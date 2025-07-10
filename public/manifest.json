@@ -1,0 +1,24 @@
+{
+  "id": "xyz.cryptopayserver.market",
+  "name": "Market",
+  "short_name": "market",
+  "start_url": "/",
+  "background_color": "#ffffff",
+  "theme_color": "#ffffff",
+  "display": "standalone",
+  "scope": "/",
+  "icons": [
+    {
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "sizes": "196x196",
+      "type": "image/png"
+    }
+  ]
+}
