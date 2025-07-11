@@ -1,5 +1,6 @@
 import { Box, Button, Container, Stack, Typography } from '@mui/material';
 import MetaTags from 'components/Common/MetaTags';
+import { CustomLogo } from 'components/Logo/CustomLogo';
 
 const Custom500 = () => {
   const onClickButton = async () => {
@@ -18,6 +19,7 @@ const Custom500 = () => {
             }}
           >
             <Stack direction={'row'} alignItems={'center'}>
+              <CustomLogo>M</CustomLogo>
               <Typography fontWeight={'bold'} color="#0098e5" fontSize={'large'}>
                 Market
               </Typography>
