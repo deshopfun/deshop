@@ -14,6 +14,7 @@ import {
 } from '@mui/material';
 
 import { CustomLogo } from 'components/Logo/CustomLogo';
+import { useUserPresistStore } from 'lib';
 import { useEffect, useState } from 'react';
 import { IsValidEmail, isValidPassword } from 'utils/verify';
 
@@ -21,7 +22,16 @@ const Login = () => {
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
 
+  const { getIsLogin, setUserId, setUserEmail, setUsername, setIsLogin } = useUserPresistStore((state) => state);
+
   const onLogin = () => {};
+
+  useEffect(() => {
+    if (getIsLogin()) {
+      window.location.href = '/';
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <Box>

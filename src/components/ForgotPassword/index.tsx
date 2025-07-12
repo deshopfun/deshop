@@ -14,20 +14,23 @@ import {
 } from '@mui/material';
 
 import { CustomLogo } from 'components/Logo/CustomLogo';
+import { useUserPresistStore } from 'lib';
 import { useEffect, useState } from 'react';
 import { IsValidEmail } from 'utils/verify';
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState<string>('');
 
+  const { getIsLogin } = useUserPresistStore((state) => state);
+
   const onResetPassword = async () => {};
 
-  // useEffect(() => {
-  //   if (getIsLogin()) {
-  //     window.location.href = '/dashboard';
-  //   }
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, []);
+  useEffect(() => {
+    if (getIsLogin()) {
+      window.location.href = '/';
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <Box>

@@ -8,6 +8,7 @@ export type RouteType = {
   name: string;
   title: string;
   component: any;
+  enableSidebar: boolean;
   needLogin: boolean;
 };
 
@@ -17,6 +18,7 @@ export const routes: RouteType[] = [
     name: 'Home',
     title: 'Home',
     component: <Home />,
+    enableSidebar: true,
     needLogin: false,
   },
   {
@@ -24,6 +26,7 @@ export const routes: RouteType[] = [
     name: 'Login',
     title: 'Login',
     component: <Login />,
+    enableSidebar: false,
     needLogin: false,
   },
   {
@@ -31,6 +34,7 @@ export const routes: RouteType[] = [
     name: 'Register',
     title: 'Register',
     component: <Register />,
+    enableSidebar: false,
     needLogin: false,
   },
   {
@@ -38,6 +42,7 @@ export const routes: RouteType[] = [
     name: 'ForgotPassword',
     title: 'ForgotPassword',
     component: <ForgotPassword />,
+    enableSidebar: false,
     needLogin: false,
   },
 ];

@@ -3,6 +3,7 @@ import { Alert, AlertTitle, Box, IconButton, LinearProgress, Snackbar, Stack, Ty
 import { routes, RouteType } from './Routes';
 import MetaTags from 'components/Common/MetaTags';
 import { useEffect, useState } from 'react';
+import HomeSidebar from 'components/Sidebar';
 
 const Home = () => {
   const router = useRouter();
@@ -26,7 +27,27 @@ const Home = () => {
     <Box height={'100%'}>
       <MetaTags title={currentRoute?.title} />
 
-      <Box>{currentRoute?.component || null}</Box>
+      {currentRoute?.enableSidebar ? (
+        <Stack direction={'row'} height={'100%'}>
+          <HomeSidebar />
+
+          <Box width={'100%'}>
+            {/* {getShowProgress() ? <LinearProgress /> : null} */}
+
+            <Box>{currentRoute?.component || null}</Box>
+          </Box>
+        </Stack>
+      ) : (
+        <Box>
+          {currentRoute?.component || null}
+
+          {/* {currentRoute?.enableInnerFooter && (
+            <Box>
+              <Footer />
+            </Box>
+          )} */}
+        </Box>
+      )}
     </Box>
   );
 };

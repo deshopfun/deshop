@@ -3,6 +3,7 @@ import { CustomLogo } from 'components/Logo/CustomLogo';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { isValidPassword, IsValidEmail } from 'utils/verify';
+import { useUserPresistStore } from 'lib';
 
 const Register = () => {
   const router = useRouter();
@@ -10,6 +11,8 @@ const Register = () => {
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [confirmPassword, setConfirmPassword] = useState<string>('');
+
+  const { getIsLogin } = useUserPresistStore((state) => state);
 
   const onRegister = async () => {};
 
@@ -21,12 +24,12 @@ const Register = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [router.query]);
 
-  // useEffect(() => {
-  //   if (getIsLogin()) {
-  //     window.location.href = '/dashboard';
-  //   }
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, []);
+  useEffect(() => {
+    if (getIsLogin()) {
+      window.location.href = '/';
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <Box>
@@ -37,7 +40,8 @@ const Register = () => {
             Welcome to decentralized cryptocurrency exchange
           </Typography>
           <Typography mt={2}>
-            A self-hosted, open-source crypto payment processor. It is secure, private, censorship-resistant and free.
+            This is a decentralized platform where anyone can list products, anyone can purchase products, and no
+            third-party constraints.
           </Typography>
 
           <Card sx={{ minWidth: 450, mt: 4, padding: 2 }}>
