@@ -19,9 +19,9 @@ const Custom404 = () => {
             }}
           >
             <Stack direction={'row'} alignItems={'center'}>
-              <CustomLogo>M</CustomLogo>
+              <CustomLogo>D</CustomLogo>
               <Typography fontWeight={'bold'} color="#0098e5" fontSize={'large'}>
-                Market
+                Deshop
               </Typography>
             </Stack>
           </Button>

@@ -37,7 +37,7 @@ const Login = () => {
     <Box>
       <Container>
         <Stack alignItems={'center'} mt={8}>
-          <CustomLogo style={{ width: 50, height: 50 }}>M</CustomLogo>
+          <CustomLogo style={{ width: 50, height: 50 }}>D</CustomLogo>
           <Typography variant="h5" fontWeight={'bold'} mt={4}>
             Welcome to decentralized cryptocurrency exchange
           </Typography>

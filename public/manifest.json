@@ -1,7 +1,7 @@
 {
-  "id": "xyz.cryptopayserver.market",
-  "name": "Market",
-  "short_name": "market",
+  "id": "fun.deshop",
+  "name": "Deshop",
+  "short_name": "deshop",
   "start_url": "/",
   "background_color": "#ffffff",
   "theme_color": "#ffffff",

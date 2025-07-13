@@ -59,7 +59,7 @@ export const useUserPresistStore = create(
       },
     }),
     {
-      name: 'cryptopayserver.store.user',
+      name: 'deshop.store.user',
     },
   ),
 );
