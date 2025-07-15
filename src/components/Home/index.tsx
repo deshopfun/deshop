@@ -14,52 +14,53 @@ import {
   Typography,
 } from '@mui/material';
 import { useState } from 'react';
+import RecentViewCard from 'components/Card/RecentViewCard';
+import { ChevronRight } from '@mui/icons-material';
+import NowTrendingCard from 'components/Card/NowTrendingCard';
+import ExploreCard from 'components/Card/ExploreCard';
 
 const Home = () => {
   const router = useRouter();
 
-  const [search, setSearch] = useState<string>('');
-
   return (
     <Box p={2}>
-      <Box display={'flex'} justifyContent={'right'} gap={1}>
-        <Button
-          onClick={() => {
-            window.location.href = '/payments/transactions';
-          }}
-          variant="contained"
-          color={'success'}
-        >
-          Create Product
-        </Button>
-        <Button
-          onClick={() => {
-            window.location.href = '/payments/transactions';
-          }}
-          variant="contained"
-        >
-          Log in
-        </Button>
+      <Box mt={4}>
+        <Box display={'flex'} alignItems={'center'}>
+          <Typography variant="h6">Recently viewed</Typography>
+          <IconButton>
+            <ChevronRight />
+          </IconButton>
+        </Box>
+
+        <Box mt={2}>
+          <RecentViewCard />
+        </Box>
       </Box>
 
-      <Box display={'flex'} justifyContent={'center'} gap={1} mt={10}>
-        <TextField
-          hiddenLabel
-          size="small"
-          style={{ width: 400 }}
-          value={search}
-          onChange={(e) => {
-            setSearch(e.target.value);
-          }}
-          placeholder="search for product"
-        />
-        <Button onClick={() => {}} variant="contained">
-          Search
-        </Button>
+      <Box mt={4}>
+        <Box display={'flex'} alignItems={'center'}>
+          <Typography variant="h6">Now tranding</Typography>
+          <IconButton>
+            <ChevronRight />
+          </IconButton>
+        </Box>
+
+        <Box mt={2}>
+          <NowTrendingCard />
+        </Box>
       </Box>
 
-      <Box mt={10}>
-        <Typography>Now trending</Typography>
+      <Box mt={4}>
+        <Box display={'flex'} alignItems={'center'}>
+          <Typography variant="h6">Explore</Typography>
+          <IconButton>
+            <ChevronRight />
+          </IconButton>
+        </Box>
+
+        <Box mt={2}>
+          <ExploreCard />
+        </Box>
       </Box>
     </Box>
   );

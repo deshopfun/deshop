@@ -4,6 +4,8 @@ import { routes, RouteType } from './Routes';
 import MetaTags from 'components/Common/MetaTags';
 import { useEffect, useState } from 'react';
 import HomeSidebar from 'components/Sidebar';
+import HomeHeader from 'components/Home/HomeHeader';
+import Search from 'components/Search';
 
 const Home = () => {
   const router = useRouter();
@@ -33,6 +35,10 @@ const Home = () => {
 
           <Box width={'100%'}>
             {/* {getShowProgress() ? <LinearProgress /> : null} */}
+
+            {currentRoute?.enableHomeHeader && <HomeHeader />}
+
+            {currentRoute?.enableSearch && <Search />}
 
             <Box>{currentRoute?.component || null}</Box>
           </Box>

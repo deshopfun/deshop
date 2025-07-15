@@ -2,7 +2,7 @@ import { useRouter } from 'next/router';
 import { useState } from 'react';
 import { Menu, menuClasses, MenuItem, MenuItemStyles, Sidebar, SubMenu } from 'react-pro-sidebar';
 import { Box, Button, Icon, Link, Stack, SvgIcon, Typography } from '@mui/material';
-import { Home, VideoCall, Chat, AccountCircle, SupportAgent, MoreVert } from '@mui/icons-material';
+import { Home, VideoCall, Chat, AccountCircle, SupportAgent, MoreVert, Explore } from '@mui/icons-material';
 import SidebarHeader from './SidebarHeader';
 
 type Theme = 'light' | 'dark';
@@ -128,6 +128,13 @@ const HomeSidebar = () => {
               Home
             </MenuItem>
             <MenuItem
+              icon={<Explore />}
+              active={router.pathname === '/explore' ? true : false}
+              component={<Link href={'/explore'} />}
+            >
+              Explore
+            </MenuItem>
+            <MenuItem
               icon={<VideoCall />}
               active={router.pathname === '/live' ? true : false}
               component={<Link href={'/live'} />}
@@ -165,7 +172,14 @@ const HomeSidebar = () => {
           </Menu>
 
           <Box mt={2} px={1}>
-            <Button variant={'contained'} onClick={() => {}} fullWidth color={'success'}>
+            <Button
+              variant={'contained'}
+              onClick={() => {
+                window.location.href = '/create';
+              }}
+              fullWidth
+              color={'success'}
+            >
               Create product
             </Button>
           </Box>
