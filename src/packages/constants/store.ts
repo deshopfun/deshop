@@ -1,0 +1,16 @@
+export const PRODUCT_TYPE = {
+  WOMEN: 'Women',
+  MEN: 'Men',
+  BEAUTY: 'Beauty',
+  FOOD: 'Food & drinks',
+  BABY: 'Baby & toddler',
+  HOME: 'Home',
+  FITNESS: 'Fitness & nutrition',
+  ACCESSORIES: 'Accessories',
+  PET: 'Pet supplies',
+  GAMES: 'Toys & games',
+  ELECTRONICS: 'Electronics',
+  ARTS: 'Arts & crafts',
+  LUGGAGE: 'Luggage & bags',
+  SPORTING: 'Sporting goods',
+};

@@ -15,7 +15,7 @@ const HomeHeader = () => {
         </Button>
         <Button
           onClick={() => {
-            window.location.href = '/payments/transactions';
+            window.location.href = '/login';
           }}
           variant="contained"
         >

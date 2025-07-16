@@ -20,11 +20,14 @@ import { IsValidEmail, isValidPassword } from 'utils/verify';
 
 const Login = () => {
   const [email, setEmail] = useState<string>('');
-  const [password, setPassword] = useState<string>('');
+  const [code, setCode] = useState<string>('');
+  const [showCode, setShowCode] = useState<boolean>(false);
 
   const { getIsLogin, setUserId, setUserEmail, setUsername, setIsLogin } = useUserPresistStore((state) => state);
 
-  const onLogin = () => {};
+  const onLogin = () => {
+    
+  };
 
   useEffect(() => {
     if (getIsLogin()) {
@@ -59,37 +62,30 @@ const Login = () => {
                   />
                 </Box>
               </Box>
-              <Box mt={3}>
-                <Stack direction={'row'} justifyContent={'space-between'} alignItems={'center'}>
-                  <Typography>Password</Typography>
-                  <Button
-                    onClick={() => {
-                      window.location.href = '/forgot-password';
-                    }}
-                  >
-                    Forgot password?
-                  </Button>
-                </Stack>
-                <Box mt={1}>
-                  <TextField
-                    fullWidth
-                    hiddenLabel
-                    type={'password'}
-                    size="small"
-                    value={password}
-                    onChange={(e) => {
-                      setPassword(e.target.value);
-                    }}
-                  />
+
+              {showCode && (
+                <Box mt={3}>
+                  <Stack direction={'row'} justifyContent={'space-between'} alignItems={'center'}>
+                    <Typography>Code</Typography>
+                  </Stack>
+                  <Box mt={1}>
+                    <TextField
+                      fullWidth
+                      hiddenLabel
+                      type={'password'}
+                      size="small"
+                      value={code}
+                      onChange={(e) => {
+                        setCode(e.target.value);
+                      }}
+                    />
+                  </Box>
                 </Box>
-              </Box>
-              {/* <Box mt={3}>
-                <FormControlLabel control={<Checkbox />} label="Remember me" />
-              </Box> */}
+              )}
 
               <Box mt={3}>
                 <Button fullWidth variant={'contained'} size={'large'} onClick={onLogin}>
-                  Sign in
+                  {showCode ? 'Sign in' : 'Get code'}
                 </Button>
               </Box>
 

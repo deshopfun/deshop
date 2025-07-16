@@ -3,7 +3,7 @@ import { Box, Card, CardActionArea, CardContent, CardMedia, Grid, Typography } f
 const RecentViewCard = () => {
   return (
     <Grid container spacing={2}>
-      <Grid size={2}>
+      <Grid size={{ xs: 12, md: 2 }}>
         <Card>
           <CardActionArea>
             <CardMedia component="img" height="140" image="/images/test.png" alt="green iguana" />
@@ -19,7 +19,7 @@ const RecentViewCard = () => {
           </CardActionArea>
         </Card>
       </Grid>
-      <Grid size={2}>
+      <Grid size={{ xs: 12, md: 2 }}>
         <Card>
           <CardActionArea>
             <CardMedia component="img" height="140" image="/images/test.png" alt="green iguana" />
@@ -35,7 +35,7 @@ const RecentViewCard = () => {
           </CardActionArea>
         </Card>
       </Grid>
-      <Grid size={2}>
+      <Grid size={{ xs: 12, md: 2 }}>
         <Card>
           <CardActionArea>
             <CardMedia component="img" height="140" image="/images/test.png" alt="green iguana" />
@@ -51,7 +51,7 @@ const RecentViewCard = () => {
           </CardActionArea>
         </Card>
       </Grid>
-      <Grid size={2}>
+      <Grid size={{ xs: 12, md: 2 }}>
         <Card>
           <CardActionArea>
             <CardMedia component="img" height="140" image="/images/test.png" alt="green iguana" />
@@ -67,7 +67,7 @@ const RecentViewCard = () => {
           </CardActionArea>
         </Card>
       </Grid>
-      <Grid size={2}>
+      <Grid size={{ xs: 12, md: 2 }}>
         <Card>
           <CardActionArea>
             <CardMedia component="img" height="140" image="/images/test.png" alt="green iguana" />
