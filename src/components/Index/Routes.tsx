@@ -1,5 +1,6 @@
 import Chat from 'components/Chat';
 import Create from 'components/Create';
+import EmailConfirm from 'components/EmailConfirm';
 import Explore from 'components/Explore';
 import ForgotPassword from 'components/ForgotPassword';
 import Home from 'components/Home';
@@ -52,10 +53,10 @@ export const routes: RouteType[] = [
     needLogin: false,
   },
   {
-    path: '/forgot-password',
-    name: 'ForgotPassword',
-    title: 'ForgotPassword',
-    component: <ForgotPassword />,
+    path: '/confirm',
+    name: 'Confirm',
+    title: 'Email confirm',
+    component: <EmailConfirm />,
     enableSidebar: false,
     enableHomeHeader: false,
     enableSearch: false,

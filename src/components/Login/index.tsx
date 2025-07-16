@@ -14,19 +14,71 @@ import {
 } from '@mui/material';
 
 import { CustomLogo } from 'components/Logo/CustomLogo';
-import { useUserPresistStore } from 'lib';
+import { useSnackPresistStore, useUserPresistStore } from 'lib';
 import { useEffect, useState } from 'react';
-import { IsValidEmail, isValidPassword } from 'utils/verify';
+import { IsValidEmail } from 'utils/verify';
+import axios from 'utils/http/axios';
+import { Http } from 'utils/http/http';
 
 const Login = () => {
   const [email, setEmail] = useState<string>('');
   const [code, setCode] = useState<string>('');
   const [showCode, setShowCode] = useState<boolean>(false);
 
-  const { getIsLogin, setUserId, setUserEmail, setUsername, setIsLogin } = useUserPresistStore((state) => state);
+  const { setSnackOpen, setSnackMessage, setSnackSeverity } = useSnackPresistStore((state) => state);
+  const { getIsLogin, setIsLogin, setAuth, setUsername, setUserEmail } = useUserPresistStore((state) => state);
 
-  const onLogin = () => {
-    
+  const onLogin = async () => {
+    try {
+      if (!email || email === '' || !IsValidEmail(email)) {
+        setSnackSeverity('error');
+        setSnackMessage('Incorrect email input');
+        setSnackOpen(true);
+        return;
+      }
+
+      if (showCode) {
+        if (!code || code === '') {
+          setSnackSeverity('error');
+          setSnackMessage('Incorrect code input');
+          setSnackOpen(true);
+          return;
+        }
+
+        const response: any = await axios.post(Http.login_by_code, {
+          email: email,
+          code: code,
+        });
+        if (response.result) {
+          setAuth(response.data.auth);
+          setUsername(response.data.username);
+          setUserEmail(response.data.email);
+          setIsLogin(true);
+
+          window.location.href = '/';
+        } else {
+          setSnackSeverity('error');
+          setSnackMessage('Login failed');
+          setSnackOpen(true);
+        }
+      } else {
+        const response: any = await axios.post(Http.login, {
+          email: email,
+        });
+        if (response.result) {
+          setShowCode(true);
+        } else {
+          setSnackSeverity('error');
+          setSnackMessage('Cannot get the login code, please check your email');
+          setSnackOpen(true);
+        }
+      }
+    } catch (e) {
+      setSnackSeverity('error');
+      setSnackMessage('The network error occurred. Please try again later');
+      setSnackOpen(true);
+      console.error(e);
+    }
   };
 
   useEffect(() => {
@@ -42,7 +94,7 @@ const Login = () => {
         <Stack alignItems={'center'} mt={8}>
           <CustomLogo style={{ width: 50, height: 50 }}>D</CustomLogo>
           <Typography variant="h5" fontWeight={'bold'} mt={4}>
-            Welcome to decentralized cryptocurrency exchange
+            Welcome to Deshop
           </Typography>
 
           <Card sx={{ minWidth: 450, mt: 4, padding: 2 }}>
@@ -67,12 +119,15 @@ const Login = () => {
                 <Box mt={3}>
                   <Stack direction={'row'} justifyContent={'space-between'} alignItems={'center'}>
                     <Typography>Code</Typography>
+                    <Typography fontWeight={'bold'} color={'warning'} fontSize={14}>
+                      The login code has been sent to your email
+                    </Typography>
                   </Stack>
                   <Box mt={1}>
                     <TextField
                       fullWidth
                       hiddenLabel
-                      type={'password'}
+                      type={'text'}
                       size="small"
                       value={code}
                       onChange={(e) => {

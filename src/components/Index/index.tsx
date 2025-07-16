@@ -6,10 +6,12 @@ import { useEffect, useState } from 'react';
 import HomeSidebar from 'components/Sidebar';
 import HomeHeader from 'components/Home/HomeHeader';
 import Search from 'components/Search';
+import { useSnackPresistStore } from 'lib';
 
 const Home = () => {
   const router = useRouter();
 
+  const { snackOpen, snackMessage, snackSeverity, setSnackOpen } = useSnackPresistStore((state) => state);
   const [currentRoute, setCurrentRoute] = useState<RouteType>();
 
   useEffect(() => {
@@ -54,6 +56,19 @@ const Home = () => {
           )} */}
         </Box>
       )}
+
+      <Snackbar anchorOrigin={{ vertical: 'top', horizontal: 'right' }} open={snackOpen}>
+        <Alert
+          onClose={() => {
+            setSnackOpen(false);
+          }}
+          severity={snackSeverity}
+          variant="filled"
+          sx={{ width: '100%' }}
+        >
+          {snackMessage}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 };

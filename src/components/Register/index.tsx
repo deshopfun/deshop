@@ -2,19 +2,47 @@ import { Box, Button, Card, CardContent, Container, Stack, TextField, Typography
 import { CustomLogo } from 'components/Logo/CustomLogo';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
-import { isValidPassword, IsValidEmail } from 'utils/verify';
-import { useUserPresistStore } from 'lib';
+import { IsValidEmail } from 'utils/verify';
+import { useSnackPresistStore, useUserPresistStore } from 'lib';
+import axios from 'utils/http/axios';
+import { Http } from 'utils/http/http';
+import RegisterDialog from 'components/Dialog/RegisterDialog';
 
 const Register = () => {
   const router = useRouter();
 
   const [email, setEmail] = useState<string>('');
-  const [password, setPassword] = useState<string>('');
-  const [confirmPassword, setConfirmPassword] = useState<string>('');
+  const [open, setOpen] = useState<boolean>(false);
 
+  const { setSnackOpen, setSnackMessage, setSnackSeverity } = useSnackPresistStore((state) => state);
   const { getIsLogin } = useUserPresistStore((state) => state);
 
-  const onRegister = async () => {};
+  const onRegister = async () => {
+    try {
+      if (!email || email === '' || !IsValidEmail(email)) {
+        setSnackSeverity('error');
+        setSnackMessage('Incorrect email input');
+        setSnackOpen(true);
+        return;
+      }
+
+      const response: any = await axios.post(Http.register, {
+        email: email,
+      });
+      if (response.result) {
+        setOpen(true);
+      } else {
+        setSnackSeverity('error');
+        setSnackMessage(response.message);
+        setSnackOpen(true);
+      }
+    } catch (e) {
+      setSnackSeverity('error');
+      setSnackMessage('The network error occurred. Please try again later.');
+      setSnackOpen(true);
+      console.error(e);
+    }
+  };
 
   useEffect(() => {
     const enterEmail = router.query.email;
@@ -37,7 +65,7 @@ const Register = () => {
         <Stack alignItems={'center'} mt={8}>
           <CustomLogo style={{ width: 50, height: 50 }}>D</CustomLogo>
           <Typography variant="h5" fontWeight={'bold'} mt={4}>
-            Welcome to decentralized cryptocurrency exchange
+            Welcome to Deshop
           </Typography>
           <Typography mt={2}>
             This is a decentralized platform where anyone can list products, anyone can purchase products, and no
@@ -61,36 +89,7 @@ const Register = () => {
                   />
                 </Box>
               </Box>
-              <Box mt={3}>
-                <Typography>Password</Typography>
-                <Box mt={1}>
-                  <TextField
-                    fullWidth
-                    hiddenLabel
-                    type={'password'}
-                    size="small"
-                    value={password}
-                    onChange={(e) => {
-                      setPassword(e.target.value);
-                    }}
-                  />
-                </Box>
-              </Box>
-              <Box mt={3}>
-                <Typography>Confirm Password</Typography>
-                <Box mt={1}>
-                  <TextField
-                    fullWidth
-                    hiddenLabel
-                    type={'password'}
-                    size="small"
-                    value={confirmPassword}
-                    onChange={(e) => {
-                      setConfirmPassword(e.target.value);
-                    }}
-                  />
-                </Box>
-              </Box>
+
               <Box mt={3}>
                 <Button fullWidth variant={'contained'} size={'large'} onClick={onRegister}>
                   Create account
@@ -112,6 +111,8 @@ const Register = () => {
           </Card>
         </Stack>
       </Container>
+
+      <RegisterDialog openDialog={open} setOpenDialog={setOpen} email={email} />
     </Box>
   );
 };

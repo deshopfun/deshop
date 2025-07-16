@@ -38,7 +38,7 @@ const ForgotPassword = () => {
         <Stack alignItems={'center'} mt={8}>
           <CustomLogo style={{ width: 50, height: 50 }}>D</CustomLogo>
           <Typography variant="h5" fontWeight={'bold'} mt={4}>
-            Welcome to decentralized cryptocurrency exchange
+            Welcome to Deshop
           </Typography>
 
           <Card sx={{ minWidth: 450, mt: 4, padding: 2 }}>

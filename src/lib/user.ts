@@ -2,21 +2,21 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
 type UserPerisistState = {
-  userId: number;
-  userEmail: string;
+  auth: string;
   username: string;
+  userEmail: string;
   isLogin: boolean;
   userTheme: 'auto' | 'light' | 'dark';
   showProgress: boolean;
 };
 
 type UserPerisistAction = {
-  setUserId: (userId: number) => void;
-  getUserId: () => number;
-  setUserEmail: (userEmail: string) => void;
-  getUserEmail: () => string;
+  setAuth: (auth: string) => void;
+  getAuth: () => string;
   setUsername: (username: string) => void;
   getUsername: () => string;
+  setUserEmail: (userEmail: string) => void;
+  getUserEmail: () => string;
   setIsLogin: (isLogin: boolean) => void;
   getIsLogin: () => boolean;
   setUserTheme: (theme: 'auto' | 'light' | 'dark') => void;
@@ -28,9 +28,9 @@ type UserPerisistAction = {
 };
 
 const initialUserState: UserPerisistState = {
-  userId: 0,
-  userEmail: '',
+  auth: '',
   username: '',
+  userEmail: '',
   isLogin: false,
   userTheme: 'auto',
   showProgress: false,
@@ -41,12 +41,12 @@ export const useUserPresistStore = create(
     (set, get) => ({
       ...initialUserState,
 
-      setUserId: (value) => set(() => ({ userId: value })),
-      getUserId: () => get().userId,
-      setUserEmail: (value) => set(() => ({ userEmail: value })),
-      getUserEmail: () => get().userEmail,
+      setAuth: (value) => set(() => ({ auth: value })),
+      getAuth: () => get().auth,
       setUsername: (value) => set(() => ({ username: value })),
       getUsername: () => get().username,
+      setUserEmail: (value) => set(() => ({ userEmail: value })),
+      getUserEmail: () => get().userEmail,
       setIsLogin: (value) => set(() => ({ isLogin: value })),
       getIsLogin: () => get().isLogin,
       setUserTheme: (value) => set(() => ({ userTheme: value })),
@@ -59,7 +59,7 @@ export const useUserPresistStore = create(
       },
     }),
     {
-      name: 'deshop.store.user',
+      name: 'deshop.user.market',
     },
   ),
 );
