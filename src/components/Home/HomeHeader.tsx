@@ -1,5 +1,5 @@
-import { KeyboardArrowDown } from '@mui/icons-material';
-import { Box, Button, Divider, Menu, MenuItem, Typography } from '@mui/material';
+import { AccountCircle, KeyboardArrowDown } from '@mui/icons-material';
+import { Avatar, Box, Button, Divider, Menu, MenuItem, Typography } from '@mui/material';
 import { useSnackPresistStore, useUserPresistStore } from 'lib';
 import { useState } from 'react';
 
@@ -17,7 +17,9 @@ const HomeHeader = () => {
   };
 
   const { setSnackOpen, setSnackMessage, setSnackSeverity } = useSnackPresistStore((state) => state);
-  const { getIsLogin, setIsLogin, setAuth, username, setUserEmail, resetUser } = useUserPresistStore((state) => state);
+  const { getIsLogin, setIsLogin, setAuth, username, userAvatar, setUserEmail, resetUser } = useUserPresistStore(
+    (state) => state,
+  );
 
   const onClickLogout = async () => {
     resetUser();
@@ -39,10 +41,20 @@ const HomeHeader = () => {
         {getIsLogin() ? (
           <>
             <Button style={{ width: 150 }} variant={'outlined'} onClick={handleClick} endIcon={<KeyboardArrowDown />}>
-              {username}
+              {userAvatar ? (
+                <Avatar alt="Avatar" src={userAvatar} />
+              ) : (
+                <Avatar sx={{ width: 20, height: 20 }} alt="Avatar" src={'/images/default_avatar.png'} />
+              )}
+              <Typography pl={1}>{username}</Typography>
             </Button>
             <Menu open={open} anchorEl={anchorEl} onClose={handleClose}>
-              <MenuItem style={{ width: 150 }} onClick={() => {}}>
+              <MenuItem
+                style={{ width: 150 }}
+                onClick={() => {
+                  window.location.href = `/profile/${username}`;
+                }}
+              >
                 Profile
               </MenuItem>
               <MenuItem style={{ width: 150 }} onClick={() => {}}>

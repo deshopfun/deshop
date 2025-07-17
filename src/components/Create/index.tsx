@@ -46,7 +46,7 @@ const Create = () => {
 
   const uploadFile = async (data: any) => {
     try {
-      if (!data || data.length !== 1) {
+      if (!data) {
         return;
       }
 

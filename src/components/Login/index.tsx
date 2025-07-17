@@ -26,7 +26,9 @@ const Login = () => {
   const [showCode, setShowCode] = useState<boolean>(false);
 
   const { setSnackOpen, setSnackMessage, setSnackSeverity } = useSnackPresistStore((state) => state);
-  const { getIsLogin, setIsLogin, setAuth, setUsername, setUserEmail } = useUserPresistStore((state) => state);
+  const { getIsLogin, setIsLogin, setAuth, setUsername, setUserEmail, setUserAvatar } = useUserPresistStore(
+    (state) => state,
+  );
 
   const onLogin = async () => {
     try {
@@ -53,6 +55,7 @@ const Login = () => {
           setAuth(response.data.auth);
           setUsername(response.data.username);
           setUserEmail(response.data.email);
+          setUserAvatar(response.data.avatar_url);
           setIsLogin(true);
 
           window.location.href = '/';

@@ -1,0 +1,256 @@
+import { AccountCircle } from '@mui/icons-material';
+import { Avatar, Box, Button, Container, Grid, Stack, Tab, Tabs, Typography } from '@mui/material';
+import { useSnackPresistStore } from 'lib';
+import { useRouter } from 'next/router';
+import { PROFILE_TAB_DATAS } from 'packages/constants';
+import { useEffect, useState } from 'react';
+import axios from 'utils/http/axios';
+import { Http } from 'utils/http/http';
+import ProfileProduct from './Product';
+import EditProfileDialog from 'components/Dialog/EditProfileDialog';
+
+type UserType = {
+  profile: ProfileType;
+};
+
+type ProfileType = {
+  AvatarUrl: string;
+  Bio: string;
+  Username: string;
+  Email: string;
+  InvitationCode: string;
+  CreatedTime: number;
+};
+
+const ProfileDetails = () => {
+  const router = useRouter();
+  const { id } = router.query;
+
+  const [user, setUser] = useState<UserType>();
+  const [tabValue, setTabValue] = useState(0);
+  const [openEditProfileDialog, setOpenEditProfileDialog] = useState<boolean>(false);
+
+  const handleChange = (event: React.SyntheticEvent, newValue: number) => {
+    const tabId = Object.values(PROFILE_TAB_DATAS).find((item) => item.id === newValue)?.tabId;
+    router.replace({
+      pathname: router.pathname,
+      query: { ...router.query, tab: tabId },
+    });
+
+    setTabValue(newValue);
+  };
+
+  const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore((state) => state);
+
+  const init = async (username: any) => {
+    try {
+      if (!username || username === '') {
+        setSnackSeverity('error');
+        setSnackMessage('Incorrect username input');
+        setSnackOpen(true);
+        return;
+      }
+
+      const response: any = await axios.get(Http.user_profile_by_username, {
+        params: {
+          username: username,
+        },
+      });
+
+      if (response.result) {
+        setUser({
+          profile: {
+            AvatarUrl: response.data.profile.avatar_url,
+            Bio: response.data.profile.bio,
+            Username: response.data.profile.username,
+            Email: response.data.profile.email,
+            InvitationCode: response.data.profile.invitation_code,
+            CreatedTime: response.data.profile.created_time,
+          },
+        });
+      } else {
+        setSnackSeverity('error');
+        setSnackMessage(response.message);
+        setSnackOpen(true);
+      }
+    } catch (e) {
+      setSnackSeverity('error');
+      setSnackMessage('The network error occurred. Please try again later.');
+      setSnackOpen(true);
+      console.error(e);
+    }
+  };
+
+  useEffect(() => {
+    if (id) {
+      init(id);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id]);
+
+  const onClickFollow = () => {};
+
+  return (
+    <Container>
+      <Grid container spacing={8}>
+        <Grid size={{ xs: 12, md: 8 }}>
+          <Stack direction={'row'} justifyContent={'space-between'} alignItems={'center'}>
+            <Stack direction={'row'} alignItems={'center'}>
+              {user?.profile.AvatarUrl ? (
+                <Avatar sx={{ width: 100, height: 100 }} alt="Avatar" src={user?.profile.AvatarUrl} />
+              ) : (
+                <Avatar sx={{ width: 100, height: 100 }} alt="Avatar" src={'/images/default_avatar.png'} />
+              )}
+              <Box ml={4}>
+                <Typography variant="h6">{user?.profile.Username}</Typography>
+                <Stack direction={'row'} alignItems={'center'} gap={1}>
+                  <Typography>Code:</Typography>
+                  <Typography fontWeight={'bold'}>{user?.profile.InvitationCode}</Typography>
+                </Stack>
+              </Box>
+            </Stack>
+
+            <Button
+              variant={'contained'}
+              onClick={() => {
+                setOpenEditProfileDialog(true);
+              }}
+            >
+              Edit
+            </Button>
+          </Stack>
+
+          <Stack direction={'row'} alignItems={'center'} mt={2} gap={4}>
+            <Box textAlign={'center'}>
+              <Typography variant="h6">0</Typography>
+              <Typography>Followers</Typography>
+            </Box>
+            <Box textAlign={'center'}>
+              <Typography variant="h6">1</Typography>
+              <Typography>Following</Typography>
+            </Box>
+            <Box textAlign={'center'}>
+              <Typography variant="h6">99</Typography>
+              <Typography>Created products</Typography>
+            </Box>
+          </Stack>
+
+          <Box mt={2} sx={{ borderBottom: 1, borderColor: 'divider' }}>
+            <Tabs value={tabValue} onChange={handleChange} variant="scrollable" scrollButtons="auto">
+              {PROFILE_TAB_DATAS &&
+                PROFILE_TAB_DATAS.length > 0 &&
+                PROFILE_TAB_DATAS.map((item, index) => <Tab key={index} label={item.title} {...a11yProps(item.id)} />)}
+            </Tabs>
+          </Box>
+
+          <CustomTabPanel value={tabValue} index={0}>
+            <ProfileProduct />
+          </CustomTabPanel>
+          <CustomTabPanel value={tabValue} index={1}>
+            <Typography>222</Typography>
+          </CustomTabPanel>
+          <CustomTabPanel value={tabValue} index={2}>
+            <Typography>333</Typography>
+          </CustomTabPanel>
+          <CustomTabPanel value={tabValue} index={3}>
+            <Typography>444</Typography>
+          </CustomTabPanel>
+          <CustomTabPanel value={tabValue} index={4}>
+            <Typography>444</Typography>
+          </CustomTabPanel>
+        </Grid>
+        <Grid size={{ xs: 12, md: 4 }}>
+          <Typography variant="h6">Who to follow</Typography>
+
+          <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} mt={2}>
+            <Stack direction={'row'} alignItems={'center'}>
+              <Avatar sx={{ width: 40, height: 40 }} alt="Avatar" src={'/images/default_avatar.png'} />
+              <Box ml={2}>
+                <Typography fontWeight={'bold'}>test123</Typography>
+                <Stack direction={'row'} alignItems={'center'} gap={1}>
+                  <Typography>123456</Typography>
+                  <Typography>followers</Typography>
+                </Stack>
+              </Box>
+            </Stack>
+
+            <Button size="small" variant={'contained'} onClick={onClickFollow}>
+              Follow
+            </Button>
+          </Stack>
+          <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} mt={2}>
+            <Stack direction={'row'} alignItems={'center'}>
+              <Avatar sx={{ width: 40, height: 40 }} alt="Avatar" src={'/images/default_avatar.png'} />
+              <Box ml={2}>
+                <Typography fontWeight={'bold'}>test123</Typography>
+                <Stack direction={'row'} alignItems={'center'} gap={1}>
+                  <Typography>123456</Typography>
+                  <Typography>followers</Typography>
+                </Stack>
+              </Box>
+            </Stack>
+
+            <Button size="small" variant={'contained'} onClick={onClickFollow}>
+              Follow
+            </Button>
+          </Stack>
+          <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} mt={2}>
+            <Stack direction={'row'} alignItems={'center'}>
+              <Avatar sx={{ width: 40, height: 40 }} alt="Avatar" src={'/images/default_avatar.png'} />
+              <Box ml={2}>
+                <Typography fontWeight={'bold'}>test123</Typography>
+                <Stack direction={'row'} alignItems={'center'} gap={1}>
+                  <Typography>123456</Typography>
+                  <Typography>followers</Typography>
+                </Stack>
+              </Box>
+            </Stack>
+
+            <Button size="small" variant={'contained'} onClick={onClickFollow}>
+              Follow
+            </Button>
+          </Stack>
+        </Grid>
+      </Grid>
+
+      <EditProfileDialog
+        avatarUrl={user?.profile.AvatarUrl}
+        username={user?.profile.Username}
+        bio={user?.profile.Bio}
+        openDialog={openEditProfileDialog}
+        setOpenDialog={setOpenEditProfileDialog}
+      />
+    </Container>
+  );
+};
+
+export default ProfileDetails;
+
+interface TabPanelProps {
+  children?: React.ReactNode;
+  index: number;
+  value: number;
+}
+
+function CustomTabPanel(props: TabPanelProps) {
+  const { children, value, index, ...other } = props;
+
+  return (
+    <Box
+      role="tabpanel"
+      hidden={value !== index}
+      id={`simple-tabpanel-${index}`}
+      aria-labelledby={`simple-tab-${index}`}
+      {...other}
+    >
+      {value === index && <Box sx={{ p: 3 }}>{children}</Box>}
+    </Box>
+  );
+}
+
+function a11yProps(index: number) {
+  return {
+    id: `simple-tab-${index}`,
+    'aria-controls': `simple-tabpanel-${index}`,
+  };
+}

@@ -7,6 +7,7 @@ import Home from 'components/Home';
 import Live from 'components/Live';
 import Login from 'components/Login';
 import Profile from 'components/Profile';
+import ProfileDetails from 'components/Profile/id';
 import Register from 'components/Register';
 import Support from 'components/Support';
 
@@ -101,6 +102,16 @@ export const routes: RouteType[] = [
     enableHomeHeader: true,
     enableSearch: false,
     needLogin: true,
+  },
+  {
+    path: '/profile/[id]',
+    name: 'Profile',
+    title: 'Profile',
+    component: <ProfileDetails />,
+    enableSidebar: true,
+    enableHomeHeader: true,
+    enableSearch: false,
+    needLogin: false,
   },
   {
     path: '/support',
