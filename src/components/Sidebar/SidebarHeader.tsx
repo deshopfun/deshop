@@ -9,7 +9,7 @@ const SidebarHeader = () => {
         <Button
           style={{ padding: 0 }}
           onClick={() => {
-            window.location.href = '/dashboard';
+            window.location.href = '/';
           }}
         >
           <Stack direction={'row'} alignItems={'center'}>

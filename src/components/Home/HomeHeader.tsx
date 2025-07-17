@@ -1,9 +1,13 @@
 import { AccountCircle, KeyboardArrowDown } from '@mui/icons-material';
 import { Avatar, Box, Button, Divider, Menu, MenuItem, Typography } from '@mui/material';
 import { useSnackPresistStore, useUserPresistStore } from 'lib';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import axios from 'utils/http/axios';
+import { Http } from 'utils/http/http';
 
 const HomeHeader = () => {
+  const [avatarUrl, setAvatarUrl] = useState<string>();
+  const [username, setUsername] = useState<string>();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
   const open = Boolean(anchorEl);
@@ -17,14 +21,36 @@ const HomeHeader = () => {
   };
 
   const { setSnackOpen, setSnackMessage, setSnackSeverity } = useSnackPresistStore((state) => state);
-  const { getIsLogin, setIsLogin, setAuth, username, userAvatar, setUserEmail, resetUser } = useUserPresistStore(
-    (state) => state,
-  );
+  const { getIsLogin, resetUser } = useUserPresistStore((state) => state);
 
   const onClickLogout = async () => {
     resetUser();
     window.location.reload();
   };
+
+  const init = async () => {
+    try {
+      const response: any = await axios.get(Http.user_setting);
+
+      if (response.result) {
+        setAvatarUrl(response.data.avatar_url);
+        setUsername(response.data.username);
+      } else {
+        setSnackSeverity('error');
+        setSnackMessage(response.message);
+        setSnackOpen(true);
+      }
+    } catch (e) {
+      setSnackSeverity('error');
+      setSnackMessage('The network error occurred. Please try again later.');
+      setSnackOpen(true);
+      console.error(e);
+    }
+  };
+
+  useEffect(() => {
+    init();
+  }, []);
 
   return (
     <Box p={2}>
@@ -40,9 +66,9 @@ const HomeHeader = () => {
         </Button>
         {getIsLogin() ? (
           <>
-            <Button style={{ width: 150 }} variant={'outlined'} onClick={handleClick} endIcon={<KeyboardArrowDown />}>
-              {userAvatar ? (
-                <Avatar alt="Avatar" src={userAvatar} />
+            <Button variant={'outlined'} onClick={handleClick} endIcon={<KeyboardArrowDown />}>
+              {avatarUrl ? (
+                <Avatar alt="Avatar" src={avatarUrl} />
               ) : (
                 <Avatar sx={{ width: 20, height: 20 }} alt="Avatar" src={'/images/default_avatar.png'} />
               )}
@@ -50,18 +76,15 @@ const HomeHeader = () => {
             </Button>
             <Menu open={open} anchorEl={anchorEl} onClose={handleClose}>
               <MenuItem
-                style={{ width: 150 }}
                 onClick={() => {
                   window.location.href = `/profile/${username}`;
                 }}
               >
                 Profile
               </MenuItem>
-              <MenuItem style={{ width: 150 }} onClick={() => {}}>
-                View wallet
-              </MenuItem>
+              <MenuItem onClick={() => {}}>View wallet</MenuItem>
               <Divider />
-              <MenuItem style={{ width: 150 }} onClick={onClickLogout}>
+              <MenuItem onClick={onClickLogout}>
                 <Typography color={'error'}>Log out</Typography>
               </MenuItem>
             </Menu>

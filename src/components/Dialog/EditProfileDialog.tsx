@@ -18,7 +18,7 @@ import {
 } from '@mui/material';
 import { useSnackPresistStore } from 'lib';
 import { FILE_TYPE } from 'packages/constants';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import axios from 'utils/http/axios';
 import { Http } from 'utils/http/http';
 
@@ -28,13 +28,12 @@ type DialogType = {
   bio?: string;
   openDialog: boolean;
   setOpenDialog: (value: boolean) => void;
-  // onClickEditProfile: (avatarUrl: string, username: string, bio: string) => Promise<void>;
 };
 
 export default function EditProfileDialog(props: DialogType) {
-  const [avatarUrl, setAvatarUrl] = useState<string>(props.avatarUrl || '');
-  const [username, setUsername] = useState<string>(props.username || '');
-  const [bio, setBio] = useState<string>(props.bio || '');
+  const [avatarUrl, setAvatarUrl] = useState<string>();
+  const [username, setUsername] = useState<string>();
+  const [bio, setBio] = useState<string>();
 
   const { setSnackSeverity, setSnackOpen, setSnackMessage } = useSnackPresistStore((state) => state);
 
@@ -54,17 +53,25 @@ export default function EditProfileDialog(props: DialogType) {
     props.setOpenDialog(false);
   };
 
-  const uploadFile = async (data: any) => {
+  useEffect(() => {
+    setAvatarUrl(props.avatarUrl);
+    setUsername(props.username);
+    setBio(props.bio);
+  }, [props.avatarUrl, props.username, props.bio]);
+
+  const uploadFile = async (files: FileList) => {
     try {
-      // if (!data || data.length !== 1) {
-      //   setSnackSeverity('error');
-      //   setSnackMessage('At least one file is required');
-      //   setSnackOpen(true);
-      //   return;
-      // }
+      if (!files.length || files.length !== 1) {
+        setSnackSeverity('error');
+        setSnackMessage('Only support uploading one file');
+        setSnackOpen(true);
+        return;
+      }
 
       const formData = new FormData();
-      formData.append('files', data);
+      Array.from(files).forEach((file) => {
+        formData.append('files', file);
+      });
 
       const response: any = await axios.post(Http.upload_file, formData, {
         params: {
@@ -91,7 +98,24 @@ export default function EditProfileDialog(props: DialogType) {
   };
 
   const onClickEditProfile = async () => {
-    handleClose();
+    const response: any = await axios.put(Http.user_setting, {
+      username: username,
+      avatar_url: avatarUrl,
+      bio: bio,
+    });
+
+    if (response.result) {
+      setSnackSeverity('success');
+      setSnackMessage('Update successfully');
+      setSnackOpen(true);
+      handleClose();
+
+      window.location.href = `/profile/${username}`;
+    } else {
+      setSnackSeverity('error');
+      setSnackMessage(response.message);
+      setSnackOpen(true);
+    }
   };
 
   return (
@@ -113,8 +137,8 @@ export default function EditProfileDialog(props: DialogType) {
                 anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
                 badgeContent={<PhotoCamera color={'action'} />}
               >
-                {props.avatarUrl ? (
-                  <Avatar sx={{ width: 50, height: 50 }} alt="Avatar" src={props.avatarUrl} />
+                {avatarUrl ? (
+                  <Avatar sx={{ width: 50, height: 50 }} alt="Avatar" src={avatarUrl} />
                 ) : (
                   <Avatar sx={{ width: 50, height: 50 }} alt="Avatar" src={'/images/default_avatar.png'} />
                 )}
