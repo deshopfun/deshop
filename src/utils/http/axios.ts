@@ -41,7 +41,6 @@ axios.interceptors.response.use(
 
     if (error.response && error.response.status === 401) {
       resetUser();
-      window.location.href = '/';
     } else {
       return Promise.reject(error);
     }

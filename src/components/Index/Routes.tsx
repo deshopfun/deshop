@@ -6,6 +6,7 @@ import ForgotPassword from 'components/ForgotPassword';
 import Home from 'components/Home';
 import Live from 'components/Live';
 import Login from 'components/Login';
+import ProductDetails from 'components/Product/id';
 import Profile from 'components/Profile';
 import ProfileDetails from 'components/Profile/id';
 import Register from 'components/Register';
@@ -131,6 +132,16 @@ export const routes: RouteType[] = [
     enableSidebar: true,
     enableHomeHeader: true,
     enableSearch: false,
+    needLogin: false,
+  },
+  {
+    path: '/products/[id]',
+    name: 'Product',
+    title: 'Product',
+    component: <ProductDetails />,
+    enableSidebar: true,
+    enableHomeHeader: true,
+    enableSearch: true,
     needLogin: false,
   },
 ];

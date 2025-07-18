@@ -30,6 +30,10 @@ const HomeHeader = () => {
 
   const init = async () => {
     try {
+      if (!getIsLogin()) {
+        return;
+      }
+
       const response: any = await axios.get(Http.user_setting);
 
       if (response.result) {

@@ -4,11 +4,14 @@ import {
   Button,
   Card,
   CardContent,
+  Chip,
   Container,
   FormControl,
   FormControlLabel,
   FormLabel,
   Grid,
+  ImageList,
+  ImageListItem,
   Radio,
   RadioGroup,
   Stack,
@@ -16,8 +19,22 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import { PRODUCT_TYPE } from 'packages/constants';
-import { useState } from 'react';
+import { useSnackPresistStore } from 'lib';
+import { FILE_TYPE, PRODUCT_TYPE } from 'packages/constants';
+import { useEffect, useState } from 'react';
+import axios from 'utils/http/axios';
+import { Http } from 'utils/http/http';
+
+type ProductImage = {
+  src: string;
+  width: number;
+  height: number;
+};
+
+type ProductOption = {
+  name: string;
+  value: string;
+};
 
 const Create = () => {
   const [title, setTitle] = useState<string>('');
@@ -31,6 +48,9 @@ const Create = () => {
   const [optionTwoValue, setOptionTwoValue] = useState<string>('');
   const [optionThree, setOptionThree] = useState<string>('');
   const [optionThreeValue, setOptionThreeValue] = useState<string>('');
+  const [imageList, setImageList] = useState<string[]>([]);
+
+  const { setSnackSeverity, setSnackOpen, setSnackMessage } = useSnackPresistStore((state) => state);
 
   const VisuallyHiddenInput = styled('input')({
     clip: 'rect(0 0 0 0)',
@@ -44,15 +64,137 @@ const Create = () => {
     width: 1,
   });
 
-  const uploadFile = async (data: any) => {
+  const uploadFile = async (files: FileList) => {
     try {
-      if (!data) {
+      if (!files.length || files.length === 0) {
+        setSnackSeverity('error');
+        setSnackMessage('Not found the file');
+        setSnackOpen(true);
         return;
       }
 
       const formData = new FormData();
-      formData.append('file', data[0]);
-    } catch (e) {}
+      Array.from(files).forEach((file) => {
+        formData.append('files', file);
+      });
+
+      const response: any = await axios.post(Http.upload_file, formData, {
+        params: {
+          file_type: FILE_TYPE.Image,
+        },
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      if (response.result && response.data.urls.length > 0) {
+        setImageList(response.data.urls);
+      } else {
+        setSnackSeverity('error');
+        setSnackMessage('Upload Failed');
+        setSnackOpen(true);
+      }
+    } catch (e) {
+      setSnackSeverity('error');
+      setSnackMessage('The network error occurred. Please try again later.');
+      setSnackOpen(true);
+      console.error(e);
+    }
+  };
+
+  const onClickCreateProduct = async () => {
+    if (!title || title === '') {
+      setSnackSeverity('error');
+      setSnackMessage('Incorrect title input');
+      setSnackOpen(true);
+      return;
+    }
+
+    if (!productType || productType === '') {
+      setSnackSeverity('error');
+      setSnackMessage('Incorrect product type');
+      setSnackOpen(true);
+      return;
+    }
+
+    if (!tags || tags === '') {
+      setSnackSeverity('error');
+      setSnackMessage('Incorrect tags input');
+      setSnackOpen(true);
+      return;
+    }
+
+    if (!description || description === '') {
+      setSnackSeverity('error');
+      setSnackMessage('Incorrect description input');
+      setSnackOpen(true);
+      return;
+    }
+
+    const productOption: ProductOption[] = [];
+    if (optionOne && optionOneValue && optionOne != '' && optionOneValue != '') {
+      productOption.push({
+        name: optionOne,
+        value: optionOneValue,
+      });
+    }
+    if (optionTwo && optionTwoValue && optionTwo != '' && optionTwoValue != '') {
+      productOption.push({
+        name: optionTwo,
+        value: optionTwoValue,
+      });
+    }
+    if (optionThree && optionThreeValue && optionThree != '' && optionThreeValue != '') {
+      productOption.push({
+        name: optionThree,
+        value: optionThreeValue,
+      });
+    }
+
+    if (productOption.length <= 0) {
+      setSnackSeverity('error');
+      setSnackMessage('At least one product option is needed');
+      setSnackOpen(true);
+      return;
+    }
+
+    const productImages: ProductImage[] = [];
+    if (imageList && imageList.length > 0) {
+      imageList.forEach((item) => {
+        productImages.push({
+          src: item,
+          width: 100,
+          height: 100,
+        });
+      });
+    }
+
+    if (productImages.length <= 0) {
+      setSnackSeverity('error');
+      setSnackMessage('At least one image is needed');
+      setSnackOpen(true);
+      return;
+    }
+
+    const response: any = await axios.post(Http.product, {
+      title: title,
+      body_html: description,
+      product_type: productType,
+      tags: tags,
+      vendor: vendor,
+      images: productImages,
+      options: productOption,
+    });
+
+    if (response.result) {
+      setSnackSeverity('success');
+      setSnackMessage('Create successfully');
+      setSnackOpen(true);
+    } else {
+      setSnackSeverity('error');
+      setSnackMessage(response.message);
+      setSnackOpen(true);
+    }
   };
 
   return (
@@ -80,6 +222,7 @@ const Create = () => {
                       onChange={(e) => {
                         setTitle(e.target.value);
                       }}
+                      placeholder="title your product"
                     />
                   </Box>
                   <Box width={'100%'}>
@@ -92,6 +235,7 @@ const Create = () => {
                       onChange={(e) => {
                         setVendor(e.target.value);
                       }}
+                      placeholder="name of the product vendor"
                     />
                   </Box>
                 </Stack>
@@ -122,6 +266,7 @@ const Create = () => {
                     onChange={(e) => {
                       setTags(e.target.value);
                     }}
+                    placeholder="used for filtering and search (e.g. apple,nike,ai)"
                   />
                 </Box>
                 <Box mt={2}>
@@ -136,6 +281,7 @@ const Create = () => {
                     onChange={(e) => {
                       setDescription(e.target.value);
                     }}
+                    placeholder="write a long description"
                   />
                 </Box>
               </CardContent>
@@ -225,22 +371,45 @@ const Create = () => {
           <Box mt={2}>
             <Card>
               <CardContent>
-                <Typography variant="h6">Image</Typography>
+                <Stack direction={'row'} alignItems={'center'} gap={2}>
+                  <Typography variant="h6">Image</Typography>
+                  {imageList && imageList.length > 0 && (
+                    <Button
+                      variant={'contained'}
+                      color="error"
+                      onClick={() => {
+                        setImageList([]);
+                      }}
+                    >
+                      Delete
+                    </Button>
+                  )}
+                </Stack>
                 <Box mt={2} style={{ border: '1px dashed #000' }}>
-                  <Button component="label" role={undefined} tabIndex={-1} fullWidth>
-                    <Box py={12} textAlign={'center'}>
-                      <VisuallyHiddenInput
-                        type="file"
-                        multiple
-                        onChange={async (event: any) => {
-                          await uploadFile(event.target.files);
-                        }}
-                      />
-                      <Collections fontSize={'large'} />
-                      <Typography mt={1}>Select video or image to upload</Typography>
-                      <Typography>or drag or drop it here</Typography>
-                    </Box>
-                  </Button>
+                  {imageList && imageList.length > 0 ? (
+                    <ImageList cols={3}>
+                      {imageList.map((item, index) => (
+                        <ImageListItem key={index}>
+                          <img srcSet={item} src={item} alt={'image'} loading="lazy" />
+                        </ImageListItem>
+                      ))}
+                    </ImageList>
+                  ) : (
+                    <Button component="label" role={undefined} tabIndex={-1} fullWidth>
+                      <Box py={12} textAlign={'center'}>
+                        <VisuallyHiddenInput
+                          type="file"
+                          multiple
+                          onChange={async (event: any) => {
+                            await uploadFile(event.target.files);
+                          }}
+                        />
+                        <Collections fontSize={'large'} />
+                        <Typography mt={1}>Select video or image to upload</Typography>
+                        <Typography>or drag or drop it here</Typography>
+                      </Box>
+                    </Button>
+                  )}
                 </Box>
 
                 <Stack direction={'row'} mt={2} gap={2} justifyContent={'space-between'}>
@@ -260,7 +429,7 @@ const Create = () => {
           </Box>
 
           <Box my={2}>
-            <Button variant={'contained'} color={'success'}>
+            <Button variant={'contained'} color={'success'} onClick={onClickCreateProduct}>
               Create Product
             </Button>
           </Box>
@@ -270,7 +439,24 @@ const Create = () => {
           <Box mt={1}>
             <Card>
               <CardContent>
-                <Typography py={20}>a preview of how the product will look like</Typography>
+                {imageList && imageList.length > 0 ? (
+                  <Box>
+                    <img srcSet={imageList[0]} src={imageList[0]} alt={'image'} loading="lazy" />
+                    <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} mt={1}>
+                      <Stack direction={'row'} alignItems={'center'} gap={1}>
+                        <Typography variant="h6">{title}</Typography>
+                        <Chip label={productType} color="primary" size="small" />
+                      </Stack>
+                      <Typography>{vendor}</Typography>
+                    </Stack>
+                    <Stack direction={'row'} alignItems={'center'} gap={1} mt={1}>
+                      {tags && tags.split(',').map((item, index) => <Chip size="small" label={item} key={index} />)}
+                    </Stack>
+                    <Box mt={2} dangerouslySetInnerHTML={{ __html: description }}></Box>
+                  </Box>
+                ) : (
+                  <Typography py={20}>a preview of how the product will look like</Typography>
+                )}
               </CardContent>
             </Card>
           </Box>

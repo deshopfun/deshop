@@ -1,6 +1,6 @@
 import { AccountCircle } from '@mui/icons-material';
 import { Avatar, Box, Button, Container, Grid, Stack, Tab, Tabs, Typography } from '@mui/material';
-import { useSnackPresistStore } from 'lib';
+import { useSnackPresistStore, useUserPresistStore } from 'lib';
 import { useRouter } from 'next/router';
 import { PROFILE_TAB_DATAS } from 'packages/constants';
 import { useEffect, useState } from 'react';
@@ -8,18 +8,46 @@ import axios from 'utils/http/axios';
 import { Http } from 'utils/http/http';
 import ProfileProduct from './Product';
 import EditProfileDialog from 'components/Dialog/EditProfileDialog';
+import ProfileWallet from './Wallet';
+import ProfileRepile from './Repile';
+import ProfileNotification from './Notification';
+import ProfileFollow from './Follow';
 
 type UserType = {
   profile: ProfileType;
+  products: ProductType[];
 };
 
 type ProfileType = {
-  AvatarUrl: string;
-  Bio: string;
-  Username: string;
-  Email: string;
-  InvitationCode: string;
-  CreatedTime: number;
+  avatar_url: string;
+  bio: string;
+  username: string;
+  email: string;
+  invitation_code: string;
+  created_time: number;
+};
+
+type ProductType = {
+  product_id: number;
+  title: string;
+  body_html: string;
+  product_type: string;
+  tags: string;
+  vendor: string;
+  product_status: number;
+  images: ProductImage[];
+  options: ProductOption[];
+};
+
+type ProductImage = {
+  src: string;
+  width: number;
+  height: number;
+};
+
+type ProductOption = {
+  name: string;
+  value: string;
 };
 
 const ProfileDetails = () => {
@@ -59,14 +87,8 @@ const ProfileDetails = () => {
 
       if (response.result) {
         setUser({
-          profile: {
-            AvatarUrl: response.data.profile.avatar_url,
-            Bio: response.data.profile.bio,
-            Username: response.data.profile.username,
-            Email: response.data.profile.email,
-            InvitationCode: response.data.profile.invitation_code,
-            CreatedTime: response.data.profile.created_time,
-          },
+          profile: response.data.profile,
+          products: response.data.products,
         });
       } else {
         setSnackSeverity('error');
@@ -96,16 +118,16 @@ const ProfileDetails = () => {
         <Grid size={{ xs: 12, md: 8 }}>
           <Stack direction={'row'} justifyContent={'space-between'} alignItems={'center'}>
             <Stack direction={'row'} alignItems={'center'}>
-              {user?.profile.AvatarUrl ? (
-                <Avatar sx={{ width: 100, height: 100 }} alt="Avatar" src={user?.profile.AvatarUrl} />
+              {user?.profile.avatar_url ? (
+                <Avatar sx={{ width: 100, height: 100 }} alt="Avatar" src={user?.profile.avatar_url} />
               ) : (
                 <Avatar sx={{ width: 100, height: 100 }} alt="Avatar" src={'/images/default_avatar.png'} />
               )}
               <Box ml={4}>
-                <Typography variant="h6">{user?.profile.Username}</Typography>
+                <Typography variant="h6">{user?.profile.username}</Typography>
                 <Stack direction={'row'} alignItems={'center'} gap={1}>
                   <Typography>Code:</Typography>
-                  <Typography fontWeight={'bold'}>{user?.profile.InvitationCode}</Typography>
+                  <Typography fontWeight={'bold'}>{user?.profile.invitation_code}</Typography>
                 </Stack>
               </Box>
             </Stack>
@@ -122,16 +144,16 @@ const ProfileDetails = () => {
 
           <Stack direction={'row'} alignItems={'center'} mt={2} gap={4}>
             <Box textAlign={'center'}>
+              <Typography variant="h6">{user?.products.length || 0}</Typography>
+              <Typography>Created products</Typography>
+            </Box>
+            <Box textAlign={'center'}>
               <Typography variant="h6">0</Typography>
               <Typography>Followers</Typography>
             </Box>
             <Box textAlign={'center'}>
               <Typography variant="h6">1</Typography>
               <Typography>Following</Typography>
-            </Box>
-            <Box textAlign={'center'}>
-              <Typography variant="h6">99</Typography>
-              <Typography>Created products</Typography>
             </Box>
           </Stack>
 
@@ -144,19 +166,19 @@ const ProfileDetails = () => {
           </Box>
 
           <CustomTabPanel value={tabValue} index={0}>
-            <ProfileProduct />
+            {user?.products && <ProfileProduct product={user?.products} />}
           </CustomTabPanel>
           <CustomTabPanel value={tabValue} index={1}>
-            <Typography>222</Typography>
+            <ProfileWallet />
           </CustomTabPanel>
           <CustomTabPanel value={tabValue} index={2}>
-            <Typography>333</Typography>
+            <ProfileRepile />
           </CustomTabPanel>
           <CustomTabPanel value={tabValue} index={3}>
-            <Typography>444</Typography>
+            <ProfileNotification />
           </CustomTabPanel>
           <CustomTabPanel value={tabValue} index={4}>
-            <Typography>444</Typography>
+            <ProfileFollow />
           </CustomTabPanel>
         </Grid>
         <Grid size={{ xs: 12, md: 4 }}>
@@ -214,9 +236,9 @@ const ProfileDetails = () => {
       </Grid>
 
       <EditProfileDialog
-        avatarUrl={user?.profile.AvatarUrl}
-        username={user?.profile.Username}
-        bio={user?.profile.Bio}
+        avatarUrl={user?.profile.avatar_url}
+        username={user?.profile.username}
+        bio={user?.profile.bio}
         openDialog={openEditProfileDialog}
         setOpenDialog={setOpenEditProfileDialog}
       />
