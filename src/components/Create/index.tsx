@@ -441,7 +441,7 @@ const Create = () => {
               <CardContent>
                 {imageList && imageList.length > 0 ? (
                   <Box>
-                    <img srcSet={imageList[0]} src={imageList[0]} alt={'image'} loading="lazy" />
+                    <img srcSet={imageList[0]} src={imageList[0]} alt={'image'} loading="lazy" width={100} height={100} />
                     <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} mt={1}>
                       <Stack direction={'row'} alignItems={'center'} gap={1}>
                         <Typography variant="h6">{title}</Typography>
