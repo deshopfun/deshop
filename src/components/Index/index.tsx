@@ -40,9 +40,7 @@ const Home = () => {
 
             {currentRoute?.enableHomeHeader && <HomeHeader />}
 
-            {currentRoute?.enableSearch && <Search />}
-
-            <Box>{currentRoute?.component || null}</Box>
+            <Box mt={10}>{currentRoute?.component || null}</Box>
           </Box>
         </Stack>
       ) : (

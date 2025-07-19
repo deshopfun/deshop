@@ -1,7 +1,6 @@
 import { useSnackPresistStore } from 'lib';
 import { useRouter } from 'next/router';
 import {
-  Avatar,
   Box,
   Button,
   Container,
@@ -9,15 +8,12 @@ import {
   Grid,
   IconButton,
   Input,
-  InputAdornment,
   LinearProgress,
   Link,
   Menu,
   MenuItem,
   Rating,
   Stack,
-  Tab,
-  Tabs,
   Typography,
 } from '@mui/material';
 import axios from 'utils/http/axios';

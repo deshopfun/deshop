@@ -5,7 +5,7 @@ const Search = () => {
   const [search, setSearch] = useState<string>('');
 
   return (
-    <Box display={'flex'} justifyContent={'center'} gap={1} mt={4}>
+    <Box display={'flex'} justifyContent={'center'} gap={1}>
       <TextField
         hiddenLabel
         size="small"

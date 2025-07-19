@@ -24,7 +24,7 @@ const Home = () => {
 
   return (
     <Box p={2}>
-      <Box mt={4}>
+      <Box>
         <Box display={'flex'} alignItems={'center'}>
           <Typography variant="h6">Recently viewed</Typography>
           <IconButton>

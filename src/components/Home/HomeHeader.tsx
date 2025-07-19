@@ -1,5 +1,6 @@
-import { AccountCircle, KeyboardArrowDown } from '@mui/icons-material';
-import { Avatar, Box, Button, Divider, Menu, MenuItem, Typography } from '@mui/material';
+import { AccountCircle, AddShoppingCart, FavoriteBorder, KeyboardArrowDown } from '@mui/icons-material';
+import { Avatar, Badge, Box, Button, Divider, Grid, IconButton, Menu, MenuItem, Typography } from '@mui/material';
+import Search from 'components/Search';
 import { useSnackPresistStore, useUserPresistStore } from 'lib';
 import { useEffect, useState } from 'react';
 import axios from 'utils/http/axios';
@@ -58,52 +59,80 @@ const HomeHeader = () => {
 
   return (
     <Box p={2}>
-      <Box display={'flex'} justifyContent={'right'} gap={1}>
-        <Button
-          onClick={() => {
-            window.location.href = '/create';
-          }}
-          variant="contained"
-          color={'success'}
-        >
-          Create Product
-        </Button>
-        {getIsLogin() ? (
-          <>
-            <Button variant={'outlined'} onClick={handleClick} endIcon={<KeyboardArrowDown />}>
-              {avatarUrl ? (
-                <Avatar alt="Avatar" src={avatarUrl} />
-              ) : (
-                <Avatar sx={{ width: 20, height: 20 }} alt="Avatar" src={'/images/default_avatar.png'} />
-              )}
-              <Typography pl={1}>{username}</Typography>
+      <Grid container>
+        <Grid size={{ xs: 12, md: 4 }}></Grid>
+        <Grid size={{ xs: 12, md: 4 }}>
+          <Search />
+        </Grid>
+        <Grid size={{ xs: 12, md: 4 }}>
+          <Box display={'flex'} alignItems={'center'} justifyContent={'right'} gap={2}>
+            <IconButton
+              size="small"
+              onClick={() => {
+                window.location.href = '#';
+              }}
+            >
+              <Badge badgeContent={1} color={'info'}>
+                <AddShoppingCart color="action" />
+              </Badge>
+            </IconButton>
+            <IconButton
+              size="small"
+              onClick={() => {
+                window.location.href = '#';
+              }}
+            >
+              <FavoriteBorder color="action" />
+            </IconButton>
+            <Button
+              onClick={() => {
+                window.location.href = '/create';
+              }}
+              variant="contained"
+              color={'success'}
+              size="small"
+            >
+              Create Product
             </Button>
-            <Menu open={open} anchorEl={anchorEl} onClose={handleClose}>
-              <MenuItem
+            {getIsLogin() ? (
+              <>
+                <Button variant={'outlined'} onClick={handleClick} endIcon={<KeyboardArrowDown />} size="small">
+                  {avatarUrl ? (
+                    <Avatar sx={{ width: 20, height: 20 }} alt="Avatar" src={avatarUrl} />
+                  ) : (
+                    <Avatar sx={{ width: 20, height: 20 }} alt="Avatar" src={'/images/default_avatar.png'} />
+                  )}
+                  <Typography pl={1} fontSize={14}>{username}</Typography>
+                </Button>
+                <Menu open={open} anchorEl={anchorEl} onClose={handleClose}>
+                  <MenuItem
+                    onClick={() => {
+                      window.location.href = `/profile/${username}`;
+                    }}
+                  >
+                    Profile
+                  </MenuItem>
+                  <MenuItem onClick={() => {}}>View wallet</MenuItem>
+                  <Divider />
+                  <MenuItem onClick={onClickLogout}>
+                    <Typography color={'error'}>Log out</Typography>
+                  </MenuItem>
+                </Menu>
+              </>
+            ) : (
+              <Button
+                size="small"
                 onClick={() => {
-                  window.location.href = `/profile/${username}`;
+                  window.location.href = '/login';
                 }}
+                variant="contained"
               >
-                Profile
-              </MenuItem>
-              <MenuItem onClick={() => {}}>View wallet</MenuItem>
-              <Divider />
-              <MenuItem onClick={onClickLogout}>
-                <Typography color={'error'}>Log out</Typography>
-              </MenuItem>
-            </Menu>
-          </>
-        ) : (
-          <Button
-            onClick={() => {
-              window.location.href = '/login';
-            }}
-            variant="contained"
-          >
-            Log in
-          </Button>
-        )}
-      </Box>
+                Log in
+              </Button>
+            )}
+          </Box>
+        </Grid>
+      </Grid>
     </Box>
   );
 };
