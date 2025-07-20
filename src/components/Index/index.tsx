@@ -5,7 +5,6 @@ import MetaTags from 'components/Common/MetaTags';
 import { useEffect, useState } from 'react';
 import HomeSidebar from 'components/Sidebar';
 import HomeHeader from 'components/Home/HomeHeader';
-import Search from 'components/Search';
 import { useSnackPresistStore } from 'lib';
 
 const Home = () => {

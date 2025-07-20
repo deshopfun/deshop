@@ -69,7 +69,7 @@ const HomeHeader = () => {
             <IconButton
               size="small"
               onClick={() => {
-                window.location.href = '#';
+                window.location.href = '/cart';
               }}
             >
               <Badge badgeContent={1} color={'info'}>
@@ -102,7 +102,9 @@ const HomeHeader = () => {
                   ) : (
                     <Avatar sx={{ width: 20, height: 20 }} alt="Avatar" src={'/images/default_avatar.png'} />
                   )}
-                  <Typography pl={1} fontSize={14}>{username}</Typography>
+                  <Typography pl={1} fontSize={14}>
+                    {username}
+                  </Typography>
                 </Button>
                 <Menu open={open} anchorEl={anchorEl} onClose={handleClose}>
                   <MenuItem

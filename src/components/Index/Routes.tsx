@@ -1,4 +1,6 @@
+import Cart from 'components/Cart';
 import Chat from 'components/Chat';
+import CheckoutDetails from 'components/Checkout/id';
 import Create from 'components/Create';
 import EmailConfirm from 'components/EmailConfirm';
 import Explore from 'components/Explore';
@@ -127,6 +129,24 @@ export const routes: RouteType[] = [
     name: 'Product',
     title: 'Product',
     component: <ProductDetails />,
+    enableSidebar: true,
+    enableHomeHeader: true,
+    needLogin: false,
+  },
+  {
+    path: '/cart',
+    name: 'Cart',
+    title: 'Cart',
+    component: <Cart />,
+    enableSidebar: true,
+    enableHomeHeader: true,
+    needLogin: false,
+  },
+  {
+    path: '/checkout/[id]',
+    name: 'Checkout',
+    title: 'Checkout',
+    component: <CheckoutDetails />,
     enableSidebar: true,
     enableHomeHeader: true,
     needLogin: false,
