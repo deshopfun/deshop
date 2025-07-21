@@ -1,6 +1,20 @@
 import { useSnackPresistStore } from 'lib';
 import { useRouter } from 'next/router';
-import { Box, Button, Checkbox, Container, Grid, IconButton, Input, Stack, TextField, Typography } from '@mui/material';
+import {
+  Box,
+  Button,
+  Checkbox,
+  Container,
+  FormControl,
+  Grid,
+  IconButton,
+  Input,
+  MenuItem,
+  Select,
+  Stack,
+  TextField,
+  Typography,
+} from '@mui/material';
 import axios from 'utils/http/axios';
 import { Http } from 'utils/http/http';
 import { useEffect, useState } from 'react';
@@ -38,32 +52,93 @@ const CheckoutDetails = () => {
             </Stack>
             <Box mt={3}>
               <Typography mb={1}>Full name</Typography>
-              <TextField hiddenLabel size="small" fullWidth value={''} onChange={(e) => {}} placeholder="" />
+              <TextField
+                hiddenLabel
+                size="small"
+                fullWidth
+                value={''}
+                onChange={(e) => {}}
+                placeholder="Enter full name"
+              />
             </Box>
             <Box mt={3}>
               <Typography mb={1}>Email address</Typography>
-              <TextField hiddenLabel size="small" fullWidth value={''} onChange={(e) => {}} placeholder="" />
+              <TextField
+                hiddenLabel
+                size="small"
+                fullWidth
+                value={''}
+                onChange={(e) => {}}
+                placeholder="Enter email address"
+              />
             </Box>
             <Box mt={3}>
               <Typography mb={1}>Phone number</Typography>
-              <TextField hiddenLabel size="small" fullWidth value={''} onChange={(e) => {}} placeholder="" />
+              <TextField
+                hiddenLabel
+                size="small"
+                fullWidth
+                value={''}
+                onChange={(e) => {}}
+                placeholder="Enter phone number"
+              />
             </Box>
             <Box mt={3}>
               <Typography mb={1}>Country</Typography>
-              <TextField hiddenLabel size="small" fullWidth value={''} onChange={(e) => {}} placeholder="" />
+              <FormControl hiddenLabel fullWidth>
+                <Select
+                  displayEmpty
+                  value={''}
+                  onChange={() => {}}
+                  size={'small'}
+                  inputProps={{ 'aria-label': 'Without label' }}
+                  renderValue={(selected: any) => {
+                    if (selected.length === 0) {
+                      return <em>Choose state</em>;
+                    }
+
+                    return selected.join(', ');
+                  }}
+                >
+                  <MenuItem value={10}>Ten</MenuItem>
+                  <MenuItem value={20}>Twenty</MenuItem>
+                  <MenuItem value={30}>Thirty</MenuItem>
+                </Select>
+              </FormControl>
             </Box>
             <Stack mt={3} direction={'row'} alignItems={'center'} justifyContent={'space-between'} gap={2}>
               <Box>
                 <Typography mb={1}>City</Typography>
-                <TextField hiddenLabel size="small" fullWidth value={''} onChange={(e) => {}} placeholder="" />
+                <TextField
+                  hiddenLabel
+                  size="small"
+                  fullWidth
+                  value={''}
+                  onChange={(e) => {}}
+                  placeholder="Enter city"
+                />
               </Box>
               <Box>
                 <Typography mb={1}>State</Typography>
-                <TextField hiddenLabel size="small" fullWidth value={''} onChange={(e) => {}} placeholder="" />
+                <TextField
+                  hiddenLabel
+                  size="small"
+                  fullWidth
+                  value={''}
+                  onChange={(e) => {}}
+                  placeholder="Enter state"
+                />
               </Box>
               <Box>
                 <Typography mb={1}>ZIP Code</Typography>
-                <TextField hiddenLabel size="small" fullWidth value={''} onChange={(e) => {}} placeholder="" />
+                <TextField
+                  hiddenLabel
+                  size="small"
+                  fullWidth
+                  value={''}
+                  onChange={(e) => {}}
+                  placeholder="Enter ZIP code"
+                />
               </Box>
             </Stack>
             <Stack direction={'row'} alignItems={'center'} mt={3}>
@@ -126,7 +201,15 @@ const CheckoutDetails = () => {
           </Stack>
 
           <Box mt={4}>
-            <Button variant={'contained'} color={'success'} size="large" fullWidth>
+            <Button
+              variant={'contained'}
+              color={'success'}
+              size="large"
+              fullWidth
+              onClick={() => {
+                window.location.href = '/payment/123456';
+              }}
+            >
               Pay Now
             </Button>
           </Box>

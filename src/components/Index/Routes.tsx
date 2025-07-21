@@ -8,6 +8,7 @@ import ForgotPassword from 'components/ForgotPassword';
 import Home from 'components/Home';
 import Live from 'components/Live';
 import Login from 'components/Login';
+import PaymentDetails from 'components/Payment/id';
 import ProductDetails from 'components/Product/id';
 import Profile from 'components/Profile';
 import ProfileDetails from 'components/Profile/id';
@@ -147,6 +148,15 @@ export const routes: RouteType[] = [
     name: 'Checkout',
     title: 'Checkout',
     component: <CheckoutDetails />,
+    enableSidebar: true,
+    enableHomeHeader: true,
+    needLogin: false,
+  },
+  {
+    path: '/payment/[id]',
+    name: 'PaymentDetails',
+    title: 'PaymentDetails',
+    component: <PaymentDetails />,
     enableSidebar: true,
     enableHomeHeader: true,
     needLogin: false,
