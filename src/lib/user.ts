@@ -3,6 +3,7 @@ import { persist } from 'zustand/middleware';
 
 type UserPerisistState = {
   auth: string;
+  uuid: string;
   isLogin: boolean;
   userTheme: 'auto' | 'light' | 'dark';
   showProgress: boolean;
@@ -11,6 +12,8 @@ type UserPerisistState = {
 type UserPerisistAction = {
   setAuth: (auth: string) => void;
   getAuth: () => string;
+  setUuid: (uuid: string) => void;
+  getUuid: () => string;
   setIsLogin: (isLogin: boolean) => void;
   getIsLogin: () => boolean;
   setUserTheme: (theme: 'auto' | 'light' | 'dark') => void;
@@ -23,6 +26,7 @@ type UserPerisistAction = {
 
 const initialUserState: UserPerisistState = {
   auth: '',
+  uuid: '',
   isLogin: false,
   userTheme: 'auto',
   showProgress: false,
@@ -35,6 +39,8 @@ export const useUserPresistStore = create(
 
       setAuth: (value) => set(() => ({ auth: value })),
       getAuth: () => get().auth,
+      setUuid: (value) => set(() => ({ uuid: value })),
+      getUuid: () => get().uuid,
       setIsLogin: (value) => set(() => ({ isLogin: value })),
       getIsLogin: () => get().isLogin,
       setUserTheme: (value) => set(() => ({ userTheme: value })),

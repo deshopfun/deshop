@@ -66,22 +66,27 @@ const HomeHeader = () => {
         </Grid>
         <Grid size={{ xs: 12, md: 4 }}>
           <Box display={'flex'} alignItems={'center'} justifyContent={'right'} gap={2}>
-            <IconButton
-              onClick={() => {
-                window.location.href = '/cart';
-              }}
-            >
-              <Badge badgeContent={1} color={'info'}>
-                <AddShoppingCart color="action" />
-              </Badge>
-            </IconButton>
-            <IconButton
-              onClick={() => {
-                window.location.href = '#';
-              }}
-            >
-              <FavoriteBorder color="action" />
-            </IconButton>
+            {getIsLogin() && (
+              <>
+                <IconButton
+                  onClick={() => {
+                    window.location.href = '/cart';
+                  }}
+                >
+                  <Badge badgeContent={1} color={'info'}>
+                    <AddShoppingCart color="action" />
+                  </Badge>
+                </IconButton>
+                <IconButton
+                  onClick={() => {
+                    window.location.href = '#';
+                  }}
+                >
+                  <FavoriteBorder color="action" />
+                </IconButton>
+              </>
+            )}
+
             <Button
               onClick={() => {
                 window.location.href = '/create';

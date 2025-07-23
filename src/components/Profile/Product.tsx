@@ -1,4 +1,5 @@
 import { Box, Card, CardActionArea, CardContent, CardMedia, Chip, Grid, Stack, Typography } from '@mui/material';
+import { useUserPresistStore } from 'lib';
 
 type ProductType = {
   product_id: number;
@@ -24,10 +25,13 @@ type ProductOption = {
 };
 
 type Props = {
+  uuid: string;
   product: ProductType[];
 };
 
 const ProfileProduct = (props: Props) => {
+  const { getUuid } = useUserPresistStore((state) => state);
+
   return (
     <Box>
       <Typography>All products</Typography>
@@ -64,12 +68,14 @@ const ProfileProduct = (props: Props) => {
                           {item.tags &&
                             item.tags.split(',').map((item, index) => <Chip size="small" label={item} key={index} />)}
                         </Stack>
-                        <Stack direction={'row'} alignItems={'center'} mt={1} gap={1} justifyContent={'right'}>
-                          <Typography fontWeight={'bold'}>Status:</Typography>
-                          {item.product_status === 1 && <Chip label={'Active'} color={'success'} size="small" />}
-                          {item.product_status === 2 && <Chip label={'Archived'} size="small" />}
-                          {item.product_status === 3 && <Chip label={'Draft'} color={'warning'} size="small" />}
-                        </Stack>
+                        {getUuid() === props.uuid && (
+                          <Stack direction={'row'} alignItems={'center'} mt={1} gap={1} justifyContent={'right'}>
+                            <Typography fontWeight={'bold'}>Status:</Typography>
+                            {item.product_status === 1 && <Chip label={'Active'} color={'success'} size="small" />}
+                            {item.product_status === 2 && <Chip label={'Archived'} size="small" />}
+                            {item.product_status === 3 && <Chip label={'Draft'} color={'warning'} size="small" />}
+                          </Stack>
+                        )}
                       </CardContent>
                     </CardActionArea>
                   </Card>

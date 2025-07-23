@@ -26,7 +26,7 @@ const Login = () => {
   const [showCode, setShowCode] = useState<boolean>(false);
 
   const { setSnackOpen, setSnackMessage, setSnackSeverity } = useSnackPresistStore((state) => state);
-  const { getIsLogin, setIsLogin, setAuth } = useUserPresistStore((state) => state);
+  const { getIsLogin, setIsLogin, setAuth, setUuid } = useUserPresistStore((state) => state);
 
   const onLogin = async () => {
     try {
@@ -51,6 +51,7 @@ const Login = () => {
         });
         if (response.result) {
           setAuth(response.data.auth);
+          setUuid(response.data.uuid);
           setIsLogin(true);
 
           window.location.href = '/';

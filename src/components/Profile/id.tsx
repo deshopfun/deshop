@@ -19,6 +19,7 @@ type UserType = {
 };
 
 type ProfileType = {
+  uuid: string;
   avatar_url: string;
   bio: string;
   username: string;
@@ -68,6 +69,7 @@ const ProfileDetails = () => {
     setTabValue(newValue);
   };
 
+  const { getUuid } = useUserPresistStore((state) => state);
   const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore((state) => state);
 
   const init = async (username: any) => {
@@ -132,14 +134,16 @@ const ProfileDetails = () => {
               </Box>
             </Stack>
 
-            <Button
-              variant={'contained'}
-              onClick={() => {
-                setOpenEditProfileDialog(true);
-              }}
-            >
-              Edit
-            </Button>
+            {getUuid() === user?.profile.uuid && (
+              <Button
+                variant={'contained'}
+                onClick={() => {
+                  setOpenEditProfileDialog(true);
+                }}
+              >
+                Edit
+              </Button>
+            )}
           </Stack>
 
           <Stack direction={'row'} alignItems={'center'} mt={2} gap={4}>
@@ -166,7 +170,7 @@ const ProfileDetails = () => {
           </Box>
 
           <CustomTabPanel value={tabValue} index={0}>
-            {user?.products && <ProfileProduct product={user?.products} />}
+            {user?.products && <ProfileProduct product={user?.products} uuid={user?.profile.uuid} />}
           </CustomTabPanel>
           <CustomTabPanel value={tabValue} index={1}>
             <ProfileWallet />

@@ -1,6 +1,8 @@
-import { useSnackPresistStore } from 'lib';
+import { useSnackPresistStore, useUserPresistStore } from 'lib';
 import { useRouter } from 'next/router';
 import {
+  Alert,
+  AlertTitle,
   Box,
   Button,
   Container,
@@ -43,9 +45,11 @@ import {
 } from '@mui/icons-material';
 import ExploreCard from 'components/Card/ExploreCard';
 import RecentViewCard from 'components/Card/RecentViewCard';
+import ProductManage from './ProductManage';
 
 type ProductType = {
   product_id: number;
+  user_uuid: string;
   title: string;
   body_html: string;
   product_type: string;
@@ -86,6 +90,7 @@ const ProductDetails = () => {
   };
 
   const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore((state) => state);
+  const { getUuid } = useUserPresistStore((state) => state);
 
   const init = async (id: any) => {
     try {
@@ -124,8 +129,37 @@ const ProductDetails = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
+  if (product?.product_status !== 1 && getUuid() !== product?.user_uuid) {
+    return (
+      <Container>
+        <Box>
+          <Alert severity="error">
+            <AlertTitle>Error</AlertTitle>
+            <Typography>Not found</Typography>
+          </Alert>
+        </Box>
+      </Container>
+    );
+  }
+
   return (
     <Container>
+      {product?.product_status === 2 && (
+        <Box>
+          <Alert severity="info">
+            <AlertTitle>Archived</AlertTitle>
+            <Typography>The product status is Archived, only read but not editable</Typography>
+          </Alert>
+        </Box>
+      )}
+      {product?.product_status === 3 && (
+        <Box>
+          <Alert severity="warning">
+            <AlertTitle>Draft</AlertTitle>
+            <Typography>The status of the product is Draft, you can edit it and put it on the market</Typography>
+          </Alert>
+        </Box>
+      )}
       <Grid container spacing={8} mt={4}>
         <Grid size={{ xs: 12, md: 8 }}>
           <Swiper
@@ -454,18 +488,26 @@ const ProductDetails = () => {
         </Grid>
       </Grid>
 
-      <Box mt={10} mb={8}>
-        <Box display={'flex'} alignItems={'center'}>
-          <Typography variant="h6">Recommend more</Typography>
-          <IconButton>
-            <ChevronRight />
-          </IconButton>
-        </Box>
+      {product?.product_status === 1 && (
+        <Box mt={10} mb={8}>
+          <Box display={'flex'} alignItems={'center'}>
+            <Typography variant="h6">Recommend more</Typography>
+            <IconButton>
+              <ChevronRight />
+            </IconButton>
+          </Box>
 
-        <Box mt={2}>
-          <RecentViewCard />
+          <Box mt={2}>
+            <RecentViewCard />
+          </Box>
         </Box>
-      </Box>
+      )}
+
+      {getUuid() === product?.user_uuid && (
+        <Box mt={10}>
+          <ProductManage />
+        </Box>
+      )}
     </Container>
   );
 };
