@@ -67,7 +67,6 @@ const HomeHeader = () => {
         <Grid size={{ xs: 12, md: 4 }}>
           <Box display={'flex'} alignItems={'center'} justifyContent={'right'} gap={2}>
             <IconButton
-              size="small"
               onClick={() => {
                 window.location.href = '/cart';
               }}
@@ -77,7 +76,6 @@ const HomeHeader = () => {
               </Badge>
             </IconButton>
             <IconButton
-              size="small"
               onClick={() => {
                 window.location.href = '#';
               }}
@@ -90,19 +88,18 @@ const HomeHeader = () => {
               }}
               variant="contained"
               color={'success'}
-              size="small"
             >
               Create Product
             </Button>
             {getIsLogin() ? (
               <>
-                <Button variant={'outlined'} onClick={handleClick} endIcon={<KeyboardArrowDown />} size="small">
+                <Button variant={'outlined'} onClick={handleClick} endIcon={<KeyboardArrowDown />}>
                   {avatarUrl ? (
-                    <Avatar sx={{ width: 20, height: 20 }} alt="Avatar" src={avatarUrl} />
+                    <Avatar sx={{ width: 25, height: 25 }} alt="Avatar" src={avatarUrl} />
                   ) : (
-                    <Avatar sx={{ width: 20, height: 20 }} alt="Avatar" src={'/images/default_avatar.png'} />
+                    <Avatar sx={{ width: 25, height: 25 }} alt="Avatar" src={'/images/default_avatar.png'} />
                   )}
-                  <Typography pl={1} fontSize={14}>
+                  <Typography pl={1} fontSize={16}>
                     {username}
                   </Typography>
                 </Button>
@@ -123,7 +120,6 @@ const HomeHeader = () => {
               </>
             ) : (
               <Button
-                size="small"
                 onClick={() => {
                   window.location.href = '/login';
                 }}

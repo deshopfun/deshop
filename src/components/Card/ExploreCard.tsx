@@ -1,88 +1,23 @@
 import { Box, Card, CardActionArea, CardContent, CardMedia, Grid, Typography } from '@mui/material';
+import { PRODUCT_TYPE } from 'packages/constants';
+import { GetImgSrcByProductType } from 'utils/image';
 
 const ExploreCard = () => {
   return (
     <Grid container spacing={2}>
-      <Grid size={{ xs: 12, md: 2 }}>
-        <Card>
-          <CardActionArea>
-            <CardMedia component="img" height="140" image="/images/test.png" alt="green iguana" />
-            <CardContent>
-              <Typography gutterBottom variant="h5" component="div">
-                Lizard
-              </Typography>
-              <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                Lizards are a widespread group of squamate reptiles, with over 6,000 species, ranging across all
-                continents except Antarctica
-              </Typography>
-            </CardContent>
-          </CardActionArea>
-        </Card>
-      </Grid>
-      <Grid size={{ xs: 12, md: 2 }}>
-        <Card>
-          <CardActionArea>
-            <CardMedia component="img" height="140" image="/images/test.png" alt="green iguana" />
-            <CardContent>
-              <Typography gutterBottom variant="h5" component="div">
-                Lizard
-              </Typography>
-              <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                Lizards are a widespread group of squamate reptiles, with over 6,000 species, ranging across all
-                continents except Antarctica
-              </Typography>
-            </CardContent>
-          </CardActionArea>
-        </Card>
-      </Grid>
-      <Grid size={{ xs: 12, md: 2 }}>
-        <Card>
-          <CardActionArea>
-            <CardMedia component="img" height="140" image="/images/test.png" alt="green iguana" />
-            <CardContent>
-              <Typography gutterBottom variant="h5" component="div">
-                Lizard
-              </Typography>
-              <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                Lizards are a widespread group of squamate reptiles, with over 6,000 species, ranging across all
-                continents except Antarctica
-              </Typography>
-            </CardContent>
-          </CardActionArea>
-        </Card>
-      </Grid>
-      <Grid size={{ xs: 12, md: 2 }}>
-        <Card>
-          <CardActionArea>
-            <CardMedia component="img" height="140" image="/images/test.png" alt="green iguana" />
-            <CardContent>
-              <Typography gutterBottom variant="h5" component="div">
-                Lizard
-              </Typography>
-              <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                Lizards are a widespread group of squamate reptiles, with over 6,000 species, ranging across all
-                continents except Antarctica
-              </Typography>
-            </CardContent>
-          </CardActionArea>
-        </Card>
-      </Grid>
-      <Grid size={{ xs: 12, md: 2 }}>
-        <Card>
-          <CardActionArea>
-            <CardMedia component="img" height="140" image="/images/test.png" alt="green iguana" />
-            <CardContent>
-              <Typography gutterBottom variant="h5" component="div">
-                Lizard
-              </Typography>
-              <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                Lizards are a widespread group of squamate reptiles, with over 6,000 species, ranging across all
-                continents except Antarctica
-              </Typography>
-            </CardContent>
-          </CardActionArea>
-        </Card>
-      </Grid>
+      {PRODUCT_TYPE &&
+        Object.entries(PRODUCT_TYPE).map((item, index) => (
+          <Grid size={{ xs: 12, md: 3 }} key={index}>
+            <Card>
+              <CardActionArea>
+                <CardMedia component="img" height="140" image={GetImgSrcByProductType(item[1])} alt="image" />
+                <CardContent>
+                  <Typography textAlign={'center'}>{item[1]}</Typography>
+                </CardContent>
+              </CardActionArea>
+            </Card>
+          </Grid>
+        ))}
     </Grid>
   );
 };

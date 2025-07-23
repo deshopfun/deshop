@@ -23,13 +23,14 @@ const Home = () => {
   const router = useRouter();
 
   return (
-    <Box p={2}>
+    <Container>
       <Box>
         <Box display={'flex'} alignItems={'center'}>
-          <Typography variant="h6">Recently viewed</Typography>
-          <IconButton>
-            <ChevronRight />
-          </IconButton>
+          <Button endIcon={<ChevronRight style={{ color: '#000' }} />}>
+            <Typography variant="h6" color={'textPrimary'}>
+              Recently viewed
+            </Typography>
+          </Button>
         </Box>
 
         <Box mt={2}>
@@ -39,10 +40,11 @@ const Home = () => {
 
       <Box mt={4}>
         <Box display={'flex'} alignItems={'center'}>
-          <Typography variant="h6">Now tranding</Typography>
-          <IconButton>
-            <ChevronRight />
-          </IconButton>
+          <Button endIcon={<ChevronRight style={{ color: '#000' }} />}>
+            <Typography variant="h6" color={'textPrimary'}>
+              Now tranding
+            </Typography>
+          </Button>
         </Box>
 
         <Box mt={2}>
@@ -52,17 +54,23 @@ const Home = () => {
 
       <Box mt={4}>
         <Box display={'flex'} alignItems={'center'}>
-          <Typography variant="h6">Explore</Typography>
-          <IconButton>
-            <ChevronRight />
-          </IconButton>
+          <Button
+            endIcon={<ChevronRight style={{ color: '#000' }} />}
+            onClick={() => {
+              window.location.href = '/explore';
+            }}
+          >
+            <Typography variant="h6" color={'textPrimary'}>
+              Explore
+            </Typography>
+          </Button>
         </Box>
 
         <Box mt={2}>
           <ExploreCard />
         </Box>
       </Box>
-    </Box>
+    </Container>
   );
 };
 

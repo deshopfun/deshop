@@ -37,7 +37,7 @@ const steps = [
 ];
 
 const PaymentDetails = () => {
-  const [page, setPage] = useState<number>(3);
+  const [page, setPage] = useState<number>(1);
   const [activeStep, setActiveStep] = useState(0);
   const [completed, setCompleted] = useState<{
     [k: number]: boolean;
