@@ -25,7 +25,7 @@ type ProductOption = {
 };
 
 type Props = {
-  uuid: string;
+  uuid?: string;
   product: ProductType[];
 };
 
@@ -34,7 +34,7 @@ const ProfileProduct = (props: Props) => {
 
   return (
     <Box>
-      <Typography>All products</Typography>
+      <Typography variant="h6">All products</Typography>
 
       <Box mt={2}>
         {props.product.length > 0 ? (

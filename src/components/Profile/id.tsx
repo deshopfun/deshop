@@ -53,11 +53,14 @@ type ProductOption = {
 
 const ProfileDetails = () => {
   const router = useRouter();
-  const { id } = router.query;
+  const { id, tab } = router.query;
 
   const [user, setUser] = useState<UserType>();
   const [tabValue, setTabValue] = useState(0);
   const [openEditProfileDialog, setOpenEditProfileDialog] = useState<boolean>(false);
+
+  const { getUuid } = useUserPresistStore((state) => state);
+  const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore((state) => state);
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     const tabId = Object.values(PROFILE_TAB_DATAS).find((item) => item.id === newValue)?.tabId;
@@ -69,8 +72,14 @@ const ProfileDetails = () => {
     setTabValue(newValue);
   };
 
-  const { getUuid } = useUserPresistStore((state) => state);
-  const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore((state) => state);
+  const initTab = (tab: any) => {
+    const tabId = Object.values(PROFILE_TAB_DATAS).find((item) => item.tabId === tab)?.id;
+    setTabValue(tabId || 0);
+  };
+
+  useEffect(() => {
+    tab && initTab(tab);
+  }, [tab]);
 
   const init = async (username: any) => {
     try {
@@ -173,7 +182,7 @@ const ProfileDetails = () => {
             {user?.products && <ProfileProduct product={user?.products} uuid={user?.profile.uuid} />}
           </CustomTabPanel>
           <CustomTabPanel value={tabValue} index={1}>
-            <ProfileWallet />
+            <ProfileWallet uuid={user?.profile.uuid} />
           </CustomTabPanel>
           <CustomTabPanel value={tabValue} index={2}>
             <ProfileRepile />

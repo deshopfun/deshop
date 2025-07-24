@@ -116,7 +116,13 @@ const HomeHeader = () => {
                   >
                     Profile
                   </MenuItem>
-                  <MenuItem onClick={() => {}}>View wallet</MenuItem>
+                  <MenuItem
+                    onClick={() => {
+                      window.location.href = `/profile/${username}?tab=wallets`;
+                    }}
+                  >
+                    View wallet
+                  </MenuItem>
                   <Divider />
                   <MenuItem onClick={onClickLogout}>
                     <Typography color={'error'}>Log out</Typography>

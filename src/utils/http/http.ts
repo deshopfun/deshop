@@ -24,6 +24,9 @@ export class Http {
   static product = this.httpPath + '/client/product/product';
   static product_variant = this.httpPath + '/client/product/product-variant';
 
+  // wallet
+  static wallet = this.httpPath + '/client/wallet/wallet';
+
   // upload
   static upload_file = this.httpPath + '/client/upload/upload-file';
 }
