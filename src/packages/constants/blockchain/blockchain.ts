@@ -1,8 +1,8 @@
-import { CHAINNAMES, CHAINS, CHAINIDS } from './chain';
+import { CHAINNAMES, CHAINIDS } from './chain';
 import { COINS } from './coin';
 
 export type COIN = {
-  chainId: CHAINS;
+  chainId: CHAINIDS;
   name: COINS;
   isMainCoin: boolean;
   symbol: COINS;
@@ -14,7 +14,7 @@ export type COIN = {
 
 export const BITCOIN_COINS: COIN[] = [
   {
-    chainId: CHAINS.BITCOIN,
+    chainId: CHAINIDS.BITCOIN,
     name: COINS.BTC,
     isMainCoin: true,
     symbol: COINS.BTC,
@@ -26,7 +26,7 @@ export const BITCOIN_COINS: COIN[] = [
 
 export const LITECOIN_COINS: COIN[] = [
   {
-    chainId: CHAINS.LITECOIN,
+    chainId: CHAINIDS.LITECOIN,
     name: COINS.LTC,
     isMainCoin: true,
     symbol: COINS.LTC,
@@ -38,7 +38,7 @@ export const LITECOIN_COINS: COIN[] = [
 
 export const XRP_COINS: COIN[] = [
   {
-    chainId: CHAINS.XRP,
+    chainId: CHAINIDS.XRP,
     name: COINS.XRP,
     isMainCoin: true,
     symbol: COINS.XRP,
@@ -47,7 +47,7 @@ export const XRP_COINS: COIN[] = [
     icon: require('assets/coin/xrp.svg'),
   },
   {
-    chainId: CHAINS.XRP,
+    chainId: CHAINIDS.XRP,
     name: COINS.USDT,
     isMainCoin: false,
     symbol: COINS.USDT,
@@ -57,7 +57,7 @@ export const XRP_COINS: COIN[] = [
     icon: require('assets/coin/usdt.svg'),
   },
   {
-    chainId: CHAINS.XRP,
+    chainId: CHAINIDS.XRP,
     name: COINS.USDC,
     isMainCoin: false,
     symbol: COINS.USDC,
@@ -70,7 +70,7 @@ export const XRP_COINS: COIN[] = [
 
 export const BITCOINCASH_COINS: COIN[] = [
   {
-    chainId: CHAINS.BITCOINCASH,
+    chainId: CHAINIDS.BITCOINCASH,
     name: COINS.BCH,
     isMainCoin: true,
     symbol: COINS.BCH,
@@ -82,7 +82,7 @@ export const BITCOINCASH_COINS: COIN[] = [
 
 export const ETHEREUM_COINS: COIN[] = [
   {
-    chainId: CHAINS.ETHEREUM,
+    chainId: CHAINIDS.ETHEREUM,
     name: COINS.ETH,
     isMainCoin: true,
     symbol: COINS.ETH,
@@ -91,7 +91,7 @@ export const ETHEREUM_COINS: COIN[] = [
     icon: require('assets/coin/eth.svg'),
   },
   {
-    chainId: CHAINS.ETHEREUM,
+    chainId: CHAINIDS.ETHEREUM,
     name: COINS.USDT,
     isMainCoin: false,
     symbol: COINS.USDT,
@@ -101,7 +101,7 @@ export const ETHEREUM_COINS: COIN[] = [
     icon: require('assets/coin/usdt.svg'),
   },
   {
-    chainId: CHAINS.ETHEREUM,
+    chainId: CHAINIDS.ETHEREUM,
     name: COINS.USDC,
     isMainCoin: false,
     symbol: COINS.USDC,
@@ -111,7 +111,7 @@ export const ETHEREUM_COINS: COIN[] = [
     icon: require('assets/coin/usdc.svg'),
   },
   {
-    chainId: CHAINS.ETHEREUM,
+    chainId: CHAINIDS.ETHEREUM,
     name: COINS.DAI,
     isMainCoin: false,
     symbol: COINS.DAI,
@@ -124,7 +124,7 @@ export const ETHEREUM_COINS: COIN[] = [
 
 export const TRON_COINS: COIN[] = [
   {
-    chainId: CHAINS.TRON,
+    chainId: CHAINIDS.TRON,
     name: COINS.TRX,
     isMainCoin: true,
     symbol: COINS.TRX,
@@ -133,7 +133,7 @@ export const TRON_COINS: COIN[] = [
     icon: require('assets/coin/trx.svg'),
   },
   {
-    chainId: CHAINS.TRON,
+    chainId: CHAINIDS.TRON,
     name: COINS.USDT,
     isMainCoin: false,
     symbol: COINS.USDT,
@@ -143,7 +143,7 @@ export const TRON_COINS: COIN[] = [
     icon: require('assets/coin/usdt.svg'),
   },
   {
-    chainId: CHAINS.TRON,
+    chainId: CHAINIDS.TRON,
     name: COINS.USDC,
     isMainCoin: false,
     symbol: COINS.USDC,
@@ -156,7 +156,7 @@ export const TRON_COINS: COIN[] = [
 
 export const SOLANA_COINS: COIN[] = [
   {
-    chainId: CHAINS.SOLANA,
+    chainId: CHAINIDS.SOLANA,
     name: COINS.SOL,
     isMainCoin: true,
     symbol: COINS.SOL,
@@ -165,7 +165,7 @@ export const SOLANA_COINS: COIN[] = [
     icon: require('assets/coin/sol.svg'),
   },
   {
-    chainId: CHAINS.SOLANA,
+    chainId: CHAINIDS.SOLANA,
     name: COINS.USDT,
     isMainCoin: false,
     symbol: COINS.USDT,
@@ -175,7 +175,7 @@ export const SOLANA_COINS: COIN[] = [
     icon: require('assets/coin/usdt.svg'),
   },
   {
-    chainId: CHAINS.SOLANA,
+    chainId: CHAINIDS.SOLANA,
     name: COINS.USDC,
     isMainCoin: false,
     symbol: COINS.USDC,
@@ -188,7 +188,7 @@ export const SOLANA_COINS: COIN[] = [
 
 export const BSC_COINS: COIN[] = [
   {
-    chainId: CHAINS.BSC,
+    chainId: CHAINIDS.BSC,
     name: COINS.BNB,
     isMainCoin: true,
     symbol: COINS.BNB,
@@ -197,7 +197,7 @@ export const BSC_COINS: COIN[] = [
     icon: require('assets/coin/bnb.svg'),
   },
   {
-    chainId: CHAINS.BSC,
+    chainId: CHAINIDS.BSC,
     name: COINS.USDT,
     isMainCoin: false,
     symbol: COINS.USDT,
@@ -207,7 +207,7 @@ export const BSC_COINS: COIN[] = [
     icon: require('assets/coin/usdt.svg'),
   },
   {
-    chainId: CHAINS.BSC,
+    chainId: CHAINIDS.BSC,
     name: COINS.USDC,
     isMainCoin: false,
     symbol: COINS.USDC,
@@ -220,7 +220,7 @@ export const BSC_COINS: COIN[] = [
 
 export const ARBITRUM_COINS: COIN[] = [
   {
-    chainId: CHAINS.ARBITRUM,
+    chainId: CHAINIDS.ARBITRUM_ONE,
     name: COINS.ETH,
     isMainCoin: true,
     symbol: COINS.ETH,
@@ -229,7 +229,7 @@ export const ARBITRUM_COINS: COIN[] = [
     icon: require('assets/coin/eth.svg'),
   },
   {
-    chainId: CHAINS.ARBITRUM,
+    chainId: CHAINIDS.ARBITRUM_ONE,
     name: COINS.USDT,
     isMainCoin: false,
     symbol: COINS.USDT,
@@ -239,7 +239,7 @@ export const ARBITRUM_COINS: COIN[] = [
     icon: require('assets/coin/usdt.svg'),
   },
   {
-    chainId: CHAINS.ARBITRUM,
+    chainId: CHAINIDS.ARBITRUM_ONE,
     name: COINS.USDC,
     isMainCoin: false,
     symbol: COINS.USDC,
@@ -249,7 +249,7 @@ export const ARBITRUM_COINS: COIN[] = [
     icon: require('assets/coin/usdc.svg'),
   },
   {
-    chainId: CHAINS.ARBITRUM,
+    chainId: CHAINIDS.ARBITRUM_ONE,
     name: COINS.DAI,
     isMainCoin: false,
     symbol: COINS.DAI,
@@ -262,7 +262,7 @@ export const ARBITRUM_COINS: COIN[] = [
 
 export const ARBITRUM_NOVA_COINS: COIN[] = [
   {
-    chainId: CHAINS.ARBITRUMNOVA,
+    chainId: CHAINIDS.ARBITRUM_ONE,
     name: COINS.ETH,
     isMainCoin: true,
     symbol: COINS.ETH,
@@ -271,7 +271,7 @@ export const ARBITRUM_NOVA_COINS: COIN[] = [
     icon: require('assets/coin/eth.svg'),
   },
   {
-    chainId: CHAINS.ARBITRUMNOVA,
+    chainId: CHAINIDS.ARBITRUM_ONE,
     name: COINS.USDC,
     isMainCoin: false,
     symbol: COINS.USDC,
@@ -281,7 +281,7 @@ export const ARBITRUM_NOVA_COINS: COIN[] = [
     icon: require('assets/coin/usdc.svg'),
   },
   {
-    chainId: CHAINS.ARBITRUMNOVA,
+    chainId: CHAINIDS.ARBITRUM_ONE,
     name: COINS.DAI,
     isMainCoin: false,
     symbol: COINS.DAI,
@@ -294,7 +294,7 @@ export const ARBITRUM_NOVA_COINS: COIN[] = [
 
 export const AVALANCHE_COINS: COIN[] = [
   {
-    chainId: CHAINS.AVALANCHE,
+    chainId: CHAINIDS.AVALANCHE,
     name: COINS.AVAX,
     isMainCoin: true,
     symbol: COINS.AVAX,
@@ -303,7 +303,7 @@ export const AVALANCHE_COINS: COIN[] = [
     icon: require('assets/coin/avax.svg'),
   },
   {
-    chainId: CHAINS.AVALANCHE,
+    chainId: CHAINIDS.AVALANCHE,
     name: COINS.USDT,
     isMainCoin: false,
     symbol: COINS.USDT,
@@ -313,7 +313,7 @@ export const AVALANCHE_COINS: COIN[] = [
     icon: require('assets/coin/usdt.svg'),
   },
   {
-    chainId: CHAINS.AVALANCHE,
+    chainId: CHAINIDS.AVALANCHE,
     name: COINS.USDC,
     isMainCoin: false,
     symbol: COINS.USDC,
@@ -326,7 +326,7 @@ export const AVALANCHE_COINS: COIN[] = [
 
 export const POLYGON_COINS: COIN[] = [
   {
-    chainId: CHAINS.POLYGON,
+    chainId: CHAINIDS.POLYGON,
     name: COINS.POL,
     isMainCoin: true,
     symbol: COINS.POL,
@@ -335,7 +335,7 @@ export const POLYGON_COINS: COIN[] = [
     icon: require('assets/coin/pol.svg'),
   },
   {
-    chainId: CHAINS.POLYGON,
+    chainId: CHAINIDS.POLYGON,
     name: COINS.USDT,
     isMainCoin: false,
     symbol: COINS.USDT,
@@ -345,7 +345,7 @@ export const POLYGON_COINS: COIN[] = [
     icon: require('assets/coin/usdt.svg'),
   },
   {
-    chainId: CHAINS.POLYGON,
+    chainId: CHAINIDS.POLYGON,
     name: COINS.USDC,
     isMainCoin: false,
     symbol: COINS.USDC,
@@ -358,7 +358,7 @@ export const POLYGON_COINS: COIN[] = [
 
 export const BASE_COINS: COIN[] = [
   {
-    chainId: CHAINS.BASE,
+    chainId: CHAINIDS.BASE,
     name: COINS.ETH,
     isMainCoin: true,
     symbol: COINS.ETH,
@@ -367,7 +367,7 @@ export const BASE_COINS: COIN[] = [
     icon: require('assets/coin/eth.svg'),
   },
   {
-    chainId: CHAINS.BASE,
+    chainId: CHAINIDS.BASE,
     name: COINS.USDC,
     isMainCoin: false,
     symbol: COINS.USDC,
@@ -380,7 +380,7 @@ export const BASE_COINS: COIN[] = [
 
 export const OPTIMISM_COINS: COIN[] = [
   {
-    chainId: CHAINS.OPTIMISM,
+    chainId: CHAINIDS.OPTIMISM,
     name: COINS.ETH,
     isMainCoin: true,
     symbol: COINS.ETH,
@@ -389,7 +389,7 @@ export const OPTIMISM_COINS: COIN[] = [
     icon: require('assets/coin/eth.svg'),
   },
   {
-    chainId: CHAINS.OPTIMISM,
+    chainId: CHAINIDS.OPTIMISM,
     name: COINS.USDT,
     isMainCoin: false,
     symbol: COINS.USDT,
@@ -399,7 +399,7 @@ export const OPTIMISM_COINS: COIN[] = [
     icon: require('assets/coin/usdt.svg'),
   },
   {
-    chainId: CHAINS.OPTIMISM,
+    chainId: CHAINIDS.OPTIMISM,
     name: COINS.USDC,
     isMainCoin: false,
     symbol: COINS.USDC,
@@ -409,7 +409,7 @@ export const OPTIMISM_COINS: COIN[] = [
     icon: require('assets/coin/usdc.svg'),
   },
   {
-    chainId: CHAINS.OPTIMISM,
+    chainId: CHAINIDS.OPTIMISM,
     name: COINS.DAI,
     isMainCoin: false,
     symbol: COINS.DAI,
@@ -422,7 +422,7 @@ export const OPTIMISM_COINS: COIN[] = [
 
 export const TON_COINS: COIN[] = [
   {
-    chainId: CHAINS.TON,
+    chainId: CHAINIDS.TON,
     name: COINS.TON,
     isMainCoin: true,
     symbol: COINS.TON,
@@ -431,7 +431,7 @@ export const TON_COINS: COIN[] = [
     icon: require('assets/coin/ton.svg'),
   },
   {
-    chainId: CHAINS.TON,
+    chainId: CHAINIDS.TON,
     name: COINS.USDT,
     isMainCoin: false,
     symbol: COINS.USDT,

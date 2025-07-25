@@ -1,12 +1,10 @@
-import { CHAINIDS, CHAINS, COINS, INNERCHAINNAMES } from 'packages/constants/blockchain';
+import { CHAINIDS, COINS, INNERCHAINNAMES } from 'packages/constants/blockchain';
 import { ChainAccountType, QRCodeText } from '../types';
 import { HDKey } from 'ethereum-cryptography/hdkey.js';
 import { ethers, Wallet } from 'ethers';
 import { FindTokenByChainIdsAndContractAddress } from 'utils/web3';
 
 export class ETH {
-  static chain = CHAINS.ETHEREUM;
-
   static getChainIds(): CHAINIDS {
     return CHAINIDS.ETHEREUM;
   }
@@ -26,7 +24,7 @@ export class ETH {
       const address = wallet.address;
 
       return {
-        chain: this.chain,
+        chain: this.getChainIds(),
         address: address,
         privateKey: privateKey,
         note: 'ETHEREUM',
@@ -43,7 +41,7 @@ export class ETH {
       const address = wallet.address;
 
       return {
-        chain: this.chain,
+        chain: this.getChainIds(),
         address: address,
         privateKey: privateKey,
         note: 'ETHEREUM',

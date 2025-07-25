@@ -1,13 +1,11 @@
 import * as bitcoin from 'bitcoinjs-lib';
-import { CHAINIDS, CHAINS, COINS, INNERCHAINNAMES } from 'packages/constants/blockchain';
+import { CHAINIDS, COINS, INNERCHAINNAMES } from 'packages/constants/blockchain';
 import { ChainAccountType, QRCodeText } from '../types';
-import * as ecc from 'tiny-secp256k1';
+// import * as ecc from 'tiny-secp256k1';
 import BIP32Factory from 'bip32';
 import { ECPairFactory } from 'ecpair';
 
 export class LTC {
-  static chain = CHAINS.LITECOIN;
-
   static getNetwork(): bitcoin.Network {
     return {
       messagePrefix: '\x19Litecoin Signed Message:\n',
@@ -31,28 +29,35 @@ export class LTC {
   }
 
   static createAccountBySeed(seed: Buffer): ChainAccountType {
-    bitcoin.initEccLib(ecc);
+    // bitcoin.initEccLib(ecc);
 
-    const nativeSegwitPath = `m/84'/0'/0'/0/0`;
+    // const nativeSegwitPath = `m/84'/0'/0'/0/0`;
 
-    try {
-      const bip32 = BIP32Factory(ecc);
-      const node = bip32.fromSeed(seed, this.getNetwork());
+    // try {
+    //   const bip32 = BIP32Factory(ecc);
+    //   const node = bip32.fromSeed(seed, this.getNetwork());
 
-      // nativeSegwit
-      const nativeSegwitPrivateKey = node.derivePath(nativeSegwitPath).privateKey?.toString('hex');
-      const nativeSegwitAddress = this.getAddressP2wpkhFromPrivateKey(nativeSegwitPrivateKey as string);
+    //   // nativeSegwit
+    //   const nativeSegwitPrivateKey = node.derivePath(nativeSegwitPath).privateKey?.toString('hex');
+    //   const nativeSegwitAddress = this.getAddressP2wpkhFromPrivateKey(nativeSegwitPrivateKey as string);
 
-      return {
-        chain: this.chain,
-        address: nativeSegwitAddress as string,
-        privateKey: nativeSegwitPrivateKey,
-        note: 'LITECOIN',
-      };
-    } catch (e) {
-      console.error(e);
-      throw new Error('can not create a wallet of ltc');
-    }
+    // return {
+    //   chain: this.getChainIds(),
+    //   address: nativeSegwitAddress as string,
+    //   privateKey: nativeSegwitPrivateKey,
+    //   note: 'LITECOIN',
+    // };
+    // } catch (e) {
+    //   console.error(e);
+    //   throw new Error('can not create a wallet of ltc');
+    // }
+
+    return {
+      chain: this.getChainIds(),
+      address: '',
+      privateKey: '',
+      note: 'LITECOIN',
+    };
   }
 
   static createAccountByPrivateKey(privateKey: string): ChainAccountType {
@@ -61,7 +66,7 @@ export class LTC {
       const nativeSegwitAddress = this.getAddressP2wpkhFromPrivateKey(privateKey);
 
       return {
-        chain: this.chain,
+        chain: this.getChainIds(),
         address: nativeSegwitAddress as string,
         privateKey: privateKey,
         note: 'NATIVESEGWIT',
@@ -72,19 +77,20 @@ export class LTC {
     }
   }
 
-  static toWifStaring(privateKey: string): string {
-    const ECPair = ECPairFactory(ecc);
-    const privateKeyBytes = Buffer.from(privateKey, 'hex');
-    const keyPair = ECPair.fromPrivateKey(privateKeyBytes, { network: this.getNetwork() });
-    return keyPair.toWIF();
-  }
+  // static toWifStaring(privateKey: string): string {
+  //   const ECPair = ECPairFactory(ecc);
+  //   const privateKeyBytes = Buffer.from(privateKey, 'hex');
+  //   const keyPair = ECPair.fromPrivateKey(privateKeyBytes, { network: this.getNetwork() });
+  //   return keyPair.toWIF();
+  // }
 
   // p2wpkh
   static getAddressP2wpkhFromPrivateKey(privateKey: string): string {
-    const ECPair = ECPairFactory(ecc);
-    const keyPair = ECPair.fromWIF(this.toWifStaring(privateKey), this.getNetwork());
-    const p2wpkh = bitcoin.payments.p2wpkh({ pubkey: keyPair.publicKey, network: this.getNetwork() });
-    return p2wpkh.address as string;
+    // const ECPair = ECPairFactory(ecc);
+    // const keyPair = ECPair.fromWIF(this.toWifStaring(privateKey), this.getNetwork());
+    // const p2wpkh = bitcoin.payments.p2wpkh({ pubkey: keyPair.publicKey, network: this.getNetwork() });
+    // return p2wpkh.address as string;
+    return '';
   }
 
   static checkAddress(address: string): boolean {

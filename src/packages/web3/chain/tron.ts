@@ -1,12 +1,10 @@
-import { CHAINIDS, CHAINS, COINS, INNERCHAINNAMES } from 'packages/constants/blockchain';
+import { CHAINIDS, COINS, INNERCHAINNAMES } from 'packages/constants/blockchain';
 import { ChainAccountType, QRCodeText } from '../types';
 import { HDKey } from 'ethereum-cryptography/hdkey';
 import { TronWeb } from 'tronweb';
 import { FindTokenByChainIdsAndContractAddress } from 'utils/web3';
 
 export class TRON {
-  static chain = CHAINS.TRON;
-
   static getChainIds(): CHAINIDS {
     return CHAINIDS.TRON;
   }
@@ -25,7 +23,7 @@ export class TRON {
       const address = TronWeb.address.fromPrivateKey(privateKey) as string;
 
       return {
-        chain: this.chain,
+        chain: this.getChainIds(),
         address: address,
         privateKey: privateKey,
         note: 'TRON',
@@ -41,7 +39,7 @@ export class TRON {
       const address = TronWeb.address.fromPrivateKey(privateKey) as string;
 
       return {
-        chain: this.chain,
+        chain: this.getChainIds(),
         address: address,
         privateKey: privateKey,
         note: 'TRON',

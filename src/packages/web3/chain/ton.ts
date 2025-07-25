@@ -1,12 +1,10 @@
-import { BLOCKCHAINNAMES, CHAINIDS, CHAINS, COINS, INNERCHAINNAMES } from 'packages/constants/blockchain';
+import { BLOCKCHAINNAMES, CHAINIDS, COINS, INNERCHAINNAMES } from 'packages/constants/blockchain';
 import { ChainAccountType, QRCodeText } from '../types';
 import { FindTokenByChainIdsAndContractAddress } from 'utils/web3';
 import { keyPairFromSecretKey, mnemonicToPrivateKey } from '@ton/crypto';
 import { Address, WalletContractV4 } from '@ton/ton';
 
 export class TON {
-  static chain = CHAINS.TON;
-
   static getChainIds(): CHAINIDS {
     return CHAINIDS.TON;
   }
@@ -35,7 +33,7 @@ export class TON {
       const address = wallet.address.toString(addressOptions);
 
       return {
-        chain: this.chain,
+        chain: this.getChainIds(),
         address: address,
         privateKey: keyPair.secretKey.toString('hex'),
         note: 'TON',
@@ -64,7 +62,7 @@ export class TON {
       const address = wallet.address.toString(addressOptions);
 
       return {
-        chain: this.chain,
+        chain: this.getChainIds(),
         address: address,
         privateKey: privateKey,
         note: 'TON',

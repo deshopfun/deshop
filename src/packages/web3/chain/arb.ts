@@ -1,10 +1,8 @@
-import { CHAINIDS, CHAINS, COINS, INNERCHAINNAMES } from 'packages/constants/blockchain';
+import { CHAINIDS, COINS, INNERCHAINNAMES } from 'packages/constants/blockchain';
 import { QRCodeText } from '../types';
 import { FindTokenByChainIdsAndContractAddress } from 'utils/web3';
 
 export class ARB {
-  static chain = CHAINS.ARBITRUM;
-
   static getChainIds(): CHAINIDS {
     return CHAINIDS.ARBITRUM_ONE;
   }

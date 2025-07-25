@@ -1,10 +1,8 @@
 import { Wallet } from 'mainnet-js';
-import { CHAINIDS, CHAINS, COINS, INNERCHAINNAMES } from 'packages/constants/blockchain';
+import { CHAINIDS, COINS, INNERCHAINNAMES } from 'packages/constants/blockchain';
 import { ChainAccountType, QRCodeText } from '../types';
 
 export class BITCOINCASH {
-  static chain = CHAINS.BITCOINCASH;
-
   static getChainIds(): CHAINIDS {
     return CHAINIDS.BITCOINCASH;
   }
@@ -20,7 +18,7 @@ export class BITCOINCASH {
       let wallet = await Wallet.fromSeed(mnemonic, path);
 
       return {
-        chain: this.chain,
+        chain: this.getChainIds(),
         address: wallet.toString(),
         privateKey: wallet.privateKeyWif,
         note: 'BITCOINCASH',
@@ -38,7 +36,7 @@ export class BITCOINCASH {
       wallet = await Wallet.fromWIF(privateKey);
 
       return {
-        chain: this.chain,
+        chain: this.getChainIds(),
         address: wallet.toString(),
         privateKey: privateKey,
         note: 'BITCOINCASH',

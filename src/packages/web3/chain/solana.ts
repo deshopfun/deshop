@@ -1,11 +1,9 @@
-import { CHAINIDS, CHAINS, COINS, INNERCHAINNAMES } from 'packages/constants/blockchain';
+import { CHAINIDS, COINS, INNERCHAINNAMES } from 'packages/constants/blockchain';
 import { ChainAccountType, QRCodeText } from '../types';
 import { Keypair, PublicKey } from '@solana/web3.js';
 import { FindTokenByChainIdsAndContractAddress } from 'utils/web3';
 
 export class SOLANA {
-  static chain = CHAINS.SOLANA;
-
   static getChainIds(): CHAINIDS {
     return CHAINIDS.SOLANA;
   }
@@ -23,7 +21,7 @@ export class SOLANA {
       const address = keypair.publicKey.toString();
 
       return {
-        chain: this.chain,
+        chain: this.getChainIds(),
         address: address,
         privateKey: privateKey,
         note: 'SOLANA',
@@ -40,7 +38,7 @@ export class SOLANA {
       const address = keypair.publicKey.toString();
 
       return {
-        chain: this.chain,
+        chain: this.getChainIds(),
         address: address,
         privateKey: privateKey,
         note: 'SOLANA',

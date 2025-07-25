@@ -1,4 +1,4 @@
-import { BLOCKCHAINNAMES, CHAINIDS, CHAINNAMES, CHAINS, COIN } from 'packages/constants';
+import { BLOCKCHAINNAMES, CHAINIDS, CHAINNAMES, COIN } from 'packages/constants';
 
 export function FindTokenByChainIdsAndContractAddress(chainIds: CHAINIDS, contractAddress: string): COIN {
   const coins = BLOCKCHAINNAMES.find((item) => item.chainId === chainIds)?.coins;
@@ -40,40 +40,5 @@ export function FindChainNamesByChainids(chains: CHAINIDS): CHAINNAMES {
       return CHAINNAMES.TON;
     default:
       return CHAINNAMES.BITCOIN;
-  }
-}
-
-export function FindChainNamesByChains(chains: CHAINS): CHAINNAMES {
-  switch (chains) {
-    case CHAINS.BITCOIN:
-      return CHAINNAMES.BITCOIN;
-    case CHAINS.LITECOIN:
-      return CHAINNAMES.LITECOIN;
-    case CHAINS.XRP:
-      return CHAINNAMES.XRP;
-    case CHAINS.BITCOINCASH:
-      return CHAINNAMES.BITCOINCASH;
-    case CHAINS.ETHEREUM:
-      return CHAINNAMES.ETHEREUM;
-    case CHAINS.TRON:
-      return CHAINNAMES.TRON;
-    case CHAINS.SOLANA:
-      return CHAINNAMES.SOLANA;
-    case CHAINS.BSC:
-      return CHAINNAMES.BSC;
-    case CHAINS.ARBITRUM:
-      return CHAINNAMES.ARBITRUM;
-    case CHAINS.ARBITRUMNOVA:
-      return CHAINNAMES.ARBITRUMNOVA;
-    case CHAINS.AVALANCHE:
-      return CHAINNAMES.AVALANCHE;
-    case CHAINS.POLYGON:
-      return CHAINNAMES.POLYGON;
-    case CHAINS.BASE:
-      return CHAINNAMES.BASE;
-    case CHAINS.OPTIMISM:
-      return CHAINNAMES.OPTIMISM;
-    case CHAINS.TON:
-      return CHAINNAMES.TON;
   }
 }

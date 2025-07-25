@@ -1,13 +1,11 @@
 import * as bitcoin from 'bitcoinjs-lib';
-import { CHAINIDS, CHAINS, COINS, INNERCHAINNAMES } from 'packages/constants/blockchain';
+import { CHAINIDS, COINS, INNERCHAINNAMES } from 'packages/constants/blockchain';
 import { BTCTYPE, ChainAccountType, QRCodeText } from '../types';
 import BIP32Factory from 'bip32';
-import * as ecc from 'tiny-secp256k1';
+// import * as ecc from 'tiny-secp256k1';
 import { ECPairFactory } from 'ecpair';
 
 export class BTC {
-  static chain = CHAINS.BITCOIN;
-
   static getNetwork(): bitcoin.Network {
     return bitcoin.networks.bitcoin;
   }
@@ -36,7 +34,7 @@ export class BTC {
   }
 
   static createAccountBySeed(seed: Buffer): ChainAccountType[] {
-    bitcoin.initEccLib(ecc);
+    // bitcoin.initEccLib(ecc);
 
     let accounts: Array<ChainAccountType> = [];
 
@@ -46,53 +44,52 @@ export class BTC {
     const legacyPath = `m/44'/0'/0'/0/0`;
 
     try {
-      const bip32 = BIP32Factory(ecc);
-      const node = bip32.fromSeed(seed, this.getNetwork());
+      // const bip32 = BIP32Factory(ecc);
+      // const node = bip32.fromSeed(seed, this.getNetwork());
 
       // nativeSegwit
-      const nativeSegwitPrivateKey = node.derivePath(nativeSegwitPath).privateKey?.toString('hex');
-      // node.derivePath(nativeSegwitPath).toWIF()
-      const nativeSegwitAddress = this.getAddressP2wpkhFromPrivateKey(nativeSegwitPrivateKey as string);
+      // const nativeSegwitPrivateKey = node.derivePath(nativeSegwitPath).privateKey?.toString('hex');
+      // const nativeSegwitAddress = this.getAddressP2wpkhFromPrivateKey(nativeSegwitPrivateKey as string);
 
-      accounts.push({
-        chain: this.chain,
-        address: nativeSegwitAddress as string,
-        privateKey: nativeSegwitPrivateKey,
-        note: BTCTYPE.NATIVESEGWIT,
-      });
+      // accounts.push({
+      //   chain: this.getChainIds(),
+      //   address: nativeSegwitAddress as string,
+      //   privateKey: nativeSegwitPrivateKey,
+      //   note: BTCTYPE.NATIVESEGWIT,
+      // });
 
       // nestedSegwit
-      const nestedSegwitPrivateKey = node.derivePath(nestedSegwitPath).privateKey?.toString('hex');
-      const nestedSegwitAddress = this.getAddressP2shP2wpkhFromPrivateKey(nestedSegwitPrivateKey as string);
+      // const nestedSegwitPrivateKey = node.derivePath(nestedSegwitPath).privateKey?.toString('hex');
+      // const nestedSegwitAddress = this.getAddressP2shP2wpkhFromPrivateKey(nestedSegwitPrivateKey as string);
 
-      accounts.push({
-        chain: this.chain,
-        address: nestedSegwitAddress as string,
-        privateKey: nestedSegwitPrivateKey,
-        note: BTCTYPE.NESTEDSEGWIT,
-      });
+      // accounts.push({
+      //   chain: this.getChainIds(),
+      //   address: nestedSegwitAddress as string,
+      //   privateKey: nestedSegwitPrivateKey,
+      //   note: BTCTYPE.NESTEDSEGWIT,
+      // });
 
-      // taproot
-      const taprootPrivateKey = node.derivePath(taprootPath).privateKey?.toString('hex');
-      const taprootAddress = this.getAddressP2trFromPrivateKey(taprootPrivateKey as string);
+      // // taproot
+      // const taprootPrivateKey = node.derivePath(taprootPath).privateKey?.toString('hex');
+      // const taprootAddress = this.getAddressP2trFromPrivateKey(taprootPrivateKey as string);
 
-      accounts.push({
-        chain: this.chain,
-        address: taprootAddress as string,
-        privateKey: taprootPrivateKey,
-        note: BTCTYPE.TAPROOT,
-      });
+      // accounts.push({
+      //   chain: this.getChainIds(),
+      //   address: taprootAddress as string,
+      //   privateKey: taprootPrivateKey,
+      //   note: BTCTYPE.TAPROOT,
+      // });
 
-      // legacy
-      const legacyPrivateKey = node.derivePath(legacyPath).privateKey?.toString('hex');
-      const legacyAddress = this.getAddressP2pkhFromPrivateKey(legacyPrivateKey as string);
+      // // legacy
+      // const legacyPrivateKey = node.derivePath(legacyPath).privateKey?.toString('hex');
+      // const legacyAddress = this.getAddressP2pkhFromPrivateKey(legacyPrivateKey as string);
 
-      accounts.push({
-        chain: this.chain,
-        address: legacyAddress as string,
-        privateKey: legacyPrivateKey,
-        note: BTCTYPE.LEGACY,
-      });
+      // accounts.push({
+      //   chain: this.getChainIds(),
+      //   address: legacyAddress as string,
+      //   privateKey: legacyPrivateKey,
+      //   note: BTCTYPE.LEGACY,
+      // });
 
       return accounts;
     } catch (e) {
@@ -109,7 +106,7 @@ export class BTC {
       const nativeSegwitAddress = this.getAddressP2wpkhFromPrivateKey(privateKey);
 
       accounts.push({
-        chain: this.chain,
+        chain: this.getChainIds(),
         address: nativeSegwitAddress as string,
         privateKey: privateKey,
         note: 'Native Segwit',
@@ -119,7 +116,7 @@ export class BTC {
       const nestedSegwitAddress = this.getAddressP2shP2wpkhFromPrivateKey(privateKey);
 
       accounts.push({
-        chain: this.chain,
+        chain: this.getChainIds(),
         address: nestedSegwitAddress as string,
         privateKey: privateKey,
         note: 'Nested Segwit',
@@ -129,7 +126,7 @@ export class BTC {
       const taprootAddress = this.getAddressP2trFromPrivateKey(privateKey);
 
       accounts.push({
-        chain: this.chain,
+        chain: this.getChainIds(),
         address: taprootAddress as string,
         privateKey: privateKey,
         note: 'Taproot',
@@ -139,7 +136,7 @@ export class BTC {
       const legacyAddress = this.getAddressP2pkhFromPrivateKey(privateKey);
 
       accounts.push({
-        chain: this.chain,
+        chain: this.getChainIds(),
         address: legacyAddress as string,
         privateKey: privateKey,
         note: 'Legacy',
@@ -152,51 +149,55 @@ export class BTC {
     }
   }
 
-  static toWifStaring(privateKey: string): string {
-    const ECPair = ECPairFactory(ecc);
-    const privateKeyBytes = Buffer.from(privateKey, 'hex');
-    const keyPair = ECPair.fromPrivateKey(privateKeyBytes, { network: this.getNetwork() });
-    return keyPair.toWIF();
-  }
+  // static toWifStaring(privateKey: string): string {
+  //   const ECPair = ECPairFactory(ecc);
+  //   const privateKeyBytes = Buffer.from(privateKey, 'hex');
+  //   const keyPair = ECPair.fromPrivateKey(privateKeyBytes, { network: this.getNetwork() });
+  //   return keyPair.toWIF();
+  // }
 
   // p2wpkh
   static getAddressP2wpkhFromPrivateKey(privateKey: string): string {
-    const ECPair = ECPairFactory(ecc);
-    const keyPair = ECPair.fromWIF(this.toWifStaring(privateKey), this.getNetwork());
-    const p2wpkh = bitcoin.payments.p2wpkh({ pubkey: keyPair.publicKey, network: this.getNetwork() });
-    return p2wpkh.address as string;
+    // const ECPair = ECPairFactory(ecc);
+    // const keyPair = ECPair.fromWIF(this.toWifStaring(privateKey), this.getNetwork());
+    // const p2wpkh = bitcoin.payments.p2wpkh({ pubkey: keyPair.publicKey, network: this.getNetwork() });
+    // return p2wpkh.address as string;
+    return ""
   }
 
   // p2sh-p2wpkh
   static getAddressP2shP2wpkhFromPrivateKey(privateKey: string): string {
-    const ECPair = ECPairFactory(ecc);
-    const keyPair = ECPair.fromWIF(this.toWifStaring(privateKey), this.getNetwork());
-    const p2 = bitcoin.payments.p2sh({
-      redeem: bitcoin.payments.p2wpkh({ pubkey: keyPair.publicKey, network: this.getNetwork() }),
-      network: this.getNetwork(),
-    });
-    return p2.address as string;
+    // const ECPair = ECPairFactory(ecc);
+    // const keyPair = ECPair.fromWIF(this.toWifStaring(privateKey), this.getNetwork());
+    // const p2 = bitcoin.payments.p2sh({
+    //   redeem: bitcoin.payments.p2wpkh({ pubkey: keyPair.publicKey, network: this.getNetwork() }),
+    //   network: this.getNetwork(),
+    // });
+    // return p2.address as string;
+    return ""
   }
 
   // p2tr
   static getAddressP2trFromPrivateKey(privateKey: string): string {
-    const ECPair = ECPairFactory(ecc);
-    const keyPair = ECPair.fromWIF(this.toWifStaring(privateKey), this.getNetwork());
-    const p2tr = bitcoin.payments.p2tr({
-      internalPubkey: keyPair.publicKey.subarray(1, 33),
-      network: this.getNetwork(),
-    });
+    // const ECPair = ECPairFactory(ecc);
+    // const keyPair = ECPair.fromWIF(this.toWifStaring(privateKey), this.getNetwork());
+    // const p2tr = bitcoin.payments.p2tr({
+    //   internalPubkey: keyPair.publicKey.subarray(1, 33),
+    //   network: this.getNetwork(),
+    // });
 
-    return p2tr.address as string;
+    // return p2tr.address as string;
+    return ""
   }
 
   // p2pkh
   static getAddressP2pkhFromPrivateKey(privateKey: string): string {
-    const ECPair = ECPairFactory(ecc);
-    const keyPair = ECPair.fromWIF(this.toWifStaring(privateKey), this.getNetwork());
-    const p2pkh = bitcoin.payments.p2pkh({ pubkey: keyPair.publicKey, network: this.getNetwork() });
-    p2pkh.output;
-    return p2pkh.address as string;
+    // const ECPair = ECPairFactory(ecc);
+    // const keyPair = ECPair.fromWIF(this.toWifStaring(privateKey), this.getNetwork());
+    // const p2pkh = bitcoin.payments.p2pkh({ pubkey: keyPair.publicKey, network: this.getNetwork() });
+    // p2pkh.output;
+    // return p2pkh.address as string;
+    return ""
   }
 
   static checkAddress(address: string): boolean {

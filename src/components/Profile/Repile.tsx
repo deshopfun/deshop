@@ -1,7 +1,9 @@
 import { Box, Card, CardContent, Typography } from '@mui/material';
 import { useSnackPresistStore, useUserPresistStore } from 'lib';
 
-type Props = {};
+type Props = {
+  uuid?: string;
+};
 
 const ProfileRepile = (props: Props) => {
   const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore((state) => state);
@@ -9,7 +11,7 @@ const ProfileRepile = (props: Props) => {
 
   return (
     <Box>
-      <Typography>Repile</Typography>
+      <Typography variant="h6">All Repiles</Typography>
 
       {getIsLogin() ? (
         <></>

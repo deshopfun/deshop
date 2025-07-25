@@ -1,4 +1,4 @@
-import { CHAINIDS, CHAINS, COIN, COINS } from 'packages/constants/blockchain';
+import { CHAINIDS, COIN, COINS } from 'packages/constants/blockchain';
 
 export type WalletAccountType = {
   isGenerate: boolean;
@@ -7,7 +7,7 @@ export type WalletAccountType = {
 };
 
 export type ChainAccountType = {
-  chain: CHAINS;
+  chain: CHAINIDS;
   address: string;
   privateKey?: string;
   note?: string;

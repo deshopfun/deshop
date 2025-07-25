@@ -1,10 +1,8 @@
-import { CHAINIDS, CHAINS, COINS, INNERCHAINNAMES } from 'packages/constants/blockchain';
+import { CHAINIDS, COINS, INNERCHAINNAMES } from 'packages/constants/blockchain';
 import { ChainAccountType, QRCodeText } from '../types';
 import { Client, isValidAddress, Wallet } from 'xrpl';
 
 export class XRP {
-  static chain = CHAINS.XRP;
-
   static getChainIds(): CHAINIDS {
     return CHAINIDS.XRP;
   }
@@ -23,7 +21,7 @@ export class XRP {
       const wallet = Wallet.fromMnemonic(mnemonic);
 
       return {
-        chain: this.chain,
+        chain: this.getChainIds(),
         address: wallet.address as string,
         privateKey: wallet.privateKey,
         note: 'XRP',
@@ -39,7 +37,7 @@ export class XRP {
       const wallet = Wallet.fromSecret(privateKey);
 
       return {
-        chain: this.chain,
+        chain: this.getChainIds(),
         address: wallet.address as string,
         privateKey: privateKey,
         note: 'XRP',

@@ -1,7 +1,4 @@
-import { PhotoCamera } from '@mui/icons-material';
 import {
-  Avatar,
-  Badge,
   Box,
   Button,
   Dialog,
@@ -9,22 +6,22 @@ import {
   DialogContent,
   DialogTitle,
   Stack,
-  styled,
   TextField,
   Typography,
 } from '@mui/material';
 import { useSnackPresistStore } from 'lib';
 import { CHAINIDS } from 'packages/constants';
+import { WEB3 } from 'packages/web3/web3';
 import { useEffect, useState } from 'react';
 import axios from 'utils/http/axios';
 import { Http } from 'utils/http/http';
-import { FindChainNamesByChainids, FindChainNamesByChains } from 'utils/web3';
+import { FindChainNamesByChainids } from 'utils/web3';
 
 type DialogType = {
   chain: CHAINIDS;
   address?: string;
   openDialog: boolean;
-  setOpenDialog: (value: boolean) => void;
+  handleCloseDialog: () => Promise<void>;
 };
 
 export default function BindAddressDialog(props: DialogType) {
@@ -32,27 +29,23 @@ export default function BindAddressDialog(props: DialogType) {
 
   const { setSnackSeverity, setSnackOpen, setSnackMessage } = useSnackPresistStore((state) => state);
 
-  const handleClose = () => {
-    props.setOpenDialog(false);
-  };
-
   useEffect(() => {
     setAddress(props.address);
   }, [props.address]);
 
   const onClickEditProfile = async () => {
     const response: any = await axios.put(Http.wallet, {
-      chain: props.chain,
+      handle: 1,
+      chain_id: props.chain,
       address: address,
     });
 
     if (response.result) {
+      await props.handleCloseDialog();
+
       setSnackSeverity('success');
       setSnackMessage('Update successfully');
       setSnackOpen(true);
-      handleClose();
-
-      //   window.location.href = `/profile/${username}`;
     } else {
       setSnackSeverity('error');
       setSnackMessage(response.message);
@@ -61,7 +54,13 @@ export default function BindAddressDialog(props: DialogType) {
   };
 
   return (
-    <Dialog open={props.openDialog} onClose={handleClose} fullWidth>
+    <Dialog
+      open={props.openDialog}
+      onClose={() => {
+        props.handleCloseDialog();
+      }}
+      fullWidth
+    >
       <DialogTitle>Bind Address</DialogTitle>
       <DialogContent>
         <Stack direction={'row'} alignItems={'center'} gap={1}>
@@ -82,7 +81,12 @@ export default function BindAddressDialog(props: DialogType) {
         </Box>
       </DialogContent>
       <DialogActions>
-        <Button variant={'contained'} onClick={handleClose}>
+        <Button
+          variant={'contained'}
+          onClick={() => {
+            props.handleCloseDialog();
+          }}
+        >
           Close
         </Button>
         <Button color="success" variant={'contained'} onClick={onClickEditProfile}>

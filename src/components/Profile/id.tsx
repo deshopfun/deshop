@@ -185,13 +185,13 @@ const ProfileDetails = () => {
             <ProfileWallet uuid={user?.profile.uuid} username={user?.profile.username} />
           </CustomTabPanel>
           <CustomTabPanel value={tabValue} index={2}>
-            <ProfileRepile />
+            <ProfileRepile uuid={user?.profile.uuid} />
           </CustomTabPanel>
           <CustomTabPanel value={tabValue} index={3}>
-            <ProfileNotification />
+            <ProfileNotification uuid={user?.profile.uuid} username={user?.profile.username} />
           </CustomTabPanel>
           <CustomTabPanel value={tabValue} index={4}>
-            <ProfileFollow />
+            <ProfileFollow uuid={user?.profile.uuid} />
           </CustomTabPanel>
         </Grid>
         <Grid size={{ xs: 12, md: 4 }}>

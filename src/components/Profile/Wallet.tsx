@@ -21,15 +21,20 @@ type Props = {
 };
 
 const ProfileWallet = (props: Props) => {
-  const [openEditAddressDialog, setOpenEditAddressDialog] = useState<boolean>(false);
+  const [username, setUsername] = useState<string>('');
   const [wallets, setWallets] = useState<WalletType[]>([]);
+
+  const [selectChain, setSelectChain] = useState<CHAINIDS>(CHAINIDS.BITCOIN);
+  const [selectAddress, setSelectAddress] = useState<string>();
+
+  const [openEditAddressDialog, setOpenEditAddressDialog] = useState<boolean>(false);
 
   const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore((state) => state);
   const { getIsLogin, getUuid } = useUserPresistStore((state) => state);
 
-  const init = async () => {
+  const init = async (username: string) => {
     try {
-      if (!props.username || props.username === '') {
+      if (!username || username === '') {
         setSnackSeverity('error');
         setSnackMessage('Incorrect username input');
         setSnackOpen(true);
@@ -53,9 +58,12 @@ const ProfileWallet = (props: Props) => {
   };
 
   useEffect(() => {
-    init();
+    if (props.username) {
+      setUsername(props.username);
+      init(props.username);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [props.username]);
 
   const onChangeCoin = async (chain: CHAINIDS, coin: COINS) => {
     let disableCoinArray = wallets
@@ -77,7 +85,7 @@ const ProfileWallet = (props: Props) => {
     });
 
     if (response.result) {
-      await init();
+      await init(username);
 
       setSnackSeverity('success');
       setSnackMessage('Update successfully');
@@ -87,6 +95,13 @@ const ProfileWallet = (props: Props) => {
       setSnackMessage(response.message);
       setSnackOpen(true);
     }
+  };
+
+  const handleCloseDialog = async () => {
+    setSelectChain(CHAINIDS.BITCOIN);
+    setSelectAddress('');
+    await init(username);
+    setOpenEditAddressDialog(false);
   };
 
   return (
@@ -110,11 +125,14 @@ const ProfileWallet = (props: Props) => {
                       />
                     )}
                   </Stack>
-
                   <Button
                     variant={'contained'}
                     color={'success'}
                     onClick={() => {
+                      setSelectChain(item.chainId);
+                      setSelectAddress(
+                        wallets.find((walletItem) => walletItem.chain_id === item.chainId)?.address as string,
+                      );
                       setOpenEditAddressDialog(true);
                     }}
                   >
@@ -154,10 +172,10 @@ const ProfileWallet = (props: Props) => {
             ))}
 
           <BindAddressDialog
-            chain={CHAINIDS.BITCOIN}
-            address={''}
+            chain={selectChain}
+            address={selectAddress}
             openDialog={openEditAddressDialog}
-            setOpenDialog={setOpenEditAddressDialog}
+            handleCloseDialog={handleCloseDialog}
           />
         </Box>
       ) : (

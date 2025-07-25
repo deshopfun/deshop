@@ -1,10 +1,8 @@
-import { CHAINIDS, CHAINS, COINS, INNERCHAINNAMES } from 'packages/constants/blockchain';
+import { CHAINIDS, COINS, INNERCHAINNAMES } from 'packages/constants/blockchain';
 import { QRCodeText } from '../types';
 import { FindTokenByChainIdsAndContractAddress } from 'utils/web3';
 
 export class AVAX {
-  static chain = CHAINS.AVALANCHE;
-
   static getChainIds(): CHAINIDS {
     return CHAINIDS.AVALANCHE;
   }

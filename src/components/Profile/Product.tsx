@@ -84,7 +84,13 @@ const ProfileProduct = (props: Props) => {
             ))}
           </Grid>
         ) : (
-          <Box>Not found</Box>
+          <Box mt={2}>
+            <Card>
+              <CardContent>
+                <Typography>Not found</Typography>
+              </CardContent>
+            </Card>
+          </Box>
         )}
       </Box>
     </Box>
