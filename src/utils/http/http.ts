@@ -13,6 +13,7 @@ export class Http {
   static user_profile_by_username = this.httpPath + '/client/user-profile-by-username';
   static product_list = this.httpPath + '/client/product-list';
   static product_by_id = this.httpPath + '/client/product-by-id';
+  static user_wallet_by_username = this.httpPath + '/client/user-wallet-by-username';
 
   // user
   static user_setting = this.httpPath + '/client/user/user-setting';

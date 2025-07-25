@@ -157,7 +157,7 @@ const ProfileDetails = () => {
 
           <Stack direction={'row'} alignItems={'center'} mt={2} gap={4}>
             <Box textAlign={'center'}>
-              <Typography variant="h6">{user?.products.length || 0}</Typography>
+              <Typography variant="h6">{user?.products?.length || 0}</Typography>
               <Typography>Created products</Typography>
             </Box>
             <Box textAlign={'center'}>
@@ -179,10 +179,10 @@ const ProfileDetails = () => {
           </Box>
 
           <CustomTabPanel value={tabValue} index={0}>
-            {user?.products && <ProfileProduct product={user?.products} uuid={user?.profile.uuid} />}
+            <ProfileProduct product={user?.products} uuid={user?.profile.uuid} />
           </CustomTabPanel>
           <CustomTabPanel value={tabValue} index={1}>
-            <ProfileWallet uuid={user?.profile.uuid} />
+            <ProfileWallet uuid={user?.profile.uuid} username={user?.profile.username} />
           </CustomTabPanel>
           <CustomTabPanel value={tabValue} index={2}>
             <ProfileRepile />

@@ -26,7 +26,7 @@ type ProductOption = {
 
 type Props = {
   uuid?: string;
-  product: ProductType[];
+  product?: ProductType[];
 };
 
 const ProfileProduct = (props: Props) => {
@@ -37,7 +37,7 @@ const ProfileProduct = (props: Props) => {
       <Typography variant="h6">All products</Typography>
 
       <Box mt={2}>
-        {props.product.length > 0 ? (
+        {props.product && props.product.length > 0 ? (
           <Grid container spacing={2}>
             {props.product.map((item, index) => (
               <Grid size={{ xs: 12, md: 6 }} key={index}>
