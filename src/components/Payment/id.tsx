@@ -1,4 +1,7 @@
 import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
   Box,
   Button,
   Card,
@@ -24,9 +27,13 @@ import {
   Stepper,
   Typography,
 } from '@mui/material';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
-import { CheckCircle, ContentCopy } from '@mui/icons-material';
+import { CheckCircle, ContentCopy, ExpandMore } from '@mui/icons-material';
+import { BLOCKCHAIN, BLOCKCHAINNAMES, COIN } from 'packages/constants';
+import Image from 'next/image';
+import axios from 'utils/http/axios';
+import { Http } from 'utils/http/http';
 
 const steps = [
   'Payment section',
@@ -36,8 +43,24 @@ const steps = [
   'Email confirmation',
 ];
 
-const PaymentDetails = () => {
+type WalletType = {
+  address: string;
+  chain_id: number;
+  chain_name: string;
+  disable_coin: string;
+};
+
+type Props = {
+  merchantId: number;
+  merchantName: string;
+};
+
+const PaymentDetails = (props: Props) => {
   const [page, setPage] = useState<number>(1);
+  const [blockchains, setBlockchains] = useState<BLOCKCHAIN[]>([]);
+  const [expanded, setExpanded] = useState<string | false>(false);
+  const [merchantName, setMerchantName] = useState<string>('');
+
   const [activeStep, setActiveStep] = useState(0);
   const [completed, setCompleted] = useState<{
     [k: number]: boolean;
@@ -46,6 +69,48 @@ const PaymentDetails = () => {
   const handleStep = (step: number) => () => {
     setActiveStep(step);
   };
+
+  const handleChangeBlockchain = (panel: string) => (event: React.SyntheticEvent, isExpanded: boolean) => {
+    setExpanded(isExpanded ? panel : false);
+  };
+
+  const init = async (username: string) => {
+    try {
+      const response: any = await axios.get(Http.user_wallet_by_username, {
+        params: {
+          username: username,
+        },
+      });
+
+      if (response.result) {
+        const newBlockchain: BLOCKCHAIN[] = BLOCKCHAINNAMES.reduce((acc: BLOCKCHAIN[], chain) => {
+          const wallet = response.data.find((w: WalletType) => w.chain_id === chain.chainId);
+          if (wallet?.address) {
+            const coins = chain.coins.filter((coin) => !wallet.disable_coin?.includes(coin.name));
+            if (coins.length > 0) {
+              acc.push({ ...chain, coins });
+            }
+          }
+          return acc;
+        }, []);
+
+        setBlockchains(newBlockchain);
+      } else {
+        setBlockchains([]);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  useEffect(() => {
+    // if (props.merchantName) {
+    //   setMerchantName(props.merchantName);
+    //   init(props.merchantName);
+    // }
+    init('LQ3tLzKh');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <Container>
@@ -56,6 +121,47 @@ const PaymentDetails = () => {
           </Typography>
           <Grid container spacing={2} mt={4}>
             <Grid size={{ xs: 12, md: 8 }}>
+              <Card>
+                <Typography textAlign={'center'} variant="h6" py={2}>
+                  Choose Your Chain And Coin
+                </Typography>
+              </Card>
+
+              <Box mt={2}>
+                {blockchains &&
+                  blockchains.length > 0 &&
+                  blockchains.map((item, index) => (
+                    <Accordion
+                      expanded={expanded === item.name}
+                      onChange={handleChangeBlockchain(item.name)}
+                      key={index}
+                    >
+                      <AccordionSummary expandIcon={<ExpandMore />} aria-controls="panel1bh-content">
+                        <Typography sx={{ width: '20%', flexShrink: 0 }} fontWeight={'bold'}>
+                          {item.name.toUpperCase()}
+                        </Typography>
+                        <Typography sx={{ color: 'text.secondary' }}>{item.desc}</Typography>
+                      </AccordionSummary>
+                      {item.coins &&
+                        item.coins.length > 0 &&
+                        item.coins.map((coinItem: COIN, coinIndex) => (
+                          <AccordionDetails key={coinIndex}>
+                            <Button
+                              fullWidth
+                              onClick={async () => {
+                                setPage(2);
+                              }}
+                            >
+                              <Image src={coinItem.icon} alt="icon" width={50} height={50} />
+                              <Typography ml={2}>{coinItem.name}</Typography>
+                            </Button>
+                          </AccordionDetails>
+                        ))}
+                    </Accordion>
+                  ))}
+              </Box>
+            </Grid>
+            <Grid size={{ xs: 12, md: 4 }}>
               <Card>
                 <Box p={3}>
                   <Box pb={1}>
@@ -78,93 +184,6 @@ const PaymentDetails = () => {
                   </Stack>
                 </Box>
               </Card>
-            </Grid>
-            <Grid size={{ xs: 12, md: 4 }}>
-              <Card>
-                <Typography textAlign={'center'} variant="h6" py={2}>
-                  Choose Your Coin
-                </Typography>
-              </Card>
-
-              <Box mt={2}>
-                <List sx={{ width: '100%', bgcolor: 'background.paper', height: 400, overflow: 'auto' }}>
-                  <ListItem disablePadding>
-                    <ListItemButton
-                      style={{ padding: 0 }}
-                      onClick={() => {
-                        setPage(2);
-                      }}
-                    >
-                      <Stack direction={'row'} alignItems={'center'} p={2}>
-                        <img src={'/images/default_avatar.png'} alt={'image'} loading="lazy" width={50} height={50} />
-                        <Box pl={4}>
-                          <Typography variant="h6">USDT TRC20</Typography>
-                          <Typography mt={1} fontWeight={'bold'}>
-                            2.5 USDT
-                          </Typography>
-                          <Typography>including Fee of 0 USDT</Typography>
-                        </Box>
-                      </Stack>
-                    </ListItemButton>
-                  </ListItem>
-                  <ListItem disablePadding>
-                    <ListItemButton style={{ padding: 0 }}>
-                      <Stack direction={'row'} alignItems={'center'} p={2}>
-                        <img src={'/images/default_avatar.png'} alt={'image'} loading="lazy" width={50} height={50} />
-                        <Box pl={4}>
-                          <Typography variant="h6">USDT TRC20</Typography>
-                          <Typography mt={1} fontWeight={'bold'}>
-                            2.5 USDT
-                          </Typography>
-                          <Typography>including Fee of 0 USDT</Typography>
-                        </Box>
-                      </Stack>
-                    </ListItemButton>
-                  </ListItem>
-                  <ListItem disablePadding>
-                    <ListItemButton style={{ padding: 0 }}>
-                      <Stack direction={'row'} alignItems={'center'} p={2}>
-                        <img src={'/images/default_avatar.png'} alt={'image'} loading="lazy" width={50} height={50} />
-                        <Box pl={4}>
-                          <Typography variant="h6">USDT TRC20</Typography>
-                          <Typography mt={1} fontWeight={'bold'}>
-                            2.5 USDT
-                          </Typography>
-                          <Typography>including Fee of 0 USDT</Typography>
-                        </Box>
-                      </Stack>
-                    </ListItemButton>
-                  </ListItem>
-                  <ListItem disablePadding>
-                    <ListItemButton style={{ padding: 0 }}>
-                      <Stack direction={'row'} alignItems={'center'} p={2}>
-                        <img src={'/images/default_avatar.png'} alt={'image'} loading="lazy" width={50} height={50} />
-                        <Box pl={4}>
-                          <Typography variant="h6">USDT TRC20</Typography>
-                          <Typography mt={1} fontWeight={'bold'}>
-                            2.5 USDT
-                          </Typography>
-                          <Typography>including Fee of 0 USDT</Typography>
-                        </Box>
-                      </Stack>
-                    </ListItemButton>
-                  </ListItem>
-                  <ListItem disablePadding>
-                    <ListItemButton style={{ padding: 0 }}>
-                      <Stack direction={'row'} alignItems={'center'} p={2}>
-                        <img src={'/images/default_avatar.png'} alt={'image'} loading="lazy" width={50} height={50} />
-                        <Box pl={4}>
-                          <Typography variant="h6">USDT TRC20</Typography>
-                          <Typography mt={1} fontWeight={'bold'}>
-                            2.5 USDT
-                          </Typography>
-                          <Typography>including Fee of 0 USDT</Typography>
-                        </Box>
-                      </Stack>
-                    </ListItemButton>
-                  </ListItem>
-                </List>
-              </Box>
             </Grid>
           </Grid>
         </Box>

@@ -56,8 +56,7 @@ const ProfileProduct = (props: Props) => {
                         alt="image"
                       />
                       <CardContent>
-                        {item.product_id}
-                        <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} mt={1}>
+                        <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} mt={1} gap={1}>
                           <Stack direction={'row'} alignItems={'center'} gap={1}>
                             <Typography variant="h6">{item.title}</Typography>
                             <Chip label={item.product_type} color="primary" size="small" />

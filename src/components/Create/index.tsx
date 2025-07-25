@@ -190,6 +190,8 @@ const Create = () => {
       setSnackSeverity('success');
       setSnackMessage('Create successfully');
       setSnackOpen(true);
+
+      window.location.href = `/products/${response.data.product_id}`;
     } else {
       setSnackSeverity('error');
       setSnackMessage(response.message);
@@ -441,8 +443,15 @@ const Create = () => {
               <CardContent>
                 {imageList && imageList.length > 0 ? (
                   <Box>
-                    <img srcSet={imageList[0]} src={imageList[0]} alt={'image'} loading="lazy" width={100} height={100} />
-                    <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} mt={1}>
+                    <img
+                      srcSet={imageList[0]}
+                      src={imageList[0]}
+                      alt={'image'}
+                      loading="lazy"
+                      width={100}
+                      height={100}
+                    />
+                    <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} mt={1} gap={1}>
                       <Stack direction={'row'} alignItems={'center'} gap={1}>
                         <Typography variant="h6">{title}</Typography>
                         <Chip label={productType} color="primary" size="small" />
