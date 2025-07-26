@@ -73,7 +73,7 @@ const HomeHeader = () => {
                     window.location.href = '/cart';
                   }}
                 >
-                  <Badge badgeContent={1} color={'info'}>
+                  <Badge badgeContent={0} color={'info'}>
                     <AddShoppingCart color="action" />
                   </Badge>
                 </IconButton>

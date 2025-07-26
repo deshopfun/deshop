@@ -34,8 +34,11 @@ import 'swiper/css/scrollbar';
 import Image from 'next/image';
 import {
   Add,
+  ChatBubbleOutline,
   ChevronRight,
   FavoriteBorder,
+  HelpOutline,
+  InsertLink,
   LocalShipping,
   MoreHoriz,
   Remove,
@@ -43,13 +46,17 @@ import {
   ThumbUpAlt,
   ThumbUpOffAlt,
 } from '@mui/icons-material';
-import ExploreCard from 'components/Card/ExploreCard';
 import RecentViewCard from 'components/Card/RecentViewCard';
 import ProductManage from './ProductManage';
+import ProductRatingsDialog from 'components/Dialog/ProductRatingsDialog';
+import RefundPolicyDialog from 'components/Dialog/RefundPolicyDialog';
 
 type ProductType = {
   product_id: number;
   user_uuid: string;
+  user_email: string;
+  username: string;
+  user_avatar_url: string;
   title: string;
   body_html: string;
   product_type: string;
@@ -78,6 +85,8 @@ const ProductDetails = () => {
   const [product, setProduct] = useState<ProductType>();
   const [thumbsSwiper, setThumbsSwiper] = useState(null);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [openRatingsDialog, setOpenRatingsDialog] = useState<boolean>(false);
+  const [openRefundPolicy, setOpenRefundPolicy] = useState<boolean>(false);
 
   const openMore = Boolean(anchorEl);
 
@@ -195,9 +204,15 @@ const ProductDetails = () => {
                 <Typography variant="h4">4.9</Typography>
                 <Star />
               </Stack>
-              <Link href="#" color="#000" fontSize={14}>
-                4.6K ratings
-              </Link>
+              <div
+                onClick={() => {
+                  setOpenRatingsDialog(true);
+                }}
+              >
+                <Link color="#000" fontSize={14}>
+                  4.6K ratings
+                </Link>
+              </div>
 
               <Box mt={2}>
                 <Stack direction={'row'} alignItems={'center'} gap={1}>
@@ -270,13 +285,7 @@ const ProductDetails = () => {
             <Box mt={2}>
               <Grid container spacing={4}>
                 <Grid size={{ xs: 6, md: 6 }}>
-                  <Rating
-                    size="small"
-                    value={5}
-                    onChange={(event, newValue) => {
-                      //   setValue(newValue);
-                    }}
-                  />
+                  <Rating size="small" value={5} readOnly />
                   <Stack direction={'row'} alignItems={'center'} gap={1}>
                     <Typography fontSize={14}>abc</Typography>
                     <Typography fontSize={14}>·</Typography>
@@ -300,13 +309,7 @@ const ProductDetails = () => {
                   </Stack>
                 </Grid>
                 <Grid size={{ xs: 6, md: 6 }}>
-                  <Rating
-                    size="small"
-                    value={5}
-                    onChange={(event, newValue) => {
-                      //   setValue(newValue);
-                    }}
-                  />
+                  <Rating size="small" value={5} readOnly />
                   <Stack direction={'row'} alignItems={'center'} gap={1}>
                     <Typography fontSize={14}>abc</Typography>
                     <Typography fontSize={14}>·</Typography>
@@ -330,13 +333,7 @@ const ProductDetails = () => {
                   </Stack>
                 </Grid>
                 <Grid size={{ xs: 6, md: 6 }}>
-                  <Rating
-                    size="small"
-                    value={5}
-                    onChange={(event, newValue) => {
-                      //   setValue(newValue);
-                    }}
-                  />
+                  <Rating size="small" value={5} readOnly />
                   <Stack direction={'row'} alignItems={'center'} gap={1}>
                     <Typography fontSize={14}>abc</Typography>
                     <Typography fontSize={14}>·</Typography>
@@ -362,7 +359,14 @@ const ProductDetails = () => {
               </Grid>
 
               <Box mt={4}>
-                <Button fullWidth variant={'contained'} color={'inherit'}>
+                <Button
+                  fullWidth
+                  variant={'contained'}
+                  color={'inherit'}
+                  onClick={() => {
+                    setOpenRatingsDialog(true);
+                  }}
+                >
                   Read more reviews
                 </Button>
               </Box>
@@ -373,14 +377,33 @@ const ProductDetails = () => {
         <Grid size={{ xs: 12, md: 4 }}>
           <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
             <Stack direction={'row'} alignItems={'center'} gap={1}>
-              <img src={'/images/default_avatar.png'} alt={'image'} loading="lazy" width={30} height={30} />
-              <Typography fontWeight={'bold'}>Comfrt</Typography>
+              {product.user_avatar_url ? (
+                <img src={product.user_avatar_url} alt={'image'} loading="lazy" width={30} height={30} />
+              ) : (
+                <img src={'/images/default_avatar.png'} alt={'image'} loading="lazy" width={30} height={30} />
+              )}
+              <Typography fontWeight={'bold'}>{product.username}</Typography>
             </Stack>
             <IconButton onClick={handleClickMore}>
               <MoreHoriz />
             </IconButton>
             <Menu open={openMore} anchorEl={anchorEl} onClose={handleCloseMore}>
-              <MenuItem>Contact me</MenuItem>
+              <MenuItem
+                onClick={() => {
+                  window.location.href = `mailto:${product.user_email}`;
+                }}
+              >
+                <Stack direction={'row'} alignItems={'center'} gap={1}>
+                  <ChatBubbleOutline fontSize={'small'} />
+                  <Typography>{`Contact ${product.username}`}</Typography>
+                </Stack>
+              </MenuItem>
+              <MenuItem onClick={() => {}}>
+                <Stack direction={'row'} alignItems={'center'} gap={1}>
+                  <HelpOutline color={'error'} fontSize={'small'} />
+                  <Typography color={'error'}>Report product</Typography>
+                </Stack>
+              </MenuItem>
             </Menu>
           </Stack>
 
@@ -388,16 +411,16 @@ const ProductDetails = () => {
             <Box>
               <Typography variant="h6">Pastel Hoodie</Typography>
               <Stack direction={'row'} alignItems={'center'} gap={1}>
-                <Rating
-                  size="small"
-                  value={5}
-                  onChange={(event, newValue) => {
-                    //   setValue(newValue);
+                <Rating size="small" value={5} readOnly />
+                <div
+                  onClick={() => {
+                    setOpenRatingsDialog(true);
                   }}
-                />
-                <Link href="#" color="#000" fontSize={14}>
-                  4.6K ratings
-                </Link>
+                >
+                  <Link color="#000" fontSize={14}>
+                    4.6K ratings
+                  </Link>
+                </div>
               </Stack>
             </Box>
             <IconButton>
@@ -438,33 +461,37 @@ const ProductDetails = () => {
               ))}
           </Box>
 
-          <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} mt={2}>
-            <Typography>Quantity</Typography>
-            <Box width={100}>
-              <Input
-                startAdornment={
-                  <IconButton>
-                    <Remove />
-                  </IconButton>
-                }
-                endAdornment={
-                  <IconButton>
-                    <Add />
-                  </IconButton>
-                }
-                value={0}
-              />
-            </Box>
-          </Stack>
+          {product?.product_status === 1 && (
+            <>
+              <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} mt={2}>
+                <Typography>Quantity</Typography>
+                <Box width={100}>
+                  <Input
+                    startAdornment={
+                      <IconButton>
+                        <Remove />
+                      </IconButton>
+                    }
+                    endAdornment={
+                      <IconButton>
+                        <Add />
+                      </IconButton>
+                    }
+                    value={0}
+                  />
+                </Box>
+              </Stack>
 
-          <Box mt={4}>
-            <Button variant={'contained'} fullWidth>
-              Add to cart
-            </Button>
-            <Button variant={'contained'} fullWidth style={{ background: '#000', marginTop: 10 }}>
-              Buy now
-            </Button>
-          </Box>
+              <Box mt={4}>
+                <Button variant={'contained'} fullWidth>
+                  Add to cart
+                </Button>
+                <Button variant={'contained'} fullWidth style={{ background: '#000', marginTop: 10 }}>
+                  Buy now
+                </Button>
+              </Box>
+            </>
+          )}
 
           <Box mt={2} overflow={'auto'}>
             <Typography variant="h6">Description</Typography>
@@ -472,18 +499,29 @@ const ProductDetails = () => {
           </Box>
 
           <Box mt={2}>
-            <Button fullWidth variant={'contained'} color={'inherit'}>
-              More details at Comfrt
+            <Button
+              fullWidth
+              variant={'contained'}
+              color={'inherit'}
+              startIcon={<InsertLink />}
+              onClick={() => {
+                window.location.href = `/profile/${product.username}`;
+              }}
+            >
+              {`More details at ${product.username}`}
             </Button>
             <Box mt={1}>
-              <Button fullWidth variant={'contained'} color={'inherit'}>
+              <Button
+                fullWidth
+                variant={'contained'}
+                color={'inherit'}
+                onClick={() => {
+                  setOpenRefundPolicy(true);
+                }}
+              >
                 Refund Policy
               </Button>
             </Box>
-          </Box>
-
-          <Box mt={4}>
-            <img src={'/images/test.png'} alt={'image'} loading="lazy" width={'100%'} />
           </Box>
         </Grid>
       </Grid>
@@ -508,6 +546,9 @@ const ProductDetails = () => {
           <ProductManage />
         </Box>
       )}
+
+      <ProductRatingsDialog openDialog={openRatingsDialog} setOpenDialog={setOpenRatingsDialog} />
+      <RefundPolicyDialog openDialog={openRefundPolicy} setOpenDialog={setOpenRefundPolicy} />
     </Container>
   );
 };

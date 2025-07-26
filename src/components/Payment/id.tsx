@@ -273,42 +273,13 @@ const PaymentDetails = (props: Props) => {
             <Grid size={{ xs: 12, md: 5 }}>
               <Card>
                 <Box p={2}>
-                  <FormControl hiddenLabel fullWidth>
-                    <Select
-                      value={'10'}
-                      onChange={() => {}}
-                      size={'small'}
-                      inputProps={{ 'aria-label': 'Without label' }}
-                    >
-                      <MenuItem value={10}>
-                        <Stack direction={'row'} alignItems={'center'}>
-                          <img src={'/images/default_avatar.png'} alt={'image'} loading="lazy" width={40} height={40} />
-                          <Box pl={2}>
-                            <Typography fontWeight={'bold'}>USDT-ERC20(USDT-ERC20)</Typography>
-                            <Typography>2.50</Typography>
-                          </Box>
-                        </Stack>
-                      </MenuItem>
-                      <MenuItem value={20}>
-                        <Stack direction={'row'} alignItems={'center'}>
-                          <img src={'/images/default_avatar.png'} alt={'image'} loading="lazy" width={40} height={40} />
-                          <Box pl={2}>
-                            <Typography fontWeight={'bold'}>USDT-ERC20(USDT-ERC20)</Typography>
-                            <Typography>2.50</Typography>
-                          </Box>
-                        </Stack>
-                      </MenuItem>
-                      <MenuItem value={30}>
-                        <Stack direction={'row'} alignItems={'center'}>
-                          <img src={'/images/default_avatar.png'} alt={'image'} loading="lazy" width={40} height={40} />
-                          <Box pl={2}>
-                            <Typography fontWeight={'bold'}>USDT-ERC20(USDT-ERC20)</Typography>
-                            <Typography>2.50</Typography>
-                          </Box>
-                        </Stack>
-                      </MenuItem>
-                    </Select>
-                  </FormControl>
+                  <Stack direction={'row'} alignItems={'center'} p={1} border={1}>
+                    <img src={'/images/default_avatar.png'} alt={'image'} loading="lazy" width={40} height={40} />
+                    <Box pl={2}>
+                      <Typography fontWeight={'bold'}>Solana</Typography>
+                      <Typography>USDT</Typography>
+                    </Box>
+                  </Stack>
 
                   <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} mt={2} px={4}>
                     <img src={'/images/default_avatar.png'} alt={'image'} loading="lazy" width={100} height={100} />
@@ -318,7 +289,7 @@ const PaymentDetails = (props: Props) => {
                         width={160}
                         height={160}
                         imageSettings={{
-                          src: '',
+                          src: '/images/default_avatar.png',
                           width: 35,
                           height: 35,
                           excavate: false,
