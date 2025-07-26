@@ -11,7 +11,7 @@ const ProfileRepile = (props: Props) => {
 
   return (
     <Box>
-      <Typography variant="h6">All Repiles</Typography>
+      <Typography variant="h6">All repiles</Typography>
 
       {getIsLogin() ? (
         <></>

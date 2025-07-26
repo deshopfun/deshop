@@ -12,6 +12,7 @@ import ProfileWallet from './Wallet';
 import ProfileRepile from './Repile';
 import ProfileNotification from './Notification';
 import ProfileFollow from './Follow';
+import ProfileAddress from './Address';
 
 type UserType = {
   profile: ProfileType;
@@ -185,12 +186,15 @@ const ProfileDetails = () => {
             <ProfileWallet uuid={user?.profile.uuid} username={user?.profile.username} />
           </CustomTabPanel>
           <CustomTabPanel value={tabValue} index={2}>
-            <ProfileRepile uuid={user?.profile.uuid} />
+            <ProfileAddress uuid={user?.profile.uuid} username={user?.profile.username} />
           </CustomTabPanel>
           <CustomTabPanel value={tabValue} index={3}>
-            <ProfileNotification uuid={user?.profile.uuid} username={user?.profile.username} />
+            <ProfileRepile uuid={user?.profile.uuid} />
           </CustomTabPanel>
           <CustomTabPanel value={tabValue} index={4}>
+            <ProfileNotification uuid={user?.profile.uuid} username={user?.profile.username} />
+          </CustomTabPanel>
+          <CustomTabPanel value={tabValue} index={5}>
             <ProfileFollow uuid={user?.profile.uuid} />
           </CustomTabPanel>
         </Grid>

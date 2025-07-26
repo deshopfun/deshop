@@ -81,7 +81,7 @@ const ProfileNotification = (props: Props) => {
 
   return (
     <Box>
-      <Typography variant="h6">Setup Notification</Typography>
+      <Typography variant="h6">Setup notification</Typography>
 
       {getIsLogin() && getUuid() === props.uuid ? (
         <Box>

@@ -106,7 +106,7 @@ const ProfileWallet = (props: Props) => {
 
   return (
     <Box>
-      <Typography variant="h6">Setup Wallet</Typography>
+      <Typography variant="h6">Setup wallet</Typography>
 
       {getIsLogin() && getUuid() === props.uuid ? (
         <Box mt={2}>

@@ -50,17 +50,31 @@ const CheckoutDetails = () => {
                 <Typography pl={1}>Pick up</Typography>
               </Button>
             </Stack>
-            <Box mt={3}>
-              <Typography mb={1}>Full name</Typography>
-              <TextField
-                hiddenLabel
-                size="small"
-                fullWidth
-                value={''}
-                onChange={(e) => {}}
-                placeholder="Enter full name"
-              />
-            </Box>
+            <Stack direction={'row'} alignItems={'center'} gap={2} mt={3}>
+              <Box width={'100%'}>
+                <Typography mb={1}>First name</Typography>
+                <TextField
+                  hiddenLabel
+                  size="small"
+                  fullWidth
+                  value={''}
+                  onChange={(e) => {}}
+                  placeholder="Enter first name"
+                />
+              </Box>
+              <Box width={'100%'}>
+                <Typography mb={1}>Last name</Typography>
+                <TextField
+                  hiddenLabel
+                  size="small"
+                  fullWidth
+                  value={''}
+                  onChange={(e) => {}}
+                  placeholder="Enter last name"
+                />
+              </Box>
+            </Stack>
+
             <Box mt={3}>
               <Typography mb={1}>Email address</Typography>
               <TextField

@@ -11,7 +11,7 @@ const ProfileFollow = (props: Props) => {
 
   return (
     <Box>
-      <Typography variant="h6">All Following</Typography>
+      <Typography variant="h6">All following</Typography>
 
       {getIsLogin() ? (
         <></>

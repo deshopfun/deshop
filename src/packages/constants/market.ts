@@ -34,16 +34,21 @@ export const PROFILE_TAB_DATAS: TAB_DATA[] = [
   },
   {
     id: 2,
+    title: 'Addresses',
+    tabId: 'Addresses',
+  },
+  {
+    id: 3,
     title: 'Replies',
     tabId: 'replies',
   },
   {
-    id: 3,
+    id: 4,
     title: 'Notifications',
     tabId: 'notifications',
   },
   {
-    id: 4,
+    id: 5,
     title: 'Following',
     tabId: 'following',
   },
