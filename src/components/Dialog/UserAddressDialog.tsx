@@ -14,6 +14,7 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
+import { useState } from 'react';
 
 type DialogType = {
   openDialog: boolean;
@@ -21,6 +22,8 @@ type DialogType = {
 };
 
 export default function UserAddressDialog(props: DialogType) {
+  const [firstName, setFirstName] = useState<string>("")
+
   const handleClose = () => {
     props.setOpenDialog(false);
   };
@@ -38,7 +41,7 @@ export default function UserAddressDialog(props: DialogType) {
               hiddenLabel
               size="small"
               fullWidth
-              value={''}
+              value={firstName}
               onChange={(e) => {}}
               placeholder="Enter first name"
             />

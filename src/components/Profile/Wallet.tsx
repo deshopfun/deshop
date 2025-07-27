@@ -41,7 +41,7 @@ const ProfileWallet = (props: Props) => {
         return;
       }
 
-      const response: any = await axios.get(Http.user_wallet_by_username, {
+      const response: any = await axios.get(Http.wallet_by_username, {
         params: {
           username: props.username,
         },
