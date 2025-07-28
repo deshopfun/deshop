@@ -54,9 +54,9 @@ export default function EditProfileDialog(props: DialogType) {
   };
 
   useEffect(() => {
-    props.avatarUrl && setAvatarUrl(props.avatarUrl);
-    props.username && setUsername(props.username);
-    props.bio && setBio(props.bio);
+    setAvatarUrl(props.avatarUrl || '');
+    setUsername(props.username || '');
+    setBio(props.bio || '');
   }, [props.avatarUrl, props.username, props.bio]);
 
   const uploadFile = async (files: FileList) => {

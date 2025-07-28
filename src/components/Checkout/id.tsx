@@ -1,15 +1,19 @@
-import { useSnackPresistStore } from 'lib';
+import { useSnackPresistStore, useUserPresistStore } from 'lib';
 import { useRouter } from 'next/router';
 import {
   Box,
   Button,
+  Card,
+  CardContent,
   Checkbox,
   Container,
   FormControl,
+  FormControlLabel,
   Grid,
   IconButton,
   Input,
   MenuItem,
+  Radio,
   Select,
   Stack,
   TextField,
@@ -18,13 +22,82 @@ import {
 import axios from 'utils/http/axios';
 import { Http } from 'utils/http/http';
 import { useEffect, useState } from 'react';
-import { Adjust, Album, ConfirmationNumber, LocalMall, LocalShipping, Lock } from '@mui/icons-material';
+import {
+  Adjust,
+  Album,
+  ConfirmationNumber,
+  LocalMall,
+  LocalShipping,
+  LocationOnOutlined,
+  Lock,
+} from '@mui/icons-material';
+import { COUNTRYPROVINCES } from 'packages/constants/countryState';
+
+type AddressType = {
+  address_id: number;
+  first_name: string;
+  last_name: string;
+  phone: string;
+  email: string;
+  company: string;
+  country: string;
+  country_code: string;
+  country_name: string;
+  city: string;
+  province: string;
+  province_code: string;
+  address_one: string;
+  address_two: string;
+  zip: string;
+  is_default: number;
+};
 
 const CheckoutDetails = () => {
   const router = useRouter();
   const { id } = router.query;
 
-  const init = async (id: any) => {};
+  const [firstName, setFirstName] = useState<string>('');
+  const [lastName, setLastName] = useState<string>('');
+  const [company, setCompany] = useState<string>('');
+  const [addressOne, setAddressOne] = useState<string>('');
+  const [addressTwo, setAddressTwo] = useState<string>('');
+  const [email, setEmail] = useState<string>('');
+  const [phone, setPhone] = useState<string>('');
+  const [country, setCountry] = useState<string>('');
+  const [city, setCity] = useState<string>('');
+  const [province, setProvince] = useState<string>('');
+  const [zip, setZip] = useState<string>('');
+  const [addresses, setAddresses] = useState<AddressType[]>([]);
+
+  const [ship, setShip] = useState<boolean>(true);
+  const [selectDeliveryAddress, setSelectDeliveryAddress] = useState<number>(0);
+  const [selectPickupAddress, setSelectPickupAddress] = useState<number>(0);
+
+  const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore((state) => state);
+  const { getUuid } = useUserPresistStore((state) => state);
+
+  const getAddress = async () => {
+    try {
+      if (!getUuid()) return;
+
+      const response: any = await axios.get(Http.address);
+
+      if (response.result) {
+        setAddresses(response.data);
+      } else {
+        setAddresses([]);
+      }
+    } catch (e) {
+      setSnackSeverity('error');
+      setSnackMessage('The network error occurred. Please try again later');
+      setSnackOpen(true);
+      console.error(e);
+    }
+  };
+
+  const init = async (id: any) => {
+    getUuid() && getAddress();
+  };
 
   useEffect(() => {
     if (id) {
@@ -41,124 +114,300 @@ const CheckoutDetails = () => {
           <Box mt={4}>
             <Typography variant="h6">Shipping Information</Typography>
             <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} gap={2} mt={3}>
-              <Button startIcon={<Album />} variant={'contained'} size="large" fullWidth>
+              <Button
+                startIcon={<Album />}
+                variant={ship ? 'contained' : 'outlined'}
+                size="large"
+                fullWidth
+                onClick={() => {
+                  setShip(true);
+                }}
+              >
                 <LocalShipping />
                 <Typography pl={1}>Delivery</Typography>
               </Button>
-              <Button startIcon={<Adjust />} variant={'outlined'} size="large" fullWidth>
+              <Button
+                startIcon={<Adjust />}
+                variant={ship ? 'outlined' : 'contained'}
+                size="large"
+                fullWidth
+                onClick={() => {
+                  setShip(false);
+                }}
+              >
                 <LocalMall />
                 <Typography pl={1}>Pick up</Typography>
               </Button>
             </Stack>
-            <Stack direction={'row'} alignItems={'center'} gap={2} mt={3}>
-              <Box width={'100%'}>
-                <Typography mb={1}>First name</Typography>
-                <TextField
-                  hiddenLabel
-                  size="small"
-                  fullWidth
-                  value={''}
-                  onChange={(e) => {}}
-                  placeholder="Enter first name"
-                />
-              </Box>
-              <Box width={'100%'}>
-                <Typography mb={1}>Last name</Typography>
-                <TextField
-                  hiddenLabel
-                  size="small"
-                  fullWidth
-                  value={''}
-                  onChange={(e) => {}}
-                  placeholder="Enter last name"
-                />
-              </Box>
-            </Stack>
+            {ship ? (
+              <Box mt={3}>
+                {addresses &&
+                  addresses.length > 0 &&
+                  addresses.map((item, index) => (
+                    <Box key={index} mb={2}>
+                      <Card>
+                        <CardContent>
+                          <Stack direction={'row'} alignItems={'start'} gap={1}>
+                            <Radio
+                              checked={selectDeliveryAddress === item.address_id ? true : false}
+                              onClick={() => {
+                                setSelectDeliveryAddress(item.address_id);
+                              }}
+                            />
+                            <Box>
+                              <Typography
+                                fontWeight={'bold'}
+                              >{`${item.first_name} ${item.last_name} , ${item.phone}`}</Typography>
+                              <Typography>{`${item.country} ${item.province} ${item.address_one}`}</Typography>
+                            </Box>
+                          </Stack>
+                        </CardContent>
+                      </Card>
+                    </Box>
+                  ))}
+                <Box mb={2}>
+                  <Card>
+                    <CardContent>
+                      <Stack direction={'row'} alignItems={'center'} gap={1}>
+                        <Radio
+                          checked={selectDeliveryAddress === 0 ? true : false}
+                          onClick={() => {
+                            setSelectDeliveryAddress(0);
+                          }}
+                        />
+                        <Typography fontWeight={'bold'}>Add new </Typography>
+                      </Stack>
+                    </CardContent>
+                  </Card>
+                </Box>
+                {selectDeliveryAddress === 0 && (
+                  <>
+                    <Stack direction={'row'} alignItems={'center'} gap={2} mt={4}>
+                      <Box width={'100%'}>
+                        <Typography mb={1}>First name</Typography>
+                        <TextField
+                          hiddenLabel
+                          size="small"
+                          fullWidth
+                          value={firstName}
+                          onChange={(e: any) => {
+                            setFirstName(e.target.value);
+                          }}
+                          placeholder="Enter first name"
+                        />
+                      </Box>
+                      <Box width={'100%'}>
+                        <Typography mb={1}>Last name</Typography>
+                        <TextField
+                          hiddenLabel
+                          size="small"
+                          fullWidth
+                          value={lastName}
+                          onChange={(e: any) => {
+                            setLastName(e.target.value);
+                          }}
+                          placeholder="Enter last name"
+                        />
+                      </Box>
+                    </Stack>
+                    <Stack direction={'row'} alignItems={'center'} gap={2} mt={3}>
+                      <Box width={'100%'}>
+                        <Typography mb={1}>Email address</Typography>
+                        <TextField
+                          hiddenLabel
+                          size="small"
+                          fullWidth
+                          value={email}
+                          onChange={(e: any) => {
+                            setEmail(e.target.value);
+                          }}
+                          placeholder="Enter email address"
+                        />
+                      </Box>
+                      <Box width={'100%'}>
+                        <Typography mb={1}>Company</Typography>
+                        <TextField
+                          hiddenLabel
+                          size="small"
+                          fullWidth
+                          value={company}
+                          onChange={(e: any) => {
+                            setCompany(e.target.value);
+                          }}
+                          placeholder="Enter company"
+                        />
+                      </Box>
+                    </Stack>
+                    <Box mt={3}>
+                      <Typography mb={1}>Phone number</Typography>
+                      <TextField
+                        hiddenLabel
+                        size="small"
+                        fullWidth
+                        value={phone}
+                        onChange={(e: any) => {
+                          setPhone(e.target.value);
+                        }}
+                        placeholder="Enter phone number"
+                      />
+                    </Box>
+                    <Box mt={3}>
+                      <Typography mb={1}>Address line 1</Typography>
+                      <TextField
+                        hiddenLabel
+                        size="small"
+                        fullWidth
+                        value={addressOne}
+                        onChange={(e: any) => {
+                          setAddressOne(e.target.value);
+                        }}
+                        placeholder="Enter address"
+                      />
+                    </Box>
+                    <Box mt={3}>
+                      <Typography mb={1}>Address line 2</Typography>
+                      <TextField
+                        hiddenLabel
+                        size="small"
+                        fullWidth
+                        value={addressTwo}
+                        onChange={(e: any) => {
+                          setAddressTwo(e.target.value);
+                        }}
+                        placeholder="Enter address"
+                      />
+                    </Box>
+                    <Box mt={3}>
+                      <Typography mb={1}>Country/Region</Typography>
+                      <FormControl hiddenLabel fullWidth>
+                        <Select
+                          displayEmpty
+                          value={country}
+                          onChange={(e: any) => {
+                            setProvince('');
+                            setCountry(e.target.value);
+                          }}
+                          size={'small'}
+                          inputProps={{ 'aria-label': 'Without label' }}
+                          renderValue={(selected: any) => {
+                            if (selected.length === 0) {
+                              return <em>Choose country</em>;
+                            }
 
-            <Box mt={3}>
-              <Typography mb={1}>Email address</Typography>
-              <TextField
-                hiddenLabel
-                size="small"
-                fullWidth
-                value={''}
-                onChange={(e) => {}}
-                placeholder="Enter email address"
-              />
-            </Box>
-            <Box mt={3}>
-              <Typography mb={1}>Phone number</Typography>
-              <TextField
-                hiddenLabel
-                size="small"
-                fullWidth
-                value={''}
-                onChange={(e) => {}}
-                placeholder="Enter phone number"
-              />
-            </Box>
-            <Box mt={3}>
-              <Typography mb={1}>Country</Typography>
-              <FormControl hiddenLabel fullWidth>
-                <Select
-                  displayEmpty
-                  value={''}
-                  onChange={() => {}}
-                  size={'small'}
-                  inputProps={{ 'aria-label': 'Without label' }}
-                  renderValue={(selected: any) => {
-                    if (selected.length === 0) {
-                      return <em>Choose state</em>;
-                    }
+                            return selected;
+                          }}
+                        >
+                          {COUNTRYPROVINCES &&
+                            COUNTRYPROVINCES.map((item, index) => (
+                              <MenuItem value={item.name} key={index}>
+                                {item.name}
+                              </MenuItem>
+                            ))}
+                        </Select>
+                      </FormControl>
+                    </Box>
+                    <Stack mt={3} direction={'row'} alignItems={'center'} justifyContent={'space-between'} gap={2}>
+                      <Box>
+                        <Typography mb={1}>City</Typography>
+                        <TextField
+                          hiddenLabel
+                          size="small"
+                          fullWidth
+                          value={city}
+                          onChange={(e: any) => {
+                            setCity(e.target.value);
+                          }}
+                          placeholder="Enter city"
+                        />
+                      </Box>
+                      <Box>
+                        <Typography mb={1}>State/Province</Typography>
+                        <FormControl hiddenLabel fullWidth>
+                          <Select
+                            displayEmpty
+                            value={province}
+                            onChange={(e: any) => {
+                              setProvince(e.target.value);
+                            }}
+                            size={'small'}
+                            inputProps={{ 'aria-label': 'Without label' }}
+                            renderValue={(selected: any) => {
+                              if (selected.length === 0) {
+                                return <em>Choose state</em>;
+                              }
 
-                    return selected.join(', ');
-                  }}
-                >
-                  <MenuItem value={10}>Ten</MenuItem>
-                  <MenuItem value={20}>Twenty</MenuItem>
-                  <MenuItem value={30}>Thirty</MenuItem>
-                </Select>
-              </FormControl>
-            </Box>
-            <Stack mt={3} direction={'row'} alignItems={'center'} justifyContent={'space-between'} gap={2}>
-              <Box>
-                <Typography mb={1}>City</Typography>
-                <TextField
-                  hiddenLabel
-                  size="small"
-                  fullWidth
-                  value={''}
-                  onChange={(e) => {}}
-                  placeholder="Enter city"
-                />
+                              return selected;
+                            }}
+                          >
+                            {country &&
+                              COUNTRYPROVINCES &&
+                              COUNTRYPROVINCES.find((item) => item.name === country)?.provinces.map((item, index) => (
+                                <MenuItem value={item.name} key={index}>
+                                  {item.name}
+                                </MenuItem>
+                              ))}
+                          </Select>
+                        </FormControl>
+                      </Box>
+                      <Box>
+                        <Typography mb={1}>ZIP/Postal code</Typography>
+                        <TextField
+                          hiddenLabel
+                          size="small"
+                          fullWidth
+                          value={zip}
+                          onChange={(e: any) => {
+                            setZip(e.target.value);
+                          }}
+                          placeholder="Enter ZIP"
+                        />
+                      </Box>
+                    </Stack>
+                    <Stack direction={'row'} alignItems={'center'} mt={3}>
+                      <Checkbox defaultChecked size={'small'} />
+                      <Typography>I have read and agree to te Terms and Conditions.</Typography>
+                    </Stack>
+                  </>
+                )}
               </Box>
-              <Box>
-                <Typography mb={1}>State</Typography>
-                <TextField
-                  hiddenLabel
-                  size="small"
-                  fullWidth
-                  value={''}
-                  onChange={(e) => {}}
-                  placeholder="Enter state"
-                />
+            ) : (
+              <Box mt={3}>
+                <Box mb={2}>
+                  <Card>
+                    <CardContent>
+                      <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
+                        <Stack direction={'row'} alignItems={'center'}>
+                          <Radio value={''} />
+                          <Typography variant="h6">New York</Typography>
+                        </Stack>
+                        <Typography variant="h6">Free</Typography>
+                      </Stack>
+                      <Stack direction={'row'} alignItems={'center'} pl={1}>
+                        <LocationOnOutlined />
+                        <Typography mt={1}>123 Easy Street, New York, 12345</Typography>
+                      </Stack>
+                    </CardContent>
+                  </Card>
+                </Box>
+                <Box mb={2}>
+                  <Card>
+                    <CardContent>
+                      <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
+                        <Stack direction={'row'} alignItems={'center'}>
+                          <Radio value={''} />
+                          <Typography variant="h6">New York</Typography>
+                        </Stack>
+                        <Typography variant="h6">Free</Typography>
+                      </Stack>
+                      <Stack direction={'row'} alignItems={'center'} pl={1}>
+                        <LocationOnOutlined />
+                        <Typography mt={1}>123 Easy Street, New York, 12345</Typography>
+                      </Stack>
+                    </CardContent>
+                  </Card>
+                </Box>
               </Box>
-              <Box>
-                <Typography mb={1}>ZIP Code</Typography>
-                <TextField
-                  hiddenLabel
-                  size="small"
-                  fullWidth
-                  value={''}
-                  onChange={(e) => {}}
-                  placeholder="Enter ZIP code"
-                />
-              </Box>
-            </Stack>
-            <Stack direction={'row'} alignItems={'center'} mt={3}>
-              <Checkbox defaultChecked />
-              <Typography>I have read and agree to te Terms and Conditions.</Typography>
-            </Stack>
+            )}
           </Box>
         </Grid>
         <Grid size={{ xs: 12, md: 6 }}>

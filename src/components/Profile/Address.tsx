@@ -7,6 +7,7 @@ import axios from 'utils/http/axios';
 import { Http } from 'utils/http/http';
 
 type AddressType = {
+  address_id: number;
   first_name: string;
   last_name: string;
   phone: string;
@@ -33,6 +34,7 @@ const ProfileAddress = (props: Props) => {
   const [handle, setHandle] = useState<number>(0);
   const [username, setUsername] = useState<string>('');
   const [addresses, setAddresses] = useState<AddressType[]>([]);
+  const [currentAddress, setCurrentAddress] = useState<AddressType>();
 
   const [openDialog, setOpenDialog] = useState<boolean>(false);
 
@@ -60,6 +62,9 @@ const ProfileAddress = (props: Props) => {
         setAddresses([]);
       }
     } catch (e) {
+      setSnackSeverity('error');
+      setSnackMessage('The network error occurred. Please try again later');
+      setSnackOpen(true);
       console.error(e);
     }
   };
@@ -73,8 +78,62 @@ const ProfileAddress = (props: Props) => {
   }, [props.username]);
 
   const handleCloseDialog = async () => {
+    setCurrentAddress(undefined);
     await init(username);
     setOpenDialog(false);
+  };
+
+  const onClickSetDefault = async (id: number, set: number) => {
+    try {
+      const response: any = await axios.put(Http.address, {
+        address_id: id,
+        is_default: set,
+      });
+
+      if (response.result) {
+        await init(username);
+
+        setSnackSeverity('success');
+        setSnackMessage('Save successfully');
+        setSnackOpen(true);
+      } else {
+        setSnackSeverity('error');
+        setSnackMessage('Save Failed');
+        setSnackOpen(true);
+      }
+    } catch (e) {
+      setSnackSeverity('error');
+      setSnackMessage('The network error occurred. Please try again later.');
+      setSnackOpen(true);
+      console.error(e);
+    }
+  };
+
+  const onClickDelete = async (id: number) => {
+    try {
+      const response: any = await axios.delete(Http.address, {
+        params: {
+          address_id: id,
+        },
+      });
+
+      if (response.result) {
+        await init(username);
+
+        setSnackSeverity('success');
+        setSnackMessage('Save successfully');
+        setSnackOpen(true);
+      } else {
+        setSnackSeverity('error');
+        setSnackMessage('Save Failed');
+        setSnackOpen(true);
+      }
+    } catch (e) {
+      setSnackSeverity('error');
+      setSnackMessage('The network error occurred. Please try again later.');
+      setSnackOpen(true);
+      console.error(e);
+    }
   };
 
   return (
@@ -91,7 +150,11 @@ const ProfileAddress = (props: Props) => {
                   <CardContent>
                     <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
                       <Typography>{`${item.first_name} ${item.last_name} , ${item.phone}`}</Typography>
-                      <IconButton onClick={() => {}}>
+                      <IconButton
+                        onClick={() => {
+                          onClickDelete(item.address_id);
+                        }}
+                      >
                         <Delete />
                       </IconButton>
                     </Stack>
@@ -100,12 +163,53 @@ const ProfileAddress = (props: Props) => {
                       <Divider />
                     </Box>
                     <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
-                      <Button variant={'contained'} onClick={() => {}}>
-                        Set as default
-                      </Button>
+                      {item.is_default === 1 ? (
+                        <Button
+                          variant={'contained'}
+                          color={'success'}
+                          onClick={() => {
+                            onClickSetDefault(item.address_id, 2);
+                          }}
+                        >
+                          Default
+                        </Button>
+                      ) : (
+                        <Button
+                          variant={'contained'}
+                          color={'success'}
+                          onClick={() => {
+                            onClickSetDefault(item.address_id, 1);
+                          }}
+                        >
+                          Set as default
+                        </Button>
+                      )}
                       <Stack direction={'row'} alignItems={'center'} gap={1}>
-                        <Button variant={'contained'}>Copy</Button>
-                        <Button variant={'contained'}>Edit</Button>
+                        <Button
+                          variant={'contained'}
+                          color={'inherit'}
+                          onClick={async () => {
+                            await navigator.clipboard.writeText(
+                              `${item.first_name} ${item.last_name} ${item.phone} ${item.country} ${item.province} ${item.address_one}`,
+                            );
+
+                            setSnackMessage('Copy successfully');
+                            setSnackSeverity('success');
+                            setSnackOpen(true);
+                          }}
+                        >
+                          Copy
+                        </Button>
+                        <Button
+                          variant={'contained'}
+                          onClick={() => {
+                            setCurrentAddress(item);
+                            setHandle(2);
+                            setOpenDialog(true);
+                          }}
+                        >
+                          Edit
+                        </Button>
                       </Stack>
                     </Stack>
                   </CardContent>
@@ -125,7 +229,23 @@ const ProfileAddress = (props: Props) => {
             Add new shipping address
           </Button>
 
-          <UserAddressDialog handle={handle} openDialog={openDialog} handleCloseDialog={handleCloseDialog} />
+          <UserAddressDialog
+            handle={handle}
+            openDialog={openDialog}
+            handleCloseDialog={handleCloseDialog}
+            addressId={currentAddress?.address_id}
+            firstName={currentAddress?.first_name}
+            lastName={currentAddress?.last_name}
+            company={currentAddress?.company}
+            addressOne={currentAddress?.address_one}
+            addressTwo={currentAddress?.address_two}
+            email={currentAddress?.email}
+            phone={currentAddress?.phone}
+            country={currentAddress?.country}
+            city={currentAddress?.city}
+            province={currentAddress?.province}
+            zip={currentAddress?.zip}
+          />
         </Box>
       ) : (
         <Box mt={2}>

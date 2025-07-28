@@ -59,17 +59,17 @@ export default function UserAddressDialog(props: DialogType) {
   useEffect(() => {
     setHandle(props.handle);
     setAddressId(props.addressId);
-    props.firstName && setFirstName(props.firstName);
-    props.lastName && setLastName(props.lastName);
-    props.company && setCompany(props.company);
-    props.addressOne && setAddressOne(props.addressOne);
-    props.addressTwo && setAddressTwo(props.addressTwo);
-    props.email && setEmail(props.email);
-    props.phone && setPhone(props.phone);
-    props.country && setCountry(props.country);
-    props.city && setCity(props.city);
-    props.province && setProvince(props.province);
-    props.zip && setZip(props.zip);
+    setFirstName(props.firstName || '');
+    setLastName(props.lastName || '');
+    setCompany(props.company || '');
+    setAddressOne(props.addressOne || '');
+    setAddressTwo(props.addressTwo || '');
+    setEmail(props.email || '');
+    setPhone(props.phone || '');
+    setCountry(props.country || '');
+    setCity(props.city || '');
+    setProvince(props.province || '');
+    setZip(props.zip || '');
   }, [
     props.handle,
     props.addressId,
@@ -109,6 +109,13 @@ export default function UserAddressDialog(props: DialogType) {
         return;
       }
 
+      if (!company || company === '') {
+        setSnackSeverity('error');
+        setSnackMessage('Incorrect company input');
+        setSnackOpen(true);
+        return;
+      }
+
       if (!phone || phone === '') {
         setSnackSeverity('error');
         setSnackMessage('Incorrect phone input');
@@ -130,6 +137,15 @@ export default function UserAddressDialog(props: DialogType) {
         return;
       }
 
+      const countryCode = COUNTRYPROVINCES.find((item) => item.name === country)?.code;
+
+      if (!countryCode || countryCode === '') {
+        setSnackSeverity('error');
+        setSnackMessage('Incorrect country code');
+        setSnackOpen(true);
+        return;
+      }
+
       if (!city || city === '') {
         setSnackSeverity('error');
         setSnackMessage('Incorrect city input');
@@ -140,6 +156,17 @@ export default function UserAddressDialog(props: DialogType) {
       if (!province || province === '') {
         setSnackSeverity('error');
         setSnackMessage('Incorrect province select');
+        setSnackOpen(true);
+        return;
+      }
+
+      const provinceCode = COUNTRYPROVINCES.find((item) => item.name === country)?.provinces.find(
+        (item) => item.name === province,
+      )?.code;
+
+      if (!provinceCode || provinceCode === '') {
+        setSnackSeverity('error');
+        setSnackMessage('Incorrect province code');
         setSnackOpen(true);
         return;
       }
@@ -156,11 +183,16 @@ export default function UserAddressDialog(props: DialogType) {
           first_name: firstName,
           last_name: lastName,
           email: email,
+          company: company,
           phone: phone,
           country: country,
+          country_code: countryCode,
           city: city,
           province: province,
+          province_code: provinceCode,
           zip: zip,
+          address_one: addressOne,
+          address_two: addressTwo,
         });
 
         if (response.result) {
@@ -180,11 +212,16 @@ export default function UserAddressDialog(props: DialogType) {
           first_name: firstName,
           last_name: lastName,
           email: email,
+          company: company,
           phone: phone,
           country: country,
+          country_code: countryCode,
           city: city,
           province: province,
+          province_code: provinceCode,
           zip: zip,
+          address_one: addressOne,
+          address_two: addressTwo,
         });
 
         if (response.result) {
@@ -214,8 +251,8 @@ export default function UserAddressDialog(props: DialogType) {
   return (
     <Dialog
       open={props.openDialog}
-      onClose={() => {
-        props.handleCloseDialog();
+      onClose={async () => {
+        await props.handleCloseDialog();
       }}
       fullWidth
     >
@@ -277,7 +314,6 @@ export default function UserAddressDialog(props: DialogType) {
             />
           </Box>
         </Stack>
-
         <Box mt={3}>
           <Typography mb={1}>Phone number</Typography>
           <TextField
@@ -407,8 +443,8 @@ export default function UserAddressDialog(props: DialogType) {
       <DialogActions>
         <Button
           variant={'contained'}
-          onClick={() => {
-            props.handleCloseDialog();
+          onClick={async () => {
+            await props.handleCloseDialog();
           }}
         >
           Close

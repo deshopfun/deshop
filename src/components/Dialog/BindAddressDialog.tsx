@@ -30,7 +30,7 @@ export default function BindAddressDialog(props: DialogType) {
   const { setSnackSeverity, setSnackOpen, setSnackMessage } = useSnackPresistStore((state) => state);
 
   useEffect(() => {
-    props.address && setAddress(props.address);
+    setAddress(props.address || '');
   }, [props.address]);
 
   const onClickEditProfile = async () => {
