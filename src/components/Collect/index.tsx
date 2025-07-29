@@ -15,6 +15,9 @@ type CollectType = {
 
 const Collect = () => {
   const [collect, setCollect] = useState<CollectType[]>([]);
+  const [collectProduct, setCollectProduct] = useState<CollectType[]>([]);
+  const [collectLive, setCollectLive] = useState<CollectType[]>([]);
+  const [collectChat, setCollectChat] = useState<CollectType[]>([]);
 
   const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore((state) => state);
 
@@ -23,7 +26,30 @@ const Collect = () => {
       const response: any = await axios.get(Http.collect);
 
       if (response.result) {
+        let products: CollectType[] = [];
+        let lives: CollectType[] = [];
+        let chats: CollectType[] = [];
+
+        if (response.data && response.data.length > 0) {
+          response.data.forEach((item: CollectType) => {
+            switch (item.collect_type) {
+              case 1:
+                products.push(item);
+                break;
+              case 2:
+                lives.push(item);
+                break;
+              case 3:
+                chats.push(item);
+                break;
+            }
+          });
+        }
+
         setCollect(response.data);
+        setCollectProduct(products);
+        setCollectLive(lives);
+        setCollectChat(chats);
       } else {
         setSnackSeverity('error');
         setSnackMessage(response.message);
@@ -69,67 +95,144 @@ const Collect = () => {
   return (
     <Container>
       <Typography variant="h5">My favorite</Typography>
-      <Box mt={4}>
-        {collect &&
-          collect.length > 0 &&
-          collect.map((item, index) => (
-            <Box key={index}>
-              <Typography variant="h6" mb={2}>
-                {item.collect_type === 1 && 'PRODUCT'}
-                {item.collect_type === 2 && 'LIVE'}
-                {item.collect_type === 3 && 'CHAT'}
-              </Typography>
-              <Grid container spacing={10}>
-                <Grid size={{ xs: 12, md: 4 }}>
-                  <Card>
-                    <CardContent>
-                      <Stack direction={'row'} alignItems={'start'} justifyContent={'space-between'}>
-                        <img
-                          src={
-                            item.image_srcs && item.image_srcs[0] ? item.image_srcs[0] : '/images/default_avatar.png'
-                          }
-                          alt={'image'}
-                          loading="lazy"
-                          width={100}
-                          height={100}
-                        />
-                        <IconButton
-                          onClick={() => {
-                            onClickDelete(item.collect_type, item.bind_id);
-                          }}
-                        >
-                          <Delete />
-                        </IconButton>
-                      </Stack>
-                      <Typography mt={1} fontWeight={'bold'}>
-                        {item.title}
-                      </Typography>
-                      <Typography mt={1}>{item.description}</Typography>
-                      <Box mt={2}>
-                        <Button
-                          variant={'contained'}
-                          fullWidth
-                          onClick={() => {
-                            window.location.href =
-                              item.collect_type === 1
-                                ? `/products/${item.bind_id}`
-                                : item.collect_type === 2
-                                ? `/lives/${item.bind_id}`
-                                : item.collect_type === 3
-                                ? `/chats/${item.bind_id}`
-                                : '#';
-                          }}
-                        >
-                          Checkout
-                        </Button>
-                      </Box>
-                    </CardContent>
-                  </Card>
-                </Grid>
+      {collectProduct && collectProduct.length > 0 && (
+        <Box mt={4}>
+          <Typography variant="h6">PRODUCT</Typography>
+          <Grid container spacing={2} mt={2}>
+            {collectProduct.map((item, index) => (
+              <Grid size={{ xs: 12, md: 4 }} key={index}>
+                <Card>
+                  <CardContent>
+                    <Stack direction={'row'} alignItems={'start'} justifyContent={'space-between'}>
+                      <img
+                        src={item.image_srcs && item.image_srcs[0] ? item.image_srcs[0] : '/images/default_avatar.png'}
+                        alt={'image'}
+                        loading="lazy"
+                        width={100}
+                        height={100}
+                      />
+                      <IconButton
+                        onClick={() => {
+                          onClickDelete(item.collect_type, item.bind_id);
+                        }}
+                      >
+                        <Delete />
+                      </IconButton>
+                    </Stack>
+                    <Typography mt={1} fontWeight={'bold'}>
+                      {item.title}
+                    </Typography>
+                    <Typography mt={1}>{item.description}</Typography>
+                    <Box mt={2}>
+                      <Button
+                        variant={'contained'}
+                        fullWidth
+                        onClick={() => {
+                          window.location.href = `/products/${item.bind_id}`;
+                        }}
+                      >
+                        Checkout
+                      </Button>
+                    </Box>
+                  </CardContent>
+                </Card>
               </Grid>
-            </Box>
-          ))}
-      </Box>
+            ))}
+          </Grid>
+        </Box>
+      )}
+      {collectLive && collectLive.length > 0 && (
+        <Box mt={4}>
+          <Typography variant="h6">LIVE</Typography>
+          <Grid container spacing={2} mt={2}>
+            {collectLive.map((item, index) => (
+              <Grid size={{ xs: 12, md: 4 }} key={index}>
+                <Card>
+                  <CardContent>
+                    <Stack direction={'row'} alignItems={'start'} justifyContent={'space-between'}>
+                      <img
+                        src={item.image_srcs && item.image_srcs[0] ? item.image_srcs[0] : '/images/default_avatar.png'}
+                        alt={'image'}
+                        loading="lazy"
+                        width={100}
+                        height={100}
+                      />
+                      <IconButton
+                        onClick={() => {
+                          onClickDelete(item.collect_type, item.bind_id);
+                        }}
+                      >
+                        <Delete />
+                      </IconButton>
+                    </Stack>
+                    <Typography mt={1} fontWeight={'bold'}>
+                      {item.title}
+                    </Typography>
+                    <Typography mt={1}>{item.description}</Typography>
+                    <Box mt={2}>
+                      <Button
+                        variant={'contained'}
+                        fullWidth
+                        onClick={() => {
+                          window.location.href = `/lives/${item.bind_id}`;
+                        }}
+                      >
+                        Checkout
+                      </Button>
+                    </Box>
+                  </CardContent>
+                </Card>
+              </Grid>
+            ))}
+          </Grid>
+        </Box>
+      )}
+      {collectChat && collectChat.length > 0 && (
+        <Box mt={4}>
+          <Typography variant="h6">CHAT</Typography>
+          <Grid container spacing={2} mt={2}>
+            {collectChat.map((item, index) => (
+              <Grid size={{ xs: 12, md: 4 }} key={index}>
+                <Card>
+                  <CardContent>
+                    <Stack direction={'row'} alignItems={'start'} justifyContent={'space-between'}>
+                      <img
+                        src={item.image_srcs && item.image_srcs[0] ? item.image_srcs[0] : '/images/default_avatar.png'}
+                        alt={'image'}
+                        loading="lazy"
+                        width={100}
+                        height={100}
+                      />
+                      <IconButton
+                        onClick={() => {
+                          onClickDelete(item.collect_type, item.bind_id);
+                        }}
+                      >
+                        <Delete />
+                      </IconButton>
+                    </Stack>
+                    <Typography mt={1} fontWeight={'bold'}>
+                      {item.title}
+                    </Typography>
+                    <Typography mt={1}>{item.description}</Typography>
+                    <Box mt={2}>
+                      <Button
+                        variant={'contained'}
+                        fullWidth
+                        onClick={() => {
+                          window.location.href = `/chats/${item.bind_id}`;
+                        }}
+                      >
+                        Checkout
+                      </Button>
+                    </Box>
+                  </CardContent>
+                </Card>
+              </Grid>
+            ))}
+          </Grid>
+        </Box>
+      )}
     </Container>
   );
 };

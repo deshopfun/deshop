@@ -24,7 +24,7 @@ const Home = () => {
 
   return (
     <Container>
-      <Box>
+      {/* <Box>
         <Box display={'flex'} alignItems={'center'}>
           <Button endIcon={<ChevronRight style={{ color: '#000' }} />}>
             <Typography variant="h6" color={'textPrimary'}>
@@ -36,7 +36,7 @@ const Home = () => {
         <Box mt={2}>
           <RecentViewCard />
         </Box>
-      </Box>
+      </Box> */}
 
       <Box mt={4}>
         <Box display={'flex'} alignItems={'center'}>
