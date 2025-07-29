@@ -79,7 +79,7 @@ const HomeHeader = () => {
                 </IconButton>
                 <IconButton
                   onClick={() => {
-                    window.location.href = '#';
+                    window.location.href = '/collect';
                   }}
                 >
                   <FavoriteBorder color="action" />

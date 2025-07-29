@@ -51,8 +51,8 @@ type WalletType = {
 };
 
 type Props = {
-  merchantId: number;
-  merchantName: string;
+  merchantId?: number;
+  merchantName?: string;
 };
 
 const PaymentDetails = (props: Props) => {

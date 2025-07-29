@@ -15,6 +15,12 @@ export const PRODUCT_TYPE = {
   SPORTING: 'Sporting goods',
 };
 
+export const COLLECT_TYPE = {
+  PRODUCT: 1,
+  LIVE: 2,
+  CHAT: 3,
+};
+
 export type TAB_DATA = {
   id: number;
   title: string;

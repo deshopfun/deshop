@@ -37,6 +37,8 @@ import {
   ChatBubbleOutline,
   ChevronRight,
   FavoriteBorder,
+  FavoriteBorderOutlined,
+  FavoriteBorderTwoTone,
   HelpOutline,
   InsertLink,
   LocalShipping,
@@ -50,6 +52,7 @@ import RecentViewCard from 'components/Card/RecentViewCard';
 import ProductManage from './ProductManage';
 import ProductRatingsDialog from 'components/Dialog/ProductRatingsDialog';
 import RefundPolicyDialog from 'components/Dialog/RefundPolicyDialog';
+import { COLLECT_TYPE } from 'packages/constants';
 
 type ProductType = {
   product_id: number;
@@ -63,6 +66,7 @@ type ProductType = {
   tags: string;
   vendor: string;
   product_status: number;
+  collect_status: number;
   images: ProductImage[];
   options: ProductOption[];
 };
@@ -150,6 +154,35 @@ const ProductDetails = () => {
       </Container>
     );
   }
+
+  const onClickFavorite = async () => {
+    try {
+      if (!product.product_id || product.product_id === 0) {
+        setSnackSeverity('error');
+        setSnackMessage('Incorrect product id');
+        setSnackOpen(true);
+        return;
+      }
+
+      const response: any = await axios.put(Http.collect, {
+        collect_type: COLLECT_TYPE.PRODUCT,
+        bind_id: product.product_id,
+      });
+
+      if (response.result) {
+        await init(id);
+      } else {
+        setSnackSeverity('error');
+        setSnackMessage(response.message);
+        setSnackOpen(true);
+      }
+    } catch (e) {
+      setSnackSeverity('error');
+      setSnackMessage('The network error occurred. Please try again later.');
+      setSnackOpen(true);
+      console.error(e);
+    }
+  };
 
   return (
     <Container>
@@ -423,7 +456,17 @@ const ProductDetails = () => {
                 </div>
               </Stack>
             </Box>
-            <IconButton>
+            <IconButton
+              style={{
+                width: 50,
+                height: 50,
+                background: product?.collect_status === 1 ? '#0098e5' : '',
+                color: product?.collect_status === 1 ? 'white' : '',
+              }}
+              onClick={() => {
+                onClickFavorite();
+              }}
+            >
               <FavoriteBorder />
             </IconButton>
           </Stack>

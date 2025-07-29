@@ -1,6 +1,7 @@
 import Cart from 'components/Cart';
 import Chat from 'components/Chat';
 import CheckoutDetails from 'components/Checkout/id';
+import Collect from 'components/Collect';
 import Create from 'components/Create';
 import EmailConfirm from 'components/EmailConfirm';
 import Explore from 'components/Explore';
@@ -157,6 +158,15 @@ export const routes: RouteType[] = [
     name: 'PaymentDetails',
     title: 'PaymentDetails',
     component: <PaymentDetails />,
+    enableSidebar: true,
+    enableHomeHeader: true,
+    needLogin: false,
+  },
+  {
+    path: '/collect',
+    name: 'Collect',
+    title: 'Collect',
+    component: <Collect />,
     enableSidebar: true,
     enableHomeHeader: true,
     needLogin: false,
