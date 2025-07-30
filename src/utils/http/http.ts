@@ -23,6 +23,9 @@ export class Http {
 
   // product
   static product = this.httpPath + '/client/product/product';
+  static product_base = this.httpPath + '/client/product/product-base';
+  static product_option = this.httpPath + '/client/product/product-option';
+  static product_image = this.httpPath + '/client/product/product-image';
   static product_variant = this.httpPath + '/client/product/product-variant';
   static product_rating = this.httpPath + '/client/product/product-rating';
 

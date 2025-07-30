@@ -113,7 +113,7 @@ const ProductDetails = () => {
   };
 
   const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore((state) => state);
-  const { getUuid } = useUserPresistStore((state) => state);
+  const { getUuid, getIsLogin } = useUserPresistStore((state) => state);
 
   const init = async (id: any) => {
     try {
@@ -466,19 +466,25 @@ const ProductDetails = () => {
                 </div>
               </Stack>
             </Box>
-            <IconButton
-              style={{
-                width: 50,
-                height: 50,
-                background: product?.collect_status === 1 ? '#0098e5' : '',
-                color: product?.collect_status === 1 ? 'white' : '',
-              }}
-              onClick={() => {
-                onClickFavorite();
-              }}
-            >
-              <FavoriteBorder />
-            </IconButton>
+            {getIsLogin() && (
+              <>
+                {getUuid() === product.user_uuid && (
+                  <IconButton
+                    style={{
+                      width: 50,
+                      height: 50,
+                      background: product?.collect_status === 1 ? '#0098e5' : '',
+                      color: product?.collect_status === 1 ? 'white' : '',
+                    }}
+                    onClick={() => {
+                      onClickFavorite();
+                    }}
+                  >
+                    <FavoriteBorder />
+                  </IconButton>
+                )}
+              </>
+            )}
           </Stack>
 
           <Stack direction={'row'} alignItems={'center'} mt={2} gap={1}>
