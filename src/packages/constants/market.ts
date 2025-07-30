@@ -21,6 +21,24 @@ export const COLLECT_TYPE = {
   CHAT: 3,
 };
 
+export const WEIGHT_UNIT_TYPE = {
+  G: 'g',
+  KG: 'kg',
+  OZ: 'oz',
+  LB: 'lb',
+  MG: 'mg',
+  T: 't',
+  CT: 'ct',
+  GR: 'gr',
+  ST: 'st',
+  TROY: 'troy_oz',
+  SHORT: 'short_ton',
+  LONG: 'long_ton',
+  DAN: 'dan',
+  JIN: 'jin',
+  LIANG: 'liang',
+};
+
 export type TAB_DATA = {
   id: number;
   title: string;

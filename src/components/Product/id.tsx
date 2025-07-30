@@ -626,7 +626,7 @@ const ProductDetails = () => {
             />
           </CustomTabPanel>
           <CustomTabPanel value={tabValue} index={1}>
-            <ProductVariant />
+            <ProductVariant product_id={product?.product_id} options={product?.options} />
           </CustomTabPanel>
           <CustomTabPanel value={tabValue} index={2}>
             <ProductRating />
