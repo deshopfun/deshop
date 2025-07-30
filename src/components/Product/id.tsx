@@ -16,6 +16,8 @@ import {
   MenuItem,
   Rating,
   Stack,
+  Tab,
+  Tabs,
   Typography,
 } from '@mui/material';
 import axios from 'utils/http/axios';
@@ -23,15 +25,11 @@ import { Http } from 'utils/http/http';
 import { useEffect, useState } from 'react';
 // import Swiper core and required modules
 import { Navigation, Pagination, Scrollbar, A11y, FreeMode, Thumbs } from 'swiper/modules';
-
 import { Swiper, SwiperSlide } from 'swiper/react';
-
-// Import Swiper styles
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 import 'swiper/css/scrollbar';
-import Image from 'next/image';
 import {
   Add,
   ChatBubbleOutline,
@@ -49,10 +47,12 @@ import {
   ThumbUpOffAlt,
 } from '@mui/icons-material';
 import RecentViewCard from 'components/Card/RecentViewCard';
-import ProductManage from './ProductManage';
 import ProductRatingsDialog from 'components/Dialog/ProductRatingsDialog';
 import RefundPolicyDialog from 'components/Dialog/RefundPolicyDialog';
-import { COLLECT_TYPE } from 'packages/constants';
+import { COLLECT_TYPE, PRODUCT_TAB_DATAS } from 'packages/constants';
+import Product from './Product';
+import ProductVariant from './Variant';
+import ProductRating from './Rating';
 
 type ProductType = {
   product_id: number;
@@ -87,10 +87,20 @@ const ProductDetails = () => {
   const { id } = router.query;
 
   const [product, setProduct] = useState<ProductType>();
-  const [thumbsSwiper, setThumbsSwiper] = useState(null);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [openRatingsDialog, setOpenRatingsDialog] = useState<boolean>(false);
   const [openRefundPolicy, setOpenRefundPolicy] = useState<boolean>(false);
+  const [tabValue, setTabValue] = useState(0);
+
+  const handleChange = (event: React.SyntheticEvent, newValue: number) => {
+    const tabId = Object.values(PRODUCT_TAB_DATAS).find((item) => item.id === newValue)?.tabId;
+    router.replace({
+      pathname: router.pathname,
+      query: { ...router.query, tab: tabId },
+    });
+
+    setTabValue(newValue);
+  };
 
   const openMore = Boolean(anchorEl);
 
@@ -570,7 +580,7 @@ const ProductDetails = () => {
       </Grid>
 
       {product?.product_status === 1 && (
-        <Box mt={10} mb={8}>
+        <Box mt={4} mb={8}>
           <Box display={'flex'} alignItems={'center'}>
             <Typography variant="h6">Recommend more</Typography>
             <IconButton>
@@ -585,8 +595,36 @@ const ProductDetails = () => {
       )}
 
       {getUuid() === product?.user_uuid && (
-        <Box mt={10}>
-          <ProductManage />
+        <Box mt={4}>
+          <Typography variant="h6">Product manage</Typography>
+
+          <Box mt={2} sx={{ borderBottom: 1, borderColor: 'divider' }}>
+            <Tabs value={tabValue} onChange={handleChange} variant="scrollable" scrollButtons="auto">
+              {PRODUCT_TAB_DATAS &&
+                PRODUCT_TAB_DATAS.length > 0 &&
+                PRODUCT_TAB_DATAS.map((item, index) => <Tab key={index} label={item.title} {...a11yProps(item.id)} />)}
+            </Tabs>
+          </Box>
+
+          <CustomTabPanel value={tabValue} index={0}>
+            <Product
+              product_id={product?.product_id}
+              title={product?.title}
+              vendor={product?.vendor}
+              productType={product?.product_type}
+              tags={product?.tags}
+              description={product?.body_html}
+              options={product?.options}
+              images={product?.images}
+              productStatus={product?.product_status}
+            />
+          </CustomTabPanel>
+          <CustomTabPanel value={tabValue} index={1}>
+            <ProductVariant />
+          </CustomTabPanel>
+          <CustomTabPanel value={tabValue} index={2}>
+            <ProductRating />
+          </CustomTabPanel>
         </Box>
       )}
 
@@ -597,3 +635,32 @@ const ProductDetails = () => {
 };
 
 export default ProductDetails;
+
+interface TabPanelProps {
+  children?: React.ReactNode;
+  index: number;
+  value: number;
+}
+
+function CustomTabPanel(props: TabPanelProps) {
+  const { children, value, index, ...other } = props;
+
+  return (
+    <Box
+      role="tabpanel"
+      hidden={value !== index}
+      id={`simple-tabpanel-${index}`}
+      aria-labelledby={`simple-tab-${index}`}
+      {...other}
+    >
+      {value === index && <Box sx={{ p: 3 }}>{children}</Box>}
+    </Box>
+  );
+}
+
+function a11yProps(index: number) {
+  return {
+    id: `simple-tab-${index}`,
+    'aria-controls': `simple-tabpanel-${index}`,
+  };
+}

@@ -413,7 +413,6 @@ const Create = () => {
                     </Button>
                   )}
                 </Box>
-
                 <Stack direction={'row'} mt={2} gap={2} justifyContent={'space-between'}>
                   <Box>
                     <Typography variant="h6">file size and type</Typography>

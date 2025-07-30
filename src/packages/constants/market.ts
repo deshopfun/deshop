@@ -60,6 +60,24 @@ export const PROFILE_TAB_DATAS: TAB_DATA[] = [
   },
 ];
 
+export const PRODUCT_TAB_DATAS: TAB_DATA[] = [
+  {
+    id: 0,
+    title: 'Product',
+    tabId: 'product',
+  },
+  {
+    id: 1,
+    title: 'Variant',
+    tabId: 'variant',
+  },
+  {
+    id: 2,
+    title: 'Rating',
+    tabId: 'rating',
+  },
+];
+
 export const FILE_TYPE = {
   Image: 'Image',
   Document: 'Document',
