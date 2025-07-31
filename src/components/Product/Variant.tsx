@@ -40,18 +40,17 @@ const ProductVariant = (props: Props) => {
   const [title, setTitle] = useState<string>('');
   const [image, setImage] = useState<string>('');
   const [barcode, setBarcode] = useState<string>('');
-  const [compareAtPrice, setCompareAtPrice] = useState<number>(0);
+  const [compareAtPrice, setCompareAtPrice] = useState<string>('');
   const [inventoryPolicy, setInventoryPolicy] = useState<boolean>(false);
-  const [inventoryQuantity, setInventoryQuantity] = useState<number>(0);
+  const [inventoryQuantity, setInventoryQuantity] = useState<string>('');
   const [price, setPrice] = useState<string>('');
-  const [position, setPosition] = useState<number>(0);
+  const [position, setPosition] = useState<string>('');
   const [sku, setSku] = useState<string>('');
   const [taxable, setTaxable] = useState<boolean>(false);
-  const [weight, setWeight] = useState<number>(0);
+  const [weight, setWeight] = useState<string>('');
   const [weightUnit, setWeightUnit] = useState<string>('');
   const [requiresShipping, setRequiresShipping] = useState<boolean>(false);
   const [options, setOptions] = useState<ProductOption[]>([]);
-  const [option, setOption] = useState<string>('');
   const [optionOneValue, setOptionOneValue] = useState<string>('');
   const [optionTwoValue, setOptionTwoValue] = useState<string>('');
   const [optionThreeValue, setOptionThreeValue] = useState<string>('');
@@ -66,6 +65,74 @@ const ProductVariant = (props: Props) => {
       props.options[2] && setOptionThreeValue(props.options[2].value.split(',')[0] || '');
     }
   }, [props]);
+
+  const init = async (oneValue: string, twoValue: string, threeValue: string) => {
+    try {
+      let option = '';
+      switch (options.length) {
+        case 3:
+          if (!oneValue || !twoValue || !threeValue) return;
+          option = `${oneValue},${twoValue},${threeValue}`;
+          break;
+        case 2:
+          if (!oneValue || !twoValue) return;
+          option = `${oneValue},${twoValue}`;
+          break;
+        case 1:
+          if (!oneValue) return;
+          option = `${oneValue}`;
+          break;
+        default:
+          return;
+      }
+
+      const response: any = await axios.get(Http.product_variant_by_option, {
+        params: {
+          product_id: props.product_id,
+          option: option,
+        },
+      });
+
+      if (response.result) {
+        setTitle(response.data.title);
+        setImage(response.data.image);
+        setBarcode(response.data.barcode);
+        setCompareAtPrice(response.data.compare_at_price);
+        setInventoryPolicy(response.data.inventory_policy === 1 ? true : false);
+        setInventoryQuantity(response.data.inventory_quantity);
+        setPrice(response.data.price);
+        setPosition(response.data.position);
+        setSku(response.data.sku);
+        setTaxable(response.data.taxable === 1 ? true : false);
+        setWeight(response.data.weight);
+        setWeightUnit(response.data.weight_unit);
+        setRequiresShipping(response.data.requires_shipping === 1 ? true : false);
+      } else {
+        setTitle('');
+        setImage('');
+        setBarcode('');
+        setCompareAtPrice('');
+        setInventoryPolicy(false);
+        setInventoryQuantity('');
+        setPrice('');
+        setPosition('');
+        setSku('');
+        setTaxable(false);
+        setWeight('');
+        setWeightUnit('');
+        setRequiresShipping(false);
+      }
+    } catch (e) {
+      setSnackSeverity('error');
+      setSnackMessage('The network error occurred. Please try again later.');
+      setSnackOpen(true);
+      console.error(e);
+    }
+  };
+
+  useEffect(() => {
+    init(optionOneValue, optionTwoValue, optionThreeValue);
+  }, [optionOneValue, optionTwoValue, optionThreeValue]);
 
   const VisuallyHiddenInput = styled('input')({
     clip: 'rect(0 0 0 0)',
@@ -117,8 +184,114 @@ const ProductVariant = (props: Props) => {
     }
   };
 
-  const onClickCreateProductVariant = async () => {
+  const onClickUpdateProductVariant = async () => {
     try {
+      if (!image || image === '') {
+        setSnackSeverity('error');
+        setSnackMessage('Incorrect image upload');
+        setSnackOpen(true);
+        return;
+      }
+
+      if (!position || parseInt(position) === 0) {
+        setSnackSeverity('error');
+        setSnackMessage('Incorrect position input');
+        setSnackOpen(true);
+        return;
+      }
+
+      if (!title || title === '') {
+        setSnackSeverity('error');
+        setSnackMessage('Incorrect title input');
+        setSnackOpen(true);
+        return;
+      }
+
+      if (!price || parseFloat(price) <= 0) {
+        setSnackSeverity('error');
+        setSnackMessage('Incorrect price input');
+        setSnackOpen(true);
+        return;
+      }
+
+      if (!compareAtPrice || parseFloat(compareAtPrice) <= 0) {
+        setSnackSeverity('error');
+        setSnackMessage('Incorrect compare at price input');
+        setSnackOpen(true);
+        return;
+      }
+
+      if (parseFloat(price) < parseFloat(compareAtPrice)) {
+        setSnackSeverity('error');
+        setSnackMessage('Incorrect price and compare at price input');
+        setSnackOpen(true);
+        return;
+      }
+
+      if (!inventoryQuantity || parseInt(inventoryQuantity) <= 0) {
+        setSnackSeverity('error');
+        setSnackMessage('Incorrect inventory quantity input');
+        setSnackOpen(true);
+        return;
+      }
+
+      if (!sku || sku === '') {
+        setSnackSeverity('error');
+        setSnackMessage('Incorrect sku input');
+        setSnackOpen(true);
+        return;
+      }
+
+      let option = '';
+      switch (options.length) {
+        case 3:
+          option = `${optionOneValue},${optionTwoValue},${optionThreeValue}`;
+          break;
+        case 2:
+          option = `${optionOneValue},${optionTwoValue}`;
+          break;
+        case 1:
+          option = `${optionOneValue}`;
+          break;
+        default:
+          return;
+      }
+
+      if (!option || option === '') {
+        setSnackSeverity('error');
+        setSnackMessage('Incorrect option parameter');
+        setSnackOpen(true);
+        return;
+      }
+
+      const response: any = await axios.post(Http.product_variant, {
+        product_id: props.product_id,
+        title: title,
+        image: image,
+        barcode: barcode,
+        compare_at_price: compareAtPrice,
+        inventory_policy: inventoryPolicy ? 1 : 2,
+        inventory_quantity: parseInt(inventoryQuantity),
+        price: price,
+        position: parseInt(position),
+        sku: sku,
+        taxable: taxable ? 1 : 2,
+        weight: weight,
+        weight_unit: weightUnit,
+        requires_shipping: requiresShipping ? 1 : 2,
+        option: option,
+      });
+
+      if (response.result) {
+        window.location.reload();
+        setSnackSeverity('success');
+        setSnackMessage('Update successfully');
+        setSnackOpen(true);
+      } else {
+        setSnackSeverity('error');
+        setSnackMessage(response.message);
+        setSnackOpen(true);
+      }
     } catch (e) {
       setSnackSeverity('error');
       setSnackMessage('The network error occurred. Please try again later.');
@@ -185,15 +358,28 @@ const ProductVariant = (props: Props) => {
                 variant={'contained'}
                 color={'success'}
                 onClick={() => {
-                  onClickCreateProductVariant();
+                  onClickUpdateProductVariant();
                 }}
               >
-                Add Product Variant
+                Update Product Variant
               </Button>
             </Stack>
             <Box mt={2}>
-              <Typography mb={1}>Image</Typography>
-              <Box style={{ border: '1px dashed #000' }}>
+              <Stack direction={'row'} alignItems={'center'} gap={2}>
+                <Typography mb={1}>Image</Typography>
+                {image && image != '' && (
+                  <Button
+                    variant={'contained'}
+                    color="error"
+                    onClick={() => {
+                      setImage('');
+                    }}
+                  >
+                    Delete
+                  </Button>
+                )}
+              </Stack>
+              <Box style={{ border: '1px dashed #000' }} mt={1}>
                 {image && image != '' ? (
                   <img srcSet={image} src={image} alt={'image'} loading="lazy" />
                 ) : (
@@ -214,7 +400,7 @@ const ProductVariant = (props: Props) => {
               </Box>
             </Box>
             <Box mt={2}>
-              <Typography mb={1}>Position</Typography>
+              <Typography mb={1}>Position(the order of the product variant in the list of product variants)</Typography>
               <TextField
                 hiddenLabel
                 size="small"
@@ -224,6 +410,7 @@ const ProductVariant = (props: Props) => {
                 onChange={(e: any) => {
                   setPosition(e.target.value);
                 }}
+                placeholder="position your variant"
               />
             </Box>
             <Box mt={2}>
@@ -254,7 +441,9 @@ const ProductVariant = (props: Props) => {
               />
             </Box>
             <Box mt={2}>
-              <Typography mb={1}>Compare at price</Typography>
+              <Typography mb={1}>
+                Compare at price(the original price of the item before an adjustment or a sale)
+              </Typography>
               <TextField
                 hiddenLabel
                 size="small"
@@ -264,10 +453,11 @@ const ProductVariant = (props: Props) => {
                 onChange={(e: any) => {
                   setCompareAtPrice(e.target.value);
                 }}
+                placeholder="compare at price your variant"
               />
             </Box>
             <Box mt={2}>
-              <Typography mb={1}>Barcode</Typography>
+              <Typography mb={1}>Barcode(the barcode, UPC, or ISBN number for the product)</Typography>
               <TextField
                 hiddenLabel
                 size="small"
@@ -290,6 +480,7 @@ const ProductVariant = (props: Props) => {
                 onChange={(e: any) => {
                   setInventoryQuantity(e.target.value);
                 }}
+                placeholder="quantity your variant"
               />
             </Box>
             <Box mt={2}>
@@ -305,47 +496,50 @@ const ProductVariant = (props: Props) => {
                 placeholder="sku your variant"
               />
             </Box>
-            <Box mt={2}>
-              <Typography mb={1}>Weight</Typography>
-              <TextField
-                hiddenLabel
-                size="small"
-                fullWidth
-                type="number"
-                value={weight}
-                onChange={(e: any) => {
-                  setWeight(e.target.value);
-                }}
-              />
-            </Box>
-            <Box mt={2}>
-              <Typography mb={1}>Weight unit</Typography>
-              <FormControl hiddenLabel fullWidth>
-                <Select
-                  displayEmpty
-                  value={weightUnit}
+            <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} gap={1} mt={2}>
+              <Box width={'100%'}>
+                <Typography mb={1}>Weight</Typography>
+                <TextField
+                  hiddenLabel
+                  size="small"
+                  fullWidth
+                  type="number"
+                  value={weight}
                   onChange={(e: any) => {
-                    setWeightUnit(e.target.value);
+                    setWeight(e.target.value);
                   }}
-                  size={'small'}
-                  inputProps={{ 'aria-label': 'Without label' }}
-                  renderValue={(selected: any) => {
-                    if (selected.length === 0) {
-                      return <em>Choose weight</em>;
-                    }
+                  placeholder="weight your variant"
+                />
+              </Box>
+              <Box width={'100%'}>
+                <Typography mb={1}>Weight unit</Typography>
+                <FormControl hiddenLabel fullWidth>
+                  <Select
+                    displayEmpty
+                    value={weightUnit}
+                    onChange={(e: any) => {
+                      setWeightUnit(e.target.value);
+                    }}
+                    size={'small'}
+                    inputProps={{ 'aria-label': 'Without label' }}
+                    renderValue={(selected: any) => {
+                      if (selected.length === 0) {
+                        return <em>Choose weight</em>;
+                      }
 
-                    return selected;
-                  }}
-                >
-                  {WEIGHT_UNIT_TYPE &&
-                    Object.entries(WEIGHT_UNIT_TYPE).map((item, index) => (
-                      <MenuItem value={item[1]} key={index}>
-                        {item[1]}
-                      </MenuItem>
-                    ))}
-                </Select>
-              </FormControl>
-            </Box>
+                      return selected;
+                    }}
+                  >
+                    {WEIGHT_UNIT_TYPE &&
+                      Object.entries(WEIGHT_UNIT_TYPE).map((item, index) => (
+                        <MenuItem value={item[1]} key={index}>
+                          {item[1]}
+                        </MenuItem>
+                      ))}
+                  </Select>
+                </FormControl>
+              </Box>
+            </Stack>
             <Stack mt={2} direction={'row'} alignItems={'center'}>
               <Switch
                 checked={inventoryPolicy}
@@ -353,7 +547,10 @@ const ProductVariant = (props: Props) => {
                   setInventoryPolicy(!inventoryPolicy);
                 }}
               />
-              <Typography>Inventory policy</Typography>
+              <Typography>
+                Inventory policy(whether customers are allowed to place an order for the product variant when it's out
+                of stock)
+              </Typography>
             </Stack>
             <Stack direction={'row'} alignItems={'center'}>
               <Switch
@@ -362,7 +559,7 @@ const ProductVariant = (props: Props) => {
                   setTaxable(!taxable);
                 }}
               />
-              <Typography>Taxable</Typography>
+              <Typography>Taxable(whether a tax is charged when the product variant is sold)</Typography>
             </Stack>
             <Stack direction={'row'} alignItems={'center'}>
               <Switch

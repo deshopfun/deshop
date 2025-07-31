@@ -82,6 +82,22 @@ type ProductOption = {
   value: string;
 };
 
+type ProductVariant = {
+  title: string;
+  barcode: string;
+  compare_at_price: string;
+  image: string;
+  inventory_policy: boolean;
+  inventory_quantity: number;
+  position: number;
+  price: string;
+  requires_shipping: boolean;
+  sku: string;
+  taxable: boolean;
+  weight: string;
+  weight_unit: string;
+};
+
 const ProductDetails = () => {
   const router = useRouter();
   const { id } = router.query;
@@ -91,6 +107,12 @@ const ProductDetails = () => {
   const [openRatingsDialog, setOpenRatingsDialog] = useState<boolean>(false);
   const [openRefundPolicy, setOpenRefundPolicy] = useState<boolean>(false);
   const [tabValue, setTabValue] = useState(0);
+  const [optionOneValue, setOptionOneValue] = useState<string>('');
+  const [optionTwoValue, setOptionTwoValue] = useState<string>('');
+  const [optionThreeValue, setOptionThreeValue] = useState<string>('');
+  const [currentProductVariant, setCurrentProductVariant] = useState<ProductVariant>();
+  const [isSelectOption, setIsSelectOption] = useState<boolean>(false);
+  const [quantity, setQuantity] = useState<number>(0);
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     const tabId = Object.values(PRODUCT_TAB_DATAS).find((item) => item.id === newValue)?.tabId;
@@ -145,12 +167,69 @@ const ProductDetails = () => {
     }
   };
 
+  const initOptionValue = async (oneValue: string, twoValue: string, threeValue: string) => {
+    try {
+      if (!product) {
+        return;
+      }
+
+      let option = '';
+      switch (product.options.length) {
+        case 3:
+          if (!oneValue || !twoValue || !threeValue) return;
+          option = `${oneValue},${twoValue},${threeValue}`;
+          break;
+        case 2:
+          if (!oneValue || !twoValue) return;
+          option = `${oneValue},${twoValue}`;
+          break;
+        case 1:
+          if (!oneValue) return;
+          option = `${oneValue}`;
+          break;
+        default:
+          return;
+      }
+
+      setIsSelectOption(true);
+
+      const response: any = await axios.get(Http.product_variant_by_option, {
+        params: {
+          product_id: product.product_id,
+          option: option,
+        },
+      });
+
+      if (response.result) {
+        setCurrentProductVariant({
+          ...response.data,
+          inventory_policy: response.data.inventory_policy === 1 ? true : false,
+          requires_shipping: response.data.requires_shipping === 1 ? true : false,
+          taxable: response.data.taxable === 1 ? true : false,
+        });
+      } else {
+        setCurrentProductVariant(undefined);
+        setQuantity(0);
+      }
+    } catch (e) {
+      setSnackSeverity('error');
+      setSnackMessage('The network error occurred. Please try again later.');
+      setSnackOpen(true);
+      console.error(e);
+    }
+  };
+
   useEffect(() => {
     if (id) {
       init(id);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
+
+  useEffect(() => {
+    initOptionValue(optionOneValue, optionTwoValue, optionThreeValue);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [optionOneValue, optionTwoValue, optionThreeValue]);
 
   if (product?.product_status !== 1 && getUuid() !== product?.user_uuid) {
     return (
@@ -214,24 +293,29 @@ const ProductDetails = () => {
       )}
       <Grid container spacing={8} mt={4}>
         <Grid size={{ xs: 12, md: 8 }}>
-          <Swiper
-            pagination={{
-              clickable: true,
-            }}
-            navigation={true}
-            modules={[Pagination, Navigation]}
-          >
-            {product &&
-              product.images.length > 0 &&
-              product.images.map((item, index) => (
-                <SwiperSlide key={index}>
-                  <Box display={'flex'} justifyContent={'center'}>
-                    <img src={item.src} alt="image" width={200} height={200} />
-                  </Box>
-                </SwiperSlide>
-              ))}
-          </Swiper>
-
+          {isSelectOption && currentProductVariant?.image ? (
+            <Box textAlign={'center'}>
+              <img src={currentProductVariant.image} alt="image" width={200} height={200} />
+            </Box>
+          ) : (
+            <Swiper
+              pagination={{
+                clickable: true,
+              }}
+              navigation={true}
+              modules={[Pagination, Navigation]}
+            >
+              {product &&
+                product.images.length > 0 &&
+                product.images.map((item, index) => (
+                  <SwiperSlide key={index}>
+                    <Box display={'flex'} justifyContent={'center'}>
+                      <img src={item.src} alt="image" width={200} height={200} />
+                    </Box>
+                  </SwiperSlide>
+                ))}
+            </Swiper>
+          )}
           <Stack direction={'row'} alignItems={'center'} gap={1} mt={2}>
             {product &&
               product.images.length > 0 &&
@@ -499,7 +583,6 @@ const ProductDetails = () => {
                 <Box key={index}>
                   <Stack direction={'row'} alignItems={'center'} gap={2}>
                     <Typography variant="h6">{item.name}</Typography>
-                    <Typography>Bubblegum</Typography>
                   </Stack>
 
                   <Box pt={1} pb={2}>
@@ -508,50 +591,102 @@ const ProductDetails = () => {
                         item.value.split(',').length > 0 &&
                         item.value.split(',').map((innerItem, innerIndex) => (
                           <Grid size={{ xs: 2, md: 2 }} key={innerIndex}>
-                            <Button size="small" variant={'contained'} color={'inherit'}>
+                            <Button
+                              variant={'contained'}
+                              color={
+                                index === 0 && innerItem === optionOneValue
+                                  ? 'success'
+                                  : index === 1 && innerItem === optionTwoValue
+                                  ? 'success'
+                                  : index === 2 && innerItem === optionThreeValue
+                                  ? 'success'
+                                  : 'primary'
+                              }
+                              onClick={() => {
+                                if (index === 0) {
+                                  setOptionOneValue(innerItem);
+                                } else if (index === 1) {
+                                  setOptionTwoValue(innerItem);
+                                } else if (index === 2) {
+                                  setOptionThreeValue(innerItem);
+                                }
+                              }}
+                            >
                               {innerItem}
                             </Button>
                           </Grid>
                         ))}
                     </Grid>
                   </Box>
-                  <Divider />
                 </Box>
               ))}
           </Box>
 
-          {product?.product_status === 1 && (
+          {product?.product_status === 1 && isSelectOption && (
             <>
-              <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} mt={2}>
-                <Typography>Quantity</Typography>
-                <Box width={100}>
-                  <Input
-                    startAdornment={
-                      <IconButton>
-                        <Remove />
-                      </IconButton>
-                    }
-                    endAdornment={
-                      <IconButton>
-                        <Add />
-                      </IconButton>
-                    }
-                    value={0}
-                  />
+              {currentProductVariant && currentProductVariant?.inventory_quantity > 0 ? (
+                <>
+                  <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} mt={2} gap={2}>
+                    <Typography>Quantity</Typography>
+                    <Input
+                      fullWidth
+                      startAdornment={
+                        <IconButton
+                          onClick={() => {
+                            if (quantity - 1 >= 0) {
+                              setQuantity(quantity - 1);
+                            }
+                          }}
+                        >
+                          <Remove />
+                        </IconButton>
+                      }
+                      endAdornment={
+                        <IconButton
+                          onClick={() => {
+                            if (quantity + 1 <= currentProductVariant.inventory_quantity) {
+                              setQuantity(quantity + 1);
+                            }
+                          }}
+                        >
+                          <Add />
+                        </IconButton>
+                      }
+                      value={quantity}
+                      onChange={(e: any) => {
+                        if (0 < e.target.value && e.target.value <= currentProductVariant.inventory_quantity) {
+                          setQuantity(e.target.value);
+                        }
+                      }}
+                    />
+                    <Button
+                      variant={'contained'}
+                      onClick={() => {
+                        setQuantity(currentProductVariant.inventory_quantity);
+                      }}
+                    >
+                      Max
+                    </Button>
+                  </Stack>
+                  <Box mt={4}>
+                    <Button variant={'contained'} fullWidth>
+                      Add to cart
+                    </Button>
+                    <Button variant={'contained'} fullWidth style={{ background: '#000', marginTop: 10 }}>
+                      Buy now
+                    </Button>
+                  </Box>
+                </>
+              ) : (
+                <Box>
+                  <Alert severity="error">
+                    <AlertTitle>Error</AlertTitle>
+                    <Typography>Sorry, the product has been sold out</Typography>
+                  </Alert>
                 </Box>
-              </Stack>
-
-              <Box mt={4}>
-                <Button variant={'contained'} fullWidth>
-                  Add to cart
-                </Button>
-                <Button variant={'contained'} fullWidth style={{ background: '#000', marginTop: 10 }}>
-                  Buy now
-                </Button>
-              </Box>
+              )}
             </>
           )}
-
           <Box mt={2} overflow={'auto'}>
             <Typography variant="h6">Description</Typography>
             {product?.body_html && <Box mt={1} dangerouslySetInnerHTML={{ __html: product?.body_html }}></Box>}
