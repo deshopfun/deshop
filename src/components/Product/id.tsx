@@ -32,6 +32,7 @@ import 'swiper/css/pagination';
 import 'swiper/css/scrollbar';
 import {
   Add,
+  BorderColor,
   ChatBubbleOutline,
   ChevronRight,
   FavoriteBorder,
@@ -42,6 +43,7 @@ import {
   LocalShipping,
   MoreHoriz,
   Remove,
+  SaveAs,
   Star,
   ThumbUpAlt,
   ThumbUpOffAlt,
@@ -272,6 +274,26 @@ const ProductDetails = () => {
       console.error(e);
     }
   };
+
+  const onClickAddToCart = async () => {
+    try {
+      
+    } catch (e) {
+      setSnackSeverity('error');
+      setSnackMessage('The network error occurred. Please try again later.');
+      setSnackOpen(true);
+      console.error(e);
+    }
+  };
+
+  const onClickBuyNow = async () => {};
+  try {
+  } catch (e) {
+    setSnackSeverity('error');
+    setSnackMessage('The network error occurred. Please try again later.');
+    setSnackOpen(true);
+    console.error(e);
+  }
 
   return (
     <Container>
@@ -571,10 +593,29 @@ const ProductDetails = () => {
             )}
           </Stack>
 
-          <Stack direction={'row'} alignItems={'center'} mt={2} gap={1}>
-            <LocalShipping />
-            <Typography>Shipping calculated at checkout</Typography>
-          </Stack>
+          {currentProductVariant && isSelectOption && (
+            <Box mt={2}>
+              <Stack direction={'row'} alignItems={'center'} gap={1}>
+                <Typography variant="h6">{`US$${currentProductVariant.price}`}</Typography>
+              </Stack>
+              <Stack direction={'row'} alignItems={'center'} gap={1} mt={2}>
+                <LocalShipping fontSize={'small'} />
+                {currentProductVariant.requires_shipping ? (
+                  <Typography>Shipping calculated at checkout</Typography>
+                ) : (
+                  <Typography>Shipping for free</Typography>
+                )}
+              </Stack>
+              <Stack direction={'row'} alignItems={'center'} gap={1} mt={1}>
+                <BorderColor fontSize={'small'} />
+                {currentProductVariant.taxable ? (
+                  <Typography>Product already include tax</Typography>
+                ) : (
+                  <Typography>Product do not include tax</Typography>
+                )}
+              </Stack>
+            </Box>
+          )}
 
           <Box mt={2}>
             {product?.options &&
@@ -669,10 +710,23 @@ const ProductDetails = () => {
                     </Button>
                   </Stack>
                   <Box mt={4}>
-                    <Button variant={'contained'} fullWidth>
+                    <Button
+                      variant={'contained'}
+                      fullWidth
+                      onClick={() => {
+                        onClickAddToCart();
+                      }}
+                    >
                       Add to cart
                     </Button>
-                    <Button variant={'contained'} fullWidth style={{ background: '#000', marginTop: 10 }}>
+                    <Button
+                      variant={'contained'}
+                      fullWidth
+                      style={{ background: '#000', marginTop: 10 }}
+                      onClick={() => {
+                        onClickBuyNow();
+                      }}
+                    >
                       Buy now
                     </Button>
                   </Box>
