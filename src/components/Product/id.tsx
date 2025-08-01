@@ -1,4 +1,4 @@
-import { useSnackPresistStore, useUserPresistStore } from 'lib';
+import { useCartPresistStore, useSnackPresistStore, useUserPresistStore } from 'lib';
 import { useRouter } from 'next/router';
 import {
   Alert,
@@ -138,6 +138,7 @@ const ProductDetails = () => {
 
   const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore((state) => state);
   const { getUuid, getIsLogin } = useUserPresistStore((state) => state);
+  const { getCart, setCart } = useCartPresistStore((state) => state);
 
   const init = async (id: any) => {
     try {
@@ -276,14 +277,38 @@ const ProductDetails = () => {
   };
 
   const onClickAddToCart = async () => {
-    try {
-      
-    } catch (e) {
-      setSnackSeverity('error');
-      setSnackMessage('The network error occurred. Please try again later.');
-      setSnackOpen(true);
-      console.error(e);
+    if (quantity <= 0) return;
+
+    let option = '';
+    switch (product.options.length) {
+      case 3:
+        if (!optionOneValue || !optionTwoValue || !optionThreeValue) return;
+        option = `${optionOneValue},${optionTwoValue},${optionThreeValue}`;
+        break;
+      case 2:
+        if (!optionOneValue || !optionTwoValue) return;
+        option = `${optionOneValue},${optionTwoValue}`;
+        break;
+      case 1:
+        if (!optionOneValue) return;
+        option = `${optionOneValue}`;
+        break;
+      default:
+        return;
     }
+
+    const cart = getCart();
+    cart.push({
+      uuid: product.user_uuid,
+      variant: [
+        {
+          productId: product.product_id,
+          option: option,
+          quantity: quantity,
+        },
+      ],
+    });
+    setCart(cart);
   };
 
   const onClickBuyNow = async () => {};
