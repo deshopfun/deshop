@@ -298,17 +298,52 @@ const ProductDetails = () => {
     }
 
     const cart = getCart();
-    cart.push({
-      uuid: product.user_uuid,
-      variant: [
+    const cartItem = cart.find((item) => item.uuid === product.user_uuid);
+    const newVariant: any = {
+      productId: product.product_id,
+      title: product.title,
+      image: String(currentProductVariant?.image ?? ''),
+      option,
+      price: String(currentProductVariant?.price ?? ''),
+      quantity,
+    };
+
+    if (cartItem) {
+      const variantItem = cartItem.variant.find(
+        (vItem) => vItem.productId === product.product_id && vItem.option === option,
+      );
+
+      setCart(
+        cart.map((item) =>
+          item.uuid === product.user_uuid
+            ? {
+                ...item,
+                variant: variantItem
+                  ? item.variant.map((vItem) =>
+                      vItem.productId === product.product_id && vItem.option === option
+                        ? { ...vItem, quantity: vItem.quantity + quantity }
+                        : vItem,
+                    )
+                  : [...item.variant, newVariant],
+              }
+            : item,
+        ),
+      );
+    } else {
+      setCart([
+        ...cart,
         {
-          productId: product.product_id,
-          option: option,
-          quantity: quantity,
+          uuid: product.user_uuid,
+          avatarUrl: product.user_avatar_url,
+          username: product.username,
+          variant: [newVariant],
         },
-      ],
-    });
-    setCart(cart);
+      ]);
+    }
+
+    setSnackSeverity('success');
+    setSnackMessage('Add to cart successfully');
+    setSnackOpen(true);
   };
 
   const onClickBuyNow = async () => {};

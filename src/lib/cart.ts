@@ -3,12 +3,17 @@ import { persist } from 'zustand/middleware';
 
 type VariantType = {
   productId: number;
+  title: string;
+  image: string;
   option: string;
+  price: string;
   quantity: number;
 };
 
 type CartType = {
   uuid: string;
+  avatarUrl: string;
+  username: string;
   variant: VariantType[];
 };
 
