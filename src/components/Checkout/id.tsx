@@ -1,4 +1,4 @@
-import { useSnackPresistStore, useUserPresistStore } from 'lib';
+import { CartType, useCartPresistStore, useSnackPresistStore, useUserPresistStore } from 'lib';
 import { useRouter } from 'next/router';
 import {
   Box,
@@ -56,6 +56,7 @@ const CheckoutDetails = () => {
   const router = useRouter();
   const { id } = router.query;
 
+  const [cartList, setCartList] = useState<CartType>();
   const [firstName, setFirstName] = useState<string>('');
   const [lastName, setLastName] = useState<string>('');
   const [company, setCompany] = useState<string>('');
@@ -68,6 +69,11 @@ const CheckoutDetails = () => {
   const [province, setProvince] = useState<string>('');
   const [zip, setZip] = useState<string>('');
   const [addresses, setAddresses] = useState<AddressType[]>([]);
+  const [discountCode, setDiscountCode] = useState<string>('');
+  const [subTotal, setSubTotal] = useState<string>('0');
+  const [shipping, setShipping] = useState<string>('0');
+  const [discount, setDiscount] = useState<string>('0');
+  const [total, setTotal] = useState<string>('0');
 
   const [ship, setShip] = useState<boolean>(true);
   const [selectDeliveryAddress, setSelectDeliveryAddress] = useState<number>(0);
@@ -75,6 +81,7 @@ const CheckoutDetails = () => {
 
   const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore((state) => state);
   const { getUuid } = useUserPresistStore((state) => state);
+  const { getCart, setCart } = useCartPresistStore((state) => state);
 
   const getAddress = async () => {
     try {
@@ -95,13 +102,23 @@ const CheckoutDetails = () => {
     }
   };
 
-  const init = async (id: any) => {
-    getUuid() && getAddress();
+  const init = async (uuid: any) => {
+    console.log(111, uuid);
   };
 
   useEffect(() => {
     if (id) {
-      init(id);
+      const cart = getCart();
+      const cartItem = cart.find((item) => item.uuid === id);
+      if (cartItem) {
+        setCartList(cartItem);
+        init(id);
+        getAddress();
+      } else {
+        setSnackSeverity('error');
+        setSnackMessage('Something wrong');
+        setSnackOpen(true);
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
@@ -411,27 +428,30 @@ const CheckoutDetails = () => {
           </Box>
         </Grid>
         <Grid size={{ xs: 12, md: 6 }}>
-          <Typography variant="h5">Review your cart</Typography>
-          <Stack direction={'row'} mt={5}>
-            <img src={'/images/default_avatar.png'} alt={'image'} loading="lazy" width={100} height={100} />
-            <Box pl={2}>
-              <Typography>Duocontact Sofa</Typography>
-              <Typography mt={1}>1x</Typography>
-              <Typography variant="h6" mt={2}>
-                $20.00
-              </Typography>
-            </Box>
-          </Stack>
-          <Stack direction={'row'} mt={5}>
-            <img src={'/images/default_avatar.png'} alt={'image'} loading="lazy" width={100} height={100} />
-            <Box pl={2}>
-              <Typography>Duocontact Sofa</Typography>
-              <Typography mt={1}>1x</Typography>
-              <Typography variant="h6" mt={2}>
-                $20.00
-              </Typography>
-            </Box>
-          </Stack>
+          <Typography variant="h5" mb={4}>
+            Review your cart
+          </Typography>
+          {cartList &&
+            cartList.variant.length > 0 &&
+            cartList.variant.map((item, index) => (
+              <Stack direction={'row'} mt={2} key={index}>
+                <img src={item.image} alt={'image'} loading="lazy" width={100} height={100} />
+                <Box pl={2}>
+                  <Typography fontWeight={'bold'}>{item.title}</Typography>
+                  <Typography mt={1}>
+                    {`$${item.price}`} {`${item.quantity}x`}
+                  </Typography>
+                  <Typography variant="h6" mt={2}>
+                    $
+                    {cartList.variant.reduce((total, item) => {
+                      const price = parseFloat(item.price) || 0;
+                      return total + price * item.quantity;
+                    }, 0)}
+                  </Typography>
+                </Box>
+              </Stack>
+            ))}
+
           <Box mt={4}>
             <Input
               fullWidth
@@ -441,26 +461,29 @@ const CheckoutDetails = () => {
                 </IconButton>
               }
               endAdornment={<Button>Apply</Button>}
-              value={''}
+              value={discountCode}
               placeholder="Discount code"
+              onChange={(e) => {
+                setDiscountCode(e.target.value);
+              }}
             />
           </Box>
 
           <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} mt={4}>
             <Typography>Subtotal</Typography>
-            <Typography fontWeight={'bold'}>$45.00</Typography>
+            <Typography fontWeight={'bold'}>{`$${subTotal}`}</Typography>
           </Stack>
           <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} mt={2}>
             <Typography>Shipping</Typography>
-            <Typography fontWeight={'bold'}>$5.00</Typography>
+            <Typography fontWeight={'bold'}>{`$${shipping}`}</Typography>
           </Stack>
           <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} mt={2}>
             <Typography>Discount</Typography>
-            <Typography fontWeight={'bold'}>-$10.00</Typography>
+            <Typography fontWeight={'bold'}>{`$${discount}`}</Typography>
           </Stack>
           <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} mt={2}>
             <Typography variant="h6">Total</Typography>
-            <Typography fontWeight={'bold'}>$40.00</Typography>
+            <Typography fontWeight={'bold'}>{`$${total}`}</Typography>
           </Stack>
 
           <Box mt={4}>

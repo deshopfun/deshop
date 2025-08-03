@@ -10,7 +10,7 @@ type VariantType = {
   quantity: number;
 };
 
-type CartType = {
+export type CartType = {
   uuid: string;
   avatarUrl: string;
   username: string;

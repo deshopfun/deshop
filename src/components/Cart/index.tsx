@@ -181,21 +181,28 @@ const Cart = () => {
                           </Box>
                         </Stack>
                       ))}
+                    <Box textAlign={'right'} mt={6}>
+                      <Typography fontWeight={'bold'} mb={1}>
+                        {`Subtotal: `}$
+                        {item.variant.reduce((itemTotal, variant) => {
+                          const price = parseFloat(variant.price) || 0;
+                          return itemTotal + price * variant.quantity;
+                        }, 0)}
+                      </Typography>
+                      <Button
+                        variant={'contained'}
+                        color="success"
+                        onClick={() => {
+                          window.location.href = `/checkout/${item.uuid}`;
+                        }}
+                      >
+                        Continue to checkout
+                      </Button>
+                    </Box>
                   </CardContent>
                 </Card>
               </Box>
             ))}
-            <Box textAlign={'right'}>
-              <Button
-                variant={'contained'}
-                color={'error'}
-                onClick={() => {
-                  resetCart();
-                }}
-              >
-                Clear Cart
-              </Button>
-            </Box>
           </Grid>
           <Grid size={{ xs: 12, md: 4 }}>
             <Card>
@@ -205,15 +212,14 @@ const Cart = () => {
                   <Typography fontWeight={'bold'}>US${subtotal}</Typography>
                 </Stack>
                 <Button
-                  variant={'contained'}
-                  size="large"
-                  color="success"
                   fullWidth
+                  variant={'contained'}
+                  color={'error'}
                   onClick={() => {
-                    window.location.href = '/checkout/123456';
+                    resetCart();
                   }}
                 >
-                  Continue to checkout
+                  Clear Cart
                 </Button>
                 <Typography mt={2} textAlign={'center'}>
                   Taxes & shipping calculated at checkout
