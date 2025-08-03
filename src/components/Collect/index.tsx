@@ -95,10 +95,12 @@ const Collect = () => {
   return (
     <Container>
       <Typography variant="h5">My favorite</Typography>
-      {collectProduct && collectProduct.length > 0 && (
-        <Box mt={4}>
-          <Typography variant="h6">PRODUCT</Typography>
-          <Grid container spacing={2} mt={2}>
+      <Box mt={4}>
+        <Typography variant="h6" mb={2}>
+          PRODUCT
+        </Typography>
+        {collectProduct && collectProduct.length > 0 ? (
+          <Grid container spacing={2}>
             {collectProduct.map((item, index) => (
               <Grid size={{ xs: 12, md: 4 }} key={index}>
                 <Card>
@@ -139,12 +141,23 @@ const Collect = () => {
               </Grid>
             ))}
           </Grid>
-        </Box>
-      )}
-      {collectLive && collectLive.length > 0 && (
-        <Box mt={4}>
-          <Typography variant="h6">LIVE</Typography>
-          <Grid container spacing={2} mt={2}>
+        ) : (
+          <Card>
+            <CardContent>
+              <Box py={2} textAlign={'center'}>
+                <Typography variant="h6">Your collect is empty</Typography>
+                <Typography mt={2}>Add items while you shop, so they'll be ready for checkout later.</Typography>
+              </Box>
+            </CardContent>
+          </Card>
+        )}
+      </Box>
+      <Box mt={4}>
+        <Typography variant="h6" mb={2}>
+          LIVE
+        </Typography>
+        {collectLive && collectLive.length > 0 ? (
+          <Grid container spacing={2}>
             {collectLive.map((item, index) => (
               <Grid size={{ xs: 12, md: 4 }} key={index}>
                 <Card>
@@ -185,12 +198,23 @@ const Collect = () => {
               </Grid>
             ))}
           </Grid>
-        </Box>
-      )}
-      {collectChat && collectChat.length > 0 && (
-        <Box mt={4}>
-          <Typography variant="h6">CHAT</Typography>
-          <Grid container spacing={2} mt={2}>
+        ) : (
+          <Card>
+            <CardContent>
+              <Box py={2} textAlign={'center'}>
+                <Typography variant="h6">Your collect is empty</Typography>
+                <Typography mt={2}>Add items while you shop, so they'll be ready for checkout later.</Typography>
+              </Box>
+            </CardContent>
+          </Card>
+        )}
+      </Box>
+      <Box mt={4}>
+        <Typography variant="h6" mb={2}>
+          CHAT
+        </Typography>
+        {collectChat && collectChat.length > 0 ? (
+          <Grid container spacing={2}>
             {collectChat.map((item, index) => (
               <Grid size={{ xs: 12, md: 4 }} key={index}>
                 <Card>
@@ -231,8 +255,17 @@ const Collect = () => {
               </Grid>
             ))}
           </Grid>
-        </Box>
-      )}
+        ) : (
+          <Card>
+            <CardContent>
+              <Box py={2} textAlign={'center'}>
+                <Typography variant="h6">Your collect is empty</Typography>
+                <Typography mt={2}>Add items while you shop, so they'll be ready for checkout later.</Typography>
+              </Box>
+            </CardContent>
+          </Card>
+        )}
+      </Box>
     </Container>
   );
 };

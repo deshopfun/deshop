@@ -1,7 +1,7 @@
 import { AccountCircle, AddShoppingCart, FavoriteBorder, KeyboardArrowDown } from '@mui/icons-material';
 import { Avatar, Badge, Box, Button, Divider, Grid, IconButton, Menu, MenuItem, Typography } from '@mui/material';
 import Search from 'components/Search';
-import { useSnackPresistStore, useUserPresistStore } from 'lib';
+import { useCartPresistStore, useSnackPresistStore, useUserPresistStore } from 'lib';
 import { useEffect, useState } from 'react';
 import axios from 'utils/http/axios';
 import { Http } from 'utils/http/http';
@@ -9,6 +9,7 @@ import { Http } from 'utils/http/http';
 const HomeHeader = () => {
   const [avatarUrl, setAvatarUrl] = useState<string>();
   const [username, setUsername] = useState<string>();
+  const [collectNumber, setCollectNumber] = useState<number>(0);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
   const open = Boolean(anchorEl);
@@ -23,6 +24,7 @@ const HomeHeader = () => {
 
   const { setSnackOpen, setSnackMessage, setSnackSeverity } = useSnackPresistStore((state) => state);
   const { getIsLogin, resetUser } = useUserPresistStore((state) => state);
+  const { getCart } = useCartPresistStore((state) => state);
 
   const onClickLogout = async () => {
     resetUser();
@@ -40,6 +42,7 @@ const HomeHeader = () => {
       if (response.result) {
         setAvatarUrl(response.data.avatar_url);
         setUsername(response.data.username);
+        response.data.collects && setCollectNumber(response.data.collects.length);
       } else {
         setSnackSeverity('error');
         setSnackMessage(response.message);
@@ -73,7 +76,7 @@ const HomeHeader = () => {
                     window.location.href = '/cart';
                   }}
                 >
-                  <Badge badgeContent={0} color={'info'}>
+                  <Badge badgeContent={getCart().length} color={'info'}>
                     <AddShoppingCart color="action" />
                   </Badge>
                 </IconButton>
@@ -82,7 +85,9 @@ const HomeHeader = () => {
                     window.location.href = '/collect';
                   }}
                 >
-                  <FavoriteBorder color="action" />
+                  <Badge badgeContent={collectNumber} color={'info'}>
+                    <FavoriteBorder color="action" />
+                  </Badge>
                 </IconButton>
               </>
             )}

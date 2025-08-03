@@ -149,11 +149,20 @@ const ProductDetails = () => {
         return;
       }
 
-      const response: any = await axios.get(Http.product_by_id, {
-        params: {
-          product_id: id,
-        },
-      });
+      let response: any;
+      if (getIsLogin()) {
+        response = await axios.get(Http.product_by_login_id, {
+          params: {
+            product_id: id,
+          },
+        });
+      } else {
+        response = await axios.get(Http.product_by_id, {
+          params: {
+            product_id: id,
+          },
+        });
+      }
 
       if (response.result) {
         setProduct(response.data);
@@ -633,23 +642,19 @@ const ProductDetails = () => {
               </Stack>
             </Box>
             {getIsLogin() && (
-              <>
-                {getUuid() === product.user_uuid && (
-                  <IconButton
-                    style={{
-                      width: 50,
-                      height: 50,
-                      background: product?.collect_status === 1 ? '#0098e5' : '',
-                      color: product?.collect_status === 1 ? 'white' : '',
-                    }}
-                    onClick={() => {
-                      onClickFavorite();
-                    }}
-                  >
-                    <FavoriteBorder />
-                  </IconButton>
-                )}
-              </>
+              <IconButton
+                style={{
+                  width: 50,
+                  height: 50,
+                  background: product?.collect_status === 1 ? '#0098e5' : '',
+                  color: product?.collect_status === 1 ? 'white' : '',
+                }}
+                onClick={() => {
+                  onClickFavorite();
+                }}
+              >
+                <FavoriteBorder />
+              </IconButton>
             )}
           </Stack>
 
