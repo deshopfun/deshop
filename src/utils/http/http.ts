@@ -38,6 +38,7 @@ export class Http {
   // address
   static address = this.httpPath + '/client/address/address';
   static address_by_username = this.httpPath + '/client/address/address-by-username';
+  static address_by_uuid = this.httpPath + '/client/address/address-by-uuid';
 
   // collect
   static collect = this.httpPath + '/client/collect/collect';

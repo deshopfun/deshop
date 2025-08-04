@@ -1,6 +1,7 @@
 import { CartType, useCartPresistStore, useSnackPresistStore, useUserPresistStore } from 'lib';
 import { useRouter } from 'next/router';
 import {
+  Badge,
   Box,
   Button,
   Card,
@@ -69,6 +70,7 @@ const CheckoutDetails = () => {
   const [province, setProvince] = useState<string>('');
   const [zip, setZip] = useState<string>('');
   const [addresses, setAddresses] = useState<AddressType[]>([]);
+  const [sellerAddresses, setSellerAddresses] = useState<AddressType[]>([]);
   const [discountCode, setDiscountCode] = useState<string>('');
   const [subTotal, setSubTotal] = useState<string>('0');
   const [shipping, setShipping] = useState<string>('0');
@@ -102,8 +104,32 @@ const CheckoutDetails = () => {
     }
   };
 
+  const getSellerAddress = async (uuid: string) => {
+    try {
+      if (!getUuid() || !uuid) return;
+
+      const response: any = await axios.get(Http.address_by_uuid, {
+        params: {
+          uuid: uuid,
+        },
+      });
+
+      if (response.result) {
+        setSellerAddresses(response.data);
+      } else {
+        setSellerAddresses([]);
+      }
+    } catch (e) {
+      setSnackSeverity('error');
+      setSnackMessage('The network error occurred. Please try again later');
+      setSnackOpen(true);
+      console.error(e);
+    }
+  };
+
   const init = async (uuid: any) => {
-    console.log(111, uuid);
+    await getSellerAddress(uuid);
+    await getAddress();
   };
 
   useEffect(() => {
@@ -113,7 +139,15 @@ const CheckoutDetails = () => {
       if (cartItem) {
         setCartList(cartItem);
         init(id);
-        getAddress();
+
+        const total = cartItem.variant.reduce((total, item) => {
+          const price = parseFloat(item.price) || 0;
+          return total + price * item.quantity;
+        }, 0);
+        setSubTotal(total.toFixed(2));
+        setShipping('0');
+        setDiscount('0');
+        setTotal(total.toFixed(2));
       } else {
         setSnackSeverity('error');
         setSnackMessage('Something wrong');
@@ -122,6 +156,21 @@ const CheckoutDetails = () => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
+
+  const onClickPayNow = async () => {
+    try {
+      const response: any = await axios.post(Http.address);
+
+      if (response.result) {
+      } else {
+      }
+    } catch (e) {
+      setSnackSeverity('error');
+      setSnackMessage('The network error occurred. Please try again later');
+      setSnackOpen(true);
+      console.error(e);
+    }
+  };
 
   return (
     <Container>
@@ -389,40 +438,53 @@ const CheckoutDetails = () => {
               </Box>
             ) : (
               <Box mt={3}>
-                <Box mb={2}>
+                {sellerAddresses && sellerAddresses.length > 0 ? (
+                  <>
+                    {sellerAddresses.map((item, index) => (
+                      <Box key={index} mb={2}>
+                        <Card>
+                          <CardContent>
+                            <Stack direction={'row'} alignItems={'center'}>
+                              <Radio
+                                checked={selectPickupAddress === item.address_id ? true : false}
+                                onClick={() => {
+                                  setSelectPickupAddress(item.address_id);
+                                }}
+                              />
+                              <Stack
+                                direction={'row'}
+                                alignItems={'center'}
+                                justifyContent={'space-between'}
+                                width={'100%'}
+                              >
+                                <Box>
+                                  <Typography
+                                    fontWeight={'bold'}
+                                    pl={1}
+                                  >{`${item.first_name} ${item.last_name} , ${item.phone}`}</Typography>
+                                  <Stack direction={'row'} alignItems={'center'} mt={1} gap={1}>
+                                    <LocationOnOutlined />
+                                    <Typography>{`${item.country} ${item.province} ${item.address_one}`}</Typography>
+                                  </Stack>
+                                </Box>
+                                <Typography variant="h6">FREE</Typography>
+                              </Stack>
+                            </Stack>
+                          </CardContent>
+                        </Card>
+                      </Box>
+                    ))}
+                  </>
+                ) : (
                   <Card>
                     <CardContent>
-                      <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
-                        <Stack direction={'row'} alignItems={'center'}>
-                          <Radio value={''} />
-                          <Typography variant="h6">New York</Typography>
-                        </Stack>
-                        <Typography variant="h6">Free</Typography>
-                      </Stack>
-                      <Stack direction={'row'} alignItems={'center'} pl={1}>
-                        <LocationOnOutlined />
-                        <Typography mt={1}>123 Easy Street, New York, 12345</Typography>
-                      </Stack>
+                      <Box py={2} textAlign={'center'}>
+                        <Typography variant="h6">Not support</Typography>
+                        <Typography mt={2}>You can contact the seller to obtain a pick up address</Typography>
+                      </Box>
                     </CardContent>
                   </Card>
-                </Box>
-                <Box mb={2}>
-                  <Card>
-                    <CardContent>
-                      <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
-                        <Stack direction={'row'} alignItems={'center'}>
-                          <Radio value={''} />
-                          <Typography variant="h6">New York</Typography>
-                        </Stack>
-                        <Typography variant="h6">Free</Typography>
-                      </Stack>
-                      <Stack direction={'row'} alignItems={'center'} pl={1}>
-                        <LocationOnOutlined />
-                        <Typography mt={1}>123 Easy Street, New York, 12345</Typography>
-                      </Stack>
-                    </CardContent>
-                  </Card>
-                </Box>
+                )}
               </Box>
             )}
           </Box>
@@ -435,12 +497,12 @@ const CheckoutDetails = () => {
             cartList.variant.length > 0 &&
             cartList.variant.map((item, index) => (
               <Stack direction={'row'} mt={2} key={index}>
-                <img src={item.image} alt={'image'} loading="lazy" width={100} height={100} />
-                <Box pl={2}>
+                <Badge badgeContent={item.quantity} color={'info'}>
+                  <img src={item.image} alt={'image'} loading="lazy" width={100} height={100} />
+                </Badge>
+                <Box pl={4}>
                   <Typography fontWeight={'bold'}>{item.title}</Typography>
-                  <Typography mt={1}>
-                    {`$${item.price}`} {`${item.quantity}x`}
-                  </Typography>
+                  <Typography mt={1}>{`$${item.price}`}</Typography>
                   <Typography variant="h6" mt={2}>
                     $
                     {cartList.variant.reduce((total, item) => {
@@ -493,7 +555,7 @@ const CheckoutDetails = () => {
               size="large"
               fullWidth
               onClick={() => {
-                window.location.href = '/payment/123456';
+                onClickPayNow();
               }}
             >
               Pay Now
