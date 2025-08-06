@@ -34,6 +34,8 @@ import { BLOCKCHAIN, BLOCKCHAINNAMES, COIN } from 'packages/constants';
 import Image from 'next/image';
 import axios from 'utils/http/axios';
 import { Http } from 'utils/http/http';
+import { useRouter } from 'next/router';
+import { useSnackPresistStore } from 'lib';
 
 const steps = [
   'Payment section',
@@ -50,21 +52,71 @@ type WalletType = {
   disable_coin: string;
 };
 
-type Props = {
-  merchantId?: number;
-  merchantName?: string;
+type OrderItemType = {
+  product_id: number;
+  option: string;
+  quantity: number;
+  price: string;
+  title: string;
+  image: string;
 };
 
-const PaymentDetails = (props: Props) => {
+type TransactionType = {
+  transaction_id: number;
+  amount: string;
+  currency: number;
+  gateway: string;
+  message: string;
+  source_name: number;
+  transaction_status: number;
+  blockchain: BlockchainType;
+};
+
+type BlockchainType = {
+  chain_id: number;
+  hash: string;
+  address: string;
+  from_address: string;
+  to_address: string;
+  token: string;
+  transact_type: string;
+  crypto_amount: string;
+  block_timestamp: number;
+};
+
+type OrderType = {
+  order_id: number;
+  user_uuid: string;
+  user_email: string;
+  username: string;
+  user_avatar_url: string;
+  order_status_url: string;
+  total_discounts: string;
+  total_price: string;
+  total_tax: string;
+  total_tip_received: string;
+  financial_status: number;
+  processed_at: number;
+  items: OrderItemType[];
+  wallets: WalletType[];
+  transaction: TransactionType;
+};
+
+const PaymentDetails = () => {
+  const router = useRouter();
+  const { id } = router.query;
+
   const [page, setPage] = useState<number>(1);
+  const [order, setOrder] = useState<OrderType>();
   const [blockchains, setBlockchains] = useState<BLOCKCHAIN[]>([]);
   const [expanded, setExpanded] = useState<string | false>(false);
-  const [merchantName, setMerchantName] = useState<string>('');
 
   const [activeStep, setActiveStep] = useState(0);
   const [completed, setCompleted] = useState<{
     [k: number]: boolean;
   }>({});
+
+  const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore((state) => state);
 
   const handleStep = (step: number) => () => {
     setActiveStep(step);
@@ -74,17 +126,17 @@ const PaymentDetails = (props: Props) => {
     setExpanded(isExpanded ? panel : false);
   };
 
-  const init = async (username: string) => {
+  const init = async (orderId: any) => {
     try {
-      const response: any = await axios.get(Http.wallet_by_username, {
+      const response: any = await axios.get(Http.order_by_id, {
         params: {
-          username: username,
+          order_id: Number(orderId),
         },
       });
 
       if (response.result) {
         const newBlockchain: BLOCKCHAIN[] = BLOCKCHAINNAMES.reduce((acc: BLOCKCHAIN[], chain) => {
-          const wallet = response.data.find((w: WalletType) => w.chain_id === chain.chainId);
+          const wallet = response.data.wallets.find((w: WalletType) => w.chain_id === chain.chainId);
           if (wallet?.address) {
             const coins = chain.coins.filter((coin) => !wallet.disable_coin?.includes(coin.name));
             if (coins.length > 0) {
@@ -95,22 +147,56 @@ const PaymentDetails = (props: Props) => {
         }, []);
 
         setBlockchains(newBlockchain);
+        setOrder(response.data);
+
+        if (response.data.transaction.transaction_id) {
+          setPage(2);
+        }
       } else {
         setBlockchains([]);
+        setOrder(undefined);
       }
     } catch (e) {
+      setSnackSeverity('error');
+      setSnackMessage('The network error occurred. Please try again later.');
+      setSnackOpen(true);
       console.error(e);
     }
   };
 
   useEffect(() => {
-    // if (props.merchantName) {
-    //   setMerchantName(props.merchantName);
-    //   init(props.merchantName);
-    // }
-    init('LQ3tLzKh');
+    if (id) {
+      init(id);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [id]);
+
+  const onClickBlockchain = async (chainId: number, coin: string) => {
+    try {
+      if (!order) {
+        return;
+      }
+
+      const response: any = await axios.post(Http.transaction, {
+        order_id: order.order_id,
+        chain_id: chainId,
+        coin: coin,
+      });
+
+      if (response.result) {
+        console.log(111, response.data);
+      } else {
+        setSnackSeverity('error');
+        setSnackMessage(response.message);
+        setSnackOpen(true);
+      }
+    } catch (e) {
+      setSnackSeverity('error');
+      setSnackMessage('The network error occurred. Please try again later.');
+      setSnackOpen(true);
+      console.error(e);
+    }
+  };
 
   return (
     <Container>
@@ -148,8 +234,9 @@ const PaymentDetails = (props: Props) => {
                           <AccordionDetails key={coinIndex}>
                             <Button
                               fullWidth
-                              onClick={async () => {
-                                setPage(2);
+                              variant={'outlined'}
+                              onClick={() => {
+                                onClickBlockchain(coinItem.chainId, coinItem.name);
                               }}
                             >
                               <Image src={coinItem.icon} alt="icon" width={50} height={50} />
@@ -164,23 +251,39 @@ const PaymentDetails = (props: Props) => {
             <Grid size={{ xs: 12, md: 4 }}>
               <Card>
                 <Box p={3}>
-                  <Box pb={1}>
-                    <img src={'/images/default_avatar.png'} alt={'image'} loading="lazy" width={80} height={80} />
-                  </Box>
-                  <Divider />
-                  <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} py={1}>
-                    <Typography fontWeight={'bold'}>Sub Total(USD)</Typography>
-                    <Typography>2.50</Typography>
+                  <Stack direction={'row'} gap={1} alignItems={'center'} pb={1}>
+                    {order?.user_avatar_url ? (
+                      <img src={order.user_avatar_url} alt={'image'} loading="lazy" width={80} height={80} />
+                    ) : (
+                      <img src={'/images/default_avatar.png'} alt={'image'} loading="lazy" width={80} height={80} />
+                    )}
+                    {order?.username ? (
+                      <Link underline={'none'} color={'textPrimary'} href={`/profile/${order.username}`}>
+                        {order.username}
+                      </Link>
+                    ) : (
+                      <></>
+                    )}
                   </Stack>
                   <Divider />
                   <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} py={1}>
-                    <Typography fontWeight={'bold'}>Others(USD)</Typography>
-                    <Typography>0</Typography>
+                    <Typography fontWeight={'bold'}>Total Discounts(USD)</Typography>
+                    <Typography>{order?.total_discounts || 0}</Typography>
+                  </Stack>
+                  <Divider />
+                  <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} py={1}>
+                    <Typography fontWeight={'bold'}>Total Tax(USD)</Typography>
+                    <Typography>{order?.total_tax || 0}</Typography>
+                  </Stack>
+                  <Divider />
+                  <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} py={1}>
+                    <Typography fontWeight={'bold'}>Total Tip Received(USD)</Typography>
+                    <Typography>{order?.total_tip_received || 0}</Typography>
                   </Stack>
                   <Divider />
                   <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} pt={1}>
                     <Typography fontWeight={'bold'}>Total(USD)</Typography>
-                    <Typography>2.50</Typography>
+                    <Typography>{order?.total_price || 0}</Typography>
                   </Stack>
                 </Box>
               </Card>
@@ -405,7 +508,7 @@ const PaymentDetails = (props: Props) => {
         </Box>
       )}
 
-      <Box mt={4}>
+      <Box mt={10}>
         <Card>
           <Box p={1}>
             <Stepper nonLinear activeStep={activeStep}>

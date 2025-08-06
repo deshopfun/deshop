@@ -33,6 +33,7 @@ import {
   Lock,
 } from '@mui/icons-material';
 import { COUNTRYPROVINCES } from 'packages/constants/countryState';
+import { SHIPPING_TYPE } from 'packages/constants';
 
 type AddressType = {
   address_id: number;
@@ -51,6 +52,12 @@ type AddressType = {
   address_two: string;
   zip: string;
   is_default: number;
+};
+
+type ProductItem = {
+  product_id: number;
+  option: string;
+  quantity: number;
 };
 
 const CheckoutDetails = () => {
@@ -159,10 +166,41 @@ const CheckoutDetails = () => {
 
   const onClickPayNow = async () => {
     try {
-      const response: any = await axios.post(Http.address);
+      let items: ProductItem[] = [];
+      cartList?.variant.forEach((item) => {
+        items.push({
+          product_id: item.productId,
+          option: item.option,
+          quantity: item.quantity,
+        });
+      });
+
+      if (!items || items.length <= 0) {
+        setSnackSeverity('error');
+        setSnackMessage('Incorrect item of product');
+        setSnackOpen(true);
+        return;
+      }
+
+      const response: any = await axios.post(Http.order, {
+        seller_uuid: id,
+        items: items,
+        currency: 'USD',
+        landing_site: window.location.origin,
+        shipping_type: ship ? SHIPPING_TYPE.DELIVERY : SHIPPING_TYPE.PICKUP,
+        shipping_address_id: ship ? selectDeliveryAddress : selectPickupAddress,
+      });
 
       if (response.result) {
+        if (response.data.order_id) {
+          const cart = getCart();
+          setCart(cart.filter((cartItem) => cartItem.uuid !== id));
+          window.location.href = `/payment/${response.data.order_id}`;
+        }
       } else {
+        setSnackSeverity('error');
+        setSnackMessage(response.message);
+        setSnackOpen(true);
       }
     } catch (e) {
       setSnackSeverity('error');

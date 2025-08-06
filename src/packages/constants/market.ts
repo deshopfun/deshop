@@ -21,6 +21,11 @@ export const COLLECT_TYPE = {
   CHAT: 3,
 };
 
+export const SHIPPING_TYPE = {
+  DELIVERY: 1,
+  PICKUP: 2,
+};
+
 export const WEIGHT_UNIT_TYPE = {
   G: 'g',
   KG: 'kg',

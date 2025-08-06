@@ -9,6 +9,7 @@ import ForgotPassword from 'components/ForgotPassword';
 import Home from 'components/Home';
 import Live from 'components/Live';
 import Login from 'components/Login';
+import OrderDetails from 'components/Order/id';
 import PaymentDetails from 'components/Payment/id';
 import ProductDetails from 'components/Product/id';
 import Profile from 'components/Profile';
@@ -167,6 +168,15 @@ export const routes: RouteType[] = [
     name: 'Collect',
     title: 'Collect',
     component: <Collect />,
+    enableSidebar: true,
+    enableHomeHeader: true,
+    needLogin: false,
+  },
+  {
+    path: '/order/[id]',
+    name: 'OrderDetails',
+    title: 'OrderDetails',
+    component: <OrderDetails />,
     enableSidebar: true,
     enableHomeHeader: true,
     needLogin: false,

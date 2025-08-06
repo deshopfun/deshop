@@ -31,6 +31,14 @@ export class Http {
   static product_variant = this.httpPath + '/client/product/product-variant';
   static product_rating = this.httpPath + '/client/product/product-rating';
 
+  // order
+  static order = this.httpPath + '/client/order/order';
+  static order_by_id = this.httpPath + '/client/order/order-by-id';
+
+  //transaction
+  static transaction = this.httpPath + '/client/transaction/transaction';
+  static transaction_by_id = this.httpPath + '/client/transaction/transaction-by-id';
+
   // wallet
   static wallet = this.httpPath + '/client/wallet/wallet';
   static wallet_by_username = this.httpPath + '/client/wallet/wallet-by-username';
