@@ -9,6 +9,7 @@ import ForgotPassword from 'components/ForgotPassword';
 import Home from 'components/Home';
 import Live from 'components/Live';
 import Login from 'components/Login';
+import ManageDetails from 'components/Manage/id';
 import OrderDetails from 'components/Order/id';
 import PaymentDetails from 'components/Payment/id';
 import ProductDetails from 'components/Product/id';
@@ -177,6 +178,15 @@ export const routes: RouteType[] = [
     name: 'OrderDetails',
     title: 'OrderDetails',
     component: <OrderDetails />,
+    enableSidebar: true,
+    enableHomeHeader: true,
+    needLogin: false,
+  },
+  {
+    path: '/manage/[id]',
+    name: 'Manage',
+    title: 'Manage',
+    component: <ManageDetails />,
     enableSidebar: true,
     enableHomeHeader: true,
     needLogin: false,

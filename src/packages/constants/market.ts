@@ -101,6 +101,39 @@ export const PRODUCT_TAB_DATAS: TAB_DATA[] = [
   },
 ];
 
+export const MANAGE_TAB_DATAS: TAB_DATA[] = [
+  {
+    id: 0,
+    title: 'Orders',
+    tabId: 'orders',
+  },
+  {
+    id: 1,
+    title: 'Wallets',
+    tabId: 'wallets',
+  },
+  {
+    id: 2,
+    title: 'Addresses',
+    tabId: 'Addresses',
+  },
+  {
+    id: 3,
+    title: 'Replies',
+    tabId: 'replies',
+  },
+  {
+    id: 4,
+    title: 'Notifications',
+    tabId: 'notifications',
+  },
+  {
+    id: 5,
+    title: 'Following',
+    tabId: 'following',
+  },
+];
+
 export const FILE_TYPE = {
   Image: 'Image',
   Document: 'Document',

@@ -128,6 +128,13 @@ const HomeHeader = () => {
                   >
                     View wallet
                   </MenuItem>
+                  <MenuItem
+                    onClick={() => {
+                      window.location.href = `/manage/${username}`;
+                    }}
+                  >
+                    View manage
+                  </MenuItem>
                   <Divider />
                   <MenuItem onClick={onClickLogout}>
                     <Typography color={'error'}>Log out</Typography>

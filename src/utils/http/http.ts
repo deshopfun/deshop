@@ -21,6 +21,7 @@ export class Http {
   static user_notification_setting_by_username = this.httpPath + '/client/user/user-notification-setting-by-username';
   static user_notification = this.httpPath + '/client/user/user-notification';
   static user_balance = this.httpPath + '/client/user/user-balance';
+  static user_manage_by_uuid = this.httpPath + '/client/user/user-manage-by-uuid';
 
   // product
   static product = this.httpPath + '/client/product/product';
