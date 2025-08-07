@@ -30,12 +30,14 @@ import {
 import { useEffect, useState } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
 import { CheckCircle, ContentCopy, ExpandMore } from '@mui/icons-material';
-import { BLOCKCHAIN, BLOCKCHAINNAMES, COIN } from 'packages/constants';
+import { BLOCKCHAIN, BLOCKCHAINNAMES, COIN, COINS } from 'packages/constants';
 import Image from 'next/image';
 import axios from 'utils/http/axios';
 import { Http } from 'utils/http/http';
 import { useRouter } from 'next/router';
-import { useSnackPresistStore } from 'lib';
+import { useSnackPresistStore, useUserPresistStore } from 'lib';
+import { FindChainNamesByChainids } from 'utils/web3';
+import { GetImgSrcByChain, GetImgSrcByCrypto } from 'utils/qrcode';
 
 const steps = [
   'Payment section',
@@ -73,6 +75,8 @@ type TransactionType = {
 };
 
 type BlockchainType = {
+  qrcode: string;
+  rate: string;
   chain_id: number;
   hash: string;
   address: string;
@@ -86,6 +90,10 @@ type BlockchainType = {
 
 type OrderType = {
   order_id: number;
+  customer_uuid: string;
+  customer_email: string;
+  customer_username: string;
+  customer_avatar_url: string;
   user_uuid: string;
   user_email: string;
   username: string;
@@ -119,6 +127,14 @@ const PaymentDetails = () => {
   const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore((state) => state);
 
   const handleStep = (step: number) => () => {
+    switch (step) {
+      case 0:
+        setPage(1);
+        break;
+      case 1:
+        setPage(2);
+        break;
+    }
     setActiveStep(step);
   };
 
@@ -150,6 +166,7 @@ const PaymentDetails = () => {
         setOrder(response.data);
 
         if (response.data.transaction.transaction_id) {
+          setActiveStep(1);
           setPage(2);
         }
       } else {
@@ -184,7 +201,7 @@ const PaymentDetails = () => {
       });
 
       if (response.result) {
-        console.log(111, response.data);
+        await init(id);
       } else {
         setSnackSeverity('error');
         setSnackMessage(response.message);
@@ -301,23 +318,39 @@ const PaymentDetails = () => {
             <Grid size={{ xs: 12, md: 7 }}>
               <Card>
                 <Box p={3}>
-                  <Box pb={1}>
-                    <img src={'/images/default_avatar.png'} alt={'image'} loading="lazy" width={80} height={80} />
-                  </Box>
-                  <Divider />
-                  <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} py={1}>
-                    <Typography fontWeight={'bold'}>Sub Total(USD)</Typography>
-                    <Typography>2.50</Typography>
+                  <Stack direction={'row'} gap={1} alignItems={'center'} pb={1}>
+                    {order?.user_avatar_url ? (
+                      <img src={order.user_avatar_url} alt={'image'} loading="lazy" width={80} height={80} />
+                    ) : (
+                      <img src={'/images/default_avatar.png'} alt={'image'} loading="lazy" width={80} height={80} />
+                    )}
+                    {order?.username ? (
+                      <Link underline={'none'} color={'textPrimary'} href={`/profile/${order.username}`}>
+                        {order.username}
+                      </Link>
+                    ) : (
+                      <></>
+                    )}
                   </Stack>
                   <Divider />
                   <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} py={1}>
-                    <Typography fontWeight={'bold'}>Others(USD)</Typography>
-                    <Typography>0</Typography>
+                    <Typography fontWeight={'bold'}>Total Discounts(USD)</Typography>
+                    <Typography>{order?.total_discounts || 0}</Typography>
+                  </Stack>
+                  <Divider />
+                  <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} py={1}>
+                    <Typography fontWeight={'bold'}>Total Tax(USD)</Typography>
+                    <Typography>{order?.total_tax || 0}</Typography>
+                  </Stack>
+                  <Divider />
+                  <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} py={1}>
+                    <Typography fontWeight={'bold'}>Total Tip Received(USD)</Typography>
+                    <Typography>{order?.total_tip_received || 0}</Typography>
                   </Stack>
                   <Divider />
                   <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} pt={1}>
                     <Typography fontWeight={'bold'}>Total(USD)</Typography>
-                    <Typography>2.50</Typography>
+                    <Typography>{order?.total_price || 0}</Typography>
                   </Stack>
                 </Box>
               </Card>
@@ -356,8 +389,11 @@ const PaymentDetails = () => {
                         However, If your money still does not appear to have been received, please contact us. With
                         your,
                       </Typography>
-                      <Typography>1 Transaction hash/link</Typography>
-                      <Typography>2 order id: 2853</Typography>
+                      <Typography>1, Transaction hash/link</Typography>
+                      <Stack direction={'row'} alignItems={'center'} gap={1}>
+                        <Typography>2, order id:</Typography>
+                        <Typography fontWeight={'bold'}>{order?.order_id}</Typography>
+                      </Stack>
                       <Typography>
                         at <Link href="#">Contact telegram</Link>
                       </Typography>
@@ -365,9 +401,10 @@ const PaymentDetails = () => {
                     <Divider />
                     <Box mt={2}>
                       <Typography>Once your payment status will change, we will send you an email</Typography>
-                      <Typography>
-                        Your email: <b>example@gmail.com</b>
-                      </Typography>
+                      <Stack direction={'row'} alignItems={'center'} gap={1}>
+                        <Typography>Your email:</Typography>
+                        <Typography fontWeight={'bold'}>{order?.customer_email}</Typography>
+                      </Stack>
                     </Box>
                   </Box>
                 </Card>
@@ -377,27 +414,49 @@ const PaymentDetails = () => {
               <Card>
                 <Box p={2}>
                   <Stack direction={'row'} alignItems={'center'} p={1} border={1}>
-                    <img src={'/images/default_avatar.png'} alt={'image'} loading="lazy" width={40} height={40} />
+                    {order?.transaction.blockchain.chain_id && (
+                      <img
+                        src={GetImgSrcByChain(order?.transaction.blockchain.chain_id)}
+                        alt={'image'}
+                        loading="lazy"
+                        width={40}
+                        height={40}
+                      />
+                    )}
+
                     <Box pl={2}>
-                      <Typography fontWeight={'bold'}>Solana</Typography>
-                      <Typography>USDT</Typography>
+                      <Typography fontWeight={'bold'}>
+                        {FindChainNamesByChainids(order?.transaction.blockchain.chain_id || 0)}
+                      </Typography>
+                      <Typography>{order?.transaction.blockchain.token}</Typography>
                     </Box>
                   </Stack>
 
                   <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} mt={2} px={4}>
-                    <img src={'/images/default_avatar.png'} alt={'image'} loading="lazy" width={100} height={100} />
+                    {order?.transaction.blockchain.token && (
+                      <img
+                        src={GetImgSrcByCrypto(order?.transaction.blockchain.token as COINS)}
+                        alt={'image'}
+                        loading="lazy"
+                        width={100}
+                        height={100}
+                      />
+                    )}
                     <Paper style={{ padding: 14 }}>
                       <QRCodeSVG
-                        value={'qrCode'}
+                        value={`${FindChainNamesByChainids(order?.transaction.blockchain.chain_id || 0)}:${
+                          order?.transaction.blockchain.address
+                        }?amount=${order?.transaction.blockchain.crypto_amount}`}
                         width={160}
                         height={160}
                         imageSettings={{
-                          src: '/images/default_avatar.png',
-                          width: 35,
-                          height: 35,
+                          src: GetImgSrcByCrypto(order?.transaction.blockchain.token as COINS),
+                          width: 30,
+                          height: 30,
                           excavate: false,
                         }}
                       />
+
                       <Typography textAlign={'center'} pt={1}>
                         Scan to pay
                       </Typography>
@@ -407,7 +466,9 @@ const PaymentDetails = () => {
                   <Box mt={4} textAlign={'center'}>
                     <Stack direction={'row'} alignItems={'center'} justifyContent={'center'} gap={1}>
                       <Typography>Send</Typography>
-                      <Typography variant="h4">2.50 USDT</Typography>
+                      <Typography variant="h5">
+                        {order?.transaction.blockchain.crypto_amount} {order?.transaction.blockchain.token}
+                      </Typography>
                       <Typography>by single transaction</Typography>
                     </Stack>
                     <Typography py={1}>Transaction to address:</Typography>
@@ -418,10 +479,18 @@ const PaymentDetails = () => {
                     <FormControl size="small" hiddenLabel fullWidth>
                       <OutlinedInput
                         disabled
-                        value={'0x0000000000000'}
+                        value={order?.transaction.blockchain.address}
                         endAdornment={
                           <InputAdornment position="end">
-                            <IconButton onClick={() => {}}>
+                            <IconButton
+                              onClick={async () => {
+                                await navigator.clipboard.writeText(order?.transaction.blockchain.address || '');
+
+                                setSnackMessage('Copy successfully');
+                                setSnackSeverity('success');
+                                setSnackOpen(true);
+                              }}
+                            >
                               <ContentCopy />
                             </IconButton>
                           </InputAdornment>
@@ -432,19 +501,19 @@ const PaymentDetails = () => {
                   <Divider />
                   <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} pt={2}>
                     <Typography>Order Descriptions</Typography>
-                    <Typography>OrderId-1234</Typography>
+                    <Typography>{`OrderId-${order?.order_id}`}</Typography>
                   </Stack>
                   <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
                     <Typography>Price</Typography>
-                    <Typography>2.50 USD</Typography>
+                    <Typography>{`${order?.total_price} ${order?.transaction.currency}`}</Typography>
                   </Stack>
                   <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
                     <Typography>Fee</Typography>
-                    <Typography>0.00 USDT</Typography>
+                    <Typography>0.00 {`${order?.transaction.blockchain.token}`}</Typography>
                   </Stack>
                   <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
-                    <Typography>1 USDT:</Typography>
-                    <Typography>1.00 USD</Typography>
+                    <Typography>{`1 ${order?.transaction.blockchain.token}:`}</Typography>
+                    <Typography>{`${order?.transaction.blockchain.rate} ${order?.transaction.currency}`}</Typography>
                   </Stack>
                   <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
                     <Typography>Page Expires in:</Typography>
