@@ -627,7 +627,7 @@ const ProductDetails = () => {
 
           <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} mt={2}>
             <Box>
-              <Typography variant="h6">Pastel Hoodie</Typography>
+              <Typography variant="h6">{product.title}</Typography>
               <Stack direction={'row'} alignItems={'center'} gap={1}>
                 <Rating size="small" value={5} readOnly />
                 <div

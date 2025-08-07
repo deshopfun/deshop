@@ -13,6 +13,7 @@ type ProductType = {
   product_status: number;
   images: ProductImage[];
   options: ProductOption[];
+  variants: ProductVariant[];
 };
 
 type ProductImage = {
@@ -24,6 +25,14 @@ type ProductImage = {
 type ProductOption = {
   name: string;
   value: string;
+};
+
+type ProductVariant = {
+  title: string;
+  image: string;
+  price: string;
+  option: string;
+  inventory_quantity: number;
 };
 
 const NowTrendingCard = () => {
@@ -53,7 +62,7 @@ const NowTrendingCard = () => {
       {product &&
         product.length > 0 &&
         product.map((item, index) => (
-          <Grid size={{ xs: 12, md: 3 }} key={index}>
+          <Grid size={{ xs: 12, md: 2 }} key={index}>
             <div
               onClick={() => {
                 window.location.href = `/products/${item.product_id}`;
@@ -61,20 +70,18 @@ const NowTrendingCard = () => {
             >
               <Card>
                 <CardActionArea>
-                  <CardMedia
-                    component="img"
-                    width={item.images[0].width}
-                    height={item.images[0].height}
-                    image={item.images[0].src}
-                    alt="image"
-                  />
+                  <CardMedia component="img" width={100} height={150} image={item.images[0].src} alt="image" />
                   <CardContent>
-                    {item.product_id}
-                    <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} mt={1}>
-                      <Stack direction={'row'} alignItems={'center'} gap={1}>
-                        <Typography variant="h6">{item.title}</Typography>
-                      </Stack>
-                    </Stack>
+                    <Typography fontWeight={'bold'}>{item.title}</Typography>
+                    {item.variants && item.variants.length > 0 && (
+                      <Box>
+                        <Typography>{item.variants[0].option}</Typography>
+                        <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} mt={1}>
+                          <Typography color={'error'} fontWeight={'bold'}>{`US$${item.variants[0].price}`}</Typography>
+                          <Typography>{`RM:${item.variants[0].inventory_quantity}`}</Typography>
+                        </Stack>
+                      </Box>
+                    )}
                   </CardContent>
                 </CardActionArea>
               </Card>
