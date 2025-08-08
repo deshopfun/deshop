@@ -58,26 +58,11 @@ export const PROFILE_TAB_DATAS: TAB_DATA[] = [
   },
   {
     id: 1,
-    title: 'Wallets',
-    tabId: 'wallets',
-  },
-  {
-    id: 2,
-    title: 'Addresses',
-    tabId: 'Addresses',
-  },
-  {
-    id: 3,
     title: 'Replies',
     tabId: 'replies',
   },
   {
-    id: 4,
-    title: 'Notifications',
-    tabId: 'notifications',
-  },
-  {
-    id: 5,
+    id: 2,
     title: 'Following',
     tabId: 'following',
   },
@@ -119,18 +104,8 @@ export const MANAGE_TAB_DATAS: TAB_DATA[] = [
   },
   {
     id: 3,
-    title: 'Replies',
-    tabId: 'replies',
-  },
-  {
-    id: 4,
     title: 'Notifications',
     tabId: 'notifications',
-  },
-  {
-    id: 5,
-    title: 'Following',
-    tabId: 'following',
   },
 ];
 

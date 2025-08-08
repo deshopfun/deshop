@@ -6,6 +6,9 @@ import { useEffect, useState } from 'react';
 import axios from 'utils/http/axios';
 import { Http } from 'utils/http/http';
 import ManageOrder from './Order';
+import ManageWallet from './Wallet';
+import ManageAddress from './Address';
+import ManageNotification from './Notification';
 
 type ProfileType = {
   uuid: string;
@@ -103,11 +106,15 @@ const ManageDetails = () => {
       <CustomTabPanel value={tabValue} index={0}>
         <ManageOrder uuid={user?.profile.uuid} />
       </CustomTabPanel>
-      <CustomTabPanel value={tabValue} index={1}></CustomTabPanel>
-      <CustomTabPanel value={tabValue} index={2}></CustomTabPanel>
-      <CustomTabPanel value={tabValue} index={3}></CustomTabPanel>
-      <CustomTabPanel value={tabValue} index={4}></CustomTabPanel>
-      <CustomTabPanel value={tabValue} index={5}></CustomTabPanel>
+      <CustomTabPanel value={tabValue} index={1}>
+        <ManageWallet uuid={user?.profile.uuid} username={user?.profile.username} />
+      </CustomTabPanel>
+      <CustomTabPanel value={tabValue} index={2}>
+        <ManageAddress uuid={user?.profile.uuid} username={user?.profile.username} />
+      </CustomTabPanel>
+      <CustomTabPanel value={tabValue} index={3}>
+        <ManageNotification uuid={user?.profile.uuid} username={user?.profile.username} />
+      </CustomTabPanel>
     </Container>
   );
 };

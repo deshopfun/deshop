@@ -10,7 +10,7 @@ type Props = {
   username?: string;
 };
 
-const ProfileNotification = (props: Props) => {
+const ManageNotification = (props: Props) => {
   const [username, setUsername] = useState<string>('');
   const [notification, setNotification] = useState<string>('');
 
@@ -124,4 +124,4 @@ const ProfileNotification = (props: Props) => {
   );
 };
 
-export default ProfileNotification;
+export default ManageNotification;

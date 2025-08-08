@@ -30,7 +30,7 @@ type Props = {
   username?: string;
 };
 
-const ProfileAddress = (props: Props) => {
+const ManageAddress = (props: Props) => {
   const [handle, setHandle] = useState<number>(0);
   const [username, setUsername] = useState<string>('');
   const [addresses, setAddresses] = useState<AddressType[]>([]);
@@ -260,4 +260,4 @@ const ProfileAddress = (props: Props) => {
   );
 };
 
-export default ProfileAddress;
+export default ManageAddress;

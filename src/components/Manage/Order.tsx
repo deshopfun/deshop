@@ -1,11 +1,56 @@
-import { Box, Button, Card, CardContent, Stack, Typography } from '@mui/material';
+import { Box, Button, Card, CardContent, Divider, Stack, Typography } from '@mui/material';
 import { useSnackPresistStore, useUserPresistStore } from 'lib';
 import { useEffect, useState } from 'react';
 import axios from 'utils/http/axios';
 import { Http } from 'utils/http/http';
 
+type WalletType = {
+  address: string;
+  chain_id: number;
+  chain_name: string;
+  disable_coin: string;
+};
+
+type OrderItemType = {
+  product_id: number;
+  option: string;
+  quantity: number;
+  price: string;
+  title: string;
+  image: string;
+};
+
+type TransactionType = {
+  transaction_id: number;
+  amount: string;
+  currency: number;
+  gateway: string;
+  message: string;
+  source_name: number;
+  transaction_status: number;
+  blockchain: BlockchainType;
+};
+
+type BlockchainType = {
+  qrcode: string;
+  rate: string;
+  chain_id: number;
+  hash: string;
+  address: string;
+  from_address: string;
+  to_address: string;
+  token: string;
+  transact_type: string;
+  crypto_amount: string;
+  block_timestamp: number;
+};
+
 type OrderType = {
   order_id: number;
+  customer_uuid: string;
+  customer_email: string;
+  customer_username: string;
+  customer_avatar_url: string;
   user_uuid: string;
   user_email: string;
   username: string;
@@ -17,6 +62,9 @@ type OrderType = {
   total_tip_received: string;
   financial_status: number;
   processed_at: number;
+  items: OrderItemType[];
+  wallets: WalletType[];
+  transaction: TransactionType;
 };
 
 type Props = {
@@ -77,27 +125,68 @@ const ManageOrder = (props: Props) => {
                 <Card>
                   <CardContent>
                     <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
-                      <Typography>{item.order_id}</Typography>
                       <Stack direction={'row'} alignItems={'center'} gap={1}>
-                        <Button
-                          variant={'contained'}
-                          color={'success'}
-                          onClick={() => {
-                            window.location.href = item.order_status_url;
-                          }}
-                        >
-                          Check out
-                        </Button>
-                        <Button
-                          variant={'contained'}
-                          color={'success'}
-                          onClick={() => {
-                            window.location.href = `/payment/${item.order_id}`;
-                          }}
-                        >
-                          Go to pay
-                        </Button>
+                        <img src={item.user_avatar_url} alt={'image'} loading="lazy" width={40} height={40} />
+                        <Typography>{item.username}</Typography>
                       </Stack>
+                      <Typography color="error">Goods to be received</Typography>
+                    </Stack>
+                    <div
+                      onClick={() => {
+                        window.location.href = item.order_status_url;
+                      }}
+                    >
+                      <Stack direction={'row'} my={2} justifyContent={'space-between'}>
+                        <Stack direction={'row'}>
+                          <img src={item.items[0].image} alt={'image'} loading="lazy" width={100} height={100} />
+                          <Box pl={2}>
+                            <Typography>{item.items[0].title}</Typography>
+                            <Typography>{item.items[0].option}</Typography>
+                          </Box>
+                        </Stack>
+                        <Box textAlign={'right'}>
+                          <Typography>{`${item.items[0].price} USD`}</Typography>
+                          <Typography>{`x${item.items[0].quantity}`}</Typography>
+                        </Box>
+                      </Stack>
+                    </div>
+                    <Divider />
+                    <Typography
+                      textAlign={'right'}
+                      py={1}
+                    >{`${item.items.length} item in total. Real payment: ${item.total_price} USD`}</Typography>
+                    <Divider />
+                    <Stack direction={'row'} alignItems={'center'} justifyContent={'right'} gap={1} mt={2}>
+                      <Button
+                        variant={'contained'}
+                        color={'success'}
+                        onClick={() => {
+                          window.location.href = `/payment/${item.order_id}`;
+                        }}
+                      >
+                        Go to pay
+                      </Button>
+                      <Button variant={'outlined'} color={'inherit'} onClick={() => {}} size="small">
+                        Apply for a refund
+                      </Button>
+                      <Button variant={'outlined'} color={'inherit'} onClick={() => {}} size="small">
+                        check logistics
+                      </Button>
+                      <Button variant={'contained'} color={'error'} onClick={() => {}} size="small">
+                        confirm the receipt of goods
+                      </Button>
+                      <Button variant={'outlined'} color={'inherit'} onClick={() => {}} size="small">
+                        Delete an order
+                      </Button>
+                      <Button variant={'outlined'} color={'inherit'} onClick={() => {}} size="small">
+                        check logistics
+                      </Button>
+                      <Button variant={'outlined'} color={'inherit'} onClick={() => {}} size="small">
+                        Buy again
+                      </Button>
+                      <Button variant={'contained'} color={'error'} onClick={() => {}} size="small">
+                        Rate now
+                      </Button>
                     </Stack>
                   </CardContent>
                 </Card>

@@ -123,7 +123,7 @@ const HomeHeader = () => {
                   </MenuItem>
                   <MenuItem
                     onClick={() => {
-                      window.location.href = `/profile/${username}?tab=wallets`;
+                      window.location.href = `/manage/${username}?tab=wallets`;
                     }}
                   >
                     View wallet

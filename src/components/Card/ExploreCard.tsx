@@ -7,7 +7,7 @@ const ExploreCard = () => {
     <Grid container spacing={2}>
       {PRODUCT_TYPE &&
         Object.entries(PRODUCT_TYPE).map((item, index) => (
-          <Grid size={{ xs: 12, md: 3 }} key={index}>
+          <Grid size={{ xs: 12, md: 2 }} key={index}>
             <Card>
               <CardActionArea>
                 <CardMedia component="img" height="140" image={GetImgSrcByProductType(item[1])} alt="image" />

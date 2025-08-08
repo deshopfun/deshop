@@ -20,7 +20,7 @@ type Props = {
   username?: string;
 };
 
-const ProfileWallet = (props: Props) => {
+const ManageWallet = (props: Props) => {
   const [username, setUsername] = useState<string>('');
   const [wallets, setWallets] = useState<WalletType[]>([]);
 
@@ -191,4 +191,4 @@ const ProfileWallet = (props: Props) => {
   );
 };
 
-export default ProfileWallet;
+export default ManageWallet;

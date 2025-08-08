@@ -1,4 +1,3 @@
-import { AccountCircle } from '@mui/icons-material';
 import { Avatar, Box, Button, Container, Grid, Stack, Tab, Tabs, Typography } from '@mui/material';
 import { useSnackPresistStore, useUserPresistStore } from 'lib';
 import { useRouter } from 'next/router';
@@ -8,11 +7,8 @@ import axios from 'utils/http/axios';
 import { Http } from 'utils/http/http';
 import ProfileProduct from './Product';
 import EditProfileDialog from 'components/Dialog/EditProfileDialog';
-import ProfileWallet from './Wallet';
 import ProfileRepile from './Repile';
-import ProfileNotification from './Notification';
 import ProfileFollow from './Follow';
-import ProfileAddress from './Address';
 
 type UserType = {
   profile: ProfileType;
@@ -183,18 +179,9 @@ const ProfileDetails = () => {
             <ProfileProduct product={user?.products} uuid={user?.profile.uuid} />
           </CustomTabPanel>
           <CustomTabPanel value={tabValue} index={1}>
-            <ProfileWallet uuid={user?.profile.uuid} username={user?.profile.username} />
-          </CustomTabPanel>
-          <CustomTabPanel value={tabValue} index={2}>
-            <ProfileAddress uuid={user?.profile.uuid} username={user?.profile.username} />
-          </CustomTabPanel>
-          <CustomTabPanel value={tabValue} index={3}>
             <ProfileRepile uuid={user?.profile.uuid} />
           </CustomTabPanel>
-          <CustomTabPanel value={tabValue} index={4}>
-            <ProfileNotification uuid={user?.profile.uuid} username={user?.profile.username} />
-          </CustomTabPanel>
-          <CustomTabPanel value={tabValue} index={5}>
+          <CustomTabPanel value={tabValue} index={2}>
             <ProfileFollow uuid={user?.profile.uuid} />
           </CustomTabPanel>
         </Grid>
