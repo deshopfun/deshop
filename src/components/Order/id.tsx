@@ -80,6 +80,10 @@ const OrderDetails = () => {
 
   const init = async (orderId: any) => {
     try {
+      if (!orderId) {
+        return;
+      }
+
       const response: any = await axios.get(Http.order_by_id, {
         params: {
           order_id: Number(orderId),
@@ -181,11 +185,15 @@ const OrderDetails = () => {
                 <Box key={index}>
                   <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
                     <Typography>Image</Typography>
-                    <img src={item.image} alt="image" width={100} height={100} />
+                    <Link href={`/products/${item.product_id}`}>
+                      <img src={item.image} alt="image" width={100} height={100} />
+                    </Link>
                   </Stack>
                   <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
                     <Typography>Title</Typography>
-                    <Typography fontWeight={'bold'}>{item?.title}</Typography>
+                    <Link href={`/products/${item.product_id}`}>
+                      <Typography fontWeight={'bold'}>{item?.title}</Typography>
+                    </Link>
                   </Stack>
                   <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
                     <Typography>Option</Typography>
@@ -292,16 +300,18 @@ const OrderDetails = () => {
             )}
 
             <Box mt={4}>
-              <Button
-                variant={'contained'}
-                color="success"
-                fullWidth
-                onClick={() => {
-                  window.location.href = `/payment/${order?.order_id}`;
-                }}
-              >
-                Go to pay
-              </Button>
+              {order?.financial_status === 2 && (
+                <Button
+                  variant={'contained'}
+                  color="success"
+                  fullWidth
+                  onClick={() => {
+                    window.location.href = `/payment/${order?.order_id}`;
+                  }}
+                >
+                  Go to pay
+                </Button>
+              )}
             </Box>
           </CardContent>
         </Card>
