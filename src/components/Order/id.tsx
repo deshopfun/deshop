@@ -186,7 +186,7 @@ const OrderDetails = () => {
                   <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
                     <Typography>Image</Typography>
                     <Link href={`/products/${item.product_id}`}>
-                      <img src={item.image} alt="image" width={100} height={100} />
+                      <img src={item.image} alt="image" width={50} height={50} />
                     </Link>
                   </Stack>
                   <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
@@ -217,11 +217,9 @@ const OrderDetails = () => {
                 </Typography>
                 <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
                   <Typography>Amount</Typography>
-                  <Typography fontWeight={'bold'}>{order?.transaction.amount}</Typography>
-                </Stack>
-                <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
-                  <Typography>Currency</Typography>
-                  <Typography fontWeight={'bold'}>{order?.transaction.currency}</Typography>
+                  <Typography fontWeight={'bold'}>
+                    {order?.transaction.amount} {order?.transaction.currency}
+                  </Typography>
                 </Stack>
                 <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
                   <Typography>Gateway</Typography>
@@ -290,7 +288,9 @@ const OrderDetails = () => {
                 </Stack>
                 <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
                   <Typography>Rate</Typography>
-                  <Typography fontWeight={'bold'}>{order?.transaction.blockchain.rate}</Typography>
+                  <Typography
+                    fontWeight={'bold'}
+                  >{`1 ${order?.transaction.blockchain.token} = ${order?.transaction.blockchain.rate} USD`}</Typography>
                 </Stack>
                 <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
                   <Typography>Block timestamp</Typography>

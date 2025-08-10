@@ -30,14 +30,15 @@ import {
 import { useEffect, useState } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
 import { CheckCircle, ContentCopy, ExpandMore } from '@mui/icons-material';
-import { BLOCKCHAIN, BLOCKCHAINNAMES, COIN, COINS } from 'packages/constants';
+import { BLOCKCHAIN, BLOCKCHAINNAMES, CHAINIDS, COIN, COINS } from 'packages/constants';
 import Image from 'next/image';
 import axios from 'utils/http/axios';
 import { Http } from 'utils/http/http';
 import { useRouter } from 'next/router';
 import { useSnackPresistStore, useUserPresistStore } from 'lib';
-import { FindChainNamesByChainids } from 'utils/web3';
+import { FindChainNamesByChainids, FindTokenByChainIdsAndSymbol } from 'utils/web3';
 import { GetImgSrcByChain, GetImgSrcByCrypto } from 'utils/qrcode';
+import WalletConnectButton from 'components/Button/WalletConnectButton';
 
 const steps = [
   'Payment section',
@@ -413,24 +414,26 @@ const PaymentDetails = () => {
             <Grid size={{ xs: 12, md: 5 }}>
               <Card>
                 <Box p={2}>
-                  <Stack direction={'row'} alignItems={'center'} p={1} border={1}>
-                    {order?.transaction.blockchain.chain_id && (
-                      <img
-                        src={GetImgSrcByChain(order?.transaction.blockchain.chain_id)}
-                        alt={'image'}
-                        loading="lazy"
-                        width={40}
-                        height={40}
-                      />
-                    )}
+                  <Card>
+                    <Stack direction={'row'} alignItems={'center'} p={1}>
+                      {order?.transaction.blockchain.chain_id && (
+                        <img
+                          src={GetImgSrcByChain(order?.transaction.blockchain.chain_id)}
+                          alt={'image'}
+                          loading="lazy"
+                          width={40}
+                          height={40}
+                        />
+                      )}
 
-                    <Box pl={2}>
-                      <Typography fontWeight={'bold'}>
-                        {FindChainNamesByChainids(order?.transaction.blockchain.chain_id || 0)}
-                      </Typography>
-                      <Typography>{order?.transaction.blockchain.token}</Typography>
-                    </Box>
-                  </Stack>
+                      <Box pl={2}>
+                        <Typography fontWeight={'bold'}>
+                          {FindChainNamesByChainids(order?.transaction.blockchain.chain_id || 0)}
+                        </Typography>
+                        <Typography>{order?.transaction.blockchain.token}</Typography>
+                      </Box>
+                    </Stack>
+                  </Card>
 
                   <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} mt={2} px={4}>
                     {order?.transaction.blockchain.token && (
@@ -473,9 +476,8 @@ const PaymentDetails = () => {
                     </Stack>
                     <Typography py={1}>Transaction to address:</Typography>
                   </Box>
-
                   <Divider />
-                  <Box pt={1} pb={2}>
+                  <Box pt={1} pb={1}>
                     <FormControl size="small" hiddenLabel fullWidth>
                       <OutlinedInput
                         disabled
@@ -498,6 +500,43 @@ const PaymentDetails = () => {
                       />
                     </FormControl>
                   </Box>
+                  <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} gap={2} pb={1}>
+                    <Button
+                      variant={'contained'}
+                      startIcon={<ContentCopy />}
+                      fullWidth
+                      onClick={async () => {
+                        await navigator.clipboard.writeText(String(order?.transaction.blockchain.address));
+
+                        setSnackMessage('Successfully copy');
+                        setSnackSeverity('success');
+                        setSnackOpen(true);
+                      }}
+                    >
+                      Copy Address
+                    </Button>
+                    <WalletConnectButton
+                      color={'success'}
+                      chainIds={order?.transaction.blockchain.chain_id as CHAINIDS}
+                      address={String(order?.transaction.blockchain.address)}
+                      contractAddress={
+                        FindTokenByChainIdsAndSymbol(
+                          order?.transaction.blockchain.chain_id as CHAINIDS,
+                          order?.transaction.blockchain.token as COINS,
+                        )?.contractAddress
+                      }
+                      decimals={
+                        FindTokenByChainIdsAndSymbol(
+                          order?.transaction.blockchain.chain_id as CHAINIDS,
+                          order?.transaction.blockchain.token as COINS,
+                        )?.decimals
+                      }
+                      value={String(order?.transaction.blockchain.crypto_amount)}
+                      buttonSize={'medium'}
+                      buttonVariant={'contained'}
+                      fullWidth={true}
+                    />
+                  </Stack>
                   <Divider />
                   <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} pt={2}>
                     <Typography>Order Descriptions</Typography>
@@ -524,7 +563,7 @@ const PaymentDetails = () => {
                     <Button
                       fullWidth
                       variant={'contained'}
-                      color={'success'}
+                      color={'info'}
                       onClick={() => {
                         setPage(1);
                       }}

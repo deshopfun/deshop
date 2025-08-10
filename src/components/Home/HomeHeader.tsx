@@ -5,6 +5,7 @@ import { useCartPresistStore, useSnackPresistStore, useUserPresistStore } from '
 import { useEffect, useState } from 'react';
 import axios from 'utils/http/axios';
 import { Http } from 'utils/http/http';
+import { OmitMiddleString } from 'utils/strings';
 
 const HomeHeader = () => {
   const [avatarUrl, setAvatarUrl] = useState<string>();
@@ -103,18 +104,36 @@ const HomeHeader = () => {
             </Button>
             {getIsLogin() ? (
               <>
-                <Button variant={'outlined'} onClick={handleClick} endIcon={<KeyboardArrowDown />}>
+                <Button
+                  variant={'outlined'}
+                  onClick={handleClick}
+                  endIcon={<KeyboardArrowDown />}
+                  style={{ width: 180 }}
+                >
                   {avatarUrl ? (
                     <Avatar sx={{ width: 25, height: 25 }} alt="Avatar" src={avatarUrl} />
                   ) : (
                     <Avatar sx={{ width: 25, height: 25 }} alt="Avatar" src={'/images/default_avatar.png'} />
                   )}
                   <Typography pl={1} fontSize={16}>
-                    {username}
+                    {OmitMiddleString(String(username), 3)}
                   </Typography>
                 </Button>
-                <Menu open={open} anchorEl={anchorEl} onClose={handleClose}>
+                <Menu
+                  open={open}
+                  anchorEl={anchorEl}
+                  onClose={handleClose}
+                  anchorOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'right',
+                  }}
+                  transformOrigin={{
+                    vertical: 'top',
+                    horizontal: 'right',
+                  }}
+                >
                   <MenuItem
+                    style={{ width: 180 }}
                     onClick={() => {
                       window.location.href = `/profile/${username}`;
                     }}
@@ -123,17 +142,10 @@ const HomeHeader = () => {
                   </MenuItem>
                   <MenuItem
                     onClick={() => {
-                      window.location.href = `/manage/${username}?tab=wallets`;
-                    }}
-                  >
-                    View wallet
-                  </MenuItem>
-                  <MenuItem
-                    onClick={() => {
                       window.location.href = `/manage/${username}`;
                     }}
                   >
-                    View manage
+                    Manage
                   </MenuItem>
                   <Divider />
                   <MenuItem onClick={onClickLogout}>

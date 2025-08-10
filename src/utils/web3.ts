@@ -1,4 +1,18 @@
-import { BLOCKCHAINNAMES, CHAINIDS, CHAINNAMES, COIN } from 'packages/constants';
+import { BLOCKCHAINNAMES, CHAINIDS, CHAINNAMES, COIN, COINS } from 'packages/constants';
+import {
+  bitcoin,
+  mainnet,
+  tron,
+  solana,
+  bsc,
+  arbitrum,
+  arbitrumNova,
+  avalanche,
+  polygon,
+  base,
+  optimism,
+  AppKitNetwork,
+} from '@reown/appkit/networks';
 
 export function FindTokenByChainIdsAndContractAddress(chainIds: CHAINIDS, contractAddress: string): COIN {
   const coins = BLOCKCHAINNAMES.find((item) => item.chainId === chainIds)?.coins;
@@ -6,8 +20,14 @@ export function FindTokenByChainIdsAndContractAddress(chainIds: CHAINIDS, contra
   return token as COIN;
 }
 
-export function FindChainNamesByChainids(chains: CHAINIDS): CHAINNAMES {
-  switch (chains) {
+export function FindTokenByChainIdsAndSymbol(chainIds: CHAINIDS, symbol: COINS): COIN {
+  const coins = BLOCKCHAINNAMES.find((item) => item.chainId === chainIds)?.coins;
+  const token = coins?.find((item) => item.symbol?.toLowerCase() === symbol.toLowerCase());
+  return token as COIN;
+}
+
+export function FindChainNamesByChainids(chainIds: CHAINIDS): CHAINNAMES {
+  switch (chainIds) {
     case CHAINIDS.BITCOIN:
       return CHAINNAMES.BITCOIN;
     case CHAINIDS.LITECOIN:
@@ -41,4 +61,45 @@ export function FindChainNamesByChainids(chains: CHAINIDS): CHAINNAMES {
     default:
       return CHAINNAMES.BITCOIN;
   }
+}
+
+export function GetAllSupportAppKitNetwork(): [AppKitNetwork, ...AppKitNetwork[]] {
+  return [bitcoin, mainnet, tron, solana, bsc, arbitrum, arbitrumNova, avalanche, polygon, base, optimism];
+}
+
+export function GetWalletConnectNetworkByChainids(chainIds: CHAINIDS): AppKitNetwork {
+  switch (chainIds) {
+    case CHAINIDS.BITCOIN:
+      return bitcoin;
+    case CHAINIDS.LITECOIN:
+      break;
+    case CHAINIDS.XRP:
+      break;
+    case CHAINIDS.BITCOINCASH:
+      break;
+    case CHAINIDS.ETHEREUM:
+      return mainnet;
+    case CHAINIDS.TRON:
+      return tron;
+    case CHAINIDS.SOLANA:
+      return solana;
+    case CHAINIDS.BSC:
+      return bsc;
+    case CHAINIDS.ARBITRUM_ONE:
+      return arbitrum;
+    case CHAINIDS.ARBITRUM_NOVA:
+      return arbitrumNova;
+    case CHAINIDS.AVALANCHE:
+      return avalanche;
+    case CHAINIDS.POLYGON:
+      return polygon;
+    case CHAINIDS.BASE:
+      return base;
+    case CHAINIDS.OPTIMISM:
+      return optimism;
+    case CHAINIDS.TON:
+      break;
+  }
+
+  return mainnet;
 }
