@@ -1,7 +1,7 @@
-export function GetBlockchainTxUrl(isMainnet: boolean, hash: string): string {
-  return isMainnet ? `https://etherscan.io/tx/${hash}` : `https://sepolia.etherscan.io/tx/${hash}`;
+export function GetBlockchainTxUrl(hash: string): string {
+  return `https://etherscan.io/tx/${hash}`;
 }
 
-export function GetBlockchainAddressUrl(isMainnet: boolean, address: string): string {
-  return isMainnet ? `https://etherscan.io/address/${address}` : `https://sepolia.etherscan.io/address/${address}`;
+export function GetBlockchainAddressUrl(address: string): string {
+  return `https://etherscan.io/address/${address}`;
 }

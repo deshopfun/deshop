@@ -25,6 +25,7 @@ import {
   Step,
   StepButton,
   Stepper,
+  TextField,
   Typography,
 } from '@mui/material';
 import { useEffect, useState } from 'react';
@@ -36,16 +37,21 @@ import axios from 'utils/http/axios';
 import { Http } from 'utils/http/http';
 import { useRouter } from 'next/router';
 import { useSnackPresistStore, useUserPresistStore } from 'lib';
-import { FindChainNamesByChainids, FindTokenByChainIdsAndSymbol } from 'utils/web3';
+import {
+  FindChainNamesByChainids,
+  FindTokenByChainIdsAndSymbol,
+  GetBlockchainAddressUrlByChainIds,
+  GetBlockchainTxUrlByChainIds,
+} from 'utils/web3';
 import { GetImgSrcByChain, GetImgSrcByCrypto } from 'utils/qrcode';
 import WalletConnectButton from 'components/Button/WalletConnectButton';
+import { OmitMiddleString } from 'utils/strings';
 
 const steps = [
   'Payment section',
   'Waiting for payment',
-  'Blockchain network confirmation',
-  'Order status change',
-  'Email confirmation',
+  'Blockchain confirmation/Order status change/Email confirmation',
+  'Complete',
 ];
 
 type WalletType = {
@@ -119,6 +125,8 @@ const PaymentDetails = () => {
   const [order, setOrder] = useState<OrderType>();
   const [blockchains, setBlockchains] = useState<BLOCKCHAIN[]>([]);
   const [expanded, setExpanded] = useState<string | false>(false);
+  const [pasteTxId, setPasteTxId] = useState<boolean>(false);
+  const [txid, setTxid] = useState<string>('');
 
   const [activeStep, setActiveStep] = useState(0);
   const [completed, setCompleted] = useState<{
@@ -143,7 +151,7 @@ const PaymentDetails = () => {
     setExpanded(isExpanded ? panel : false);
   };
 
-  const init = async (orderId: any) => {
+  const init = async (orderId: any, order?: OrderType) => {
     try {
       const response: any = await axios.get(Http.order_by_id, {
         params: {
@@ -164,12 +172,21 @@ const PaymentDetails = () => {
         }, []);
 
         setBlockchains(newBlockchain);
-        setOrder(response.data);
 
-        if (response.data.transaction.transaction_id) {
-          setActiveStep(1);
-          setPage(2);
+        if (!order) {
+          switch (response.data.transaction.transaction_status) {
+            case 1 || 2 || 4:
+              setActiveStep(3);
+              setPage(3);
+              break;
+            case 3:
+              setActiveStep(1);
+              setPage(2);
+              break;
+          }
         }
+
+        setOrder(response.data);
       } else {
         setBlockchains([]);
         setOrder(undefined);
@@ -181,6 +198,18 @@ const PaymentDetails = () => {
       console.error(e);
     }
   };
+
+  useEffect(() => {
+    if (id) {
+      const activeInit = setInterval(async () => {
+        await init(id, order as OrderType);
+      }, 10 * 1000);
+
+      return () => clearInterval(activeInit);
+    }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id, order]);
 
   useEffect(() => {
     if (id) {
@@ -203,6 +232,31 @@ const PaymentDetails = () => {
 
       if (response.result) {
         await init(id);
+      } else {
+        setSnackSeverity('error');
+        setSnackMessage(response.message);
+        setSnackOpen(true);
+      }
+    } catch (e) {
+      setSnackSeverity('error');
+      setSnackMessage('The network error occurred. Please try again later.');
+      setSnackOpen(true);
+      console.error(e);
+    }
+  };
+
+  const onClickPasteTxId = async () => {
+    try {
+      if (!order || !txid || txid === '') {
+        return;
+      }
+
+      const response: any = await axios.post(Http.transaction_paste_tx_id, {
+        order_id: order.order_id,
+        txid: txid,
+      });
+
+      if (response.result) {
       } else {
         setSnackSeverity('error');
         setSnackMessage(response.message);
@@ -305,6 +359,21 @@ const PaymentDetails = () => {
                   </Stack>
                 </Box>
               </Card>
+
+              {order?.transaction.transaction_id && (
+                <Box mt={2}>
+                  <Button
+                    variant={'contained'}
+                    color={'info'}
+                    fullWidth
+                    onClick={() => {
+                      setPage(2);
+                    }}
+                  >
+                    Next
+                  </Button>
+                </Box>
+              )}
             </Grid>
           </Grid>
         </Box>
@@ -383,7 +452,53 @@ const PaymentDetails = () => {
                       <Typography>
                         Paste/Write your Chain transaction id(Txid) to manual payment confirmation
                       </Typography>
-                      <Link href="#">Paste Chain Txid</Link>
+                      {pasteTxId ? (
+                        <Box>
+                          <Typography mb={1} fontWeight={'bold'}>
+                            Txid:
+                          </Typography>
+                          <TextField
+                            hiddenLabel
+                            size="small"
+                            fullWidth
+                            value={txid}
+                            onChange={(e) => {
+                              setTxid(e.target.value);
+                            }}
+                            placeholder="txid from blockchain"
+                          />
+                          <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} my={2}>
+                            <Button
+                              size="small"
+                              onClick={() => {
+                                setPasteTxId(false);
+                              }}
+                              variant={'contained'}
+                              color={'error'}
+                            >
+                              Cancel
+                            </Button>
+                            <Button
+                              size="small"
+                              onClick={() => {
+                                onClickPasteTxId();
+                              }}
+                              variant={'contained'}
+                              color={'success'}
+                            >
+                              Transaction Confirm
+                            </Button>
+                          </Stack>
+                        </Box>
+                      ) : (
+                        <div
+                          onClick={() => {
+                            setPasteTxId(true);
+                          }}
+                        >
+                          <Link>Paste Chain Txid</Link>
+                        </div>
+                      )}
                     </Box>
                     <Box py={2}>
                       <Typography>
@@ -587,26 +702,95 @@ const PaymentDetails = () => {
           <Box mt={4}>
             <Card>
               <Box display={'flex'} p={4} justifyContent={'center'}>
-                <Box width={400} textAlign={'center'}>
-                  <CheckCircle color={'success'} fontSize={'large'} />
-                  <Typography variant="h6">Thank you</Typography>
+                <Box width={500} textAlign={'center'}>
+                  {order?.transaction.transaction_status === 1 && (
+                    <>
+                      <CheckCircle color={'success'} fontSize={'large'} />
+                      <Typography variant="h6">Thank you</Typography>
+                    </>
+                  )}
 
+                  {order?.transaction.transaction_status === 2 && (
+                    <>
+                      <CheckCircle color={'warning'} fontSize={'large'} />
+                      <Typography variant="h6">Something wrong</Typography>
+                    </>
+                  )}
+
+                  {order?.transaction.transaction_status === 4 && (
+                    <>
+                      <CheckCircle color={'error'} fontSize={'large'} />
+                      <Typography variant="h6">Something wrong</Typography>
+                    </>
+                  )}
                   <Box mt={2}>
-                    <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} gap={2} pb={1}>
-                      <Typography>Order Status</Typography>
-                      <Chip label={'Settled'} color={'success'} />
-                    </Stack>
-                    <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} gap={2} pb={1}>
-                      <Typography>Hash</Typography>
-                      <Link href="#">0x00000</Link>
-                    </Stack>
-                    <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} gap={2} pb={1}>
-                      <Typography>From Address</Typography>
-                      <Link href="#">0x00000</Link>
+                    <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} gap={2}>
+                      <Typography>Order status</Typography>
+                      {order?.transaction.transaction_status === 1 && (
+                        <>
+                          <Chip label={'Settled'} color={'success'} />
+                        </>
+                      )}
+                      {order?.transaction.transaction_status === 2 && (
+                        <>
+                          <Chip label={'Failure'} color={'warning'} />
+                        </>
+                      )}
+                      {order?.transaction.transaction_status === 4 && (
+                        <>
+                          <Chip label={'Error'} color={'error'} />
+                        </>
+                      )}
                     </Stack>
                     <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} gap={2}>
-                      <Typography>To Address</Typography>
-                      <Link href="#">0x00000</Link>
+                      <Typography>Blockchain</Typography>
+                      <Typography fontWeight={'bold'}>
+                        {FindChainNamesByChainids(order?.transaction.blockchain.chain_id as CHAINIDS)}
+                      </Typography>
+                    </Stack>
+                    <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} gap={2}>
+                      <Typography>Hash</Typography>
+                      <Link
+                        href={GetBlockchainTxUrlByChainIds(
+                          order?.transaction.blockchain.chain_id as CHAINIDS,
+                          String(order?.transaction.blockchain.hash),
+                        )}
+                        target="_blank"
+                      >
+                        {OmitMiddleString(String(order?.transaction.blockchain.hash))}
+                      </Link>
+                    </Stack>
+                    <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} gap={2}>
+                      <Typography>From address</Typography>
+                      <Link
+                        href={GetBlockchainAddressUrlByChainIds(
+                          order?.transaction.blockchain.chain_id as CHAINIDS,
+                          String(order?.transaction.blockchain.from_address),
+                        )}
+                        target="_blank"
+                      >
+                        {OmitMiddleString(String(order?.transaction.blockchain.from_address))}
+                      </Link>
+                    </Stack>
+                    <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} gap={2}>
+                      <Typography>To address</Typography>
+                      <Link
+                        href={GetBlockchainAddressUrlByChainIds(
+                          order?.transaction.blockchain.chain_id as CHAINIDS,
+                          String(order?.transaction.blockchain.to_address),
+                        )}
+                        target="_blank"
+                      >
+                        {OmitMiddleString(String(order?.transaction.blockchain.to_address))}
+                      </Link>
+                    </Stack>
+                    <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} gap={2}>
+                      <Typography>Token</Typography>
+                      <Typography fontWeight={'bold'}>{order?.transaction.blockchain.token}</Typography>
+                    </Stack>
+                    <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} gap={2}>
+                      <Typography>Block timestamp</Typography>
+                      <Typography fontWeight={'bold'}>{order?.transaction.blockchain.block_timestamp}</Typography>
                     </Stack>
                   </Box>
                 </Box>

@@ -1,11 +1,7 @@
-export function GetBlockchainTxUrl(isMainnet: boolean, hash: string): string {
-  return isMainnet
-    ? `https://explorer.melroy.org/tx/${hash}`
-    : `https://blockexplorer.one/bitcoin-cash/testnet/tx/${hash}`;
+export function GetBlockchainTxUrl(hash: string): string {
+  return `https://explorer.melroy.org/tx/${hash}`;
 }
 
-export function GetBlockchainAddressUrl(isMainnet: boolean, address: string): string {
-  return isMainnet
-    ? `https://explorer.melroy.org/address/${address}`
-    : `https://blockexplorer.one/bitcoin-cash/testnet/address/${address}`;
+export function GetBlockchainAddressUrl(address: string): string {
+  return `https://explorer.melroy.org/address/${address}`;
 }

@@ -1,7 +1,7 @@
-export function GetBlockchainTxUrl(isMainnet: boolean, hash: string): string {
-  return isMainnet ? `https://tronscan.org/#/transaction/${hash}` : `https://nile.tronscan.org/#/transaction/${hash}`;
+export function GetBlockchainTxUrl(hash: string): string {
+  return `https://tronscan.org/#/transaction/${hash}`;
 }
 
-export function GetBlockchainAddressUrl(isMainnet: boolean, address: string): string {
-  return isMainnet ? `https://tronscan.org/#/address/${address}` : `https://nile.tronscan.org/#/address/${address}`;
+export function GetBlockchainAddressUrl(address: string): string {
+  return `https://tronscan.org/#/address/${address}`;
 }

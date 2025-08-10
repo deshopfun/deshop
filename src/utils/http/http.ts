@@ -39,6 +39,7 @@ export class Http {
   //transaction
   static transaction = this.httpPath + '/client/transaction/transaction';
   static transaction_by_id = this.httpPath + '/client/transaction/transaction-by-id';
+  static transaction_paste_tx_id = this.httpPath + '/client/transaction/transaction-paste-tx-id';
 
   // wallet
   static wallet = this.httpPath + '/client/wallet/wallet';
