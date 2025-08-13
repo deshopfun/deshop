@@ -1,4 +1,14 @@
-import { Box, Button, Card, CardContent, Divider, Stack, Typography } from '@mui/material';
+import {
+  Box,
+  Button,
+  Card,
+  CardContent,
+  Divider,
+  Stack,
+  ToggleButton,
+  ToggleButtonGroup,
+  Typography,
+} from '@mui/material';
 import { useSnackPresistStore, useUserPresistStore } from 'lib';
 import { useEffect, useState } from 'react';
 import axios from 'utils/http/axios';
@@ -73,12 +83,13 @@ type Props = {
 };
 
 const ManageOrder = (props: Props) => {
+  const [alignment, setAlignment] = useState<string>('buy' || 'sell');
   const [orders, setOrders] = useState<OrderType[]>([]);
 
   const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore((state) => state);
   const { getIsLogin, getUuid } = useUserPresistStore((state) => state);
 
-  const init = async (uuid: string) => {
+  const init = async (uuid: string, kind: string) => {
     try {
       if (!uuid || uuid === '') {
         setSnackSeverity('error');
@@ -89,7 +100,7 @@ const ManageOrder = (props: Props) => {
 
       const response: any = await axios.get(Http.order, {
         params: {
-          uuid: uuid,
+          kind: kind === 'buy' ? 1 : 2,
         },
       });
 
@@ -108,7 +119,7 @@ const ManageOrder = (props: Props) => {
 
   useEffect(() => {
     if (props.uuid) {
-      init(props.uuid);
+      init(props.uuid, 'buy');
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.uuid]);
@@ -116,6 +127,22 @@ const ManageOrder = (props: Props) => {
   return (
     <Box>
       <Typography variant="h6">All order</Typography>
+
+      <Box mt={2}>
+        <ToggleButtonGroup
+          fullWidth
+          exclusive
+          color="primary"
+          value={alignment}
+          onChange={async (e: any) => {
+            setAlignment(e.target.value);
+            await init(String(props.uuid), e.target.value);
+          }}
+        >
+          <ToggleButton value={'buy'}>Buy</ToggleButton>
+          <ToggleButton value={'sell'}>Sell</ToggleButton>
+        </ToggleButtonGroup>
+      </Box>
 
       {getIsLogin() && getUuid() === props.uuid ? (
         <Box mt={2}>
