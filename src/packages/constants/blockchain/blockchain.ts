@@ -46,26 +46,6 @@ export const XRP_COINS: COIN[] = [
     displayDecimals: 8,
     icon: require('assets/coin/xrp.svg'),
   },
-  {
-    chainId: CHAINIDS.XRP,
-    name: COINS.USDT,
-    isMainCoin: false,
-    symbol: COINS.USDT,
-    decimals: 6,
-    displayDecimals: 2,
-    contractAddress: 'rcvxE9PS9YBwxtGg1qNeewV6ZB3wGubZq',
-    icon: require('assets/coin/usdt.svg'),
-  },
-  {
-    chainId: CHAINIDS.XRP,
-    name: COINS.USDC,
-    isMainCoin: false,
-    symbol: COINS.USDC,
-    decimals: 6,
-    displayDecimals: 2,
-    contractAddress: 'rcEGREd8NmkKRE8GE424sksyt1tJVFZwu',
-    icon: require('assets/coin/usdc.svg'),
-  },
 ];
 
 export const BITCOINCASH_COINS: COIN[] = [
