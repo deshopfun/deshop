@@ -39,11 +39,11 @@ export class LTC {
 
     //   // nativeSegwit
     //   const nativeSegwitPrivateKey = node.derivePath(nativeSegwitPath).privateKey?.toString('hex');
-    //   const nativeSegwitAddress = this.getAddressP2wpkhFromPrivateKey(nativeSegwitPrivateKey as string);
+    //   const nativeSegwitAddress = this.getAddressP2wpkhFromPrivateKey(nativeSegwitPrivateKey);
 
     // return {
     //   chain: this.getChainIds(),
-    //   address: nativeSegwitAddress as string,
+    //   address: nativeSegwitAddress,
     //   privateKey: nativeSegwitPrivateKey,
     //   note: 'LITECOIN',
     // };
@@ -67,7 +67,7 @@ export class LTC {
 
       return {
         chain: this.getChainIds(),
-        address: nativeSegwitAddress as string,
+        address: nativeSegwitAddress,
         privateKey: privateKey,
         note: 'NATIVESEGWIT',
       };
@@ -89,7 +89,7 @@ export class LTC {
     // const ECPair = ECPairFactory(ecc);
     // const keyPair = ECPair.fromWIF(this.toWifStaring(privateKey), this.getNetwork());
     // const p2wpkh = bitcoin.payments.p2wpkh({ pubkey: keyPair.publicKey, network: this.getNetwork() });
-    // return p2wpkh.address as string;
+    // return p2wpkh.address;
     return '';
   }
 

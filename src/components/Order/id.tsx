@@ -2,10 +2,12 @@ import { Alert, AlertTitle, Box, Button, Card, CardContent, Container, Stack, Ty
 import { useSnackPresistStore } from 'lib';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
+import { CHAINIDS } from 'packages/constants';
 import { useEffect, useState } from 'react';
 import axios from 'utils/http/axios';
 import { Http } from 'utils/http/http';
-import { FindChainNamesByChainids } from 'utils/web3';
+import { OmitMiddleString } from 'utils/strings';
+import { FindChainNamesByChainids, GetBlockchainAddressUrlByChainIds, GetBlockchainTxUrlByChainIds } from 'utils/web3';
 
 type WalletType = {
   address: string;
@@ -116,7 +118,7 @@ const OrderDetails = () => {
         <Box>
           <Alert severity="success">
             <AlertTitle>Paid</AlertTitle>
-            <Typography>The order status is Paid</Typography>
+            <Typography>The order financial status is Paid</Typography>
           </Alert>
         </Box>
       )}
@@ -124,7 +126,7 @@ const OrderDetails = () => {
         <Box>
           <Alert severity="warning">
             <AlertTitle>Pending</AlertTitle>
-            <Typography>The order status is Pending</Typography>
+            <Typography>The order financial status is Pending</Typography>
           </Alert>
         </Box>
       )}
@@ -132,7 +134,7 @@ const OrderDetails = () => {
         <Box>
           <Alert severity="info">
             <AlertTitle>Refunded</AlertTitle>
-            <Typography>The order status is Refunded</Typography>
+            <Typography>The order financial status is Refunded</Typography>
           </Alert>
         </Box>
       )}
@@ -140,7 +142,7 @@ const OrderDetails = () => {
         <Box>
           <Alert severity="error">
             <AlertTitle>Voided</AlertTitle>
-            <Typography>The order status is Voided</Typography>
+            <Typography>The order financial status is Voided</Typography>
           </Alert>
         </Box>
       )}
@@ -264,19 +266,39 @@ const OrderDetails = () => {
                 </Stack>
                 <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
                   <Typography>Hash</Typography>
-                  <Typography fontWeight={'bold'}>{order?.transaction.blockchain.hash}</Typography>
-                </Stack>
-                <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
-                  <Typography>Address</Typography>
-                  <Typography fontWeight={'bold'}>{order?.transaction.blockchain.address}</Typography>
+                  <Link
+                    href={GetBlockchainTxUrlByChainIds(
+                      order?.transaction.blockchain.chain_id as CHAINIDS,
+                      String(order?.transaction.blockchain.hash),
+                    )}
+                    target="_blank"
+                  >
+                    {OmitMiddleString(String(order?.transaction.blockchain.hash))}
+                  </Link>
                 </Stack>
                 <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
                   <Typography>From address</Typography>
-                  <Typography fontWeight={'bold'}>{order?.transaction.blockchain.from_address}</Typography>
+                  <Link
+                    href={GetBlockchainAddressUrlByChainIds(
+                      order?.transaction.blockchain.chain_id as CHAINIDS,
+                      String(order?.transaction.blockchain.from_address),
+                    )}
+                    target="_blank"
+                  >
+                    {OmitMiddleString(String(order?.transaction.blockchain.from_address))}
+                  </Link>
                 </Stack>
                 <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
                   <Typography>To address</Typography>
-                  <Typography fontWeight={'bold'}>{order?.transaction.blockchain.to_address}</Typography>
+                  <Link
+                    href={GetBlockchainAddressUrlByChainIds(
+                      order?.transaction.blockchain.chain_id as CHAINIDS,
+                      String(order?.transaction.blockchain.to_address),
+                    )}
+                    target="_blank"
+                  >
+                    {OmitMiddleString(String(order?.transaction.blockchain.to_address))}
+                  </Link>
                 </Stack>
                 <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
                   <Typography>Token</Typography>
@@ -294,12 +316,19 @@ const OrderDetails = () => {
                 </Stack>
                 <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
                   <Typography>Block timestamp</Typography>
-                  <Typography fontWeight={'bold'}>{order?.transaction.blockchain.block_timestamp}</Typography>
+                  <Typography fontWeight={'bold'}>
+                    {new Date(Number(order?.transaction.blockchain.block_timestamp)).toLocaleString()}
+                  </Typography>
                 </Stack>
               </Box>
             )}
 
             <Box mt={4}>
+              {order?.financial_status === 1 && (
+                <Button variant={'contained'} color="inherit" fullWidth onClick={() => {}}>
+                  Check logistics
+                </Button>
+              )}
               {order?.financial_status === 2 && (
                 <Button
                   variant={'contained'}

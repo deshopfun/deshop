@@ -22,7 +22,7 @@ export class XRP {
 
       return {
         chain: this.getChainIds(),
-        address: wallet.address as string,
+        address: wallet.address,
         privateKey: wallet.privateKey,
         note: 'XRP',
       };
@@ -38,7 +38,7 @@ export class XRP {
 
       return {
         chain: this.getChainIds(),
-        address: wallet.address as string,
+        address: wallet.address,
         privateKey: privateKey,
         note: 'XRP',
       };

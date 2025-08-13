@@ -151,10 +151,10 @@ const CheckoutDetails = () => {
           const price = parseFloat(item.price) || 0;
           return total + price * item.quantity;
         }, 0);
-        setSubTotal(total.toFixed(2));
+        setSubTotal(String(total));
         setShipping('0');
         setDiscount('0');
-        setTotal(total.toFixed(2));
+        setTotal(String(total));
       } else {
         setSnackSeverity('error');
         setSnackMessage('Something wrong');

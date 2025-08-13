@@ -692,11 +692,11 @@ const ProductDetails = () => {
                   </Stack>
 
                   <Box pt={1} pb={2}>
-                    <Grid container spacing={10}>
+                    <Grid container columnSpacing={6} rowSpacing={2}>
                       {item.value &&
                         item.value.split(',').length > 0 &&
                         item.value.split(',').map((innerItem, innerIndex) => (
-                          <Grid size={{ xs: 2, md: 2 }} key={innerIndex}>
+                          <Grid size={4} key={innerIndex}>
                             <Button
                               variant={'contained'}
                               color={

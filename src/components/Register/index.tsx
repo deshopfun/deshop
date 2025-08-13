@@ -47,7 +47,7 @@ const Register = () => {
   useEffect(() => {
     const enterEmail = router.query.email;
     if (enterEmail) {
-      setEmail(enterEmail as string);
+      setEmail(String(enterEmail));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [router.query]);

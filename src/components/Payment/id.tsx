@@ -50,8 +50,9 @@ import { OmitMiddleString } from 'utils/strings';
 const steps = [
   'Payment section',
   'Waiting for payment',
-  'Blockchain confirmation/Order status change/Email confirmation',
-  'Complete',
+  // 'Blockchain confirmation/Order status change/Email confirmation',
+  'Transaction confirmation',
+  'Transaction complete',
 ];
 
 type WalletType = {
@@ -134,18 +135,6 @@ const PaymentDetails = () => {
   }>({});
 
   const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore((state) => state);
-
-  const handleStep = (step: number) => () => {
-    switch (step) {
-      case 0:
-        setPage(1);
-        break;
-      case 1:
-        setPage(2);
-        break;
-    }
-    setActiveStep(step);
-  };
 
   const handleChangeBlockchain = (panel: string) => (event: React.SyntheticEvent, isExpanded: boolean) => {
     setExpanded(isExpanded ? panel : false);
@@ -257,6 +246,11 @@ const PaymentDetails = () => {
       });
 
       if (response.result) {
+        setSnackSeverity('success');
+        setSnackMessage('Handle successfully');
+        setSnackOpen(true);
+
+        window.location.reload();
       } else {
         setSnackSeverity('error');
         setSnackMessage(response.message);
@@ -367,6 +361,7 @@ const PaymentDetails = () => {
                     color={'info'}
                     fullWidth
                     onClick={() => {
+                      setActiveStep(1);
                       setPage(2);
                     }}
                   >
@@ -471,6 +466,7 @@ const PaymentDetails = () => {
                             <Button
                               size="small"
                               onClick={() => {
+                                setTxid('');
                                 setPasteTxId(false);
                               }}
                               variant={'contained'}
@@ -663,7 +659,7 @@ const PaymentDetails = () => {
                   </Stack>
                   <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
                     <Typography>Fee</Typography>
-                    <Typography>0.00 {`${order?.transaction.blockchain.token}`}</Typography>
+                    <Typography>0 {`${order?.transaction.blockchain.token}`}</Typography>
                   </Stack>
                   <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
                     <Typography>{`1 ${order?.transaction.blockchain.token}:`}</Typography>
@@ -680,6 +676,7 @@ const PaymentDetails = () => {
                       variant={'contained'}
                       color={'info'}
                       onClick={() => {
+                        setActiveStep(0);
                         setPage(1);
                       }}
                     >
@@ -790,7 +787,9 @@ const PaymentDetails = () => {
                     </Stack>
                     <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} gap={2}>
                       <Typography>Block timestamp</Typography>
-                      <Typography fontWeight={'bold'}>{order?.transaction.blockchain.block_timestamp}</Typography>
+                      <Typography fontWeight={'bold'}>
+                        {new Date(Number(order?.transaction.blockchain.block_timestamp)).toLocaleString()}
+                      </Typography>
                     </Stack>
                   </Box>
                 </Box>
@@ -806,7 +805,7 @@ const PaymentDetails = () => {
             <Stepper nonLinear activeStep={activeStep}>
               {steps.map((label, index) => (
                 <Step key={label} completed={completed[index]}>
-                  <StepButton color="inherit" onClick={handleStep(index)}>
+                  <StepButton color="inherit">
                     <Typography fontWeight={'bold'} textAlign={'left'}>
                       Step {index + 1}
                     </Typography>

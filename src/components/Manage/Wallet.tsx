@@ -75,7 +75,7 @@ const ManageWallet = (props: Props) => {
       newDisableCoin = disableCoinArray.filter((item) => item !== coin).join(',');
     } else {
       disableCoinArray?.push(coin);
-      newDisableCoin = disableCoinArray?.join(',') as string;
+      newDisableCoin = String(disableCoinArray?.join(','));
     }
 
     const response: any = await axios.put(Http.wallet, {
@@ -116,10 +116,10 @@ const ManageWallet = (props: Props) => {
                 <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
                   <Stack direction={'row'} alignItems={'center'} gap={2}>
                     <Typography variant="h6">{item.name}</Typography>
-                    {(wallets.find((walletItem) => walletItem.chain_id === item.chainId)?.address as string) && (
+                    {wallets.find((walletItem) => walletItem.chain_id === item.chainId)?.address && (
                       <Chip
                         label={OmitMiddleString(
-                          wallets.find((walletItem) => walletItem.chain_id === item.chainId)?.address as string,
+                          String(wallets.find((walletItem) => walletItem.chain_id === item.chainId)?.address),
                         )}
                         color="primary"
                       />
@@ -130,9 +130,7 @@ const ManageWallet = (props: Props) => {
                     color={'success'}
                     onClick={() => {
                       setSelectChain(item.chainId);
-                      setSelectAddress(
-                        wallets.find((walletItem) => walletItem.chain_id === item.chainId)?.address as string,
-                      );
+                      setSelectAddress(wallets.find((walletItem) => walletItem.chain_id === item.chainId)?.address);
                       setOpenEditAddressDialog(true);
                     }}
                   >

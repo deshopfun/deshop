@@ -60,6 +60,7 @@ type OrderType = {
   total_price: string;
   total_tax: string;
   total_tip_received: string;
+  confirmed: number;
   financial_status: number;
   processed_at: number;
   items: OrderItemType[];
@@ -157,36 +158,47 @@ const ManageOrder = (props: Props) => {
                     >{`${item.items.length} item in total. Real payment: ${item.total_price} USD`}</Typography>
                     <Divider />
                     <Stack direction={'row'} alignItems={'center'} justifyContent={'right'} gap={1} mt={2}>
-                      <Button
-                        variant={'contained'}
-                        color={'success'}
-                        onClick={() => {
-                          window.location.href = `/payment/${item.order_id}`;
-                        }}
-                      >
-                        Go to pay
-                      </Button>
-                      <Button variant={'outlined'} color={'inherit'} onClick={() => {}} size="small">
-                        Apply for a refund
-                      </Button>
-                      <Button variant={'outlined'} color={'inherit'} onClick={() => {}} size="small">
-                        check logistics
-                      </Button>
-                      <Button variant={'contained'} color={'error'} onClick={() => {}} size="small">
-                        confirm the receipt of goods
-                      </Button>
-                      <Button variant={'outlined'} color={'inherit'} onClick={() => {}} size="small">
-                        Delete an order
-                      </Button>
-                      <Button variant={'outlined'} color={'inherit'} onClick={() => {}} size="small">
-                        check logistics
-                      </Button>
-                      <Button variant={'outlined'} color={'inherit'} onClick={() => {}} size="small">
-                        Buy again
-                      </Button>
-                      <Button variant={'contained'} color={'error'} onClick={() => {}} size="small">
-                        Rate now
-                      </Button>
+                      {item.financial_status === 1 ? (
+                        <>
+                          <Button variant={'outlined'} color={'inherit'} onClick={() => {}} size="small">
+                            Apply for a refund
+                          </Button>
+                          <Button variant={'outlined'} color={'inherit'} onClick={() => {}} size="small">
+                            check logistics
+                          </Button>
+                          <Button variant={'contained'} color={'error'} onClick={() => {}} size="small">
+                            confirm the receipt of goods
+                          </Button>
+                        </>
+                      ) : (
+                        <Button
+                          size="small"
+                          variant={'contained'}
+                          color={'success'}
+                          onClick={() => {
+                            window.location.href = `/payment/${item.order_id}`;
+                          }}
+                        >
+                          Go to pay
+                        </Button>
+                      )}
+
+                      {item.confirmed === 1 && (
+                        <>
+                          <Button variant={'outlined'} color={'inherit'} onClick={() => {}} size="small">
+                            Delete an order
+                          </Button>
+                          <Button variant={'outlined'} color={'inherit'} onClick={() => {}} size="small">
+                            check logistics
+                          </Button>
+                          <Button variant={'outlined'} color={'inherit'} onClick={() => {}} size="small">
+                            Buy again
+                          </Button>
+                          <Button variant={'contained'} color={'error'} onClick={() => {}} size="small">
+                            Rate now
+                          </Button>
+                        </>
+                      )}
                     </Stack>
                   </CardContent>
                 </Card>

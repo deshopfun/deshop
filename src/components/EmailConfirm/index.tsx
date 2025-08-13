@@ -49,7 +49,7 @@ const EmailConfirm = () => {
   useEffect(() => {
     const enterCode = router.query.code;
     if (enterCode) {
-      setCode(enterCode as string);
+      setCode(String(enterCode));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [router.query]);

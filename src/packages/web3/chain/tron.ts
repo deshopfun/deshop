@@ -20,11 +20,11 @@ export class TRON {
       const hdkey = HDKey.fromMasterSeed(Uint8Array.from(seed)).derive(path);
 
       const privateKey = Buffer.from(hdkey.privateKey as Uint8Array).toString('hex');
-      const address = TronWeb.address.fromPrivateKey(privateKey) as string;
+      const address = TronWeb.address.fromPrivateKey(privateKey);
 
       return {
         chain: this.getChainIds(),
-        address: address,
+        address: String(address),
         privateKey: privateKey,
         note: 'TRON',
       };
@@ -36,11 +36,11 @@ export class TRON {
 
   static createAccountByPrivateKey(privateKey: string): ChainAccountType {
     try {
-      const address = TronWeb.address.fromPrivateKey(privateKey) as string;
+      const address = TronWeb.address.fromPrivateKey(privateKey);
 
       return {
         chain: this.getChainIds(),
-        address: address,
+        address: String(address),
         privateKey: privateKey,
         note: 'TRON',
       };

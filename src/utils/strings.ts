@@ -2,7 +2,7 @@ import { generate } from 'random-words';
 import { Hex } from 'viem';
 
 export function RandomWords(length: number = 0): string[] {
-  return length === 0 ? [generate() as string] : (generate(length) as string[]);
+  return length === 0 ? [String(generate())] : (generate(length) as string[]);
 }
 
 export function AddAndShuffleArray(arr: string[], str: string): string[] {

@@ -19,7 +19,7 @@ const Cart = () => {
           }, 0);
           return total + cartItemTotal;
         }, 0);
-        setSubtotal(newTotal.toFixed(2));
+        setSubtotal(String(newTotal));
       }
     }
   }, [getCart()]);
