@@ -96,7 +96,11 @@ const CheckoutDetails = () => {
     try {
       if (!getUuid()) return;
 
-      const response: any = await axios.get(Http.address);
+      const response: any = await axios.get(Http.address, {
+        params: {
+          kind: 1,
+        },
+      });
 
       if (response.result) {
         setAddresses(response.data);
@@ -118,6 +122,7 @@ const CheckoutDetails = () => {
       const response: any = await axios.get(Http.address_by_uuid, {
         params: {
           uuid: uuid,
+          kind: 2,
         },
       });
 

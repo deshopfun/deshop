@@ -37,6 +37,7 @@ type DialogType = {
   city?: string;
   province?: string;
   zip?: string;
+  kind: number;
 };
 
 export default function UserAddressDialog(props: DialogType) {
@@ -53,6 +54,7 @@ export default function UserAddressDialog(props: DialogType) {
   const [city, setCity] = useState<string>('');
   const [province, setProvince] = useState<string>('');
   const [zip, setZip] = useState<string>('');
+  const [kind, setKind] = useState<number>(0);
 
   const { setSnackSeverity, setSnackOpen, setSnackMessage } = useSnackPresistStore((state) => state);
 
@@ -70,6 +72,7 @@ export default function UserAddressDialog(props: DialogType) {
     setCity(props.city || '');
     setProvince(props.province || '');
     setZip(props.zip || '');
+    setKind(props.kind);
   }, [
     props.handle,
     props.addressId,
@@ -84,6 +87,7 @@ export default function UserAddressDialog(props: DialogType) {
     props.city,
     props.province,
     props.zip,
+    props.kind,
   ]);
 
   const onClickSaveAddress = async () => {
@@ -178,6 +182,10 @@ export default function UserAddressDialog(props: DialogType) {
         return;
       }
 
+      if (kind !== 1 && kind !== 2) {
+        return;
+      }
+
       if (handle === 1) {
         const response: any = await axios.post(Http.address, {
           first_name: firstName,
@@ -193,6 +201,7 @@ export default function UserAddressDialog(props: DialogType) {
           zip: zip,
           address_one: addressOne,
           address_two: addressTwo,
+          kind: kind,
         });
 
         if (response.result) {
@@ -256,7 +265,7 @@ export default function UserAddressDialog(props: DialogType) {
       }}
       fullWidth
     >
-      <DialogTitle>Add new shipping address</DialogTitle>
+      <DialogTitle>{props.addressId ? 'Edit shipping address' : 'Add new shipping address'}</DialogTitle>
       <DialogContent>
         <Stack direction={'row'} alignItems={'center'} gap={2}>
           <Box width={'100%'}>

@@ -1,5 +1,16 @@
 import { Add, Delete } from '@mui/icons-material';
-import { Box, Button, Card, CardContent, Divider, IconButton, Stack, Typography } from '@mui/material';
+import {
+  Box,
+  Button,
+  Card,
+  CardContent,
+  Divider,
+  IconButton,
+  Stack,
+  ToggleButton,
+  ToggleButtonGroup,
+  Typography,
+} from '@mui/material';
 import UserAddressDialog from 'components/Dialog/UserAddressDialog';
 import { useSnackPresistStore, useUserPresistStore } from 'lib';
 import { useEffect, useState } from 'react';
@@ -22,6 +33,7 @@ type AddressType = {
   address_one: string;
   address_two: string;
   zip: string;
+  kind: number;
   is_default: number;
 };
 
@@ -31,6 +43,7 @@ type Props = {
 };
 
 const ManageAddress = (props: Props) => {
+  const [alignment, setAlignment] = useState<string>('received' || 'delivery');
   const [handle, setHandle] = useState<number>(0);
   const [username, setUsername] = useState<string>('');
   const [addresses, setAddresses] = useState<AddressType[]>([]);
@@ -41,7 +54,7 @@ const ManageAddress = (props: Props) => {
   const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore((state) => state);
   const { getIsLogin, getUuid } = useUserPresistStore((state) => state);
 
-  const init = async (username: string) => {
+  const init = async (username: string, kind: string) => {
     try {
       if (!username || username === '') {
         setSnackSeverity('error');
@@ -53,6 +66,7 @@ const ManageAddress = (props: Props) => {
       const response: any = await axios.get(Http.address_by_username, {
         params: {
           username: props.username,
+          kind: kind === 'received' ? 1 : 2,
         },
       });
 
@@ -72,14 +86,14 @@ const ManageAddress = (props: Props) => {
   useEffect(() => {
     if (props.username) {
       setUsername(props.username);
-      init(props.username);
+      init(props.username, 'received');
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.username]);
 
   const handleCloseDialog = async () => {
     setCurrentAddress(undefined);
-    await init(username);
+    await init(username, alignment);
     setOpenDialog(false);
   };
 
@@ -91,7 +105,7 @@ const ManageAddress = (props: Props) => {
       });
 
       if (response.result) {
-        await init(username);
+        await init(username, alignment);
 
         setSnackSeverity('success');
         setSnackMessage('Save successfully');
@@ -118,7 +132,7 @@ const ManageAddress = (props: Props) => {
       });
 
       if (response.result) {
-        await init(username);
+        await init(username, alignment);
 
         setSnackSeverity('success');
         setSnackMessage('Save successfully');
@@ -139,6 +153,22 @@ const ManageAddress = (props: Props) => {
   return (
     <Box>
       <Typography variant="h6">All address</Typography>
+
+      <Box mt={2}>
+        <ToggleButtonGroup
+          fullWidth
+          exclusive
+          color="primary"
+          value={alignment}
+          onChange={async (e: any) => {
+            setAlignment(e.target.value);
+            await init(String(props.uuid), e.target.value);
+          }}
+        >
+          <ToggleButton value={'received'}>Received</ToggleButton>
+          <ToggleButton value={'delivery'}>Delivery</ToggleButton>
+        </ToggleButtonGroup>
+      </Box>
 
       {getIsLogin() && getUuid() === props.uuid ? (
         <Box mt={2}>
@@ -245,6 +275,7 @@ const ManageAddress = (props: Props) => {
             city={currentAddress?.city}
             province={currentAddress?.province}
             zip={currentAddress?.zip}
+            kind={alignment === 'received' ? 1 : 2}
           />
         </Box>
       ) : (

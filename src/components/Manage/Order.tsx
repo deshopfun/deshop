@@ -154,7 +154,11 @@ const ManageOrder = (props: Props) => {
                   <CardContent>
                     <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
                       <Stack direction={'row'} alignItems={'center'} gap={1}>
-                        <img src={item.user_avatar_url} alt={'image'} loading="lazy" width={40} height={40} />
+                        {item.user_avatar_url ? (
+                          <img src={item.user_avatar_url} alt={'image'} loading="lazy" width={40} height={40} />
+                        ) : (
+                          <img src={'/images/default_avatar.png'} alt={'image'} loading="lazy" width={40} height={40} />
+                        )}
                         <Typography>{item.username}</Typography>
                       </Stack>
                       <Typography color="error">Goods to be received</Typography>
