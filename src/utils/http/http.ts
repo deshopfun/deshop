@@ -14,6 +14,8 @@ export class Http {
   static product_list = this.httpPath + '/client/product-list';
   static product_by_id = this.httpPath + '/client/product-by-id';
   static product_variant_by_option = this.httpPath + '/client/product-variant-by-option';
+  static order_by_id = this.httpPath + '/client/order-by-id';
+  static transaction_paste_tx_id = this.httpPath + '/client/transaction-paste-tx-id';
 
   // upload
   static upload_file = this.httpPath + '/client/upload-file';
@@ -37,12 +39,10 @@ export class Http {
 
   // order
   static order = this.httpPath + '/client/order/order';
-  static order_by_id = this.httpPath + '/client/order/order-by-id';
 
   //transaction
   static transaction = this.httpPath + '/client/transaction/transaction';
   static transaction_by_id = this.httpPath + '/client/transaction/transaction-by-id';
-  static transaction_paste_tx_id = this.httpPath + '/client/transaction/transaction-paste-tx-id';
 
   // wallet
   static wallet = this.httpPath + '/client/wallet/wallet';

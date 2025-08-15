@@ -9,6 +9,7 @@ import {
   ToggleButtonGroup,
   Typography,
 } from '@mui/material';
+import BlockchainDialog from 'components/Dialog/BlockchainDialog';
 import { useSnackPresistStore, useUserPresistStore } from 'lib';
 import { useEffect, useState } from 'react';
 import axios from 'utils/http/axios';
@@ -83,6 +84,7 @@ type Props = {
 };
 
 const ManageOrder = (props: Props) => {
+  const [openBlockchainDialog, setOpenBlockchainDialog] = useState<boolean>(false);
   const [alignment, setAlignment] = useState<string>('buy' || 'sell');
   const [orders, setOrders] = useState<OrderType[]>([]);
 
@@ -123,6 +125,10 @@ const ManageOrder = (props: Props) => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.uuid]);
+
+  const handleCloseDialog = async () => {
+    setOpenBlockchainDialog(false);
+  };
 
   return (
     <Box>
@@ -202,16 +208,28 @@ const ManageOrder = (props: Props) => {
                           </Button>
                         </>
                       ) : (
-                        <Button
-                          size="small"
-                          variant={'contained'}
-                          color={'success'}
-                          onClick={() => {
-                            window.location.href = `/payment/${item.order_id}`;
-                          }}
-                        >
-                          Go to pay
-                        </Button>
+                        <>
+                          <Button
+                            variant={'outlined'}
+                            color={'inherit'}
+                            onClick={() => {
+                              setOpenBlockchainDialog(true);
+                            }}
+                            size="small"
+                          >
+                            Check blockchain
+                          </Button>
+                          <Button
+                            size="small"
+                            variant={'contained'}
+                            color={'success'}
+                            onClick={() => {
+                              window.location.href = `/payment/${item.order_id}`;
+                            }}
+                          >
+                            Go to pay
+                          </Button>
+                        </>
                       )}
 
                       {item.confirmed === 1 && (
@@ -220,7 +238,7 @@ const ManageOrder = (props: Props) => {
                             Delete an order
                           </Button>
                           <Button variant={'outlined'} color={'inherit'} onClick={() => {}} size="small">
-                            check logistics
+                            Check logistics
                           </Button>
                           <Button variant={'outlined'} color={'inherit'} onClick={() => {}} size="small">
                             Buy again
@@ -233,6 +251,11 @@ const ManageOrder = (props: Props) => {
                     </Stack>
                   </CardContent>
                 </Card>
+                <BlockchainDialog
+                  blockchain={item.transaction.blockchain}
+                  openDialog={openBlockchainDialog}
+                  handleCloseDialog={handleCloseDialog}
+                />
               </Box>
             ))}
         </Box>

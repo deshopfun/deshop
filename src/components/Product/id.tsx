@@ -244,21 +244,12 @@ const ProductDetails = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [optionOneValue, optionTwoValue, optionThreeValue]);
 
-  if (product?.product_status !== 1 && getUuid() !== product?.user_uuid) {
-    return (
-      <Container>
-        <Box>
-          <Alert severity="error">
-            <AlertTitle>Error</AlertTitle>
-            <Typography>Not found</Typography>
-          </Alert>
-        </Box>
-      </Container>
-    );
-  }
-
   const onClickFavorite = async () => {
     try {
+      if (!product) {
+        return;
+      }
+
       if (!product.product_id || product.product_id === 0) {
         setSnackSeverity('error');
         setSnackMessage('Incorrect product id');
@@ -287,6 +278,10 @@ const ProductDetails = () => {
   };
 
   const onClickAddToCart = async () => {
+    if (!product) {
+      return;
+    }
+
     if (quantity <= 0) return;
 
     let option = '';
@@ -367,538 +362,551 @@ const ProductDetails = () => {
 
   return (
     <Container>
-      {product?.product_status === 2 && (
+      {product?.product_status !== 1 && getUuid() !== product?.user_uuid ? (
         <Box>
-          <Alert severity="info">
-            <AlertTitle>Archived</AlertTitle>
-            <Typography>The product status is Archived, only read but not editable</Typography>
+          <Alert severity="error">
+            <AlertTitle>Error</AlertTitle>
+            <Typography>Not found</Typography>
           </Alert>
         </Box>
-      )}
-      {product?.product_status === 3 && (
-        <Box>
-          <Alert severity="warning">
-            <AlertTitle>Draft</AlertTitle>
-            <Typography>The status of the product is Draft, you can edit it and put it on the market</Typography>
-          </Alert>
-        </Box>
-      )}
-      <Grid container spacing={8} mt={4}>
-        <Grid size={{ xs: 12, md: 8 }}>
-          {isSelectOption && currentProductVariant?.image ? (
-            <Box textAlign={'center'}>
-              <img src={currentProductVariant.image} alt="image" width={200} height={200} />
+      ) : (
+        <>
+          {product?.product_status === 2 && (
+            <Box>
+              <Alert severity="info">
+                <AlertTitle>Archived</AlertTitle>
+                <Typography>The product status is Archived, only read but not editable</Typography>
+              </Alert>
             </Box>
-          ) : (
-            <Swiper
-              pagination={{
-                clickable: true,
-              }}
-              navigation={true}
-              modules={[Pagination, Navigation]}
-            >
-              {product &&
-                product.images.length > 0 &&
-                product.images.map((item, index) => (
-                  <SwiperSlide key={index}>
-                    <Box display={'flex'} justifyContent={'center'}>
-                      <img src={item.src} alt="image" width={200} height={200} />
-                    </Box>
-                  </SwiperSlide>
-                ))}
-            </Swiper>
           )}
-          <Stack direction={'row'} alignItems={'center'} gap={1} mt={2}>
-            {product &&
-              product.images.length > 0 &&
-              product.images.map((item, index) => (
-                <img key={index} src={item.src} alt="image" width={50} height={50} />
-              ))}
-          </Stack>
-
-          <Box mt={3}>
-            <Typography variant="h6">Ratings and reviews</Typography>
-            <Box mt={2}>
-              <Stack direction={'row'} alignItems={'center'} gap={1}>
-                <Typography variant="h4">4.9</Typography>
-                <Star />
+          {product?.product_status === 3 && (
+            <Box>
+              <Alert severity="warning">
+                <AlertTitle>Draft</AlertTitle>
+                <Typography>The status of the product is Draft, you can edit it and put it on the market</Typography>
+              </Alert>
+            </Box>
+          )}
+          <Grid container spacing={8} mt={4}>
+            <Grid size={{ xs: 12, md: 8 }}>
+              {isSelectOption && currentProductVariant?.image ? (
+                <Box textAlign={'center'}>
+                  <img src={currentProductVariant.image} alt="image" width={200} height={200} />
+                </Box>
+              ) : (
+                <Swiper
+                  pagination={{
+                    clickable: true,
+                  }}
+                  navigation={true}
+                  modules={[Pagination, Navigation]}
+                >
+                  {product &&
+                    product.images.length > 0 &&
+                    product.images.map((item, index) => (
+                      <SwiperSlide key={index}>
+                        <Box display={'flex'} justifyContent={'center'}>
+                          <img src={item.src} alt="image" width={200} height={200} />
+                        </Box>
+                      </SwiperSlide>
+                    ))}
+                </Swiper>
+              )}
+              <Stack direction={'row'} alignItems={'center'} gap={1} mt={2}>
+                {product &&
+                  product.images.length > 0 &&
+                  product.images.map((item, index) => (
+                    <img key={index} src={item.src} alt="image" width={50} height={50} />
+                  ))}
               </Stack>
-              <div
-                onClick={() => {
-                  setOpenRatingsDialog(true);
-                }}
-              >
-                <Link color="#000" fontSize={14}>
-                  4.6K ratings
-                </Link>
-              </div>
+
+              <Box mt={3}>
+                <Typography variant="h6">Ratings and reviews</Typography>
+                <Box mt={2}>
+                  <Stack direction={'row'} alignItems={'center'} gap={1}>
+                    <Typography variant="h4">4.9</Typography>
+                    <Star />
+                  </Stack>
+                  <div
+                    onClick={() => {
+                      setOpenRatingsDialog(true);
+                    }}
+                  >
+                    <Link color="#000" fontSize={14}>
+                      4.6K ratings
+                    </Link>
+                  </div>
+
+                  <Box mt={2}>
+                    <Stack direction={'row'} alignItems={'center'} gap={1}>
+                      <Typography fontWeight={'bold'}>5</Typography>
+                      <Box sx={{ width: '100%' }}>
+                        <LinearProgress
+                          color={'inherit'}
+                          variant="determinate"
+                          value={90}
+                          style={{
+                            borderRadius: 5,
+                          }}
+                        />
+                      </Box>
+                    </Stack>
+                    <Stack direction={'row'} alignItems={'center'} gap={1}>
+                      <Typography fontWeight={'bold'}>4</Typography>
+                      <Box sx={{ width: '100%' }}>
+                        <LinearProgress
+                          color={'inherit'}
+                          variant="determinate"
+                          value={20}
+                          style={{
+                            borderRadius: 5,
+                          }}
+                        />
+                      </Box>
+                    </Stack>
+                    <Stack direction={'row'} alignItems={'center'} gap={1}>
+                      <Typography fontWeight={'bold'}>3</Typography>
+                      <Box sx={{ width: '100%' }}>
+                        <LinearProgress
+                          color={'inherit'}
+                          variant="determinate"
+                          value={30}
+                          style={{
+                            borderRadius: 5,
+                          }}
+                        />
+                      </Box>
+                    </Stack>
+                    <Stack direction={'row'} alignItems={'center'} gap={1}>
+                      <Typography fontWeight={'bold'}>2</Typography>
+                      <Box sx={{ width: '100%' }}>
+                        <LinearProgress
+                          color={'inherit'}
+                          variant="determinate"
+                          value={2}
+                          style={{
+                            borderRadius: 5,
+                          }}
+                        />
+                      </Box>
+                    </Stack>
+                    <Stack direction={'row'} alignItems={'center'} gap={1}>
+                      <Typography fontWeight={'bold'}>1</Typography>
+                      <Box sx={{ width: '100%' }}>
+                        <LinearProgress
+                          color={'inherit'}
+                          variant="determinate"
+                          value={10}
+                          style={{
+                            borderRadius: 5,
+                          }}
+                        />
+                      </Box>
+                    </Stack>
+                  </Box>
+                </Box>
+                <Box mt={2}>
+                  <Grid container spacing={4}>
+                    <Grid size={{ xs: 6, md: 6 }}>
+                      <Rating size="small" value={5} readOnly />
+                      <Stack direction={'row'} alignItems={'center'} gap={1}>
+                        <Typography fontSize={14}>abc</Typography>
+                        <Typography fontSize={14}>·</Typography>
+                        <Typography fontSize={14}>7 days ago</Typography>
+                      </Stack>
+                      <Stack direction={'row'} alignItems={'center'} gap={1} mt={1}>
+                        <Typography fontSize={14}>Red</Typography>
+                        <Typography fontSize={14}>/</Typography>
+                        <Typography fontSize={14}>M</Typography>
+                      </Stack>
+                      <Typography mt={2}>
+                        the hoodie is super comfy. only thing is even though i like over sized and knew this would be
+                        oversized i would still suggest sizing down.
+                      </Typography>
+                      <Stack direction={'row'} alignItems={'center'} mt={2}>
+                        <IconButton size="small">
+                          <ThumbUpOffAlt fontSize={'small'} />
+                          {/* <ThumbUpAlt fontSize={'small'}/> */}
+                        </IconButton>
+                        <Typography>Helpful</Typography>
+                      </Stack>
+                    </Grid>
+                    <Grid size={{ xs: 6, md: 6 }}>
+                      <Rating size="small" value={5} readOnly />
+                      <Stack direction={'row'} alignItems={'center'} gap={1}>
+                        <Typography fontSize={14}>abc</Typography>
+                        <Typography fontSize={14}>·</Typography>
+                        <Typography fontSize={14}>7 days ago</Typography>
+                      </Stack>
+                      <Stack direction={'row'} alignItems={'center'} gap={1} mt={1}>
+                        <Typography fontSize={14}>Red</Typography>
+                        <Typography fontSize={14}>/</Typography>
+                        <Typography fontSize={14}>M</Typography>
+                      </Stack>
+                      <Typography mt={2}>
+                        the hoodie is super comfy. only thing is even though i like over sized and knew this would be
+                        oversized i would still suggest sizing down.
+                      </Typography>
+                      <Stack direction={'row'} alignItems={'center'} mt={2}>
+                        <IconButton size="small">
+                          <ThumbUpOffAlt fontSize={'small'} />
+                          {/* <ThumbUpAlt fontSize={'small'}/> */}
+                        </IconButton>
+                        <Typography>Helpful</Typography>
+                      </Stack>
+                    </Grid>
+                    <Grid size={{ xs: 6, md: 6 }}>
+                      <Rating size="small" value={5} readOnly />
+                      <Stack direction={'row'} alignItems={'center'} gap={1}>
+                        <Typography fontSize={14}>abc</Typography>
+                        <Typography fontSize={14}>·</Typography>
+                        <Typography fontSize={14}>7 days ago</Typography>
+                      </Stack>
+                      <Stack direction={'row'} alignItems={'center'} gap={1} mt={1}>
+                        <Typography fontSize={14}>Red</Typography>
+                        <Typography fontSize={14}>/</Typography>
+                        <Typography fontSize={14}>M</Typography>
+                      </Stack>
+                      <Typography mt={2}>
+                        the hoodie is super comfy. only thing is even though i like over sized and knew this would be
+                        oversized i would still suggest sizing down.
+                      </Typography>
+                      <Stack direction={'row'} alignItems={'center'} mt={2}>
+                        <IconButton size="small">
+                          <ThumbUpOffAlt fontSize={'small'} />
+                          {/* <ThumbUpAlt fontSize={'small'}/> */}
+                        </IconButton>
+                        <Typography>Helpful</Typography>
+                      </Stack>
+                    </Grid>
+                  </Grid>
+
+                  <Box mt={4}>
+                    <Button
+                      fullWidth
+                      variant={'contained'}
+                      color={'inherit'}
+                      onClick={() => {
+                        setOpenRatingsDialog(true);
+                      }}
+                    >
+                      Read more reviews
+                    </Button>
+                  </Box>
+                </Box>
+              </Box>
+            </Grid>
+
+            <Grid size={{ xs: 12, md: 4 }}>
+              <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
+                <Stack direction={'row'} alignItems={'center'} gap={1}>
+                  {product.user_avatar_url ? (
+                    <img src={product.user_avatar_url} alt={'image'} loading="lazy" width={30} height={30} />
+                  ) : (
+                    <img src={'/images/default_avatar.png'} alt={'image'} loading="lazy" width={30} height={30} />
+                  )}
+                  <Typography fontWeight={'bold'}>{product.username}</Typography>
+                </Stack>
+                <IconButton onClick={handleClickMore}>
+                  <MoreHoriz />
+                </IconButton>
+                <Menu open={openMore} anchorEl={anchorEl} onClose={handleCloseMore}>
+                  <MenuItem
+                    onClick={() => {
+                      window.location.href = `mailto:${product.user_email}`;
+                    }}
+                  >
+                    <Stack direction={'row'} alignItems={'center'} gap={1}>
+                      <ChatBubbleOutline fontSize={'small'} />
+                      <Typography>{`Contact ${product.username}`}</Typography>
+                    </Stack>
+                  </MenuItem>
+                  <MenuItem onClick={() => {}}>
+                    <Stack direction={'row'} alignItems={'center'} gap={1}>
+                      <HelpOutline color={'error'} fontSize={'small'} />
+                      <Typography color={'error'}>Report product</Typography>
+                    </Stack>
+                  </MenuItem>
+                </Menu>
+              </Stack>
+
+              <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} mt={2}>
+                <Box>
+                  <Typography variant="h6">{product.title}</Typography>
+                  <Stack direction={'row'} alignItems={'center'} gap={1}>
+                    <Rating size="small" value={5} readOnly />
+                    <div
+                      onClick={() => {
+                        setOpenRatingsDialog(true);
+                      }}
+                    >
+                      <Link color="#000" fontSize={14}>
+                        4.6K ratings
+                      </Link>
+                    </div>
+                  </Stack>
+                </Box>
+                {getIsLogin() && (
+                  <IconButton
+                    style={{
+                      width: 50,
+                      height: 50,
+                      background: product?.collect_status === 1 ? '#0098e5' : '',
+                      color: product?.collect_status === 1 ? 'white' : '',
+                    }}
+                    onClick={() => {
+                      onClickFavorite();
+                    }}
+                  >
+                    <FavoriteBorder />
+                  </IconButton>
+                )}
+              </Stack>
+
+              {currentProductVariant && isSelectOption && (
+                <Box mt={2}>
+                  <Stack direction={'row'} alignItems={'center'} gap={1}>
+                    <Typography variant="h6">{`US$${currentProductVariant.price}`}</Typography>
+                  </Stack>
+                  <Stack direction={'row'} alignItems={'center'} gap={1} mt={2}>
+                    <LocalShipping fontSize={'small'} />
+                    {currentProductVariant.requires_shipping ? (
+                      <Typography>Shipping calculated at checkout</Typography>
+                    ) : (
+                      <Typography>Shipping for free</Typography>
+                    )}
+                  </Stack>
+                  <Stack direction={'row'} alignItems={'center'} gap={1} mt={1}>
+                    <BorderColor fontSize={'small'} />
+                    {currentProductVariant.taxable ? (
+                      <Typography>Product already include tax</Typography>
+                    ) : (
+                      <Typography>Product do not include tax</Typography>
+                    )}
+                  </Stack>
+                </Box>
+              )}
 
               <Box mt={2}>
-                <Stack direction={'row'} alignItems={'center'} gap={1}>
-                  <Typography fontWeight={'bold'}>5</Typography>
-                  <Box sx={{ width: '100%' }}>
-                    <LinearProgress
-                      color={'inherit'}
-                      variant="determinate"
-                      value={90}
-                      style={{
-                        borderRadius: 5,
-                      }}
-                    />
-                  </Box>
-                </Stack>
-                <Stack direction={'row'} alignItems={'center'} gap={1}>
-                  <Typography fontWeight={'bold'}>4</Typography>
-                  <Box sx={{ width: '100%' }}>
-                    <LinearProgress
-                      color={'inherit'}
-                      variant="determinate"
-                      value={20}
-                      style={{
-                        borderRadius: 5,
-                      }}
-                    />
-                  </Box>
-                </Stack>
-                <Stack direction={'row'} alignItems={'center'} gap={1}>
-                  <Typography fontWeight={'bold'}>3</Typography>
-                  <Box sx={{ width: '100%' }}>
-                    <LinearProgress
-                      color={'inherit'}
-                      variant="determinate"
-                      value={30}
-                      style={{
-                        borderRadius: 5,
-                      }}
-                    />
-                  </Box>
-                </Stack>
-                <Stack direction={'row'} alignItems={'center'} gap={1}>
-                  <Typography fontWeight={'bold'}>2</Typography>
-                  <Box sx={{ width: '100%' }}>
-                    <LinearProgress
-                      color={'inherit'}
-                      variant="determinate"
-                      value={2}
-                      style={{
-                        borderRadius: 5,
-                      }}
-                    />
-                  </Box>
-                </Stack>
-                <Stack direction={'row'} alignItems={'center'} gap={1}>
-                  <Typography fontWeight={'bold'}>1</Typography>
-                  <Box sx={{ width: '100%' }}>
-                    <LinearProgress
-                      color={'inherit'}
-                      variant="determinate"
-                      value={10}
-                      style={{
-                        borderRadius: 5,
-                      }}
-                    />
-                  </Box>
-                </Stack>
-              </Box>
-            </Box>
-            <Box mt={2}>
-              <Grid container spacing={4}>
-                <Grid size={{ xs: 6, md: 6 }}>
-                  <Rating size="small" value={5} readOnly />
-                  <Stack direction={'row'} alignItems={'center'} gap={1}>
-                    <Typography fontSize={14}>abc</Typography>
-                    <Typography fontSize={14}>·</Typography>
-                    <Typography fontSize={14}>7 days ago</Typography>
-                  </Stack>
-                  <Stack direction={'row'} alignItems={'center'} gap={1} mt={1}>
-                    <Typography fontSize={14}>Red</Typography>
-                    <Typography fontSize={14}>/</Typography>
-                    <Typography fontSize={14}>M</Typography>
-                  </Stack>
-                  <Typography mt={2}>
-                    the hoodie is super comfy. only thing is even though i like over sized and knew this would be
-                    oversized i would still suggest sizing down.
-                  </Typography>
-                  <Stack direction={'row'} alignItems={'center'} mt={2}>
-                    <IconButton size="small">
-                      <ThumbUpOffAlt fontSize={'small'} />
-                      {/* <ThumbUpAlt fontSize={'small'}/> */}
-                    </IconButton>
-                    <Typography>Helpful</Typography>
-                  </Stack>
-                </Grid>
-                <Grid size={{ xs: 6, md: 6 }}>
-                  <Rating size="small" value={5} readOnly />
-                  <Stack direction={'row'} alignItems={'center'} gap={1}>
-                    <Typography fontSize={14}>abc</Typography>
-                    <Typography fontSize={14}>·</Typography>
-                    <Typography fontSize={14}>7 days ago</Typography>
-                  </Stack>
-                  <Stack direction={'row'} alignItems={'center'} gap={1} mt={1}>
-                    <Typography fontSize={14}>Red</Typography>
-                    <Typography fontSize={14}>/</Typography>
-                    <Typography fontSize={14}>M</Typography>
-                  </Stack>
-                  <Typography mt={2}>
-                    the hoodie is super comfy. only thing is even though i like over sized and knew this would be
-                    oversized i would still suggest sizing down.
-                  </Typography>
-                  <Stack direction={'row'} alignItems={'center'} mt={2}>
-                    <IconButton size="small">
-                      <ThumbUpOffAlt fontSize={'small'} />
-                      {/* <ThumbUpAlt fontSize={'small'}/> */}
-                    </IconButton>
-                    <Typography>Helpful</Typography>
-                  </Stack>
-                </Grid>
-                <Grid size={{ xs: 6, md: 6 }}>
-                  <Rating size="small" value={5} readOnly />
-                  <Stack direction={'row'} alignItems={'center'} gap={1}>
-                    <Typography fontSize={14}>abc</Typography>
-                    <Typography fontSize={14}>·</Typography>
-                    <Typography fontSize={14}>7 days ago</Typography>
-                  </Stack>
-                  <Stack direction={'row'} alignItems={'center'} gap={1} mt={1}>
-                    <Typography fontSize={14}>Red</Typography>
-                    <Typography fontSize={14}>/</Typography>
-                    <Typography fontSize={14}>M</Typography>
-                  </Stack>
-                  <Typography mt={2}>
-                    the hoodie is super comfy. only thing is even though i like over sized and knew this would be
-                    oversized i would still suggest sizing down.
-                  </Typography>
-                  <Stack direction={'row'} alignItems={'center'} mt={2}>
-                    <IconButton size="small">
-                      <ThumbUpOffAlt fontSize={'small'} />
-                      {/* <ThumbUpAlt fontSize={'small'}/> */}
-                    </IconButton>
-                    <Typography>Helpful</Typography>
-                  </Stack>
-                </Grid>
-              </Grid>
+                {product?.options &&
+                  product.options.length > 0 &&
+                  product.options.map((item, index) => (
+                    <Box key={index}>
+                      <Stack direction={'row'} alignItems={'center'} gap={2}>
+                        <Typography variant="h6">{item.name}</Typography>
+                      </Stack>
 
-              <Box mt={4}>
+                      <Box pt={1} pb={2}>
+                        <Grid container columnSpacing={6} rowSpacing={2}>
+                          {item.value &&
+                            item.value.split(',').length > 0 &&
+                            item.value.split(',').map((innerItem, innerIndex) => (
+                              <Grid size={4} key={innerIndex}>
+                                <Button
+                                  variant={'contained'}
+                                  color={
+                                    index === 0 && innerItem === optionOneValue
+                                      ? 'success'
+                                      : index === 1 && innerItem === optionTwoValue
+                                      ? 'success'
+                                      : index === 2 && innerItem === optionThreeValue
+                                      ? 'success'
+                                      : 'primary'
+                                  }
+                                  onClick={() => {
+                                    if (index === 0) {
+                                      setOptionOneValue(innerItem);
+                                    } else if (index === 1) {
+                                      setOptionTwoValue(innerItem);
+                                    } else if (index === 2) {
+                                      setOptionThreeValue(innerItem);
+                                    }
+                                  }}
+                                >
+                                  {innerItem}
+                                </Button>
+                              </Grid>
+                            ))}
+                        </Grid>
+                      </Box>
+                    </Box>
+                  ))}
+              </Box>
+
+              {product?.product_status === 1 && isSelectOption && (
+                <>
+                  {currentProductVariant && currentProductVariant?.inventory_quantity > 0 ? (
+                    <>
+                      <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} mt={2} gap={2}>
+                        <Typography>Quantity</Typography>
+                        <Input
+                          fullWidth
+                          startAdornment={
+                            <IconButton
+                              onClick={() => {
+                                if (quantity - 1 >= 0) {
+                                  setQuantity(quantity - 1);
+                                }
+                              }}
+                            >
+                              <Remove />
+                            </IconButton>
+                          }
+                          endAdornment={
+                            <IconButton
+                              onClick={() => {
+                                if (quantity + 1 <= currentProductVariant.inventory_quantity) {
+                                  setQuantity(quantity + 1);
+                                }
+                              }}
+                            >
+                              <Add />
+                            </IconButton>
+                          }
+                          value={quantity}
+                          onChange={(e: any) => {
+                            if (0 < e.target.value && e.target.value <= currentProductVariant.inventory_quantity) {
+                              setQuantity(e.target.value);
+                            }
+                          }}
+                        />
+                        <Button
+                          variant={'contained'}
+                          onClick={() => {
+                            setQuantity(currentProductVariant.inventory_quantity);
+                          }}
+                        >
+                          Max
+                        </Button>
+                      </Stack>
+                      <Box mt={4}>
+                        <Button
+                          variant={'contained'}
+                          fullWidth
+                          onClick={() => {
+                            onClickAddToCart();
+                          }}
+                        >
+                          Add to cart
+                        </Button>
+                        <Button
+                          variant={'contained'}
+                          fullWidth
+                          style={{ background: '#000', marginTop: 10 }}
+                          onClick={() => {
+                            onClickBuyNow();
+                          }}
+                        >
+                          Buy now
+                        </Button>
+                      </Box>
+                    </>
+                  ) : (
+                    <Box>
+                      <Alert severity="error">
+                        <AlertTitle>Error</AlertTitle>
+                        <Typography>Sorry, the product has been sold out</Typography>
+                      </Alert>
+                    </Box>
+                  )}
+                </>
+              )}
+              <Box mt={2} overflow={'auto'}>
+                <Typography variant="h6">Description</Typography>
+                {product?.body_html && <Box mt={1} dangerouslySetInnerHTML={{ __html: product?.body_html }}></Box>}
+              </Box>
+
+              <Box mt={2}>
                 <Button
                   fullWidth
                   variant={'contained'}
                   color={'inherit'}
+                  startIcon={<InsertLink />}
                   onClick={() => {
-                    setOpenRatingsDialog(true);
+                    window.location.href = `/profile/${product.username}`;
                   }}
                 >
-                  Read more reviews
+                  {`More details at ${product.username}`}
+                </Button>
+                <Box mt={1}>
+                  <Button
+                    fullWidth
+                    variant={'contained'}
+                    color={'inherit'}
+                    onClick={() => {
+                      setOpenRefundPolicy(true);
+                    }}
+                  >
+                    Refund Policy
+                  </Button>
+                </Box>
+              </Box>
+            </Grid>
+          </Grid>
+
+          {product?.product_status === 1 && (
+            <Box mt={4} mb={8}>
+              <Box display={'flex'} alignItems={'center'}>
+                <Button
+                  endIcon={<ChevronRight style={{ color: '#000' }} />}
+                  onClick={() => {
+                    window.location.href = `/explore?type=${
+                      Object.entries(PRODUCT_TYPE).find((item) => item[1] == product.product_type)?.[0]
+                    }`;
+                  }}
+                >
+                  <Typography variant="h6" color={'textPrimary'}>
+                    Recommend more
+                  </Typography>
                 </Button>
               </Box>
-            </Box>
-          </Box>
-        </Grid>
 
-        <Grid size={{ xs: 12, md: 4 }}>
-          <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
-            <Stack direction={'row'} alignItems={'center'} gap={1}>
-              {product.user_avatar_url ? (
-                <img src={product.user_avatar_url} alt={'image'} loading="lazy" width={30} height={30} />
-              ) : (
-                <img src={'/images/default_avatar.png'} alt={'image'} loading="lazy" width={30} height={30} />
-              )}
-              <Typography fontWeight={'bold'}>{product.username}</Typography>
-            </Stack>
-            <IconButton onClick={handleClickMore}>
-              <MoreHoriz />
-            </IconButton>
-            <Menu open={openMore} anchorEl={anchorEl} onClose={handleCloseMore}>
-              <MenuItem
-                onClick={() => {
-                  window.location.href = `mailto:${product.user_email}`;
-                }}
-              >
-                <Stack direction={'row'} alignItems={'center'} gap={1}>
-                  <ChatBubbleOutline fontSize={'small'} />
-                  <Typography>{`Contact ${product.username}`}</Typography>
-                </Stack>
-              </MenuItem>
-              <MenuItem onClick={() => {}}>
-                <Stack direction={'row'} alignItems={'center'} gap={1}>
-                  <HelpOutline color={'error'} fontSize={'small'} />
-                  <Typography color={'error'}>Report product</Typography>
-                </Stack>
-              </MenuItem>
-            </Menu>
-          </Stack>
-
-          <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} mt={2}>
-            <Box>
-              <Typography variant="h6">{product.title}</Typography>
-              <Stack direction={'row'} alignItems={'center'} gap={1}>
-                <Rating size="small" value={5} readOnly />
-                <div
-                  onClick={() => {
-                    setOpenRatingsDialog(true);
-                  }}
-                >
-                  <Link color="#000" fontSize={14}>
-                    4.6K ratings
-                  </Link>
-                </div>
-              </Stack>
-            </Box>
-            {getIsLogin() && (
-              <IconButton
-                style={{
-                  width: 50,
-                  height: 50,
-                  background: product?.collect_status === 1 ? '#0098e5' : '',
-                  color: product?.collect_status === 1 ? 'white' : '',
-                }}
-                onClick={() => {
-                  onClickFavorite();
-                }}
-              >
-                <FavoriteBorder />
-              </IconButton>
-            )}
-          </Stack>
-
-          {currentProductVariant && isSelectOption && (
-            <Box mt={2}>
-              <Stack direction={'row'} alignItems={'center'} gap={1}>
-                <Typography variant="h6">{`US$${currentProductVariant.price}`}</Typography>
-              </Stack>
-              <Stack direction={'row'} alignItems={'center'} gap={1} mt={2}>
-                <LocalShipping fontSize={'small'} />
-                {currentProductVariant.requires_shipping ? (
-                  <Typography>Shipping calculated at checkout</Typography>
-                ) : (
-                  <Typography>Shipping for free</Typography>
-                )}
-              </Stack>
-              <Stack direction={'row'} alignItems={'center'} gap={1} mt={1}>
-                <BorderColor fontSize={'small'} />
-                {currentProductVariant.taxable ? (
-                  <Typography>Product already include tax</Typography>
-                ) : (
-                  <Typography>Product do not include tax</Typography>
-                )}
-              </Stack>
+              <Box mt={2}>
+                <NowTrendingCard productType={product.product_type} />
+              </Box>
             </Box>
           )}
 
-          <Box mt={2}>
-            {product?.options &&
-              product.options.length > 0 &&
-              product.options.map((item, index) => (
-                <Box key={index}>
-                  <Stack direction={'row'} alignItems={'center'} gap={2}>
-                    <Typography variant="h6">{item.name}</Typography>
-                  </Stack>
+          {getUuid() === product?.user_uuid && (
+            <Box mt={4}>
+              <Typography variant="h6">Product manage</Typography>
 
-                  <Box pt={1} pb={2}>
-                    <Grid container columnSpacing={6} rowSpacing={2}>
-                      {item.value &&
-                        item.value.split(',').length > 0 &&
-                        item.value.split(',').map((innerItem, innerIndex) => (
-                          <Grid size={4} key={innerIndex}>
-                            <Button
-                              variant={'contained'}
-                              color={
-                                index === 0 && innerItem === optionOneValue
-                                  ? 'success'
-                                  : index === 1 && innerItem === optionTwoValue
-                                  ? 'success'
-                                  : index === 2 && innerItem === optionThreeValue
-                                  ? 'success'
-                                  : 'primary'
-                              }
-                              onClick={() => {
-                                if (index === 0) {
-                                  setOptionOneValue(innerItem);
-                                } else if (index === 1) {
-                                  setOptionTwoValue(innerItem);
-                                } else if (index === 2) {
-                                  setOptionThreeValue(innerItem);
-                                }
-                              }}
-                            >
-                              {innerItem}
-                            </Button>
-                          </Grid>
-                        ))}
-                    </Grid>
-                  </Box>
-                </Box>
-              ))}
-          </Box>
+              <Box mt={2} sx={{ borderBottom: 1, borderColor: 'divider' }}>
+                <Tabs value={tabValue} onChange={handleChange} variant="scrollable" scrollButtons="auto">
+                  {PRODUCT_TAB_DATAS &&
+                    PRODUCT_TAB_DATAS.length > 0 &&
+                    PRODUCT_TAB_DATAS.map((item, index) => (
+                      <Tab key={index} label={item.title} {...a11yProps(item.id)} />
+                    ))}
+                </Tabs>
+              </Box>
 
-          {product?.product_status === 1 && isSelectOption && (
-            <>
-              {currentProductVariant && currentProductVariant?.inventory_quantity > 0 ? (
-                <>
-                  <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} mt={2} gap={2}>
-                    <Typography>Quantity</Typography>
-                    <Input
-                      fullWidth
-                      startAdornment={
-                        <IconButton
-                          onClick={() => {
-                            if (quantity - 1 >= 0) {
-                              setQuantity(quantity - 1);
-                            }
-                          }}
-                        >
-                          <Remove />
-                        </IconButton>
-                      }
-                      endAdornment={
-                        <IconButton
-                          onClick={() => {
-                            if (quantity + 1 <= currentProductVariant.inventory_quantity) {
-                              setQuantity(quantity + 1);
-                            }
-                          }}
-                        >
-                          <Add />
-                        </IconButton>
-                      }
-                      value={quantity}
-                      onChange={(e: any) => {
-                        if (0 < e.target.value && e.target.value <= currentProductVariant.inventory_quantity) {
-                          setQuantity(e.target.value);
-                        }
-                      }}
-                    />
-                    <Button
-                      variant={'contained'}
-                      onClick={() => {
-                        setQuantity(currentProductVariant.inventory_quantity);
-                      }}
-                    >
-                      Max
-                    </Button>
-                  </Stack>
-                  <Box mt={4}>
-                    <Button
-                      variant={'contained'}
-                      fullWidth
-                      onClick={() => {
-                        onClickAddToCart();
-                      }}
-                    >
-                      Add to cart
-                    </Button>
-                    <Button
-                      variant={'contained'}
-                      fullWidth
-                      style={{ background: '#000', marginTop: 10 }}
-                      onClick={() => {
-                        onClickBuyNow();
-                      }}
-                    >
-                      Buy now
-                    </Button>
-                  </Box>
-                </>
-              ) : (
-                <Box>
-                  <Alert severity="error">
-                    <AlertTitle>Error</AlertTitle>
-                    <Typography>Sorry, the product has been sold out</Typography>
-                  </Alert>
-                </Box>
-              )}
-            </>
-          )}
-          <Box mt={2} overflow={'auto'}>
-            <Typography variant="h6">Description</Typography>
-            {product?.body_html && <Box mt={1} dangerouslySetInnerHTML={{ __html: product?.body_html }}></Box>}
-          </Box>
-
-          <Box mt={2}>
-            <Button
-              fullWidth
-              variant={'contained'}
-              color={'inherit'}
-              startIcon={<InsertLink />}
-              onClick={() => {
-                window.location.href = `/profile/${product.username}`;
-              }}
-            >
-              {`More details at ${product.username}`}
-            </Button>
-            <Box mt={1}>
-              <Button
-                fullWidth
-                variant={'contained'}
-                color={'inherit'}
-                onClick={() => {
-                  setOpenRefundPolicy(true);
-                }}
-              >
-                Refund Policy
-              </Button>
+              <CustomTabPanel value={tabValue} index={0}>
+                <Product
+                  product_id={product?.product_id}
+                  title={product?.title}
+                  vendor={product?.vendor}
+                  productType={product?.product_type}
+                  tags={product?.tags}
+                  description={product?.body_html}
+                  options={product?.options}
+                  images={product?.images}
+                  productStatus={product?.product_status}
+                />
+              </CustomTabPanel>
+              <CustomTabPanel value={tabValue} index={1}>
+                <ProductVariant product_id={product?.product_id} options={product?.options} />
+              </CustomTabPanel>
+              <CustomTabPanel value={tabValue} index={2}>
+                <ProductRating />
+              </CustomTabPanel>
             </Box>
-          </Box>
-        </Grid>
-      </Grid>
+          )}
 
-      {product?.product_status === 1 && (
-        <Box mt={4} mb={8}>
-          <Box display={'flex'} alignItems={'center'}>
-            <Button
-              endIcon={<ChevronRight style={{ color: '#000' }} />}
-              onClick={() => {
-                window.location.href = `/explore?type=${
-                  Object.entries(PRODUCT_TYPE).find((item) => item[1] == product.product_type)?.[0]
-                }`;
-              }}
-            >
-              <Typography variant="h6" color={'textPrimary'}>
-                Recommend more
-              </Typography>
-            </Button>
-          </Box>
-
-          <Box mt={2}>
-            <NowTrendingCard productType={product.product_type} />
-          </Box>
-        </Box>
+          <ProductRatingsDialog openDialog={openRatingsDialog} setOpenDialog={setOpenRatingsDialog} />
+          <RefundPolicyDialog openDialog={openRefundPolicy} setOpenDialog={setOpenRefundPolicy} />
+        </>
       )}
-
-      {getUuid() === product?.user_uuid && (
-        <Box mt={4}>
-          <Typography variant="h6">Product manage</Typography>
-
-          <Box mt={2} sx={{ borderBottom: 1, borderColor: 'divider' }}>
-            <Tabs value={tabValue} onChange={handleChange} variant="scrollable" scrollButtons="auto">
-              {PRODUCT_TAB_DATAS &&
-                PRODUCT_TAB_DATAS.length > 0 &&
-                PRODUCT_TAB_DATAS.map((item, index) => <Tab key={index} label={item.title} {...a11yProps(item.id)} />)}
-            </Tabs>
-          </Box>
-
-          <CustomTabPanel value={tabValue} index={0}>
-            <Product
-              product_id={product?.product_id}
-              title={product?.title}
-              vendor={product?.vendor}
-              productType={product?.product_type}
-              tags={product?.tags}
-              description={product?.body_html}
-              options={product?.options}
-              images={product?.images}
-              productStatus={product?.product_status}
-            />
-          </CustomTabPanel>
-          <CustomTabPanel value={tabValue} index={1}>
-            <ProductVariant product_id={product?.product_id} options={product?.options} />
-          </CustomTabPanel>
-          <CustomTabPanel value={tabValue} index={2}>
-            <ProductRating />
-          </CustomTabPanel>
-        </Box>
-      )}
-
-      <ProductRatingsDialog openDialog={openRatingsDialog} setOpenDialog={setOpenRatingsDialog} />
-      <RefundPolicyDialog openDialog={openRefundPolicy} setOpenDialog={setOpenRefundPolicy} />
     </Container>
   );
 };
