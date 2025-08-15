@@ -103,99 +103,106 @@ const Create = () => {
   };
 
   const onClickCreateProduct = async () => {
-    if (!title || title === '') {
-      setSnackSeverity('error');
-      setSnackMessage('Incorrect title input');
-      setSnackOpen(true);
-      return;
-    }
+    try {
+      if (!title || title === '') {
+        setSnackSeverity('error');
+        setSnackMessage('Incorrect title input');
+        setSnackOpen(true);
+        return;
+      }
 
-    if (!productType || productType === '') {
-      setSnackSeverity('error');
-      setSnackMessage('Incorrect product type');
-      setSnackOpen(true);
-      return;
-    }
+      if (!productType || productType === '') {
+        setSnackSeverity('error');
+        setSnackMessage('Incorrect product type');
+        setSnackOpen(true);
+        return;
+      }
 
-    if (!tags || tags === '') {
-      setSnackSeverity('error');
-      setSnackMessage('Incorrect tags input');
-      setSnackOpen(true);
-      return;
-    }
+      if (!tags || tags === '') {
+        setSnackSeverity('error');
+        setSnackMessage('Incorrect tags input');
+        setSnackOpen(true);
+        return;
+      }
 
-    if (!description || description === '') {
-      setSnackSeverity('error');
-      setSnackMessage('Incorrect description input');
-      setSnackOpen(true);
-      return;
-    }
+      if (!description || description === '') {
+        setSnackSeverity('error');
+        setSnackMessage('Incorrect description input');
+        setSnackOpen(true);
+        return;
+      }
 
-    const productOption: ProductOption[] = [];
-    if (optionOne && optionOneValue && optionOne != '' && optionOneValue != '') {
-      productOption.push({
-        name: optionOne,
-        value: optionOneValue,
-      });
-    }
-    if (optionTwo && optionTwoValue && optionTwo != '' && optionTwoValue != '') {
-      productOption.push({
-        name: optionTwo,
-        value: optionTwoValue,
-      });
-    }
-    if (optionThree && optionThreeValue && optionThree != '' && optionThreeValue != '') {
-      productOption.push({
-        name: optionThree,
-        value: optionThreeValue,
-      });
-    }
-
-    if (productOption.length <= 0) {
-      setSnackSeverity('error');
-      setSnackMessage('At least one product option is needed');
-      setSnackOpen(true);
-      return;
-    }
-
-    const productImages: ProductImage[] = [];
-    if (imageList && imageList.length > 0) {
-      imageList.forEach((item) => {
-        productImages.push({
-          src: item,
-          width: 100,
-          height: 100,
+      const productOption: ProductOption[] = [];
+      if (optionOne && optionOneValue && optionOne != '' && optionOneValue != '') {
+        productOption.push({
+          name: optionOne,
+          value: optionOneValue,
         });
+      }
+      if (optionTwo && optionTwoValue && optionTwo != '' && optionTwoValue != '') {
+        productOption.push({
+          name: optionTwo,
+          value: optionTwoValue,
+        });
+      }
+      if (optionThree && optionThreeValue && optionThree != '' && optionThreeValue != '') {
+        productOption.push({
+          name: optionThree,
+          value: optionThreeValue,
+        });
+      }
+
+      if (productOption.length <= 0) {
+        setSnackSeverity('error');
+        setSnackMessage('At least one product option is needed');
+        setSnackOpen(true);
+        return;
+      }
+
+      const productImages: ProductImage[] = [];
+      if (imageList && imageList.length > 0) {
+        imageList.forEach((item) => {
+          productImages.push({
+            src: item,
+            width: 100,
+            height: 100,
+          });
+        });
+      }
+
+      if (productImages.length <= 0) {
+        setSnackSeverity('error');
+        setSnackMessage('At least one image is needed');
+        setSnackOpen(true);
+        return;
+      }
+
+      const response: any = await axios.post(Http.product, {
+        title: title,
+        body_html: description,
+        product_type: productType,
+        tags: tags,
+        vendor: vendor,
+        images: productImages,
+        options: productOption,
       });
-    }
 
-    if (productImages.length <= 0) {
+      if (response.result) {
+        setSnackSeverity('success');
+        setSnackMessage('Create successfully');
+        setSnackOpen(true);
+
+        window.location.href = `/products/${response.data.product_id}`;
+      } else {
+        setSnackSeverity('error');
+        setSnackMessage(response.message);
+        setSnackOpen(true);
+      }
+    } catch (e) {
       setSnackSeverity('error');
-      setSnackMessage('At least one image is needed');
+      setSnackMessage('The network error occurred. Please try again later');
       setSnackOpen(true);
-      return;
-    }
-
-    const response: any = await axios.post(Http.product, {
-      title: title,
-      body_html: description,
-      product_type: productType,
-      tags: tags,
-      vendor: vendor,
-      images: productImages,
-      options: productOption,
-    });
-
-    if (response.result) {
-      setSnackSeverity('success');
-      setSnackMessage('Create successfully');
-      setSnackOpen(true);
-
-      window.location.href = `/products/${response.data.product_id}`;
-    } else {
-      setSnackSeverity('error');
-      setSnackMessage(response.message);
-      setSnackOpen(true);
+      console.error(e);
     }
   };
 

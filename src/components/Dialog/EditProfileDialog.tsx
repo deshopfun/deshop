@@ -98,23 +98,30 @@ export default function EditProfileDialog(props: DialogType) {
   };
 
   const onClickEditProfile = async () => {
-    const response: any = await axios.put(Http.user_setting, {
-      username: username,
-      avatar_url: avatarUrl,
-      bio: bio,
-    });
+    try {
+      const response: any = await axios.put(Http.user_setting, {
+        username: username,
+        avatar_url: avatarUrl,
+        bio: bio,
+      });
 
-    if (response.result) {
-      setSnackSeverity('success');
-      setSnackMessage('Update successfully');
-      setSnackOpen(true);
-      handleClose();
+      if (response.result) {
+        setSnackSeverity('success');
+        setSnackMessage('Update successfully');
+        setSnackOpen(true);
+        handleClose();
 
-      window.location.href = `/profile/${username}`;
-    } else {
+        window.location.href = `/profile/${username}`;
+      } else {
+        setSnackSeverity('error');
+        setSnackMessage(response.message);
+        setSnackOpen(true);
+      }
+    } catch (e) {
       setSnackSeverity('error');
-      setSnackMessage(response.message);
+      setSnackMessage('The network error occurred. Please try again later.');
       setSnackOpen(true);
+      console.error(e);
     }
   };
 

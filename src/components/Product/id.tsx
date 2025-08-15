@@ -51,10 +51,11 @@ import {
 import RecentViewCard from 'components/Card/RecentViewCard';
 import ProductRatingsDialog from 'components/Dialog/ProductRatingsDialog';
 import RefundPolicyDialog from 'components/Dialog/RefundPolicyDialog';
-import { COLLECT_TYPE, PRODUCT_TAB_DATAS } from 'packages/constants';
+import { COLLECT_TYPE, PRODUCT_TAB_DATAS, PRODUCT_TYPE } from 'packages/constants';
 import Product from './Product';
 import ProductVariant from './Variant';
 import ProductRating from './Rating';
+import NowTrendingCard from 'components/Card/NowTrendingCard';
 
 type ProductType = {
   product_id: number;
@@ -842,14 +843,22 @@ const ProductDetails = () => {
       {product?.product_status === 1 && (
         <Box mt={4} mb={8}>
           <Box display={'flex'} alignItems={'center'}>
-            <Typography variant="h6">Recommend more</Typography>
-            <IconButton>
-              <ChevronRight />
-            </IconButton>
+            <Button
+              endIcon={<ChevronRight style={{ color: '#000' }} />}
+              onClick={() => {
+                window.location.href = `/explore?type=${
+                  Object.entries(PRODUCT_TYPE).find((item) => item[1] == product.product_type)?.[0]
+                }`;
+              }}
+            >
+              <Typography variant="h6" color={'textPrimary'}>
+                Recommend more
+              </Typography>
+            </Button>
           </Box>
 
           <Box mt={2}>
-            <RecentViewCard />
+            <NowTrendingCard productType={product.product_type} />
           </Box>
         </Box>
       )}

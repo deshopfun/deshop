@@ -9,7 +9,11 @@ const ExploreCard = () => {
         Object.entries(PRODUCT_TYPE).map((item, index) => (
           <Grid size={{ xs: 12, md: 2 }} key={index}>
             <Card>
-              <CardActionArea>
+              <CardActionArea
+                onClick={() => {
+                  window.location.href = `/explore?type=${item[0]}`;
+                }}
+              >
                 <CardMedia component="img" height="140" image={GetImgSrcByProductType(item[1])} alt="image" />
                 <CardContent>
                   <Typography textAlign={'center'}>{item[1]}</Typography>

@@ -53,6 +53,9 @@ const ManageWallet = (props: Props) => {
         setWallets([]);
       }
     } catch (e) {
+      setSnackSeverity('error');
+      setSnackMessage('The network error occurred. Please try again later.');
+      setSnackOpen(true);
       console.error(e);
     }
   };
@@ -66,34 +69,41 @@ const ManageWallet = (props: Props) => {
   }, [props.username]);
 
   const onChangeCoin = async (chain: CHAINIDS, coin: COINS) => {
-    let disableCoinArray = wallets
-      .find((item) => item.chain_id === chain)
-      ?.disable_coin.split(',')
-      .filter((item) => item !== '');
-    let newDisableCoin = '';
-    if (disableCoinArray?.includes(coin)) {
-      newDisableCoin = disableCoinArray.filter((item) => item !== coin).join(',');
-    } else {
-      disableCoinArray?.push(coin);
-      newDisableCoin = String(disableCoinArray?.join(','));
-    }
+    try {
+      let disableCoinArray = wallets
+        .find((item) => item.chain_id === chain)
+        ?.disable_coin.split(',')
+        .filter((item) => item !== '');
+      let newDisableCoin = '';
+      if (disableCoinArray?.includes(coin)) {
+        newDisableCoin = disableCoinArray.filter((item) => item !== coin).join(',');
+      } else {
+        disableCoinArray?.push(coin);
+        newDisableCoin = String(disableCoinArray?.join(','));
+      }
 
-    const response: any = await axios.put(Http.wallet, {
-      handle: 2,
-      chain_id: chain,
-      disable_coin: newDisableCoin,
-    });
+      const response: any = await axios.put(Http.wallet, {
+        handle: 2,
+        chain_id: chain,
+        disable_coin: newDisableCoin,
+      });
 
-    if (response.result) {
-      await init(username);
+      if (response.result) {
+        await init(username);
 
-      setSnackSeverity('success');
-      setSnackMessage('Update successfully');
-      setSnackOpen(true);
-    } else {
+        setSnackSeverity('success');
+        setSnackMessage('Update successfully');
+        setSnackOpen(true);
+      } else {
+        setSnackSeverity('error');
+        setSnackMessage(response.message);
+        setSnackOpen(true);
+      }
+    } catch (e) {
       setSnackSeverity('error');
-      setSnackMessage(response.message);
+      setSnackMessage('The network error occurred. Please try again later.');
       setSnackOpen(true);
+      console.error(e);
     }
   };
 

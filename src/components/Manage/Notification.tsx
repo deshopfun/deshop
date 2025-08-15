@@ -38,6 +38,9 @@ const ManageNotification = (props: Props) => {
         setNotification('');
       }
     } catch (e) {
+      setSnackSeverity('error');
+      setSnackMessage('The network error occurred. Please try again later.');
+      setSnackOpen(true);
       console.error(e);
     }
   };
@@ -51,31 +54,38 @@ const ManageNotification = (props: Props) => {
   }, [props.username]);
 
   const onChangeNotification = async (id: number) => {
-    let notificationArray = notification.split(',').filter((item) => item !== '');
-    let newNotifiction = '';
-    if (id !== 0) {
-      if (notificationArray.includes(String(id))) {
-        newNotifiction = notificationArray.filter((item) => item !== String(id)).join(',');
-      } else {
-        notificationArray.push(String(id));
-        newNotifiction = notificationArray.join(',');
+    try {
+      let notificationArray = notification.split(',').filter((item) => item !== '');
+      let newNotifiction = '';
+      if (id !== 0) {
+        if (notificationArray.includes(String(id))) {
+          newNotifiction = notificationArray.filter((item) => item !== String(id)).join(',');
+        } else {
+          notificationArray.push(String(id));
+          newNotifiction = notificationArray.join(',');
+        }
       }
-    }
 
-    const response: any = await axios.put(Http.user_notification_setting, {
-      notification: newNotifiction,
-    });
+      const response: any = await axios.put(Http.user_notification_setting, {
+        notification: newNotifiction,
+      });
 
-    if (response.result) {
-      await init(username);
+      if (response.result) {
+        await init(username);
 
-      setSnackSeverity('success');
-      setSnackMessage('Update successfully');
-      setSnackOpen(true);
-    } else {
+        setSnackSeverity('success');
+        setSnackMessage('Update successfully');
+        setSnackOpen(true);
+      } else {
+        setSnackSeverity('error');
+        setSnackMessage(response.message);
+        setSnackOpen(true);
+      }
+    } catch (e) {
       setSnackSeverity('error');
-      setSnackMessage(response.message);
+      setSnackMessage('The network error occurred. Please try again later.');
       setSnackOpen(true);
+      console.error(e);
     }
   };
 

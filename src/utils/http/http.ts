@@ -15,6 +15,9 @@ export class Http {
   static product_by_id = this.httpPath + '/client/product-by-id';
   static product_variant_by_option = this.httpPath + '/client/product-variant-by-option';
 
+  // upload
+  static upload_file = this.httpPath + '/client/upload-file';
+
   // user
   static user_setting = this.httpPath + '/client/user/user-setting';
   static user_notification_setting = this.httpPath + '/client/user/user-notification-setting';
@@ -53,7 +56,4 @@ export class Http {
   // collect
   static collect = this.httpPath + '/client/collect/collect';
   static collect_by_username = this.httpPath + '/client/collect/collect_by_username';
-
-  // upload
-  static upload_file = this.httpPath + '/client/upload/upload-file';
 }

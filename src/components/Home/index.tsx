@@ -40,11 +40,9 @@ const Home = () => {
 
       <Box mt={4}>
         <Box display={'flex'} alignItems={'center'}>
-          <Button endIcon={<ChevronRight style={{ color: '#000' }} />}>
-            <Typography variant="h6" color={'textPrimary'}>
-              Now tranding
-            </Typography>
-          </Button>
+          <Typography variant="h6" color={'textPrimary'}>
+            Now trending
+          </Typography>
         </Box>
 
         <Box mt={2}>

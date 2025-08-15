@@ -34,22 +34,29 @@ export default function BindAddressDialog(props: DialogType) {
   }, [props.address]);
 
   const onClickEditProfile = async () => {
-    const response: any = await axios.put(Http.wallet, {
-      handle: 1,
-      chain_id: props.chain,
-      address: address,
-    });
+    try {
+      const response: any = await axios.put(Http.wallet, {
+        handle: 1,
+        chain_id: props.chain,
+        address: address,
+      });
 
-    if (response.result) {
-      await props.handleCloseDialog();
+      if (response.result) {
+        await props.handleCloseDialog();
 
-      setSnackSeverity('success');
-      setSnackMessage('Update successfully');
-      setSnackOpen(true);
-    } else {
+        setSnackSeverity('success');
+        setSnackMessage('Update successfully');
+        setSnackOpen(true);
+      } else {
+        setSnackSeverity('error');
+        setSnackMessage(response.message);
+        setSnackOpen(true);
+      }
+    } catch (e) {
       setSnackSeverity('error');
-      setSnackMessage(response.message);
+      setSnackMessage('The network error occurred. Please try again later.');
       setSnackOpen(true);
+      console.error(e);
     }
   };
 
