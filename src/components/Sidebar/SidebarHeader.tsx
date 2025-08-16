@@ -1,8 +1,11 @@
 import { Badge, Box, Button, FormControl, IconButton, MenuItem, Select, Stack, Typography } from '@mui/material';
 import { CustomLogo } from 'components/Logo/CustomLogo';
 import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
+import { useUserPresistStore } from 'lib';
 
 const SidebarHeader = () => {
+  const { getIsLogin } = useUserPresistStore((state) => state);
+
   return (
     <Box paddingLeft={3} paddingRight={1} paddingY={3} overflow={'hidden'}>
       <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
@@ -20,18 +23,20 @@ const SidebarHeader = () => {
           </Stack>
         </Button>
 
-        <Box>
-          <IconButton
-            size="small"
-            onClick={() => {
-              window.location.href = '/notifications';
-            }}
-          >
-            <Badge badgeContent={0} color="error">
-              <NotificationsNoneIcon color="action" />
-            </Badge>
-          </IconButton>
-        </Box>
+        {getIsLogin() && (
+          <Box>
+            <IconButton
+              size="small"
+              onClick={() => {
+                window.location.href = '/notifications';
+              }}
+            >
+              <Badge badgeContent={0} color="error">
+                <NotificationsNoneIcon color="action" />
+              </Badge>
+            </IconButton>
+          </Box>
+        )}
       </Stack>
     </Box>
   );

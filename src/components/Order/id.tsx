@@ -114,237 +114,250 @@ const OrderDetails = () => {
 
   return (
     <Container>
-      {order?.financial_status === 1 && (
-        <Box>
-          <Alert severity="success">
-            <AlertTitle>Paid</AlertTitle>
-            <Typography>The order financial status is Paid</Typography>
-          </Alert>
-        </Box>
-      )}
-      {order?.financial_status === 2 && (
-        <Box>
-          <Alert severity="warning">
-            <AlertTitle>Pending</AlertTitle>
-            <Typography>The order financial status is Pending</Typography>
-          </Alert>
-        </Box>
-      )}
-      {order?.financial_status === 6 && (
-        <Box>
-          <Alert severity="info">
-            <AlertTitle>Refunded</AlertTitle>
-            <Typography>The order financial status is Refunded</Typography>
-          </Alert>
-        </Box>
-      )}
-      {order?.financial_status === 7 && (
-        <Box>
-          <Alert severity="error">
-            <AlertTitle>Voided</AlertTitle>
-            <Typography>The order financial status is Voided</Typography>
-          </Alert>
-        </Box>
-      )}
+      {order ? (
+        <>
+          {order?.financial_status === 1 && (
+            <Box>
+              <Alert severity="success">
+                <AlertTitle>Paid</AlertTitle>
+                <Typography>The order financial status is Paid</Typography>
+              </Alert>
+            </Box>
+          )}
+          {order?.financial_status === 2 && (
+            <Box>
+              <Alert severity="warning">
+                <AlertTitle>Pending</AlertTitle>
+                <Typography>The order financial status is Pending</Typography>
+              </Alert>
+            </Box>
+          )}
+          {order?.financial_status === 6 && (
+            <Box>
+              <Alert severity="info">
+                <AlertTitle>Refunded</AlertTitle>
+                <Typography>The order financial status is Refunded</Typography>
+              </Alert>
+            </Box>
+          )}
+          {order?.financial_status === 7 && (
+            <Box>
+              <Alert severity="error">
+                <AlertTitle>Voided</AlertTitle>
+                <Typography>The order financial status is Voided</Typography>
+              </Alert>
+            </Box>
+          )}
 
-      <Box mt={4}>
+          <Box mt={4}>
+            <Card>
+              <CardContent>
+                <Typography variant="h6">Base info</Typography>
+                <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
+                  <Typography>Customer username</Typography>
+                  <Link href={`profile/${order?.customer_username}`}>
+                    <Typography>{order?.customer_username}</Typography>
+                  </Link>
+                </Stack>
+                <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
+                  <Typography>Customer email</Typography>
+                  <Typography fontWeight={'bold'}>{order?.customer_email}</Typography>
+                </Stack>
+                <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
+                  <Typography>Total discounts</Typography>
+                  <Typography fontWeight={'bold'}>{order?.total_discounts || 0} USD</Typography>
+                </Stack>
+                <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
+                  <Typography>Total tax</Typography>
+                  <Typography fontWeight={'bold'}>{order?.total_tax || 0} USD</Typography>
+                </Stack>
+                <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
+                  <Typography>Total tip received</Typography>
+                  <Typography fontWeight={'bold'}>{order?.total_tip_received || 0} USD</Typography>
+                </Stack>
+                <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
+                  <Typography>Total price</Typography>
+                  <Typography fontWeight={'bold'}>{order?.total_price || 0} USD</Typography>
+                </Stack>
+
+                <Typography variant="h6" mt={2}>
+                  Order items
+                </Typography>
+                {order?.items &&
+                  order.items.length > 0 &&
+                  order.items.map((item, index) => (
+                    <Box key={index}>
+                      <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
+                        <Typography>Image</Typography>
+                        <Link href={`/products/${item.product_id}`}>
+                          <img src={item.image} alt="image" width={50} height={50} />
+                        </Link>
+                      </Stack>
+                      <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
+                        <Typography>Title</Typography>
+                        <Link href={`/products/${item.product_id}`}>
+                          <Typography fontWeight={'bold'}>{item?.title}</Typography>
+                        </Link>
+                      </Stack>
+                      <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
+                        <Typography>Option</Typography>
+                        <Typography fontWeight={'bold'}>{item?.option}</Typography>
+                      </Stack>
+                      <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
+                        <Typography>Quantity</Typography>
+                        <Typography fontWeight={'bold'}>{item?.quantity}</Typography>
+                      </Stack>
+                      <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
+                        <Typography>Price</Typography>
+                        <Typography fontWeight={'bold'}>{item?.price || 0} USD</Typography>
+                      </Stack>
+                    </Box>
+                  ))}
+
+                {order?.transaction && order?.transaction.transaction_id > 0 && (
+                  <Box>
+                    <Typography variant="h6" mt={2}>
+                      Transaction
+                    </Typography>
+                    <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
+                      <Typography>Amount</Typography>
+                      <Typography fontWeight={'bold'}>
+                        {order?.transaction.amount} {order?.transaction.currency}
+                      </Typography>
+                    </Stack>
+                    <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
+                      <Typography>Gateway</Typography>
+                      <Typography fontWeight={'bold'}>{order?.transaction.gateway}</Typography>
+                    </Stack>
+                    <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
+                      <Typography>Message</Typography>
+                      <Typography fontWeight={'bold'}>{order?.transaction.message}</Typography>
+                    </Stack>
+                    <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
+                      <Typography>Transaction status</Typography>
+                      {order?.transaction.transaction_status === 1 && (
+                        <Typography fontWeight={'bold'} color="success">
+                          Success
+                        </Typography>
+                      )}
+                      {order?.transaction.transaction_status === 2 && (
+                        <Typography fontWeight={'bold'} color="error">
+                          Failure
+                        </Typography>
+                      )}
+                      {order?.transaction.transaction_status === 3 && (
+                        <Typography fontWeight={'bold'} color="info">
+                          Pending
+                        </Typography>
+                      )}
+                      {order?.transaction.transaction_status === 4 && (
+                        <Typography fontWeight={'bold'} color="error">
+                          Error
+                        </Typography>
+                      )}
+                    </Stack>
+
+                    <Typography mt={2} fontWeight={'bold'}>
+                      Blockchain
+                    </Typography>
+                    <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
+                      <Typography>Chain</Typography>
+                      <Typography fontWeight={'bold'}>
+                        {FindChainNamesByChainids(order?.transaction.blockchain.chain_id)}
+                      </Typography>
+                    </Stack>
+                    <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
+                      <Typography>Hash</Typography>
+                      <Link
+                        href={GetBlockchainTxUrlByChainIds(
+                          order?.transaction.blockchain.chain_id as CHAINIDS,
+                          String(order?.transaction.blockchain.hash),
+                        )}
+                        target="_blank"
+                      >
+                        {OmitMiddleString(String(order?.transaction.blockchain.hash))}
+                      </Link>
+                    </Stack>
+                    <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
+                      <Typography>From address</Typography>
+                      <Link
+                        href={GetBlockchainAddressUrlByChainIds(
+                          order?.transaction.blockchain.chain_id as CHAINIDS,
+                          String(order?.transaction.blockchain.from_address),
+                        )}
+                        target="_blank"
+                      >
+                        {OmitMiddleString(String(order?.transaction.blockchain.from_address))}
+                      </Link>
+                    </Stack>
+                    <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
+                      <Typography>To address</Typography>
+                      <Link
+                        href={GetBlockchainAddressUrlByChainIds(
+                          order?.transaction.blockchain.chain_id as CHAINIDS,
+                          String(order?.transaction.blockchain.to_address),
+                        )}
+                        target="_blank"
+                      >
+                        {OmitMiddleString(String(order?.transaction.blockchain.to_address))}
+                      </Link>
+                    </Stack>
+                    <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
+                      <Typography>Token</Typography>
+                      <Typography fontWeight={'bold'}>{order?.transaction.blockchain.token}</Typography>
+                    </Stack>
+                    <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
+                      <Typography>Crypto amount</Typography>
+                      <Typography fontWeight={'bold'}>{order?.transaction.blockchain.crypto_amount}</Typography>
+                    </Stack>
+                    <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
+                      <Typography>Rate</Typography>
+                      <Typography
+                        fontWeight={'bold'}
+                      >{`1 ${order?.transaction.blockchain.token} = ${order?.transaction.blockchain.rate} USD`}</Typography>
+                    </Stack>
+                    <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
+                      <Typography>Block timestamp</Typography>
+                      <Typography fontWeight={'bold'}>
+                        {new Date(Number(order?.transaction.blockchain.block_timestamp)).toLocaleString()}
+                      </Typography>
+                    </Stack>
+                  </Box>
+                )}
+
+                <Box mt={4}>
+                  {order?.financial_status === 1 && (
+                    <Button variant={'contained'} color="inherit" fullWidth onClick={() => {}}>
+                      Check logistics
+                    </Button>
+                  )}
+                  {order?.financial_status === 2 && (
+                    <Button
+                      variant={'contained'}
+                      color="success"
+                      fullWidth
+                      onClick={() => {
+                        window.location.href = `/payment/${order?.order_id}`;
+                      }}
+                    >
+                      Go to pay
+                    </Button>
+                  )}
+                </Box>
+              </CardContent>
+            </Card>
+          </Box>
+        </>
+      ) : (
         <Card>
           <CardContent>
-            <Typography variant="h6">Base info</Typography>
-            <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
-              <Typography>Customer username</Typography>
-              <Link href={`profile/${order?.customer_username}`}>
-                <Typography>{order?.customer_username}</Typography>
-              </Link>
-            </Stack>
-            <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
-              <Typography>Customer email</Typography>
-              <Typography fontWeight={'bold'}>{order?.customer_email}</Typography>
-            </Stack>
-            <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
-              <Typography>Total discounts</Typography>
-              <Typography fontWeight={'bold'}>{order?.total_discounts || 0} USD</Typography>
-            </Stack>
-            <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
-              <Typography>Total tax</Typography>
-              <Typography fontWeight={'bold'}>{order?.total_tax || 0} USD</Typography>
-            </Stack>
-            <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
-              <Typography>Total tip received</Typography>
-              <Typography fontWeight={'bold'}>{order?.total_tip_received || 0} USD</Typography>
-            </Stack>
-            <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
-              <Typography>Total price</Typography>
-              <Typography fontWeight={'bold'}>{order?.total_price || 0} USD</Typography>
-            </Stack>
-
-            <Typography variant="h6" mt={2}>
-              Order items
-            </Typography>
-            {order?.items &&
-              order.items.length > 0 &&
-              order.items.map((item, index) => (
-                <Box key={index}>
-                  <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
-                    <Typography>Image</Typography>
-                    <Link href={`/products/${item.product_id}`}>
-                      <img src={item.image} alt="image" width={50} height={50} />
-                    </Link>
-                  </Stack>
-                  <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
-                    <Typography>Title</Typography>
-                    <Link href={`/products/${item.product_id}`}>
-                      <Typography fontWeight={'bold'}>{item?.title}</Typography>
-                    </Link>
-                  </Stack>
-                  <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
-                    <Typography>Option</Typography>
-                    <Typography fontWeight={'bold'}>{item?.option}</Typography>
-                  </Stack>
-                  <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
-                    <Typography>Quantity</Typography>
-                    <Typography fontWeight={'bold'}>{item?.quantity}</Typography>
-                  </Stack>
-                  <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
-                    <Typography>Price</Typography>
-                    <Typography fontWeight={'bold'}>{item?.price || 0} USD</Typography>
-                  </Stack>
-                </Box>
-              ))}
-
-            {order?.transaction && order?.transaction.transaction_id > 0 && (
-              <Box>
-                <Typography variant="h6" mt={2}>
-                  Transaction
-                </Typography>
-                <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
-                  <Typography>Amount</Typography>
-                  <Typography fontWeight={'bold'}>
-                    {order?.transaction.amount} {order?.transaction.currency}
-                  </Typography>
-                </Stack>
-                <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
-                  <Typography>Gateway</Typography>
-                  <Typography fontWeight={'bold'}>{order?.transaction.gateway}</Typography>
-                </Stack>
-                <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
-                  <Typography>Message</Typography>
-                  <Typography fontWeight={'bold'}>{order?.transaction.message}</Typography>
-                </Stack>
-                <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
-                  <Typography>Transaction status</Typography>
-                  {order?.transaction.transaction_status === 1 && (
-                    <Typography fontWeight={'bold'} color="success">
-                      Success
-                    </Typography>
-                  )}
-                  {order?.transaction.transaction_status === 2 && (
-                    <Typography fontWeight={'bold'} color="error">
-                      Failure
-                    </Typography>
-                  )}
-                  {order?.transaction.transaction_status === 3 && (
-                    <Typography fontWeight={'bold'} color="info">
-                      Pending
-                    </Typography>
-                  )}
-                  {order?.transaction.transaction_status === 4 && (
-                    <Typography fontWeight={'bold'} color="error">
-                      Error
-                    </Typography>
-                  )}
-                </Stack>
-
-                <Typography mt={2} fontWeight={'bold'}>
-                  Blockchain
-                </Typography>
-                <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
-                  <Typography>Chain</Typography>
-                  <Typography fontWeight={'bold'}>
-                    {FindChainNamesByChainids(order?.transaction.blockchain.chain_id)}
-                  </Typography>
-                </Stack>
-                <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
-                  <Typography>Hash</Typography>
-                  <Link
-                    href={GetBlockchainTxUrlByChainIds(
-                      order?.transaction.blockchain.chain_id as CHAINIDS,
-                      String(order?.transaction.blockchain.hash),
-                    )}
-                    target="_blank"
-                  >
-                    {OmitMiddleString(String(order?.transaction.blockchain.hash))}
-                  </Link>
-                </Stack>
-                <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
-                  <Typography>From address</Typography>
-                  <Link
-                    href={GetBlockchainAddressUrlByChainIds(
-                      order?.transaction.blockchain.chain_id as CHAINIDS,
-                      String(order?.transaction.blockchain.from_address),
-                    )}
-                    target="_blank"
-                  >
-                    {OmitMiddleString(String(order?.transaction.blockchain.from_address))}
-                  </Link>
-                </Stack>
-                <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
-                  <Typography>To address</Typography>
-                  <Link
-                    href={GetBlockchainAddressUrlByChainIds(
-                      order?.transaction.blockchain.chain_id as CHAINIDS,
-                      String(order?.transaction.blockchain.to_address),
-                    )}
-                    target="_blank"
-                  >
-                    {OmitMiddleString(String(order?.transaction.blockchain.to_address))}
-                  </Link>
-                </Stack>
-                <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
-                  <Typography>Token</Typography>
-                  <Typography fontWeight={'bold'}>{order?.transaction.blockchain.token}</Typography>
-                </Stack>
-                <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
-                  <Typography>Crypto amount</Typography>
-                  <Typography fontWeight={'bold'}>{order?.transaction.blockchain.crypto_amount}</Typography>
-                </Stack>
-                <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
-                  <Typography>Rate</Typography>
-                  <Typography
-                    fontWeight={'bold'}
-                  >{`1 ${order?.transaction.blockchain.token} = ${order?.transaction.blockchain.rate} USD`}</Typography>
-                </Stack>
-                <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
-                  <Typography>Block timestamp</Typography>
-                  <Typography fontWeight={'bold'}>
-                    {new Date(Number(order?.transaction.blockchain.block_timestamp)).toLocaleString()}
-                  </Typography>
-                </Stack>
-              </Box>
-            )}
-
-            <Box mt={4}>
-              {order?.financial_status === 1 && (
-                <Button variant={'contained'} color="inherit" fullWidth onClick={() => {}}>
-                  Check logistics
-                </Button>
-              )}
-              {order?.financial_status === 2 && (
-                <Button
-                  variant={'contained'}
-                  color="success"
-                  fullWidth
-                  onClick={() => {
-                    window.location.href = `/payment/${order?.order_id}`;
-                  }}
-                >
-                  Go to pay
-                </Button>
-              )}
+            <Box py={2} textAlign={'center'}>
+              <Typography variant="h6">order is empty</Typography>
+              <Typography mt={2}>No information was found about the order.</Typography>
             </Box>
           </CardContent>
         </Card>
-      </Box>
+      )}
     </Container>
   );
 };
