@@ -43,7 +43,7 @@ type Props = {
 };
 
 const ManageAddress = (props: Props) => {
-  const [alignment, setAlignment] = useState<string>('received' || 'delivery');
+  const [alignment, setAlignment] = useState<'received' | 'delivery'>('received');
   const [handle, setHandle] = useState<number>(0);
   const [username, setUsername] = useState<string>('');
   const [addresses, setAddresses] = useState<AddressType[]>([]);

@@ -356,7 +356,7 @@ const PaymentDetails = () => {
                       </Stack>
                     </Box>
                   </Card>
-                  {order?.transaction.transaction_id ? (
+                  {order?.transaction.transaction_id > 0 && (
                     <Box mt={2}>
                       <Button
                         variant={'contained'}
@@ -370,8 +370,6 @@ const PaymentDetails = () => {
                         Next
                       </Button>
                     </Box>
-                  ) : (
-                    <></>
                   )}
                 </Grid>
               </Grid>
@@ -789,12 +787,14 @@ const PaymentDetails = () => {
                           <Typography>Token</Typography>
                           <Typography fontWeight={'bold'}>{order?.transaction.blockchain.token}</Typography>
                         </Stack>
-                        <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} gap={2}>
-                          <Typography>Block timestamp</Typography>
-                          <Typography fontWeight={'bold'}>
-                            {new Date(Number(order?.transaction.blockchain.block_timestamp)).toLocaleString()}
-                          </Typography>
-                        </Stack>
+                        {order?.transaction.blockchain.block_timestamp > 0 && (
+                          <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} gap={2}>
+                            <Typography>Block timestamp</Typography>
+                            <Typography fontWeight={'bold'}>
+                              {new Date(Number(order?.transaction.blockchain.block_timestamp)).toLocaleString()}
+                            </Typography>
+                          </Stack>
+                        )}
                       </Box>
                     </Box>
                   </Box>

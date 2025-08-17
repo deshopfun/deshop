@@ -103,12 +103,14 @@ export default function BlockchainDialog(props: DialogType) {
           <Typography>Rate</Typography>
           <Typography fontWeight={'bold'}>{`1 ${props.blockchain.token} = ${props.blockchain.rate} USD`}</Typography>
         </Stack>
-        <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
-          <Typography>Block timestamp</Typography>
-          <Typography fontWeight={'bold'}>
-            {new Date(Number(props.blockchain.block_timestamp)).toLocaleString()}
-          </Typography>
-        </Stack>
+        {props.blockchain.block_timestamp > 0 && (
+          <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
+            <Typography>Block timestamp</Typography>
+            <Typography fontWeight={'bold'}>
+              {new Date(Number(props.blockchain.block_timestamp)).toLocaleString()}
+            </Typography>
+          </Stack>
+        )}
       </DialogContent>
       <DialogActions>
         <Button

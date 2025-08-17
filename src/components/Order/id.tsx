@@ -316,12 +316,14 @@ const OrderDetails = () => {
                         fontWeight={'bold'}
                       >{`1 ${order?.transaction.blockchain.token} = ${order?.transaction.blockchain.rate} USD`}</Typography>
                     </Stack>
-                    <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
-                      <Typography>Block timestamp</Typography>
-                      <Typography fontWeight={'bold'}>
-                        {new Date(Number(order?.transaction.blockchain.block_timestamp)).toLocaleString()}
-                      </Typography>
-                    </Stack>
+                    {order?.transaction.blockchain.block_timestamp > 0 && (
+                      <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
+                        <Typography>Block timestamp</Typography>
+                        <Typography fontWeight={'bold'}>
+                          {new Date(Number(order?.transaction.blockchain.block_timestamp)).toLocaleString()}
+                        </Typography>
+                      </Stack>
+                    )}
                   </Box>
                 )}
 

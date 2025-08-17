@@ -115,7 +115,7 @@ const ProductDetails = () => {
   const [optionThreeValue, setOptionThreeValue] = useState<string>('');
   const [currentProductVariant, setCurrentProductVariant] = useState<ProductVariant>();
   const [isSelectOption, setIsSelectOption] = useState<boolean>(false);
-  const [quantity, setQuantity] = useState<number>(0);
+  const [quantity, setQuantity] = useState<number>(1);
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     const tabId = Object.values(PRODUCT_TAB_DATAS).find((item) => item.id === newValue)?.tabId;
@@ -222,7 +222,7 @@ const ProductDetails = () => {
         });
       } else {
         setCurrentProductVariant(undefined);
-        setQuantity(0);
+        setQuantity(1);
       }
     } catch (e) {
       setSnackSeverity('error');
@@ -282,7 +282,55 @@ const ProductDetails = () => {
       return;
     }
 
-    if (quantity <= 0) return;
+    if (quantity <= 0) {
+      setSnackSeverity('error');
+      setSnackMessage('At least one quantity is required.');
+      setSnackOpen(true);
+      return;
+    }
+
+    if (getUuid() === product.user_uuid) {
+      setSnackSeverity('error');
+      setSnackMessage('Cannot buy your own products.');
+      setSnackOpen(true);
+      return;
+    }
+
+    addToCart();
+
+    setSnackSeverity('success');
+    setSnackMessage('Add to cart successfully');
+    setSnackOpen(true);
+  };
+
+  const onClickBuyNow = async () => {
+    if (!product) {
+      return;
+    }
+
+    if (quantity <= 0) {
+      setSnackSeverity('error');
+      setSnackMessage('At least one quantity is required.');
+      setSnackOpen(true);
+      return;
+    }
+
+    if (getUuid() === product.user_uuid) {
+      setSnackSeverity('error');
+      setSnackMessage('Cannot buy your own products.');
+      setSnackOpen(true);
+      return;
+    }
+
+    addToCart();
+
+    window.location.href = `/checkout/${product.user_uuid}`;
+  };
+
+  const addToCart = () => {
+    if (!product) {
+      return;
+    }
 
     let option = '';
     switch (product.options.length) {
@@ -345,20 +393,7 @@ const ProductDetails = () => {
         },
       ]);
     }
-
-    setSnackSeverity('success');
-    setSnackMessage('Add to cart successfully');
-    setSnackOpen(true);
   };
-
-  const onClickBuyNow = async () => {};
-  try {
-  } catch (e) {
-    setSnackSeverity('error');
-    setSnackMessage('The network error occurred. Please try again later.');
-    setSnackOpen(true);
-    console.error(e);
-  }
 
   return (
     <Container>
