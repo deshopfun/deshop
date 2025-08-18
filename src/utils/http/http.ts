@@ -39,6 +39,9 @@ export class Http {
 
   // order
   static order = this.httpPath + '/client/order/order';
+  static order_confirm_payment = this.httpPath + '/client/order/confirm-payment';
+  static order_confirm_shipping = this.httpPath + '/client/order/confirm-shipping';
+  static order_confirm = this.httpPath + '/client/order/confirm';
 
   //transaction
   static transaction = this.httpPath + '/client/transaction/transaction';

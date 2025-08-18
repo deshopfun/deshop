@@ -1,8 +1,23 @@
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Stack, Typography } from '@mui/material';
+import {
+  Box,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Divider,
+  Stack,
+  TextField,
+  Typography,
+} from '@mui/material';
 import Link from 'next/link';
 import { CHAINIDS } from 'packages/constants';
 import { OmitMiddleString } from 'utils/strings';
 import { FindChainNamesByChainids, GetBlockchainAddressUrlByChainIds, GetBlockchainTxUrlByChainIds } from 'utils/web3';
+import { useState } from 'react';
+import { useSnackPresistStore } from 'lib';
+import axios from 'utils/http/axios';
+import { Http } from 'utils/http/http';
 
 type BlockchainType = {
   qrcode: string;
@@ -19,12 +34,55 @@ type BlockchainType = {
 };
 
 type DialogType = {
+  orderId: number;
+  confirmNumber: string;
   blockchain: BlockchainType;
   openDialog: boolean;
   handleCloseDialog: () => Promise<void>;
 };
 
-export default function BlockchainDialog(props: DialogType) {
+export default function ConfirmPaymentDialog(props: DialogType) {
+  const [text, setText] = useState<string>('');
+
+  const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore((state) => state);
+
+  const onClickConfirm = async () => {
+    try {
+      if (!props.orderId) {
+        return;
+      }
+
+      if (!text || text === '' || text !== props.confirmNumber) {
+        setSnackSeverity('error');
+        setSnackMessage('Incorrect text input');
+        setSnackOpen(true);
+        return;
+      }
+
+      const response: any = await axios.put(Http.order_confirm_payment, {
+        order_id: props.orderId,
+        confirm_number: text,
+      });
+
+      if (response.result) {
+        await props.handleCloseDialog();
+
+        setSnackSeverity('success');
+        setSnackMessage('Confirm successfully');
+        setSnackOpen(true);
+      } else {
+        setSnackSeverity('error');
+        setSnackMessage('Confirm Failed');
+        setSnackOpen(true);
+      }
+    } catch (e) {
+      setSnackSeverity('error');
+      setSnackMessage('The network error occurred. Please try again later');
+      setSnackOpen(true);
+      console.error(e);
+    }
+  };
+
   return (
     <Dialog
       open={props.openDialog}
@@ -33,7 +91,7 @@ export default function BlockchainDialog(props: DialogType) {
       }}
       fullWidth
     >
-      <DialogTitle>Blockchain</DialogTitle>
+      <DialogTitle>Confirm payment</DialogTitle>
       <DialogContent>
         <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
           <Typography>Chain</Typography>
@@ -92,6 +150,31 @@ export default function BlockchainDialog(props: DialogType) {
             </Typography>
           </Stack>
         )}
+        <Box py={2}>
+          <Divider />
+        </Box>
+        <Typography>{`To confirm, type "${props.confirmNumber}" in the box below`}</Typography>
+        <Box py={1}>
+          <TextField
+            hiddenLabel
+            size="small"
+            fullWidth
+            value={text}
+            onChange={(e) => {
+              setText(e.target.value);
+            }}
+          />
+        </Box>
+        <Button
+          color="success"
+          fullWidth
+          variant={'contained'}
+          onClick={() => {
+            onClickConfirm();
+          }}
+        >
+          Confirm the payment
+        </Button>
       </DialogContent>
       <DialogActions>
         <Button

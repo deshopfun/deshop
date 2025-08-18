@@ -330,7 +330,7 @@ const OrderDetails = () => {
                 <Box mt={4}>
                   {order?.financial_status === 1 && (
                     <Button variant={'contained'} color="inherit" fullWidth onClick={() => {}}>
-                      Check logistics
+                      Check shipping
                     </Button>
                   )}
                   {order?.financial_status === 2 && (
