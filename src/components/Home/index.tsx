@@ -26,8 +26,8 @@ const Home = () => {
     <Container>
       {/* <Box>
         <Box display={'flex'} alignItems={'center'}>
-          <Button endIcon={<ChevronRight style={{ color: '#000' }} />}>
-            <Typography variant="h6" color={'textPrimary'}>
+          <Button color={'inherit'}  endIcon={<ChevronRight  />}>
+            <Typography variant="h6" >
               Recently viewed
             </Typography>
           </Button>
@@ -53,14 +53,13 @@ const Home = () => {
       <Box mt={4}>
         <Box display={'flex'} alignItems={'center'}>
           <Button
-            endIcon={<ChevronRight style={{ color: '#000' }} />}
+            color={'inherit'}
+            endIcon={<ChevronRight />}
             onClick={() => {
               window.location.href = '/explore';
             }}
           >
-            <Typography variant="h6" color={'textPrimary'}>
-              Explore
-            </Typography>
+            <Typography variant="h6">Explore</Typography>
           </Button>
         </Box>
 

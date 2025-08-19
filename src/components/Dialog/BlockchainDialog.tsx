@@ -19,6 +19,7 @@ type BlockchainType = {
 };
 
 type DialogType = {
+  currency: string;
   blockchain: BlockchainType;
   openDialog: boolean;
   handleCloseDialog: () => Promise<void>;
@@ -82,7 +83,11 @@ export default function BlockchainDialog(props: DialogType) {
         </Stack>
         <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
           <Typography>Rate</Typography>
-          <Typography fontWeight={'bold'}>{`1 ${props.blockchain.token} = ${props.blockchain.rate} USD`}</Typography>
+          {props.blockchain.rate && (
+            <Typography
+              fontWeight={'bold'}
+            >{`1 ${props.blockchain.token} = ${props.blockchain.rate} ${props.currency}`}</Typography>
+          )}
         </Stack>
         {props.blockchain.block_timestamp > 0 && (
           <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>

@@ -153,7 +153,9 @@ export default function ConfirmPaymentDialog(props: DialogType) {
         <Box py={2}>
           <Divider />
         </Box>
-        <Typography>{`To confirm, type "${props.confirmNumber}" in the box below`}</Typography>
+        <Typography>
+          To confirm, type "<b>{props.confirmNumber}</b>" in the box below
+        </Typography>
         <Box py={1}>
           <TextField
             hiddenLabel

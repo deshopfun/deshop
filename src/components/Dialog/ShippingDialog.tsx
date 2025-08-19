@@ -1,7 +1,7 @@
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Stack, Typography } from '@mui/material';
 import Link from 'next/link';
 import { CHAINIDS, SHIPPING_TYPE } from 'packages/constants';
-import { OmitMiddleString } from 'utils/strings';
+import { OmitMiddleString, OrderShippingStatusText } from 'utils/strings';
 import { FindChainNamesByChainids, GetBlockchainAddressUrlByChainIds, GetBlockchainTxUrlByChainIds } from 'utils/web3';
 
 type ShippingType = {
@@ -23,6 +23,7 @@ type ShippingType = {
 
 type DialogType = {
   alignment: 'buy' | 'sell';
+  shippingConfirmed: number;
   shipping: ShippingType;
   openDialog: boolean;
   handleCloseDialog: () => Promise<void>;
@@ -42,10 +43,11 @@ export default function ShippingDialog(props: DialogType) {
         <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
           <Typography>Shipping type</Typography>
           <Typography fontWeight={'bold'} color={'error'}>
-            {props.alignment === 'buy' && props.shipping.shipping_type === 1 && 'Goods to be received'}
-            {props.alignment === 'buy' && props.shipping.shipping_type === 2 && 'To be picked up'}
-            {props.alignment === 'sell' && props.shipping.shipping_type === 1 && 'Waiting for delivery'}
-            {props.alignment === 'sell' && props.shipping.shipping_type === 2 && 'Waiting for customers to pick up'}
+            {OrderShippingStatusText(
+              props.alignment,
+              props.shippingConfirmed === 1 ? true : false,
+              props.shipping.shipping_type,
+            )}
           </Typography>
         </Stack>
         <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>

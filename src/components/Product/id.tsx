@@ -883,16 +883,15 @@ const ProductDetails = () => {
             <Box mt={4} mb={8}>
               <Box display={'flex'} alignItems={'center'}>
                 <Button
-                  endIcon={<ChevronRight style={{ color: '#000' }} />}
+                  color={'inherit'}
+                  endIcon={<ChevronRight />}
                   onClick={() => {
                     window.location.href = `/explore?type=${
                       Object.entries(PRODUCT_TYPE).find((item) => item[1] == product.product_type)?.[0]
                     }`;
                   }}
                 >
-                  <Typography variant="h6" color={'textPrimary'}>
-                    Recommend more
-                  </Typography>
+                  <Typography variant="h6">Recommend more</Typography>
                 </Button>
               </Box>
 
