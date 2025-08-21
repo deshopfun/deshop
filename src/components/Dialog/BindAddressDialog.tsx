@@ -11,7 +11,6 @@ import {
 } from '@mui/material';
 import { useSnackPresistStore } from 'lib';
 import { CHAINIDS } from 'packages/constants';
-import { WEB3 } from 'packages/web3/web3';
 import { useEffect, useState } from 'react';
 import axios from 'utils/http/axios';
 import { Http } from 'utils/http/http';

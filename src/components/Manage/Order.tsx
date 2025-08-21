@@ -18,6 +18,8 @@ import ConfirmOrderDialog from 'components/Dialog/ConfirmOrderDialog';
 import ConfirmPaymentDialog from 'components/Dialog/ConfirmPaymentDialog';
 import ConfirmShippingDialog from 'components/Dialog/ConfirmShippingDialog';
 import OrderDetailsDialog from 'components/Dialog/OrderDetailsDialog';
+import OrderRatingDialog from 'components/Dialog/OrderRatingDialog';
+import PostOrderRateDialog from 'components/Dialog/PostOrderRateDialog';
 import ShippingDialog from 'components/Dialog/ShippingDialog';
 import { useSnackPresistStore, useUserPresistStore } from 'lib';
 import { useEffect, useState } from 'react';
@@ -91,6 +93,15 @@ type ShippingType = {
   zip: string;
 };
 
+type RatingType = {
+  rating_id: number;
+  product_option: string;
+  number: number;
+  image: string;
+  body: string;
+  created_at: number;
+};
+
 type OrderType = {
   order_id: number;
   customer_uuid: string;
@@ -116,6 +127,7 @@ type OrderType = {
   financial_status: number;
   processed_at: number;
   items: OrderItemType[];
+  ratings: RatingType[];
   wallets: WalletType[];
   transaction: TransactionType;
   shipping: ShippingType;
@@ -132,7 +144,8 @@ const ManageOrder = (props: Props) => {
   const [openConfirmShippingDialog, setOpenConfirmShippingDialog] = useState<boolean>(false);
   const [openConfirmDialog, setOpenConfirmDialog] = useState<boolean>(false);
   const [openOrderDetailsDialog, setOpenOrderDetailsDialog] = useState<boolean>(false);
-  const [openOrderRateDialog, setOpenOrderRateDialog] = useState<boolean>(false);
+  const [openPostOrderRateDialog, setPostOpenOrderRateDialog] = useState<boolean>(false);
+  const [openOrderRatingDialog, setOpenOrderRatingDialog] = useState<boolean>(false);
   const [alignment, setAlignment] = useState<'buy' | 'sell'>('buy');
   const [orders, setOrders] = useState<OrderType[]>([]);
   const [currentOrder, setCurrentOrder] = useState<OrderType>();
@@ -205,9 +218,14 @@ const ManageOrder = (props: Props) => {
     setOpenOrderDetailsDialog(false);
   };
 
-  const handleOrderRateCloseDialog = async () => {
+  const handlePostOrderRateCloseDialog = async () => {
     props.uuid && (await init(props.uuid, alignment));
-    setOpenOrderRateDialog(false);
+    setPostOpenOrderRateDialog(false);
+  };
+
+  const handleOrderRatingCloseDialog = async () => {
+    props.uuid && (await init(props.uuid, alignment));
+    setOpenOrderRatingDialog(false);
   };
 
   return (
@@ -305,19 +323,21 @@ const ManageOrder = (props: Props) => {
                         window.location.href = item.order_status_url;
                       }}
                     >
-                      <Stack direction={'row'} my={4} justifyContent={'space-between'}>
-                        <Stack direction={'row'}>
-                          <img src={item.items[0].image} alt={'image'} loading="lazy" width={100} height={100} />
-                          <Box pl={2}>
-                            <Typography>{item.items[0].title}</Typography>
-                            <Typography>{item.items[0].option}</Typography>
+                      {item.items.map((productItem, productIndex) => (
+                        <Stack direction={'row'} my={4} justifyContent={'space-between'} key={productIndex}>
+                          <Stack direction={'row'}>
+                            <img src={productItem.image} alt={'image'} loading="lazy" width={100} height={100} />
+                            <Box pl={2}>
+                              <Typography fontWeight={'bold'}>{productItem.title}</Typography>
+                              <Typography>{productItem.option}</Typography>
+                            </Box>
+                          </Stack>
+                          <Box textAlign={'right'}>
+                            <Typography>{`${productItem.price} ${item.currency}`}</Typography>
+                            <Typography>{`x${productItem.quantity}`}</Typography>
                           </Box>
                         </Stack>
-                        <Box textAlign={'right'}>
-                          <Typography>{`${item.items[0].price} ${item.currency}`}</Typography>
-                          <Typography>{`x${item.items[0].quantity}`}</Typography>
-                        </Box>
-                      </Stack>
+                      ))}
                     </div>
                     <Divider />
                     <Typography textAlign={'right'} py={1}>
@@ -331,8 +351,7 @@ const ManageOrder = (props: Props) => {
                           <Typography variant="h6">Payment</Typography>
                           <Stack mt={2} gap={1}>
                             <Button
-                              variant={'outlined'}
-                              color={'inherit'}
+                              variant={'contained'}
                               onClick={() => {
                                 setCurrentOrder(item);
                                 setOpenBlockchainDialog(true);
@@ -374,8 +393,7 @@ const ManageOrder = (props: Props) => {
                           <Typography variant="h6">Shipping</Typography>
                           <Stack mt={2} gap={1}>
                             <Button
-                              variant={'outlined'}
-                              color={'inherit'}
+                              variant={'contained'}
                               onClick={() => {
                                 setCurrentOrder(item);
                                 setOpenShippingDialog(true);
@@ -405,8 +423,7 @@ const ManageOrder = (props: Props) => {
                           <Typography variant="h6">More</Typography>
                           <Stack mt={2} gap={1}>
                             <Button
-                              variant={'outlined'}
-                              color={'inherit'}
+                              variant={'contained'}
                               onClick={() => {
                                 setCurrentOrder(item);
                                 setOpenOrderDetailsDialog(true);
@@ -446,17 +463,31 @@ const ManageOrder = (props: Props) => {
                                   )}
                                 {item.confirmed === 1 && (
                                   <>
-                                    <Button
-                                      variant={'contained'}
-                                      color={'error'}
-                                      onClick={() => {
-                                        setCurrentOrder(item);
-                                        setOpenOrderRateDialog(true);
-                                      }}
-                                      size="small"
-                                    >
-                                      Rate now
-                                    </Button>
+                                    {item.ratings && item.ratings.length > 0 ? (
+                                      <Button
+                                        variant={'contained'}
+                                        onClick={() => {
+                                          setCurrentOrder(item);
+                                          setOpenOrderRatingDialog(true);
+                                        }}
+                                        size="small"
+                                      >
+                                        Check rating
+                                      </Button>
+                                    ) : (
+                                      <Button
+                                        variant={'contained'}
+                                        color={'error'}
+                                        onClick={() => {
+                                          setCurrentOrder(item);
+                                          setPostOpenOrderRateDialog(true);
+                                        }}
+                                        size="small"
+                                      >
+                                        Rating now
+                                      </Button>
+                                    )}
+
                                     <Button
                                       variant={'outlined'}
                                       color={'inherit'}
@@ -543,6 +574,17 @@ const ManageOrder = (props: Props) => {
                 order={currentOrder}
                 openDialog={openOrderDetailsDialog}
                 handleCloseDialog={handleOrderDetailsCloseDialog}
+              />
+              <PostOrderRateDialog
+                orderId={currentOrder.order_id}
+                orderItems={currentOrder.items}
+                openDialog={openPostOrderRateDialog}
+                handleCloseDialog={handlePostOrderRateCloseDialog}
+              />
+              <OrderRatingDialog
+                ratings={currentOrder.ratings}
+                openDialog={openOrderRatingDialog}
+                handleCloseDialog={handleOrderRatingCloseDialog}
               />
             </>
           )}
