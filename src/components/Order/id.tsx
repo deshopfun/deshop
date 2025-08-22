@@ -65,6 +65,10 @@ type OrderType = {
   total_price: string;
   total_tax: string;
   total_tip_received: string;
+  currency: string;
+  confirmed: number;
+  payment_confirmed: number;
+  shipping_confirmed: number;
   financial_status: number;
   processed_at: number;
   items: OrderItemType[];
@@ -116,43 +120,32 @@ const OrderDetails = () => {
     <Container>
       {order ? (
         <>
-          {order?.financial_status === 1 && (
-            <Box>
-              <Alert severity="success">
-                <AlertTitle>Paid</AlertTitle>
-                <Typography>The order financial status is Paid</Typography>
-              </Alert>
-            </Box>
-          )}
-          {order?.financial_status === 2 && (
-            <Box>
-              <Alert severity="warning">
-                <AlertTitle>Pending</AlertTitle>
-                <Typography>The order financial status is Pending</Typography>
-              </Alert>
-            </Box>
-          )}
-          {order?.financial_status === 6 && (
-            <Box>
-              <Alert severity="info">
-                <AlertTitle>Refunded</AlertTitle>
-                <Typography>The order financial status is Refunded</Typography>
-              </Alert>
-            </Box>
-          )}
-          {order?.financial_status === 7 && (
-            <Box>
-              <Alert severity="error">
-                <AlertTitle>Voided</AlertTitle>
-                <Typography>The order financial status is Voided</Typography>
-              </Alert>
-            </Box>
-          )}
-
           <Box mt={4}>
             <Card>
               <CardContent>
-                <Typography variant="h6">Base info</Typography>
+                <Typography variant="h6">Order status</Typography>
+                <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
+                  <Typography>Payment status</Typography>
+                  <Typography fontWeight={'bold'} color={order?.payment_confirmed === 1 ? 'success' : 'error'}>
+                    {order?.payment_confirmed === 1 ? 'Complete' : 'Waiting for confirm'}
+                  </Typography>
+                </Stack>
+                <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
+                  <Typography>Shipping status</Typography>
+                  <Typography fontWeight={'bold'} color={order?.shipping_confirmed === 1 ? 'success' : 'error'}>
+                    {order?.shipping_confirmed === 1 ? 'Complete' : 'Waiting for confirm'}
+                  </Typography>
+                </Stack>
+                <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
+                  <Typography>Order status</Typography>
+                  <Typography fontWeight={'bold'} color={order?.confirmed === 1 ? 'success' : 'error'}>
+                    {order?.confirmed === 1 ? 'Complete' : 'Waiting for confirm'}
+                  </Typography>
+                </Stack>
+
+                <Typography variant="h6" mt={2}>
+                  Base info
+                </Typography>
                 <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
                   <Typography>Customer username</Typography>
                   <Link href={`/profile/${order?.customer_username}`}>
@@ -165,19 +158,27 @@ const OrderDetails = () => {
                 </Stack>
                 <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
                   <Typography>Total discounts</Typography>
-                  <Typography fontWeight={'bold'}>{order?.total_discounts || 0} USD</Typography>
+                  <Typography fontWeight={'bold'}>
+                    {order?.total_discounts || 0} {order?.currency}
+                  </Typography>
                 </Stack>
                 <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
                   <Typography>Total tax</Typography>
-                  <Typography fontWeight={'bold'}>{order?.total_tax || 0} USD</Typography>
+                  <Typography fontWeight={'bold'}>
+                    {order?.total_tax || 0} {order?.currency}
+                  </Typography>
                 </Stack>
                 <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
                   <Typography>Total tip received</Typography>
-                  <Typography fontWeight={'bold'}>{order?.total_tip_received || 0} USD</Typography>
+                  <Typography fontWeight={'bold'}>
+                    {order?.total_tip_received || 0} {order?.currency}
+                  </Typography>
                 </Stack>
                 <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
                   <Typography>Total price</Typography>
-                  <Typography fontWeight={'bold'}>{order?.total_price || 0} USD</Typography>
+                  <Typography fontWeight={'bold'}>
+                    {order?.total_price || 0} {order?.currency}
+                  </Typography>
                 </Stack>
 
                 <Typography variant="h6" mt={2}>
@@ -209,12 +210,14 @@ const OrderDetails = () => {
                       </Stack>
                       <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
                         <Typography>Price</Typography>
-                        <Typography fontWeight={'bold'}>{item?.price || 0} USD</Typography>
+                        <Typography fontWeight={'bold'}>
+                          {item?.price || 0} {order?.currency}
+                        </Typography>
                       </Stack>
                     </Box>
                   ))}
 
-                {order?.transaction && order?.transaction.transaction_id > 0 && (
+                {order?.payment_confirmed === 1 && (
                   <Box>
                     <Typography variant="h6" mt={2}>
                       Transaction
@@ -314,7 +317,7 @@ const OrderDetails = () => {
                       <Typography>Rate</Typography>
                       <Typography
                         fontWeight={'bold'}
-                      >{`1 ${order?.transaction.blockchain.token} = ${order?.transaction.blockchain.rate} USD`}</Typography>
+                      >{`1 ${order?.transaction.blockchain.token} = ${order?.transaction.blockchain.rate} ${order?.currency}`}</Typography>
                     </Stack>
                     {order?.transaction.blockchain.block_timestamp > 0 && (
                       <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
@@ -328,12 +331,7 @@ const OrderDetails = () => {
                 )}
 
                 <Box mt={4}>
-                  {order?.financial_status === 1 && (
-                    <Button variant={'contained'} color="inherit" fullWidth onClick={() => {}}>
-                      Check shipping
-                    </Button>
-                  )}
-                  {order?.financial_status === 2 && (
+                  {order?.payment_confirmed !== 1 ? (
                     <Button
                       variant={'contained'}
                       color="success"
@@ -344,6 +342,16 @@ const OrderDetails = () => {
                     >
                       Go to pay
                     </Button>
+                  ) : order?.shipping_confirmed !== 1 ? (
+                    <Button variant={'contained'} color="inherit" fullWidth onClick={() => {}}>
+                      Waiting for shipping
+                    </Button>
+                  ) : order?.confirmed !== 1 ? (
+                    <Button variant={'contained'} color="inherit" fullWidth onClick={() => {}}>
+                      Waiting for order confirm
+                    </Button>
+                  ) : (
+                    <></>
                   )}
                 </Box>
               </CardContent>
