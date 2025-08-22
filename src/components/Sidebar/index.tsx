@@ -149,13 +149,6 @@ const HomeSidebar = () => {
               Chat
             </MenuItem>
             <MenuItem
-              icon={<AccountCircle />}
-              active={router.pathname === '/profile' ? true : false}
-              component={<Link href={'/profile'} />}
-            >
-              Profile
-            </MenuItem>
-            <MenuItem
               icon={<SupportAgent />}
               active={router.pathname === '/support' ? true : false}
               component={<Link href={'/support'} />}
@@ -165,7 +158,7 @@ const HomeSidebar = () => {
             <MenuItem
               icon={<MoreVert />}
               active={router.pathname === '/more' ? true : false}
-              component={<Link href={'/more'} />}
+              component={<Link href={'#'} />}
             >
               More
             </MenuItem>

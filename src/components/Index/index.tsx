@@ -42,14 +42,22 @@ const Home = () => {
 
             <Box mt={10}>{currentRoute?.component || null}</Box>
 
-            {currentRoute?.enableHomeFooter && <HomeFooter />}
+            {currentRoute?.enableHomeFooter && (
+              <Box mt={10}>
+                <HomeFooter />
+              </Box>
+            )}
           </Box>
         </Stack>
       ) : (
         <Box>
           {currentRoute?.component || null}
 
-          {currentRoute?.enableHomeFooter && <HomeFooter />}
+          {currentRoute?.enableHomeFooter && (
+            <Box mt={10}>
+              <HomeFooter />
+            </Box>
+          )}
         </Box>
       )}
 

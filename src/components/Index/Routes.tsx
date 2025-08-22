@@ -10,10 +10,10 @@ import Home from 'components/Home';
 import Live from 'components/Live';
 import Login from 'components/Login';
 import ManageDetails from 'components/Manage/id';
+import Notification from 'components/Notification';
 import OrderDetails from 'components/Order/id';
 import PaymentDetails from 'components/Payment/id';
 import ProductDetails from 'components/Product/id';
-import Profile from 'components/Profile';
 import ProfileDetails from 'components/Profile/id';
 import Register from 'components/Register';
 import Support from 'components/Support';
@@ -91,20 +91,20 @@ export const routes: RouteType[] = [
     needLogin: false,
   },
   {
+    path: '/notification',
+    name: 'Notification',
+    title: 'Notification',
+    component: <Notification />,
+    enableSidebar: true,
+    enableHomeHeader: true,
+    enableHomeFooter: true,
+    needLogin: false,
+  },
+  {
     path: '/chat',
     name: 'Chat',
     title: 'Chat',
     component: <Chat />,
-    enableSidebar: true,
-    enableHomeHeader: true,
-    enableHomeFooter: true,
-    needLogin: true,
-  },
-  {
-    path: '/profile',
-    name: 'Profile',
-    title: 'Profile',
-    component: <Profile />,
     enableSidebar: true,
     enableHomeHeader: true,
     enableHomeFooter: true,

@@ -28,7 +28,7 @@ const SidebarHeader = () => {
             <IconButton
               size="small"
               onClick={() => {
-                window.location.href = '/notifications';
+                window.location.href = '/notification';
               }}
             >
               <Badge badgeContent={0} color="error">
