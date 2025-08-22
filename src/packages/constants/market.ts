@@ -118,3 +118,20 @@ export const FILE_TYPE = {
   Dev: 'Dev',
   Other: 'Other',
 };
+
+export const SORT_BY_TYPE = {
+  MOST_RELEVABT: 'Most relevant',
+  NEWEST: 'Newest',
+  OLDEST: 'Oldest',
+  RATING_LOW_HIGH: 'Rating: Low -> High',
+  RATING_HIGH_LOW: 'Rating: High -> Low',
+};
+
+export const RATING_TYPE = {
+  5: '5',
+  4: '4',
+  3: '3',
+  2: '2',
+  1: '1',
+  0: 'RESET',
+};

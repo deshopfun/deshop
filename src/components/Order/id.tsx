@@ -155,7 +155,7 @@ const OrderDetails = () => {
                 <Typography variant="h6">Base info</Typography>
                 <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
                   <Typography>Customer username</Typography>
-                  <Link href={`profile/${order?.customer_username}`}>
+                  <Link href={`/profile/${order?.customer_username}`}>
                     <Typography>{order?.customer_username}</Typography>
                   </Link>
                 </Stack>

@@ -14,6 +14,7 @@ export class Http {
   static product_list = this.httpPath + '/client/product-list';
   static product_by_id = this.httpPath + '/client/product-by-id';
   static product_variant_by_option = this.httpPath + '/client/product-variant-by-option';
+  static product_rating_by_id = this.httpPath + '/client/product-rating-by-id';
   static order_by_id = this.httpPath + '/client/order-by-id';
   static transaction_paste_tx_id = this.httpPath + '/client/transaction-paste-tx-id';
 

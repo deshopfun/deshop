@@ -15,19 +15,76 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import { useState } from 'react';
+import { RATING_TYPE, SORT_BY_TYPE } from 'packages/constants';
+import { useEffect, useState } from 'react';
+import { Http } from 'utils/http/http';
+import axios from 'utils/http/axios';
+import { useSnackPresistStore } from 'lib';
+
+type ProductRating = {
+  username: string;
+  rating_id: number;
+  product_option: string;
+  number: number;
+  image: string;
+  body: string;
+  created_at: number;
+};
 
 type DialogType = {
+  product_id: number;
+  ratings: ProductRating[];
   openDialog: boolean;
   setOpenDialog: (value: boolean) => void;
 };
 
 export default function ProductRatingsDialog(props: DialogType) {
+  const [ratings, setRatings] = useState<ProductRating[]>([]);
   const [reviewSearch, setReviewSearch] = useState<string>('');
+  const [selectSortBy, setSelectSortBy] = useState<string>('');
+  const [selectRating, setSelectRating] = useState<string>('');
+
+  const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore((state) => state);
 
   const handleClose = () => {
     props.setOpenDialog(false);
   };
+
+  const init = async (product_id: number, selectSortBy: string, selectRating: string) => {
+    try {
+      if (!product_id) {
+        return;
+      }
+
+      var ratingVal = 0;
+      if (!isNaN(parseInt(selectRating))) {
+        ratingVal = parseInt(selectRating);
+      }
+
+      const response: any = await axios.get(Http.product_rating_by_id, {
+        params: {
+          product_id: product_id,
+          sort_by: selectSortBy ? selectSortBy : undefined,
+          rating_number: ratingVal,
+        },
+      });
+
+      if (response.result) {
+        setRatings(response.data);
+      } else {
+        setRatings([]);
+      }
+    } catch (e) {
+      setSnackSeverity('error');
+      setSnackMessage('The network error occurred. Please try again later.');
+      setSnackOpen(true);
+      console.error(e);
+    }
+  };
+
+  useEffect(() => {
+    props.product_id && init(props.product_id, selectSortBy, selectRating);
+  }, [props.product_id, selectSortBy, selectRating]);
 
   return (
     <Dialog open={props.openDialog} onClose={handleClose} fullWidth>
@@ -47,11 +104,19 @@ export default function ProductRatingsDialog(props: DialogType) {
         <Stack direction={'row'} alignItems={'center'} gap={0}>
           <Box width={'20%'}>
             <Stack direction={'row'} alignItems={'center'}>
-              <Typography variant="h4">4.9</Typography>
+              <Typography variant="h4">
+                {props.ratings
+                  ? (
+                      props.ratings.reduce((total, item) => {
+                        return total + item.number;
+                      }, 0) / props.ratings.length
+                    ).toFixed(1)
+                  : 0}
+              </Typography>
               <Star />
             </Stack>
             <Typography color="#000" fontSize={14}>
-              4.6K ratings
+              {`${props.ratings ? props.ratings.length : 0} ratings`}
             </Typography>
           </Box>
           <Box width={'80%'}>
@@ -61,7 +126,18 @@ export default function ProductRatingsDialog(props: DialogType) {
                 <LinearProgress
                   color={'inherit'}
                   variant="determinate"
-                  value={90}
+                  value={parseInt(
+                    (
+                      (props.ratings
+                        ? props.ratings.reduce((total, item) => {
+                            if (item.number === 5) {
+                              return total + 1;
+                            }
+                            return total;
+                          }, 0) / props.ratings.length
+                        : 0) * 100
+                    ).toString(),
+                  )}
                   style={{
                     borderRadius: 5,
                   }}
@@ -74,7 +150,18 @@ export default function ProductRatingsDialog(props: DialogType) {
                 <LinearProgress
                   color={'inherit'}
                   variant="determinate"
-                  value={20}
+                  value={parseInt(
+                    (
+                      (props.ratings
+                        ? props.ratings.reduce((total, item) => {
+                            if (item.number === 4) {
+                              return total + 1;
+                            }
+                            return total;
+                          }, 0) / props.ratings.length
+                        : 0) * 100
+                    ).toString(),
+                  )}
                   style={{
                     borderRadius: 5,
                   }}
@@ -87,7 +174,18 @@ export default function ProductRatingsDialog(props: DialogType) {
                 <LinearProgress
                   color={'inherit'}
                   variant="determinate"
-                  value={30}
+                  value={parseInt(
+                    (
+                      (props.ratings
+                        ? props.ratings.reduce((total, item) => {
+                            if (item.number === 3) {
+                              return total + 1;
+                            }
+                            return total;
+                          }, 0) / props.ratings.length
+                        : 0) * 100
+                    ).toString(),
+                  )}
                   style={{
                     borderRadius: 5,
                   }}
@@ -100,7 +198,18 @@ export default function ProductRatingsDialog(props: DialogType) {
                 <LinearProgress
                   color={'inherit'}
                   variant="determinate"
-                  value={2}
+                  value={parseInt(
+                    (
+                      (props.ratings
+                        ? props.ratings.reduce((total, item) => {
+                            if (item.number === 2) {
+                              return total + 1;
+                            }
+                            return total;
+                          }, 0) / props.ratings.length
+                        : 0) * 100
+                    ).toString(),
+                  )}
                   style={{
                     borderRadius: 5,
                   }}
@@ -113,7 +222,18 @@ export default function ProductRatingsDialog(props: DialogType) {
                 <LinearProgress
                   color={'inherit'}
                   variant="determinate"
-                  value={10}
+                  value={parseInt(
+                    (
+                      (props.ratings
+                        ? props.ratings.reduce((total, item) => {
+                            if (item.number === 1) {
+                              return total + 1;
+                            }
+                            return total;
+                          }, 0) / props.ratings.length
+                        : 0) * 100
+                    ).toString(),
+                  )}
                   style={{
                     borderRadius: 5,
                   }}
@@ -126,7 +246,7 @@ export default function ProductRatingsDialog(props: DialogType) {
           <Divider />
         </Box>
         <Box>
-          <Typography variant="h6">Reviews(123)</Typography>
+          <Typography variant="h6">Reviews({props.ratings ? props.ratings.length : 0})</Typography>
           <Box display={'flex'} justifyContent={'center'} gap={1} py={1}>
             <TextField
               fullWidth
@@ -136,7 +256,7 @@ export default function ProductRatingsDialog(props: DialogType) {
               onChange={(e) => {
                 setReviewSearch(e.target.value);
               }}
-              placeholder="search for product"
+              placeholder="Search"
             />
             <Button onClick={() => {}} variant="contained">
               Search
@@ -145,8 +265,10 @@ export default function ProductRatingsDialog(props: DialogType) {
           <Stack direction={'row'} alignItems={'center'} gap={1}>
             <Select
               displayEmpty
-              value={''}
-              onChange={() => {}}
+              value={selectSortBy}
+              onChange={(e: any) => {
+                setSelectSortBy(e.target.value);
+              }}
               size={'small'}
               inputProps={{ 'aria-label': 'Without label' }}
               renderValue={(selected: any) => {
@@ -154,17 +276,22 @@ export default function ProductRatingsDialog(props: DialogType) {
                   return <em>Sort by</em>;
                 }
 
-                return selected.join(', ');
+                return selected;
               }}
             >
-              <MenuItem value={10}>Ten</MenuItem>
-              <MenuItem value={20}>Twenty</MenuItem>
-              <MenuItem value={30}>Thirty</MenuItem>
+              {SORT_BY_TYPE &&
+                Object.entries(SORT_BY_TYPE).map((item, index) => (
+                  <MenuItem value={item[1]} key={index}>
+                    {item[1]}
+                  </MenuItem>
+                ))}
             </Select>
             <Select
               displayEmpty
-              value={''}
-              onChange={() => {}}
+              value={selectRating}
+              onChange={(e: any) => {
+                setSelectRating(e.target.value);
+              }}
               size={'small'}
               inputProps={{ 'aria-label': 'Without label' }}
               renderValue={(selected: any) => {
@@ -172,114 +299,50 @@ export default function ProductRatingsDialog(props: DialogType) {
                   return <em>Rating</em>;
                 }
 
-                return selected.join(', ');
+                return selected;
               }}
             >
-              <MenuItem value={10}>Ten</MenuItem>
-              <MenuItem value={20}>Twenty</MenuItem>
-              <MenuItem value={30}>Thirty</MenuItem>
+              {RATING_TYPE &&
+                Object.entries(RATING_TYPE).map((item, index) => (
+                  <MenuItem value={item[1]} key={index}>
+                    {item[1]}
+                  </MenuItem>
+                ))}
             </Select>
           </Stack>
 
-          <Box py={2}>
-            <Rating size="small" value={5} readOnly />
-            <Stack direction={'row'} alignItems={'center'} gap={1}>
-              <Typography fontSize={14}>abc</Typography>
-              <Typography fontSize={14}>·</Typography>
-              <Typography fontSize={14}>7 days ago</Typography>
-            </Stack>
-            <Stack direction={'row'} alignItems={'center'} gap={1}>
-              <Typography fontSize={14}>Red</Typography>
-              <Typography fontSize={14}>/</Typography>
-              <Typography fontSize={14}>M</Typography>
-            </Stack>
-            <Typography mt={2}>
-              the hoodie is super comfy. only thing is even though i like over sized and knew this would be oversized i
-              would still suggest sizing down.
-            </Typography>
-            <Stack direction={'row'} alignItems={'center'} py={2}>
-              <IconButton size="small">
-                <ThumbUpOffAlt fontSize={'small'} />
-                {/* <ThumbUpAlt fontSize={'small'}/> */}
-              </IconButton>
-              <Typography>Helpful</Typography>
-            </Stack>
-            <Divider />
-          </Box>
-          <Box py={2}>
-            <Rating size="small" value={5} readOnly />
-            <Stack direction={'row'} alignItems={'center'} gap={1}>
-              <Typography fontSize={14}>abc</Typography>
-              <Typography fontSize={14}>·</Typography>
-              <Typography fontSize={14}>7 days ago</Typography>
-            </Stack>
-            <Stack direction={'row'} alignItems={'center'} gap={1}>
-              <Typography fontSize={14}>Red</Typography>
-              <Typography fontSize={14}>/</Typography>
-              <Typography fontSize={14}>M</Typography>
-            </Stack>
-            <Typography mt={2}>
-              the hoodie is super comfy. only thing is even though i like over sized and knew this would be oversized i
-              would still suggest sizing down.
-            </Typography>
-            <Stack direction={'row'} alignItems={'center'} py={2}>
-              <IconButton size="small">
-                <ThumbUpOffAlt fontSize={'small'} />
-                {/* <ThumbUpAlt fontSize={'small'}/> */}
-              </IconButton>
-              <Typography>Helpful</Typography>
-            </Stack>
-            <Divider />
-          </Box>
-          <Box py={2}>
-            <Rating size="small" value={5} readOnly />
-            <Stack direction={'row'} alignItems={'center'} gap={1}>
-              <Typography fontSize={14}>abc</Typography>
-              <Typography fontSize={14}>·</Typography>
-              <Typography fontSize={14}>7 days ago</Typography>
-            </Stack>
-            <Stack direction={'row'} alignItems={'center'} gap={1}>
-              <Typography fontSize={14}>Red</Typography>
-              <Typography fontSize={14}>/</Typography>
-              <Typography fontSize={14}>M</Typography>
-            </Stack>
-            <Typography mt={2}>
-              the hoodie is super comfy. only thing is even though i like over sized and knew this would be oversized i
-              would still suggest sizing down.
-            </Typography>
-            <Stack direction={'row'} alignItems={'center'} py={2}>
-              <IconButton size="small">
-                <ThumbUpOffAlt fontSize={'small'} />
-                {/* <ThumbUpAlt fontSize={'small'}/> */}
-              </IconButton>
-              <Typography>Helpful</Typography>
-            </Stack>
-            <Divider />
-          </Box>
-          <Box py={2}>
-            <Rating size="small" value={5} readOnly />
-            <Stack direction={'row'} alignItems={'center'} gap={1}>
-              <Typography fontSize={14}>abc</Typography>
-              <Typography fontSize={14}>·</Typography>
-              <Typography fontSize={14}>7 days ago</Typography>
-            </Stack>
-            <Stack direction={'row'} alignItems={'center'} gap={1}>
-              <Typography fontSize={14}>Red</Typography>
-              <Typography fontSize={14}>/</Typography>
-              <Typography fontSize={14}>M</Typography>
-            </Stack>
-            <Typography mt={2}>
-              the hoodie is super comfy. only thing is even though i like over sized and knew this would be oversized i
-              would still suggest sizing down.
-            </Typography>
-            <Stack direction={'row'} alignItems={'center'} py={2}>
-              <IconButton size="small">
-                <ThumbUpOffAlt fontSize={'small'} />
-                {/* <ThumbUpAlt fontSize={'small'}/> */}
-              </IconButton>
-              <Typography>Helpful</Typography>
-            </Stack>
-            <Divider />
+          <Typography mt={1}>{`${ratings ? ratings.length : 0} results`}</Typography>
+
+          <Box mt={2}>
+            {ratings &&
+              ratings.length > 0 &&
+              ratings.map((item, index) => (
+                <Box key={index}>
+                  <Rating size="small" value={item.number} readOnly />
+                  <Typography fontSize={14}>{`${item.username} · ${new Date(
+                    item.created_at,
+                  ).toLocaleString()}`}</Typography>
+                  <Stack direction={'row'} alignItems={'center'} mt={1} gap={1}>
+                    {item.product_option.split(',').map((optionItem, optionIndex) => (
+                      <>
+                        <Typography fontSize={14}>{optionItem}</Typography>
+                        {optionIndex + 1 !== item.product_option.split(',').length && (
+                          <Typography fontSize={14}>/</Typography>
+                        )}
+                      </>
+                    ))}
+                  </Stack>
+                  {item.image && (
+                    <Box mt={2}>
+                      <img src={item.image} alt={'image'} loading="lazy" width={50} height={50} />
+                    </Box>
+                  )}
+                  <Typography mt={1}>{item.body}</Typography>
+                  <Box py={2}>
+                    <Divider />
+                  </Box>
+                </Box>
+              ))}
           </Box>
         </Box>
       </DialogContent>

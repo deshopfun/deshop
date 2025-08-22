@@ -5,6 +5,8 @@ import {
   AlertTitle,
   Box,
   Button,
+  Card,
+  CardContent,
   Container,
   Divider,
   Grid,
@@ -72,6 +74,17 @@ type ProductType = {
   collect_status: number;
   images: ProductImage[];
   options: ProductOption[];
+  ratings: ProductRating[];
+};
+
+type ProductRating = {
+  username: string;
+  rating_id: number;
+  product_option: string;
+  number: number;
+  image: string;
+  body: string;
+  created_at: number;
 };
 
 type ProductImage = {
@@ -455,181 +468,208 @@ const ProductDetails = () => {
                   ))}
               </Stack>
 
-              <Box mt={3}>
-                <Typography variant="h6">Ratings and reviews</Typography>
-                <Box mt={2}>
-                  <Stack direction={'row'} alignItems={'center'} gap={1}>
-                    <Typography variant="h4">4.9</Typography>
-                    <Star />
-                  </Stack>
-                  <div
-                    onClick={() => {
-                      setOpenRatingsDialog(true);
-                    }}
-                  >
-                    <Link color="#000" fontSize={14}>
-                      4.6K ratings
-                    </Link>
-                  </div>
-
+              {product.ratings && product.ratings.length > 0 ? (
+                <Box mt={3}>
+                  <Typography variant="h6">Ratings and reviews</Typography>
                   <Box mt={2}>
                     <Stack direction={'row'} alignItems={'center'} gap={1}>
-                      <Typography fontWeight={'bold'}>5</Typography>
-                      <Box sx={{ width: '100%' }}>
-                        <LinearProgress
-                          color={'inherit'}
-                          variant="determinate"
-                          value={90}
-                          style={{
-                            borderRadius: 5,
-                          }}
-                        />
-                      </Box>
-                    </Stack>
-                    <Stack direction={'row'} alignItems={'center'} gap={1}>
-                      <Typography fontWeight={'bold'}>4</Typography>
-                      <Box sx={{ width: '100%' }}>
-                        <LinearProgress
-                          color={'inherit'}
-                          variant="determinate"
-                          value={20}
-                          style={{
-                            borderRadius: 5,
-                          }}
-                        />
-                      </Box>
-                    </Stack>
-                    <Stack direction={'row'} alignItems={'center'} gap={1}>
-                      <Typography fontWeight={'bold'}>3</Typography>
-                      <Box sx={{ width: '100%' }}>
-                        <LinearProgress
-                          color={'inherit'}
-                          variant="determinate"
-                          value={30}
-                          style={{
-                            borderRadius: 5,
-                          }}
-                        />
-                      </Box>
-                    </Stack>
-                    <Stack direction={'row'} alignItems={'center'} gap={1}>
-                      <Typography fontWeight={'bold'}>2</Typography>
-                      <Box sx={{ width: '100%' }}>
-                        <LinearProgress
-                          color={'inherit'}
-                          variant="determinate"
-                          value={2}
-                          style={{
-                            borderRadius: 5,
-                          }}
-                        />
-                      </Box>
-                    </Stack>
-                    <Stack direction={'row'} alignItems={'center'} gap={1}>
-                      <Typography fontWeight={'bold'}>1</Typography>
-                      <Box sx={{ width: '100%' }}>
-                        <LinearProgress
-                          color={'inherit'}
-                          variant="determinate"
-                          value={10}
-                          style={{
-                            borderRadius: 5,
-                          }}
-                        />
-                      </Box>
-                    </Stack>
-                  </Box>
-                </Box>
-                <Box mt={2}>
-                  <Grid container spacing={4}>
-                    <Grid size={{ xs: 6, md: 6 }}>
-                      <Rating size="small" value={5} readOnly />
-                      <Stack direction={'row'} alignItems={'center'} gap={1}>
-                        <Typography fontSize={14}>abc</Typography>
-                        <Typography fontSize={14}>·</Typography>
-                        <Typography fontSize={14}>7 days ago</Typography>
-                      </Stack>
-                      <Stack direction={'row'} alignItems={'center'} gap={1} mt={1}>
-                        <Typography fontSize={14}>Red</Typography>
-                        <Typography fontSize={14}>/</Typography>
-                        <Typography fontSize={14}>M</Typography>
-                      </Stack>
-                      <Typography mt={2}>
-                        the hoodie is super comfy. only thing is even though i like over sized and knew this would be
-                        oversized i would still suggest sizing down.
+                      <Typography variant="h4">
+                        {product.ratings
+                          ? (
+                              product.ratings.reduce((total, item) => {
+                                return total + item.number;
+                              }, 0) / product.ratings.length
+                            ).toFixed(1)
+                          : 0}
                       </Typography>
-                      <Stack direction={'row'} alignItems={'center'} mt={2}>
-                        <IconButton size="small">
-                          <ThumbUpOffAlt fontSize={'small'} />
-                          {/* <ThumbUpAlt fontSize={'small'}/> */}
-                        </IconButton>
-                        <Typography>Helpful</Typography>
-                      </Stack>
-                    </Grid>
-                    <Grid size={{ xs: 6, md: 6 }}>
-                      <Rating size="small" value={5} readOnly />
-                      <Stack direction={'row'} alignItems={'center'} gap={1}>
-                        <Typography fontSize={14}>abc</Typography>
-                        <Typography fontSize={14}>·</Typography>
-                        <Typography fontSize={14}>7 days ago</Typography>
-                      </Stack>
-                      <Stack direction={'row'} alignItems={'center'} gap={1} mt={1}>
-                        <Typography fontSize={14}>Red</Typography>
-                        <Typography fontSize={14}>/</Typography>
-                        <Typography fontSize={14}>M</Typography>
-                      </Stack>
-                      <Typography mt={2}>
-                        the hoodie is super comfy. only thing is even though i like over sized and knew this would be
-                        oversized i would still suggest sizing down.
-                      </Typography>
-                      <Stack direction={'row'} alignItems={'center'} mt={2}>
-                        <IconButton size="small">
-                          <ThumbUpOffAlt fontSize={'small'} />
-                          {/* <ThumbUpAlt fontSize={'small'}/> */}
-                        </IconButton>
-                        <Typography>Helpful</Typography>
-                      </Stack>
-                    </Grid>
-                    <Grid size={{ xs: 6, md: 6 }}>
-                      <Rating size="small" value={5} readOnly />
-                      <Stack direction={'row'} alignItems={'center'} gap={1}>
-                        <Typography fontSize={14}>abc</Typography>
-                        <Typography fontSize={14}>·</Typography>
-                        <Typography fontSize={14}>7 days ago</Typography>
-                      </Stack>
-                      <Stack direction={'row'} alignItems={'center'} gap={1} mt={1}>
-                        <Typography fontSize={14}>Red</Typography>
-                        <Typography fontSize={14}>/</Typography>
-                        <Typography fontSize={14}>M</Typography>
-                      </Stack>
-                      <Typography mt={2}>
-                        the hoodie is super comfy. only thing is even though i like over sized and knew this would be
-                        oversized i would still suggest sizing down.
-                      </Typography>
-                      <Stack direction={'row'} alignItems={'center'} mt={2}>
-                        <IconButton size="small">
-                          <ThumbUpOffAlt fontSize={'small'} />
-                          {/* <ThumbUpAlt fontSize={'small'}/> */}
-                        </IconButton>
-                        <Typography>Helpful</Typography>
-                      </Stack>
-                    </Grid>
-                  </Grid>
-
-                  <Box mt={4}>
-                    <Button
-                      fullWidth
-                      variant={'contained'}
-                      color={'inherit'}
+                      <Star />
+                    </Stack>
+                    <div
                       onClick={() => {
                         setOpenRatingsDialog(true);
                       }}
                     >
-                      Read more reviews
-                    </Button>
+                      <Link color="#000" fontSize={14}>
+                        {`${product.ratings ? product.ratings.length : 0} ratings`}
+                      </Link>
+                    </div>
+
+                    <Box mt={2}>
+                      <Stack direction={'row'} alignItems={'center'} gap={1}>
+                        <Typography fontWeight={'bold'}>5</Typography>
+                        <Box sx={{ width: '100%' }}>
+                          <LinearProgress
+                            color={'inherit'}
+                            variant="determinate"
+                            value={parseInt(
+                              (
+                                (product.ratings
+                                  ? product.ratings.reduce((total, item) => {
+                                      if (item.number === 5) {
+                                        return total + 1;
+                                      }
+                                      return total;
+                                    }, 0) / product.ratings.length
+                                  : 0) * 100
+                              ).toString(),
+                            )}
+                            style={{
+                              borderRadius: 5,
+                            }}
+                          />
+                        </Box>
+                      </Stack>
+                      <Stack direction={'row'} alignItems={'center'} gap={1}>
+                        <Typography fontWeight={'bold'}>4</Typography>
+                        <Box sx={{ width: '100%' }}>
+                          <LinearProgress
+                            color={'inherit'}
+                            variant="determinate"
+                            value={parseInt(
+                              (
+                                (product.ratings
+                                  ? product.ratings.reduce((total, item) => {
+                                      if (item.number === 4) {
+                                        return total + 1;
+                                      }
+                                      return total;
+                                    }, 0) / product.ratings.length
+                                  : 0) * 100
+                              ).toString(),
+                            )}
+                            style={{
+                              borderRadius: 5,
+                            }}
+                          />
+                        </Box>
+                      </Stack>
+                      <Stack direction={'row'} alignItems={'center'} gap={1}>
+                        <Typography fontWeight={'bold'}>3</Typography>
+                        <Box sx={{ width: '100%' }}>
+                          <LinearProgress
+                            color={'inherit'}
+                            variant="determinate"
+                            value={parseInt(
+                              (
+                                (product.ratings
+                                  ? product.ratings.reduce((total, item) => {
+                                      if (item.number === 3) {
+                                        return total + 1;
+                                      }
+                                      return total;
+                                    }, 0) / product.ratings.length
+                                  : 0) * 100
+                              ).toString(),
+                            )}
+                            style={{
+                              borderRadius: 5,
+                            }}
+                          />
+                        </Box>
+                      </Stack>
+                      <Stack direction={'row'} alignItems={'center'} gap={1}>
+                        <Typography fontWeight={'bold'}>2</Typography>
+                        <Box sx={{ width: '100%' }}>
+                          <LinearProgress
+                            color={'inherit'}
+                            variant="determinate"
+                            value={parseInt(
+                              (
+                                (product.ratings
+                                  ? product.ratings.reduce((total, item) => {
+                                      if (item.number === 2) {
+                                        return total + 1;
+                                      }
+                                      return total;
+                                    }, 0) / product.ratings.length
+                                  : 0) * 100
+                              ).toString(),
+                            )}
+                            style={{
+                              borderRadius: 5,
+                            }}
+                          />
+                        </Box>
+                      </Stack>
+                      <Stack direction={'row'} alignItems={'center'} gap={1}>
+                        <Typography fontWeight={'bold'}>1</Typography>
+                        <Box sx={{ width: '100%' }}>
+                          <LinearProgress
+                            color={'inherit'}
+                            variant="determinate"
+                            value={parseInt(
+                              (
+                                (product.ratings
+                                  ? product.ratings.reduce((total, item) => {
+                                      if (item.number === 1) {
+                                        return total + 1;
+                                      }
+                                      return total;
+                                    }, 0) / product.ratings.length
+                                  : 0) * 100
+                              ).toString(),
+                            )}
+                            style={{
+                              borderRadius: 5,
+                            }}
+                          />
+                        </Box>
+                      </Stack>
+                    </Box>
+                  </Box>
+                  <Box mt={2}>
+                    <Grid container spacing={4}>
+                      {product.ratings.slice(0, 4).map((item, index) => (
+                        <Grid size={{ xs: 6, md: 6 }} key={index}>
+                          <Rating size="small" value={item.number} readOnly />
+                          <Typography fontSize={14}>{`${item.username} · ${new Date(
+                            item.created_at,
+                          ).toLocaleString()}`}</Typography>
+                          <Stack direction={'row'} alignItems={'center'} mt={1} gap={1}>
+                            {item.product_option.split(',').map((optionItem, optionIndex) => (
+                              <>
+                                <Typography fontSize={14}>{optionItem}</Typography>
+                                {optionIndex + 1 !== item.product_option.split(',').length && (
+                                  <Typography fontSize={14}>/</Typography>
+                                )}
+                              </>
+                            ))}
+                          </Stack>
+                          {item.image && (
+                            <Box mt={2}>
+                              <img src={item.image} alt={'image'} loading="lazy" width={50} height={50} />
+                            </Box>
+                          )}
+                          <Typography mt={1}>{item.body}</Typography>
+                        </Grid>
+                      ))}
+                    </Grid>
+                    <Box mt={4}>
+                      <Button
+                        fullWidth
+                        variant={'contained'}
+                        color={'inherit'}
+                        onClick={() => {
+                          setOpenRatingsDialog(true);
+                        }}
+                      >
+                        Read more reviews
+                      </Button>
+                    </Box>
                   </Box>
                 </Box>
-              </Box>
+              ) : (
+                <Box mt={3}>
+                  <Card>
+                    <CardContent>
+                      <Box py={2} textAlign={'center'}>
+                        <Typography variant="h6">Not found the rating</Typography>
+                        <Typography mt={2}>Need more product reviews to be displayed here.</Typography>
+                      </Box>
+                    </CardContent>
+                  </Card>
+                </Box>
+              )}
             </Grid>
 
             <Grid size={{ xs: 12, md: 4 }}>
@@ -668,18 +708,20 @@ const ProductDetails = () => {
               <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} mt={2}>
                 <Box>
                   <Typography variant="h6">{product.title}</Typography>
-                  <Stack direction={'row'} alignItems={'center'} gap={1}>
-                    <Rating size="small" value={5} readOnly />
-                    <div
-                      onClick={() => {
-                        setOpenRatingsDialog(true);
-                      }}
-                    >
-                      <Link color="#000" fontSize={14}>
-                        4.6K ratings
-                      </Link>
-                    </div>
-                  </Stack>
+                  {product.ratings && product.ratings.length > 0 && (
+                    <Stack direction={'row'} alignItems={'center'} gap={1}>
+                      <Rating size="small" value={5} readOnly />
+                      <div
+                        onClick={() => {
+                          setOpenRatingsDialog(true);
+                        }}
+                      >
+                        <Link color="#000" fontSize={14}>
+                          {`${product.ratings ? product.ratings.length : 0} ratings`}
+                        </Link>
+                      </div>
+                    </Stack>
+                  )}
                 </Box>
                 {getIsLogin() && (
                   <IconButton
@@ -937,7 +979,12 @@ const ProductDetails = () => {
             </Box>
           )}
 
-          <ProductRatingsDialog openDialog={openRatingsDialog} setOpenDialog={setOpenRatingsDialog} />
+          <ProductRatingsDialog
+            product_id={product.product_id}
+            openDialog={openRatingsDialog}
+            setOpenDialog={setOpenRatingsDialog}
+            ratings={product.ratings}
+          />
           <RefundPolicyDialog openDialog={openRefundPolicy} setOpenDialog={setOpenRefundPolicy} />
         </>
       )}
