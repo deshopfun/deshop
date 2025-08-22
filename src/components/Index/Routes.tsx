@@ -25,6 +25,7 @@ export type RouteType = {
   component: any;
   enableSidebar: boolean;
   enableHomeHeader: boolean;
+  enableHomeFooter: boolean;
   needLogin: boolean;
 };
 
@@ -36,6 +37,7 @@ export const routes: RouteType[] = [
     component: <Home />,
     enableSidebar: true,
     enableHomeHeader: true,
+    enableHomeFooter: true,
     needLogin: false,
   },
   {
@@ -45,6 +47,7 @@ export const routes: RouteType[] = [
     component: <Login />,
     enableSidebar: false,
     enableHomeHeader: false,
+    enableHomeFooter: false,
     needLogin: false,
   },
   {
@@ -54,6 +57,7 @@ export const routes: RouteType[] = [
     component: <Register />,
     enableSidebar: false,
     enableHomeHeader: false,
+    enableHomeFooter: false,
     needLogin: false,
   },
   {
@@ -63,6 +67,7 @@ export const routes: RouteType[] = [
     component: <EmailConfirm />,
     enableSidebar: false,
     enableHomeHeader: false,
+    enableHomeFooter: false,
     needLogin: false,
   },
   {
@@ -72,6 +77,7 @@ export const routes: RouteType[] = [
     component: <Explore />,
     enableSidebar: true,
     enableHomeHeader: true,
+    enableHomeFooter: true,
     needLogin: false,
   },
   {
@@ -81,6 +87,7 @@ export const routes: RouteType[] = [
     component: <Live />,
     enableSidebar: true,
     enableHomeHeader: true,
+    enableHomeFooter: true,
     needLogin: false,
   },
   {
@@ -90,6 +97,7 @@ export const routes: RouteType[] = [
     component: <Chat />,
     enableSidebar: true,
     enableHomeHeader: true,
+    enableHomeFooter: true,
     needLogin: true,
   },
   {
@@ -99,6 +107,7 @@ export const routes: RouteType[] = [
     component: <Profile />,
     enableSidebar: true,
     enableHomeHeader: true,
+    enableHomeFooter: true,
     needLogin: true,
   },
   {
@@ -108,6 +117,7 @@ export const routes: RouteType[] = [
     component: <ProfileDetails />,
     enableSidebar: true,
     enableHomeHeader: true,
+    enableHomeFooter: true,
     needLogin: false,
   },
   {
@@ -117,6 +127,7 @@ export const routes: RouteType[] = [
     component: <Support />,
     enableSidebar: true,
     enableHomeHeader: true,
+    enableHomeFooter: true,
     needLogin: false,
   },
   {
@@ -126,6 +137,7 @@ export const routes: RouteType[] = [
     component: <Create />,
     enableSidebar: true,
     enableHomeHeader: true,
+    enableHomeFooter: true,
     needLogin: false,
   },
   {
@@ -135,6 +147,7 @@ export const routes: RouteType[] = [
     component: <ProductDetails />,
     enableSidebar: true,
     enableHomeHeader: true,
+    enableHomeFooter: true,
     needLogin: false,
   },
   {
@@ -144,6 +157,7 @@ export const routes: RouteType[] = [
     component: <Cart />,
     enableSidebar: true,
     enableHomeHeader: true,
+    enableHomeFooter: true,
     needLogin: false,
   },
   {
@@ -153,6 +167,7 @@ export const routes: RouteType[] = [
     component: <CheckoutDetails />,
     enableSidebar: true,
     enableHomeHeader: true,
+    enableHomeFooter: true,
     needLogin: false,
   },
   {
@@ -162,6 +177,7 @@ export const routes: RouteType[] = [
     component: <PaymentDetails />,
     enableSidebar: true,
     enableHomeHeader: true,
+    enableHomeFooter: true,
     needLogin: false,
   },
   {
@@ -171,6 +187,7 @@ export const routes: RouteType[] = [
     component: <Collect />,
     enableSidebar: true,
     enableHomeHeader: true,
+    enableHomeFooter: true,
     needLogin: false,
   },
   {
@@ -180,6 +197,7 @@ export const routes: RouteType[] = [
     component: <OrderDetails />,
     enableSidebar: true,
     enableHomeHeader: true,
+    enableHomeFooter: true,
     needLogin: false,
   },
   {
@@ -189,6 +207,7 @@ export const routes: RouteType[] = [
     component: <ManageDetails />,
     enableSidebar: true,
     enableHomeHeader: true,
+    enableHomeFooter: true,
     needLogin: false,
   },
 ];

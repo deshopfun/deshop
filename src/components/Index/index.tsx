@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 import HomeSidebar from 'components/Sidebar';
 import HomeHeader from 'components/Home/HomeHeader';
 import { useSnackPresistStore } from 'lib';
+import HomeFooter from 'components/Home/HomeFooter';
 
 const Home = () => {
   const router = useRouter();
@@ -40,17 +41,15 @@ const Home = () => {
             {currentRoute?.enableHomeHeader && <HomeHeader />}
 
             <Box mt={10}>{currentRoute?.component || null}</Box>
+
+            {currentRoute?.enableHomeFooter && <HomeFooter />}
           </Box>
         </Stack>
       ) : (
         <Box>
           {currentRoute?.component || null}
 
-          {/* {currentRoute?.enableInnerFooter && (
-            <Box>
-              <Footer />
-            </Box>
-          )} */}
+          {currentRoute?.enableHomeFooter && <HomeFooter />}
         </Box>
       )}
 
