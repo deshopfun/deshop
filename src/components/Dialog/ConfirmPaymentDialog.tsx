@@ -1,11 +1,14 @@
 import {
   Box,
   Button,
+  Card,
+  CardContent,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
   Divider,
+  Radio,
   Stack,
   TextField,
   Typography,
@@ -20,7 +23,6 @@ import axios from 'utils/http/axios';
 import { Http } from 'utils/http/http';
 
 type BlockchainType = {
-  qrcode: string;
   rate: string;
   chain_id: number;
   hash: string;
@@ -28,21 +30,32 @@ type BlockchainType = {
   from_address: string;
   to_address: string;
   token: string;
-  transact_type: string;
   crypto_amount: string;
   block_timestamp: number;
+};
+
+type TransactionType = {
+  transaction_id: number;
+  amount: string;
+  currency: number;
+  gateway: string;
+  message: string;
+  source_name: number;
+  transaction_status: number;
+  blockchain: BlockchainType;
 };
 
 type DialogType = {
   orderId: number;
   confirmNumber: string;
-  blockchain: BlockchainType;
+  transactions: TransactionType[];
   openDialog: boolean;
   handleCloseDialog: () => Promise<void>;
 };
 
 export default function ConfirmPaymentDialog(props: DialogType) {
   const [text, setText] = useState<string>('');
+  const [selectId, setSelectId] = useState<number>(0);
 
   const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore((state) => state);
 
@@ -59,8 +72,16 @@ export default function ConfirmPaymentDialog(props: DialogType) {
         return;
       }
 
+      if (!selectId) {
+        setSnackSeverity('error');
+        setSnackMessage('Incorrect tx select');
+        setSnackOpen(true);
+        return;
+      }
+
       const response: any = await axios.put(Http.order_confirm_payment, {
         order_id: props.orderId,
+        confirm_payment_id: Number(selectId),
         confirm_number: text,
       });
 
@@ -93,90 +114,123 @@ export default function ConfirmPaymentDialog(props: DialogType) {
     >
       <DialogTitle>Confirm payment</DialogTitle>
       <DialogContent>
-        <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
-          <Typography>Chain</Typography>
-          <Typography fontWeight={'bold'}>{FindChainNamesByChainids(props.blockchain.chain_id)}</Typography>
-        </Stack>
-        <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
-          <Typography>Hash</Typography>
-          <Link
-            href={GetBlockchainTxUrlByChainIds(props.blockchain.chain_id as CHAINIDS, String(props.blockchain.hash))}
-            target="_blank"
-          >
-            {OmitMiddleString(String(props.blockchain.hash))}
-          </Link>
-        </Stack>
-        <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
-          <Typography>From address</Typography>
-          <Link
-            href={GetBlockchainAddressUrlByChainIds(
-              props.blockchain.chain_id as CHAINIDS,
-              String(props.blockchain.from_address),
-            )}
-            target="_blank"
-          >
-            {OmitMiddleString(String(props.blockchain.from_address))}
-          </Link>
-        </Stack>
-        <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
-          <Typography>To address</Typography>
-          <Link
-            href={GetBlockchainAddressUrlByChainIds(
-              props.blockchain.chain_id as CHAINIDS,
-              String(props.blockchain.to_address),
-            )}
-            target="_blank"
-          >
-            {OmitMiddleString(String(props.blockchain.to_address))}
-          </Link>
-        </Stack>
-        <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
-          <Typography>Token</Typography>
-          <Typography fontWeight={'bold'}>{props.blockchain.token}</Typography>
-        </Stack>
-        <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
-          <Typography>Crypto amount</Typography>
-          <Typography fontWeight={'bold'}>{props.blockchain.crypto_amount}</Typography>
-        </Stack>
-        <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
-          <Typography>Rate</Typography>
-          <Typography fontWeight={'bold'}>{`1 ${props.blockchain.token} = ${props.blockchain.rate} USD`}</Typography>
-        </Stack>
-        {props.blockchain.block_timestamp > 0 && (
-          <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
-            <Typography>Block timestamp</Typography>
-            <Typography fontWeight={'bold'}>
-              {new Date(Number(props.blockchain.block_timestamp)).toLocaleString()}
+        {props.transactions && props.transactions.length > 0 ? (
+          <Box>
+            {props.transactions.map((item, index) => (
+              <Box key={index}>
+                <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
+                  <Typography>Select</Typography>
+                  <Radio
+                    size="small"
+                    checked={item.transaction_id === selectId ? true : false}
+                    onClick={() => {
+                      setSelectId(item.transaction_id);
+                    }}
+                  />
+                </Stack>
+                <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
+                  <Typography>Chain</Typography>
+                  <Typography fontWeight={'bold'}>{FindChainNamesByChainids(item.blockchain.chain_id)}</Typography>
+                </Stack>
+                <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
+                  <Typography>Hash</Typography>
+                  <Link
+                    href={GetBlockchainTxUrlByChainIds(
+                      item.blockchain.chain_id as CHAINIDS,
+                      String(item.blockchain.hash),
+                    )}
+                    target="_blank"
+                  >
+                    {OmitMiddleString(String(item.blockchain.hash))}
+                  </Link>
+                </Stack>
+                <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
+                  <Typography>From address</Typography>
+                  <Link
+                    href={GetBlockchainAddressUrlByChainIds(
+                      item.blockchain.chain_id as CHAINIDS,
+                      String(item.blockchain.from_address),
+                    )}
+                    target="_blank"
+                  >
+                    {OmitMiddleString(String(item.blockchain.from_address))}
+                  </Link>
+                </Stack>
+                <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
+                  <Typography>To address</Typography>
+                  <Link
+                    href={GetBlockchainAddressUrlByChainIds(
+                      item.blockchain.chain_id as CHAINIDS,
+                      String(item.blockchain.to_address),
+                    )}
+                    target="_blank"
+                  >
+                    {OmitMiddleString(String(item.blockchain.to_address))}
+                  </Link>
+                </Stack>
+                <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
+                  <Typography>Token</Typography>
+                  <Typography fontWeight={'bold'}>{item.blockchain.token}</Typography>
+                </Stack>
+                <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
+                  <Typography>Crypto amount</Typography>
+                  <Typography fontWeight={'bold'}>{item.blockchain.crypto_amount}</Typography>
+                </Stack>
+                <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
+                  <Typography>Rate</Typography>
+                  <Typography
+                    fontWeight={'bold'}
+                  >{`1 ${item.blockchain.token} = ${item.blockchain.rate} USD`}</Typography>
+                </Stack>
+                {item.blockchain.block_timestamp > 0 && (
+                  <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
+                    <Typography>Block timestamp</Typography>
+                    <Typography fontWeight={'bold'}>
+                      {new Date(Number(item.blockchain.block_timestamp)).toLocaleString()}
+                    </Typography>
+                  </Stack>
+                )}
+
+                <Box py={2}>
+                  <Divider />
+                </Box>
+              </Box>
+            ))}
+            <Typography>
+              To confirm, type "<b>{props.confirmNumber}</b>" in the box below
             </Typography>
-          </Stack>
+            <Box py={1}>
+              <TextField
+                hiddenLabel
+                size="small"
+                fullWidth
+                value={text}
+                onChange={(e) => {
+                  setText(e.target.value);
+                }}
+              />
+            </Box>
+            <Button
+              color="success"
+              fullWidth
+              variant={'contained'}
+              onClick={() => {
+                onClickConfirm();
+              }}
+            >
+              Confirm the payment
+            </Button>
+          </Box>
+        ) : (
+          <Card>
+            <CardContent>
+              <Box py={2} textAlign={'center'}>
+                <Typography variant="h6">blockchain is empty</Typography>
+                <Typography mt={2}>No records have been paid.</Typography>
+              </Box>
+            </CardContent>
+          </Card>
         )}
-        <Box py={2}>
-          <Divider />
-        </Box>
-        <Typography>
-          To confirm, type "<b>{props.confirmNumber}</b>" in the box below
-        </Typography>
-        <Box py={1}>
-          <TextField
-            hiddenLabel
-            size="small"
-            fullWidth
-            value={text}
-            onChange={(e) => {
-              setText(e.target.value);
-            }}
-          />
-        </Box>
-        <Button
-          color="success"
-          fullWidth
-          variant={'contained'}
-          onClick={() => {
-            onClickConfirm();
-          }}
-        >
-          Confirm the payment
-        </Button>
       </DialogContent>
       <DialogActions>
         <Button

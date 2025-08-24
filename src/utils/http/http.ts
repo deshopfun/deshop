@@ -44,7 +44,7 @@ export class Http {
   static order_confirm_shipping = this.httpPath + '/client/order/confirm-shipping';
   static order_confirm = this.httpPath + '/client/order/confirm';
 
-  //transaction
+  // transaction
   static transaction = this.httpPath + '/client/transaction/transaction';
   static transaction_by_id = this.httpPath + '/client/transaction/transaction-by-id';
 

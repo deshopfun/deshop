@@ -116,7 +116,7 @@ type OrderType = {
   processed_at: number;
   items: OrderItemType[];
   wallets: WalletType[];
-  transaction: TransactionType;
+  transactions: TransactionType[];
 };
 
 const PaymentDetails = () => {
@@ -164,7 +164,7 @@ const PaymentDetails = () => {
         setBlockchains(newBlockchain);
 
         if (!order) {
-          switch (response.data.transaction.transaction_status) {
+          switch (response.data.transactions[0].transaction_status) {
             case 1 || 2 || 4:
               setActiveStep(3);
               setPage(3);
@@ -356,7 +356,7 @@ const PaymentDetails = () => {
                       </Stack>
                     </Box>
                   </Card>
-                  {order?.transaction.transaction_id > 0 && (
+                  {order?.transactions[0].transaction_id > 0 && (
                     <Box mt={2}>
                       <Button
                         variant={'contained'}
@@ -529,9 +529,9 @@ const PaymentDetails = () => {
                     <Box p={2}>
                       <Card>
                         <Stack direction={'row'} alignItems={'center'} p={1}>
-                          {order?.transaction.blockchain.chain_id && (
+                          {order?.transactions[0].blockchain.chain_id && (
                             <img
-                              src={GetImgSrcByChain(order?.transaction.blockchain.chain_id)}
+                              src={GetImgSrcByChain(order?.transactions[0].blockchain.chain_id)}
                               alt={'image'}
                               loading="lazy"
                               width={40}
@@ -541,17 +541,17 @@ const PaymentDetails = () => {
 
                           <Box pl={2}>
                             <Typography fontWeight={'bold'}>
-                              {FindChainNamesByChainids(order?.transaction.blockchain.chain_id || 0)}
+                              {FindChainNamesByChainids(order?.transactions[0].blockchain.chain_id || 0)}
                             </Typography>
-                            <Typography>{order?.transaction.blockchain.token}</Typography>
+                            <Typography>{order?.transactions[0].blockchain.token}</Typography>
                           </Box>
                         </Stack>
                       </Card>
 
                       <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} mt={2} px={4}>
-                        {order?.transaction.blockchain.token && (
+                        {order?.transactions[0].blockchain.token && (
                           <img
-                            src={GetImgSrcByCrypto(order?.transaction.blockchain.token as COINS)}
+                            src={GetImgSrcByCrypto(order?.transactions[0].blockchain.token as COINS)}
                             alt={'image'}
                             loading="lazy"
                             width={100}
@@ -560,13 +560,13 @@ const PaymentDetails = () => {
                         )}
                         <Paper style={{ padding: 14 }}>
                           <QRCodeSVG
-                            value={`${FindChainNamesByChainids(order?.transaction.blockchain.chain_id || 0)}:${
-                              order?.transaction.blockchain.address
-                            }?amount=${order?.transaction.blockchain.crypto_amount}`}
+                            value={`${FindChainNamesByChainids(order?.transactions[0].blockchain.chain_id || 0)}:${
+                              order?.transactions[0].blockchain.address
+                            }?amount=${order?.transactions[0].blockchain.crypto_amount}`}
                             width={180}
                             height={180}
                             imageSettings={{
-                              src: GetImgSrcByCrypto(order?.transaction.blockchain.token as COINS),
+                              src: GetImgSrcByCrypto(order?.transactions[0].blockchain.token as COINS),
                               width: 25,
                               height: 25,
                               excavate: true,
@@ -583,7 +583,7 @@ const PaymentDetails = () => {
                         <Stack direction={'row'} alignItems={'center'} justifyContent={'center'} gap={1}>
                           <Typography>Send</Typography>
                           <Typography variant="h5">
-                            {order?.transaction.blockchain.crypto_amount} {order?.transaction.blockchain.token}
+                            {order?.transactions[0].blockchain.crypto_amount} {order?.transactions[0].blockchain.token}
                           </Typography>
                           <Typography>by single transaction</Typography>
                         </Stack>
@@ -594,12 +594,14 @@ const PaymentDetails = () => {
                         <FormControl size="small" hiddenLabel fullWidth>
                           <OutlinedInput
                             disabled
-                            value={order?.transaction.blockchain.address}
+                            value={order?.transactions[0].blockchain.address}
                             endAdornment={
                               <InputAdornment position="end">
                                 <IconButton
                                   onClick={async () => {
-                                    await navigator.clipboard.writeText(order?.transaction.blockchain.address || '');
+                                    await navigator.clipboard.writeText(
+                                      order?.transactions[0].blockchain.address || '',
+                                    );
 
                                     setSnackMessage('Copy successfully');
                                     setSnackSeverity('success');
@@ -619,7 +621,7 @@ const PaymentDetails = () => {
                           startIcon={<ContentCopy />}
                           fullWidth
                           onClick={async () => {
-                            await navigator.clipboard.writeText(String(order?.transaction.blockchain.address));
+                            await navigator.clipboard.writeText(String(order?.transactions[0].blockchain.address));
 
                             setSnackMessage('Successfully copy');
                             setSnackSeverity('success');
@@ -630,21 +632,21 @@ const PaymentDetails = () => {
                         </Button>
                         <WalletConnectButton
                           color={'success'}
-                          chainIds={order?.transaction.blockchain.chain_id as CHAINIDS}
-                          address={String(order?.transaction.blockchain.address)}
+                          chainIds={order?.transactions[0].blockchain.chain_id as CHAINIDS}
+                          address={String(order?.transactions[0].blockchain.address)}
                           contractAddress={
                             FindTokenByChainIdsAndSymbol(
-                              order?.transaction.blockchain.chain_id as CHAINIDS,
-                              order?.transaction.blockchain.token as COINS,
+                              order?.transactions[0].blockchain.chain_id as CHAINIDS,
+                              order?.transactions[0].blockchain.token as COINS,
                             )?.contractAddress
                           }
                           decimals={
                             FindTokenByChainIdsAndSymbol(
-                              order?.transaction.blockchain.chain_id as CHAINIDS,
-                              order?.transaction.blockchain.token as COINS,
+                              order?.transactions[0].blockchain.chain_id as CHAINIDS,
+                              order?.transactions[0].blockchain.token as COINS,
                             )?.decimals
                           }
-                          value={String(order?.transaction.blockchain.crypto_amount)}
+                          value={String(order?.transactions[0].blockchain.crypto_amount)}
                           buttonSize={'medium'}
                           buttonVariant={'contained'}
                           fullWidth={true}
@@ -657,15 +659,15 @@ const PaymentDetails = () => {
                       </Stack>
                       <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
                         <Typography>Price</Typography>
-                        <Typography>{`${order?.total_price} ${order?.transaction.currency}`}</Typography>
+                        <Typography>{`${order?.total_price} ${order?.transactions[0].currency}`}</Typography>
                       </Stack>
                       <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
                         <Typography>Fee</Typography>
-                        <Typography>0 {`${order?.transaction.blockchain.token}`}</Typography>
+                        <Typography>0 {`${order?.transactions[0].blockchain.token}`}</Typography>
                       </Stack>
                       <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
-                        <Typography>{`1 ${order?.transaction.blockchain.token}:`}</Typography>
-                        <Typography>{`${order?.transaction.blockchain.rate} ${order?.transaction.currency}`}</Typography>
+                        <Typography>{`1 ${order?.transactions[0].blockchain.token}:`}</Typography>
+                        <Typography>{`${order?.transactions[0].blockchain.rate} ${order?.transactions[0].currency}`}</Typography>
                       </Stack>
                       <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
                         <Typography>Page Expires in:</Typography>
@@ -702,21 +704,21 @@ const PaymentDetails = () => {
                 <Card>
                   <Box display={'flex'} p={4} justifyContent={'center'}>
                     <Box width={500} textAlign={'center'}>
-                      {order?.transaction.transaction_status === 1 && (
+                      {order?.transactions[0].transaction_status === 1 && (
                         <>
                           <CheckCircle color={'success'} fontSize={'large'} />
                           <Typography variant="h6">Thank you</Typography>
                         </>
                       )}
 
-                      {order?.transaction.transaction_status === 2 && (
+                      {order?.transactions[0].transaction_status === 2 && (
                         <>
                           <CheckCircle color={'warning'} fontSize={'large'} />
                           <Typography variant="h6">Something wrong</Typography>
                         </>
                       )}
 
-                      {order?.transaction.transaction_status === 4 && (
+                      {order?.transactions[0].transaction_status === 4 && (
                         <>
                           <CheckCircle color={'error'} fontSize={'large'} />
                           <Typography variant="h6">Something wrong</Typography>
@@ -725,17 +727,17 @@ const PaymentDetails = () => {
                       <Box mt={2}>
                         <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} gap={2}>
                           <Typography>Order status</Typography>
-                          {order?.transaction.transaction_status === 1 && (
+                          {order?.transactions[0].transaction_status === 1 && (
                             <>
                               <Chip label={'Settled'} color={'success'} />
                             </>
                           )}
-                          {order?.transaction.transaction_status === 2 && (
+                          {order?.transactions[0].transaction_status === 2 && (
                             <>
                               <Chip label={'Failure'} color={'warning'} />
                             </>
                           )}
-                          {order?.transaction.transaction_status === 4 && (
+                          {order?.transactions[0].transaction_status === 4 && (
                             <>
                               <Chip label={'Error'} color={'error'} />
                             </>
@@ -744,54 +746,54 @@ const PaymentDetails = () => {
                         <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} gap={2}>
                           <Typography>Blockchain</Typography>
                           <Typography fontWeight={'bold'}>
-                            {FindChainNamesByChainids(order?.transaction.blockchain.chain_id as CHAINIDS)}
+                            {FindChainNamesByChainids(order?.transactions[0].blockchain.chain_id as CHAINIDS)}
                           </Typography>
                         </Stack>
                         <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} gap={2}>
                           <Typography>Hash</Typography>
                           <Link
                             href={GetBlockchainTxUrlByChainIds(
-                              order?.transaction.blockchain.chain_id as CHAINIDS,
-                              String(order?.transaction.blockchain.hash),
+                              order?.transactions[0].blockchain.chain_id as CHAINIDS,
+                              String(order?.transactions[0].blockchain.hash),
                             )}
                             target="_blank"
                           >
-                            {OmitMiddleString(String(order?.transaction.blockchain.hash))}
+                            {OmitMiddleString(String(order?.transactions[0].blockchain.hash))}
                           </Link>
                         </Stack>
                         <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} gap={2}>
                           <Typography>From address</Typography>
                           <Link
                             href={GetBlockchainAddressUrlByChainIds(
-                              order?.transaction.blockchain.chain_id as CHAINIDS,
-                              String(order?.transaction.blockchain.from_address),
+                              order?.transactions[0].blockchain.chain_id as CHAINIDS,
+                              String(order?.transactions[0].blockchain.from_address),
                             )}
                             target="_blank"
                           >
-                            {OmitMiddleString(String(order?.transaction.blockchain.from_address))}
+                            {OmitMiddleString(String(order?.transactions[0].blockchain.from_address))}
                           </Link>
                         </Stack>
                         <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} gap={2}>
                           <Typography>To address</Typography>
                           <Link
                             href={GetBlockchainAddressUrlByChainIds(
-                              order?.transaction.blockchain.chain_id as CHAINIDS,
-                              String(order?.transaction.blockchain.to_address),
+                              order?.transactions[0].blockchain.chain_id as CHAINIDS,
+                              String(order?.transactions[0].blockchain.to_address),
                             )}
                             target="_blank"
                           >
-                            {OmitMiddleString(String(order?.transaction.blockchain.to_address))}
+                            {OmitMiddleString(String(order?.transactions[0].blockchain.to_address))}
                           </Link>
                         </Stack>
                         <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} gap={2}>
                           <Typography>Token</Typography>
-                          <Typography fontWeight={'bold'}>{order?.transaction.blockchain.token}</Typography>
+                          <Typography fontWeight={'bold'}>{order?.transactions[0].blockchain.token}</Typography>
                         </Stack>
-                        {order?.transaction.blockchain.block_timestamp > 0 && (
+                        {order?.transactions[0].blockchain.block_timestamp > 0 && (
                           <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} gap={2}>
                             <Typography>Block timestamp</Typography>
                             <Typography fontWeight={'bold'}>
-                              {new Date(Number(order?.transaction.blockchain.block_timestamp)).toLocaleString()}
+                              {new Date(Number(order?.transactions[0].blockchain.block_timestamp)).toLocaleString()}
                             </Typography>
                           </Stack>
                         )}

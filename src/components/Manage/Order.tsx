@@ -52,6 +52,7 @@ type OrderItemType = {
 };
 
 type TransactionType = {
+  select: number;
   transaction_id: number;
   amount: string;
   currency: number;
@@ -63,7 +64,6 @@ type TransactionType = {
 };
 
 type BlockchainType = {
-  qrcode: string;
   rate: string;
   chain_id: number;
   hash: string;
@@ -71,7 +71,6 @@ type BlockchainType = {
   from_address: string;
   to_address: string;
   token: string;
-  transact_type: string;
   crypto_amount: string;
   block_timestamp: number;
 };
@@ -129,7 +128,7 @@ type OrderType = {
   items: OrderItemType[];
   ratings: RatingType[];
   wallets: WalletType[];
-  transaction: TransactionType;
+  transactions: TransactionType[];
   shipping: ShippingType;
 };
 
@@ -539,14 +538,14 @@ const ManageOrder = (props: Props) => {
             <>
               <BlockchainDialog
                 currency={currentOrder.currency}
-                blockchain={currentOrder.transaction.blockchain}
+                transactions={currentOrder.transactions}
                 openDialog={openBlockchainDialog}
                 handleCloseDialog={handleBlockchainCloseDialog}
               />
               <ConfirmPaymentDialog
                 orderId={currentOrder.order_id}
                 confirmNumber={currentOrder.payment_confirmed_number}
-                blockchain={currentOrder.transaction.blockchain}
+                transactions={currentOrder.transactions}
                 openDialog={openConfirmPaymentDialog}
                 handleCloseDialog={handleConfirmPaymentCloseDialog}
               />

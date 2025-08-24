@@ -26,6 +26,7 @@ type OrderItemType = {
 };
 
 type TransactionType = {
+  select: number;
   transaction_id: number;
   amount: string;
   currency: number;
@@ -37,7 +38,6 @@ type TransactionType = {
 };
 
 type BlockchainType = {
-  qrcode: string;
   rate: string;
   chain_id: number;
   hash: string;
@@ -45,7 +45,6 @@ type BlockchainType = {
   from_address: string;
   to_address: string;
   token: string;
-  transact_type: string;
   crypto_amount: string;
   block_timestamp: number;
 };
@@ -73,7 +72,7 @@ type OrderType = {
   processed_at: number;
   items: OrderItemType[];
   wallets: WalletType[];
-  transaction: TransactionType;
+  transactions: TransactionType[];
 };
 
 const OrderDetails = () => {
@@ -225,35 +224,35 @@ const OrderDetails = () => {
                     <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
                       <Typography>Amount</Typography>
                       <Typography fontWeight={'bold'}>
-                        {order?.transaction.amount} {order?.transaction.currency}
+                        {order?.transactions[0].amount} {order?.transactions[0].currency}
                       </Typography>
                     </Stack>
                     <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
                       <Typography>Gateway</Typography>
-                      <Typography fontWeight={'bold'}>{order?.transaction.gateway}</Typography>
+                      <Typography fontWeight={'bold'}>{order?.transactions[0].gateway}</Typography>
                     </Stack>
                     <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
                       <Typography>Message</Typography>
-                      <Typography fontWeight={'bold'}>{order?.transaction.message}</Typography>
+                      <Typography fontWeight={'bold'}>{order?.transactions[0].message}</Typography>
                     </Stack>
                     <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
                       <Typography>Transaction status</Typography>
-                      {order?.transaction.transaction_status === 1 && (
+                      {order?.transactions[0].transaction_status === 1 && (
                         <Typography fontWeight={'bold'} color="success">
                           Success
                         </Typography>
                       )}
-                      {order?.transaction.transaction_status === 2 && (
+                      {order?.transactions[0].transaction_status === 2 && (
                         <Typography fontWeight={'bold'} color="error">
                           Failure
                         </Typography>
                       )}
-                      {order?.transaction.transaction_status === 3 && (
+                      {order?.transactions[0].transaction_status === 3 && (
                         <Typography fontWeight={'bold'} color="info">
                           Pending
                         </Typography>
                       )}
-                      {order?.transaction.transaction_status === 4 && (
+                      {order?.transactions[0].transaction_status === 4 && (
                         <Typography fontWeight={'bold'} color="error">
                           Error
                         </Typography>
@@ -266,64 +265,64 @@ const OrderDetails = () => {
                     <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
                       <Typography>Chain</Typography>
                       <Typography fontWeight={'bold'}>
-                        {FindChainNamesByChainids(order?.transaction.blockchain.chain_id)}
+                        {FindChainNamesByChainids(order?.transactions[0].blockchain.chain_id)}
                       </Typography>
                     </Stack>
                     <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
                       <Typography>Hash</Typography>
                       <Link
                         href={GetBlockchainTxUrlByChainIds(
-                          order?.transaction.blockchain.chain_id as CHAINIDS,
-                          String(order?.transaction.blockchain.hash),
+                          order?.transactions[0].blockchain.chain_id as CHAINIDS,
+                          String(order?.transactions[0].blockchain.hash),
                         )}
                         target="_blank"
                       >
-                        {OmitMiddleString(String(order?.transaction.blockchain.hash))}
+                        {OmitMiddleString(String(order?.transactions[0].blockchain.hash))}
                       </Link>
                     </Stack>
                     <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
                       <Typography>From address</Typography>
                       <Link
                         href={GetBlockchainAddressUrlByChainIds(
-                          order?.transaction.blockchain.chain_id as CHAINIDS,
-                          String(order?.transaction.blockchain.from_address),
+                          order?.transactions[0].blockchain.chain_id as CHAINIDS,
+                          String(order?.transactions[0].blockchain.from_address),
                         )}
                         target="_blank"
                       >
-                        {OmitMiddleString(String(order?.transaction.blockchain.from_address))}
+                        {OmitMiddleString(String(order?.transactions[0].blockchain.from_address))}
                       </Link>
                     </Stack>
                     <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
                       <Typography>To address</Typography>
                       <Link
                         href={GetBlockchainAddressUrlByChainIds(
-                          order?.transaction.blockchain.chain_id as CHAINIDS,
-                          String(order?.transaction.blockchain.to_address),
+                          order?.transactions[0].blockchain.chain_id as CHAINIDS,
+                          String(order?.transactions[0].blockchain.to_address),
                         )}
                         target="_blank"
                       >
-                        {OmitMiddleString(String(order?.transaction.blockchain.to_address))}
+                        {OmitMiddleString(String(order?.transactions[0].blockchain.to_address))}
                       </Link>
                     </Stack>
                     <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
                       <Typography>Token</Typography>
-                      <Typography fontWeight={'bold'}>{order?.transaction.blockchain.token}</Typography>
+                      <Typography fontWeight={'bold'}>{order?.transactions[0].blockchain.token}</Typography>
                     </Stack>
                     <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
                       <Typography>Crypto amount</Typography>
-                      <Typography fontWeight={'bold'}>{order?.transaction.blockchain.crypto_amount}</Typography>
+                      <Typography fontWeight={'bold'}>{order?.transactions[0].blockchain.crypto_amount}</Typography>
                     </Stack>
                     <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
                       <Typography>Rate</Typography>
                       <Typography
                         fontWeight={'bold'}
-                      >{`1 ${order?.transaction.blockchain.token} = ${order?.transaction.blockchain.rate} ${order?.currency}`}</Typography>
+                      >{`1 ${order?.transactions[0].blockchain.token} = ${order?.transactions[0].blockchain.rate} ${order?.currency}`}</Typography>
                     </Stack>
-                    {order?.transaction.blockchain.block_timestamp > 0 && (
+                    {order?.transactions[0].blockchain.block_timestamp > 0 && (
                       <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
                         <Typography>Block timestamp</Typography>
                         <Typography fontWeight={'bold'}>
-                          {new Date(Number(order?.transaction.blockchain.block_timestamp)).toLocaleString()}
+                          {new Date(Number(order?.transactions[0].blockchain.block_timestamp)).toLocaleString()}
                         </Typography>
                       </Stack>
                     )}
