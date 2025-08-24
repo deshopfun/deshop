@@ -46,7 +46,10 @@ const ProductVariant = (props: Props) => {
   const [price, setPrice] = useState<string>('');
   const [position, setPosition] = useState<string>('');
   const [sku, setSku] = useState<string>('');
+  const [tax, setTax] = useState<string>('');
   const [taxable, setTaxable] = useState<boolean>(false);
+  const [discounts, setDiscounts] = useState<string>('');
+  const [tipReceived, setTipReceived] = useState<string>('');
   const [weight, setWeight] = useState<string>('');
   const [weightUnit, setWeightUnit] = useState<string>('');
   const [requiresShipping, setRequiresShipping] = useState<boolean>(false);
@@ -103,7 +106,10 @@ const ProductVariant = (props: Props) => {
         setPrice(response.data.price);
         setPosition(response.data.position);
         setSku(response.data.sku);
+        setTax(response.data.tax);
         setTaxable(response.data.taxable === 1 ? true : false);
+        setDiscounts(response.data.discounts);
+        setTipReceived(response.data.tip_received);
         setWeight(response.data.weight);
         setWeightUnit(response.data.weight_unit);
         setRequiresShipping(response.data.requires_shipping === 1 ? true : false);
@@ -117,7 +123,10 @@ const ProductVariant = (props: Props) => {
         setPrice('');
         setPosition('');
         setSku('');
+        setTax('');
         setTaxable(false);
+        setDiscounts('');
+        setTipReceived('');
         setWeight('');
         setWeightUnit('');
         setRequiresShipping(false);
@@ -228,6 +237,29 @@ const ProductVariant = (props: Props) => {
         return;
       }
 
+      if (taxable) {
+        if (!tax || parseFloat(tax) <= 0) {
+          setSnackSeverity('error');
+          setSnackMessage('Incorrect tax input');
+          setSnackOpen(true);
+          return;
+        }
+      }
+
+      if (!tipReceived || parseFloat(tipReceived) <= 0) {
+        setSnackSeverity('error');
+        setSnackMessage('Incorrect tip input');
+        setSnackOpen(true);
+        return;
+      }
+
+      if (!discounts || parseFloat(discounts) <= 0) {
+        setSnackSeverity('error');
+        setSnackMessage('Incorrect discounts input');
+        setSnackOpen(true);
+        return;
+      }
+
       if (!inventoryQuantity || parseInt(inventoryQuantity) <= 0) {
         setSnackSeverity('error');
         setSnackMessage('Incorrect inventory quantity input');
@@ -276,6 +308,9 @@ const ProductVariant = (props: Props) => {
         position: parseInt(position),
         sku: sku,
         taxable: taxable ? 1 : 2,
+        tax: taxable ? tax : undefined,
+        discounts: discounts,
+        tip_received: tipReceived,
         weight: weight,
         weight_unit: weightUnit,
         requires_shipping: requiresShipping ? 1 : 2,
@@ -457,6 +492,34 @@ const ProductVariant = (props: Props) => {
               />
             </Box>
             <Box mt={2}>
+              <Typography mb={1}>Tip</Typography>
+              <TextField
+                hiddenLabel
+                size="small"
+                fullWidth
+                type="number"
+                value={tipReceived}
+                onChange={(e: any) => {
+                  setTipReceived(e.target.value);
+                }}
+                placeholder="tip at price your variant"
+              />
+            </Box>
+            <Box mt={2}>
+              <Typography mb={1}>Discounts</Typography>
+              <TextField
+                hiddenLabel
+                size="small"
+                fullWidth
+                type="number"
+                value={discounts}
+                onChange={(e: any) => {
+                  setDiscounts(e.target.value);
+                }}
+                placeholder="discounts at price your variant"
+              />
+            </Box>
+            <Box mt={2}>
               <Typography mb={1}>Barcode(the barcode, UPC, or ISBN number for the product)</Typography>
               <TextField
                 hiddenLabel
@@ -561,6 +624,22 @@ const ProductVariant = (props: Props) => {
               />
               <Typography>Taxable(whether a tax is charged when the product variant is sold)</Typography>
             </Stack>
+            {taxable && (
+              <Box py={1}>
+                <Typography mb={1}>Tax</Typography>
+                <TextField
+                  hiddenLabel
+                  size="small"
+                  fullWidth
+                  type="number"
+                  value={tax}
+                  onChange={(e: any) => {
+                    setTax(e.target.value);
+                  }}
+                  placeholder="tax your variant"
+                />
+              </Box>
+            )}
             <Stack direction={'row'} alignItems={'center'}>
               <Switch
                 checked={requiresShipping}

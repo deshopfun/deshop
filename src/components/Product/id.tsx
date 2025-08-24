@@ -107,6 +107,9 @@ type ProductVariant = {
   inventory_quantity: number;
   position: number;
   price: string;
+  discounts: string;
+  tax: string;
+  tip_received: string;
   requires_shipping: boolean;
   sku: string;
   taxable: boolean;
@@ -756,7 +759,7 @@ const ProductDetails = () => {
                   <Stack direction={'row'} alignItems={'center'} gap={1} mt={1}>
                     <BorderColor fontSize={'small'} />
                     {currentProductVariant.taxable ? (
-                      <Typography>Product already include tax</Typography>
+                      <Typography>{`Tax: US$${parseFloat(currentProductVariant.tax) * quantity}`}</Typography>
                     ) : (
                       <Typography>Product do not include tax</Typography>
                     )}
