@@ -107,6 +107,11 @@ export const MANAGE_TAB_DATAS: TAB_DATA[] = [
     title: 'Notifications',
     tabId: 'notifications',
   },
+  {
+    id: 4,
+    title: 'Settings',
+    tabId: 'settings',
+  },
 ];
 
 export const FILE_TYPE = {
