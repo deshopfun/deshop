@@ -1,6 +1,7 @@
 import { Add, FavoriteBorder, Remove, Star } from '@mui/icons-material';
 import { Box, Button, Card, CardContent, Container, Grid, IconButton, Input, Stack, Typography } from '@mui/material';
 import { useCartPresistStore } from 'lib';
+import { CURRENCYS } from 'packages/constants/currency';
 import { useEffect, useState } from 'react';
 
 const Cart = () => {
@@ -138,7 +139,9 @@ const Cart = () => {
                                 </Stack>
                               </Box>
                               <Box>
-                                <Typography fontWeight={'bold'}>{`US$${vitem.price}`}</Typography>
+                                <Typography fontWeight={'bold'}>{`${
+                                  CURRENCYS.find((c) => c.name === item.currency)?.code
+                                }${vitem.price}`}</Typography>
                               </Box>
                             </Stack>
 
@@ -183,11 +186,13 @@ const Cart = () => {
                       ))}
                     <Box textAlign={'right'} mt={6}>
                       <Typography fontWeight={'bold'} mb={1}>
-                        {`Subtotal: `}$
-                        {item.variant.reduce((itemTotal, variant) => {
-                          const price = parseFloat(variant.price) || 0;
-                          return itemTotal + price * variant.quantity;
-                        }, 0)}
+                        {`Subtotal: ${CURRENCYS.find((c) => c.name === item.currency)?.code}${item.variant.reduce(
+                          (itemTotal, variant) => {
+                            const price = parseFloat(variant.price) || 0;
+                            return itemTotal + price * variant.quantity;
+                          },
+                          0,
+                        )}`}
                       </Typography>
                       <Button
                         variant={'contained'}
@@ -207,10 +212,6 @@ const Cart = () => {
           <Grid size={{ xs: 12, md: 4 }}>
             <Card>
               <CardContent>
-                <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} mb={2}>
-                  <Typography fontWeight={'bold'}>Subtotal</Typography>
-                  <Typography fontWeight={'bold'}>US${subtotal}</Typography>
-                </Stack>
                 <Button
                   fullWidth
                   variant={'contained'}
@@ -221,9 +222,10 @@ const Cart = () => {
                 >
                   Clear Cart
                 </Button>
-                <Typography mt={2} textAlign={'center'}>
-                  Taxes & shipping calculated at checkout
+                <Typography mt={2} textAlign={'center'} fontWeight={'bold'}>
+                  Taxes & shipping & tip & discounts & weight
                 </Typography>
+                <Typography textAlign={'center'}>calculated at checkout page</Typography>
               </CardContent>
             </Card>
           </Grid>

@@ -58,6 +58,7 @@ import Product from './Product';
 import ProductVariant from './Variant';
 import ProductRating from './Rating';
 import NowTrendingCard from 'components/Card/NowTrendingCard';
+import { CURRENCYS } from 'packages/constants/currency';
 
 type ProductType = {
   product_id: number;
@@ -70,6 +71,7 @@ type ProductType = {
   product_type: string;
   tags: string;
   vendor: string;
+  currency: string;
   product_status: number;
   collect_status: number;
   images: ProductImage[];
@@ -374,6 +376,12 @@ const ProductDetails = () => {
       image: String(currentProductVariant?.image ?? ''),
       option,
       price: String(currentProductVariant?.price ?? ''),
+      discounts: String(currentProductVariant?.discounts ?? ''),
+      taxable: currentProductVariant?.taxable,
+      tax: String(currentProductVariant?.tax ?? ''),
+      tipReceived: String(currentProductVariant?.tip_received ?? ''),
+      weight: String(currentProductVariant?.weight ?? ''),
+      weightUnit: String(currentProductVariant?.weight_unit ?? ''),
       quantity,
     };
 
@@ -405,6 +413,7 @@ const ProductDetails = () => {
           uuid: product.user_uuid,
           avatarUrl: product.user_avatar_url,
           username: product.username,
+          currency: product.currency,
           variant: [newVariant],
         },
       ]);
@@ -746,7 +755,9 @@ const ProductDetails = () => {
               {currentProductVariant && isSelectOption && (
                 <Box mt={2}>
                   <Stack direction={'row'} alignItems={'center'} gap={1}>
-                    <Typography variant="h6">{`US$${currentProductVariant.price}`}</Typography>
+                    <Typography variant="h5">{`${CURRENCYS.find((item) => item.name === product.currency)?.code}${
+                      currentProductVariant.price
+                    }`}</Typography>
                   </Stack>
                   <Stack direction={'row'} alignItems={'center'} gap={1} mt={2}>
                     <LocalShipping fontSize={'small'} />
@@ -759,7 +770,13 @@ const ProductDetails = () => {
                   <Stack direction={'row'} alignItems={'center'} gap={1} mt={1}>
                     <BorderColor fontSize={'small'} />
                     {currentProductVariant.taxable ? (
-                      <Typography>{`Tax: US$${parseFloat(currentProductVariant.tax) * quantity}`}</Typography>
+                      <Stack direction={'row'} alignItems={'center'} gap={1}>
+                        <Typography>Tax:</Typography>
+                        <Typography fontWeight={'bold'} variant="h6">
+                          {CURRENCYS.find((item) => item.name === product.currency)?.code}
+                          {parseFloat(currentProductVariant.tax) * quantity}
+                        </Typography>
+                      </Stack>
                     ) : (
                       <Typography>Product do not include tax</Typography>
                     )}

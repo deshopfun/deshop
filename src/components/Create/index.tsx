@@ -8,7 +8,6 @@ import {
   Container,
   FormControl,
   FormControlLabel,
-  FormLabel,
   Grid,
   ImageList,
   ImageListItem,
@@ -21,7 +20,7 @@ import {
 } from '@mui/material';
 import { useSnackPresistStore } from 'lib';
 import { FILE_TYPE, PRODUCT_TYPE } from 'packages/constants';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import axios from 'utils/http/axios';
 import { Http } from 'utils/http/http';
 
@@ -41,6 +40,7 @@ const Create = () => {
   const [vendor, setVendor] = useState<string>('');
   const [productType, setProductType] = useState<string>(PRODUCT_TYPE.WOMEN);
   const [tags, setTags] = useState<string>('');
+  const [currency, setCurrency] = useState<string>('');
   const [description, setDescription] = useState<string>('');
   const [optionOne, setOptionOne] = useState<string>('');
   const [optionOneValue, setOptionOneValue] = useState<string>('');
@@ -296,7 +296,6 @@ const Create = () => {
               </CardContent>
             </Card>
           </Box>
-
           <Box mt={2}>
             <Card>
               <CardContent>

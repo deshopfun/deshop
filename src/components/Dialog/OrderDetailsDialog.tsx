@@ -3,6 +3,7 @@ import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Stack, Typog
 type OrderType = {
   customer_username: string;
   username: string;
+  sub_total_price: string;
   total_discounts: string;
   total_tax: string;
   total_tip_received: string;
@@ -39,18 +40,26 @@ export default function OrderDetailsDialog(props: DialogType) {
           <Typography fontWeight={'bold'}>{props.order.username}</Typography>
         </Stack>
         <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
-          <Typography>Total discounts</Typography>
-          <Typography fontWeight={'bold'}>{`${props.order.total_discounts || 0} ${props.order.currency}`}</Typography>
+          <Typography>Subtotal price</Typography>
+          <Typography fontWeight={'bold'}>{`${props.order.sub_total_price || 0} ${props.order.currency}`}</Typography>
+        </Stack>
+        <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
+          <Typography>Shipping</Typography>
+          <Typography fontWeight={'bold'}>{`0 ${props.order.currency}`}</Typography>
         </Stack>
         <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
           <Typography>Total tax</Typography>
           <Typography fontWeight={'bold'}>{`${props.order.total_tax || 0} ${props.order.currency}`}</Typography>
         </Stack>
         <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
-          <Typography>Total tip received</Typography>
+          <Typography>Total tip</Typography>
           <Typography fontWeight={'bold'}>{`${props.order.total_tip_received || 0} ${
             props.order.currency
           }`}</Typography>
+        </Stack>
+        <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
+          <Typography>Total discounts</Typography>
+          <Typography fontWeight={'bold'}>{`${props.order.total_discounts || 0} ${props.order.currency}`}</Typography>
         </Stack>
         <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
           <Typography>Total price</Typography>

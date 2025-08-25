@@ -113,6 +113,7 @@ type OrderType = {
   user_avatar_url: string;
   order_status_url: string;
   total_discounts: string;
+  sub_total_price: string;
   total_price: string;
   total_tax: string;
   total_tip_received: string;
@@ -339,10 +340,27 @@ const ManageOrder = (props: Props) => {
                       ))}
                     </div>
                     <Divider />
-                    <Typography textAlign={'right'} py={1}>
-                      {`${item.items.length} item in total. Real payment: `}
-                      <b>{`${item.total_price} ${item.currency}`}</b>
-                    </Typography>
+                    <Box py={1}>
+                      <Typography textAlign={'right'}>{`${item.items.length} item in total`}</Typography>
+                      <Typography textAlign={'right'}>
+                        Subtotal price: <b>{`${item.sub_total_price || 0} ${item.currency}`}</b>
+                      </Typography>
+                      <Typography textAlign={'right'}>
+                        Shipping: <b>{`0 ${item.currency}`}</b>
+                      </Typography>
+                      <Typography textAlign={'right'}>
+                        Total tax: <b>{`${item.total_tax || 0} ${item.currency}`}</b>
+                      </Typography>
+                      <Typography textAlign={'right'}>
+                        Total tip: <b>{`${item.total_tip_received || 0} ${item.currency}`}</b>
+                      </Typography>
+                      <Typography textAlign={'right'}>
+                        Total discount: <b>{`${item.total_discounts || 0} ${item.currency}`}</b>
+                      </Typography>
+                      <Typography textAlign={'right'}>
+                        Total price: <b>{`${item.total_price || 0} ${item.currency}`}</b>
+                      </Typography>
+                    </Box>
                     <Divider />
                     <Stack direction={'row'} alignItems={'start'} justifyContent={'space-between'} mt={2} gap={2}>
                       <Card style={{ width: '100%' }}>

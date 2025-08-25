@@ -7,6 +7,12 @@ type VariantType = {
   image: string;
   option: string;
   price: string;
+  discounts: string;
+  taxable: boolean;
+  tax: string;
+  tipReceived: string;
+  weight: string;
+  weightUnit: string;
   quantity: number;
 };
 
@@ -14,6 +20,7 @@ export type CartType = {
   uuid: string;
   avatarUrl: string;
   username: string;
+  currency: string;
   variant: VariantType[];
 };
 

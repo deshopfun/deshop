@@ -8,6 +8,7 @@ import {
   CardContent,
   Checkbox,
   Container,
+  Divider,
   FormControl,
   FormControlLabel,
   Grid,
@@ -34,6 +35,7 @@ import {
 } from '@mui/icons-material';
 import { COUNTRYPROVINCES } from 'packages/constants/countryState';
 import { SHIPPING_TYPE } from 'packages/constants';
+import { CURRENCYS } from 'packages/constants/currency';
 
 type AddressType = {
   address_id: number;
@@ -81,6 +83,8 @@ const CheckoutDetails = () => {
   const [discountCode, setDiscountCode] = useState<string>('');
   const [subTotal, setSubTotal] = useState<string>('0');
   const [shipping, setShipping] = useState<string>('0');
+  const [tax, setTax] = useState<string>('0');
+  const [tip, setTip] = useState<string>('0');
   const [discount, setDiscount] = useState<string>('0');
   const [total, setTotal] = useState<string>('0');
 
@@ -153,14 +157,26 @@ const CheckoutDetails = () => {
         setCartList(cartItem);
         init(id);
 
-        const total = cartItem.variant.reduce((total, item) => {
-          const price = parseFloat(item.price) || 0;
-          return total + price * item.quantity;
-        }, 0);
-        setSubTotal(String(total));
-        setShipping('0');
-        setDiscount('0');
-        setTotal(String(total));
+        var price = 0,
+          shipping = 0,
+          tax = 0,
+          tip = 0,
+          discounts = 0;
+
+        cartItem.variant.forEach((item) => {
+          price += (parseFloat(item.price) || 0) * item.quantity;
+          if (item.taxable) {
+            tax += (parseFloat(item.tax) || 0) * item.quantity;
+          }
+          tip += (parseFloat(item.tipReceived) || 0) * item.quantity;
+          discounts += (parseFloat(item.discounts) || 0) * item.quantity;
+        });
+        setSubTotal(String(price));
+        setShipping(String(shipping));
+        setTax(String(tax));
+        setTip(String(tip));
+        setDiscount(String(discounts));
+        setTotal(String(price + shipping + tax + tip - discounts));
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -187,7 +203,6 @@ const CheckoutDetails = () => {
       const response: any = await axios.post(Http.order, {
         seller_uuid: id,
         items: items,
-        currency: 'USD',
         landing_site: window.location.origin,
         shipping_type: ship ? SHIPPING_TYPE.DELIVERY : SHIPPING_TYPE.PICKUP,
         shipping_address_id: ship ? selectDeliveryAddress : selectPickupAddress,
@@ -541,21 +556,69 @@ const CheckoutDetails = () => {
                   <Badge badgeContent={item.quantity} color={'info'}>
                     <img src={item.image} alt={'image'} loading="lazy" width={100} height={100} />
                   </Badge>
-                  <Box pl={4}>
-                    <Typography fontWeight={'bold'}>{item.title}</Typography>
-                    <Typography mt={1}>{`$${item.price}`}</Typography>
-                    <Typography variant="h6" mt={2}>
-                      $
-                      {cartList.variant.reduce((total, item) => {
-                        const price = parseFloat(item.price) || 0;
-                        return total + price * item.quantity;
-                      }, 0)}
-                    </Typography>
+                  <Box pl={4} width={'100%'}>
+                    <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
+                      <Typography fontWeight={'bold'}>{item.title}</Typography>
+                      <Typography fontWeight={'bold'}>{`${CURRENCYS.find((c) => c.name === cartList.currency)?.code}${
+                        item.price
+                      }`}</Typography>
+                    </Stack>
+                    <Stack direction={'row'} alignItems={'center'}>
+                      {item.option.split(',').map((optionItem, optionIndex) => (
+                        <Stack direction={'row'} alignItems={'center'} key={optionIndex}>
+                          <Typography>{optionItem}</Typography>
+                          {optionIndex + 1 !== item.option.split(',').length && <Typography px={1}>/</Typography>}
+                        </Stack>
+                      ))}
+                    </Stack>
+                    <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} mt={2}>
+                      <Typography>Price</Typography>
+                      <Typography variant="h6">
+                        {CURRENCYS.find((c) => c.name === cartList.currency)?.code}
+                        {parseFloat(item.price) * item.quantity}
+                      </Typography>
+                    </Stack>
+                    {item.taxable && (
+                      <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
+                        <Typography>Tax</Typography>
+                        <Typography variant="h6">
+                          {CURRENCYS.find((c) => c.name === cartList.currency)?.code}
+                          {parseFloat(item.tax) * item.quantity}
+                        </Typography>
+                      </Stack>
+                    )}
+                    {item.tipReceived && parseFloat(item.tipReceived) > 0 && (
+                      <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
+                        <Typography>Tip</Typography>
+                        <Typography variant="h6">
+                          {CURRENCYS.find((c) => c.name === cartList.currency)?.code}
+                          {parseFloat(item.tipReceived) * item.quantity}
+                        </Typography>
+                      </Stack>
+                    )}
+                    {item.discounts && parseFloat(item.discounts) > 0 && (
+                      <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
+                        <Typography>Discounts</Typography>
+                        <Typography variant="h6">
+                          {CURRENCYS.find((c) => c.name === cartList.currency)?.code}
+                          {parseFloat(item.discounts) * item.quantity}
+                        </Typography>
+                      </Stack>
+                    )}
+                    {item.weight && parseInt(item.weight) > 0 && (
+                      <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
+                        <Typography>Weight</Typography>
+                        <Typography variant="h6">
+                          {item.weight}
+                          {item.weightUnit}
+                        </Typography>
+                      </Stack>
+                    )}
                   </Box>
                 </Stack>
               ))}
 
-            <Box mt={4}>
+            {/* <Box mt={4}>
               <Input
                 fullWidth
                 startAdornment={
@@ -570,23 +633,51 @@ const CheckoutDetails = () => {
                   setDiscountCode(e.target.value);
                 }}
               />
+            </Box> */}
+
+            <Box py={2}>
+              <Divider />
             </Box>
 
-            <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} mt={4}>
+            <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
               <Typography>Subtotal</Typography>
-              <Typography fontWeight={'bold'}>{`$${subTotal}`}</Typography>
+              <Typography fontWeight={'bold'}>{`${
+                CURRENCYS.find((c) => c.name === cartList.currency)?.code
+              }${subTotal}`}</Typography>
             </Stack>
             <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} mt={2}>
               <Typography>Shipping</Typography>
-              <Typography fontWeight={'bold'}>{`$${shipping}`}</Typography>
+              <Typography fontWeight={'bold'}>{`${
+                CURRENCYS.find((c) => c.name === cartList.currency)?.code
+              }${shipping}`}</Typography>
+            </Stack>
+            <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} mt={2}>
+              <Typography>Tax</Typography>
+              <Typography fontWeight={'bold'}>{`${
+                CURRENCYS.find((c) => c.name === cartList.currency)?.code
+              }${tax}`}</Typography>
+            </Stack>
+            <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} mt={2}>
+              <Typography>Tip</Typography>
+              <Typography fontWeight={'bold'}>{`${
+                CURRENCYS.find((c) => c.name === cartList.currency)?.code
+              }${tip}`}</Typography>
             </Stack>
             <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} mt={2}>
               <Typography>Discount</Typography>
-              <Typography fontWeight={'bold'}>{`$${discount}`}</Typography>
+              <Typography fontWeight={'bold'}>{`${
+                CURRENCYS.find((c) => c.name === cartList.currency)?.code
+              }${discount}`}</Typography>
             </Stack>
+            {/* <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} mt={2}>
+              <Typography>Weight</Typography>
+              <Typography fontWeight={'bold'}>{`${weight}${discount}`}</Typography>
+            </Stack> */}
             <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} mt={2}>
               <Typography variant="h6">Total</Typography>
-              <Typography fontWeight={'bold'}>{`$${total}`}</Typography>
+              <Typography fontWeight={'bold'}>{`${
+                CURRENCYS.find((c) => c.name === cartList.currency)?.code
+              }${total}`}</Typography>
             </Stack>
 
             <Box mt={4}>

@@ -109,9 +109,11 @@ type OrderType = {
   user_avatar_url: string;
   order_status_url: string;
   total_discounts: string;
+  sub_total_price: string;
   total_price: string;
   total_tax: string;
   total_tip_received: string;
+  currency: string;
   financial_status: number;
   processed_at: number;
   items: OrderItemType[];
@@ -336,22 +338,32 @@ const PaymentDetails = () => {
                       </Stack>
                       <Divider />
                       <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} py={1}>
-                        <Typography fontWeight={'bold'}>Total Discounts(USD)</Typography>
-                        <Typography>{order?.total_discounts || 0}</Typography>
+                        <Typography fontWeight={'bold'}>Subtotal({order?.currency})</Typography>
+                        <Typography>{order?.sub_total_price || 0}</Typography>
                       </Stack>
                       <Divider />
                       <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} py={1}>
-                        <Typography fontWeight={'bold'}>Total Tax(USD)</Typography>
+                        <Typography fontWeight={'bold'}>Shipping({order?.currency})</Typography>
+                        <Typography>0</Typography>
+                      </Stack>
+                      <Divider />
+                      <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} py={1}>
+                        <Typography fontWeight={'bold'}>Total Tax({order?.currency})</Typography>
                         <Typography>{order?.total_tax || 0}</Typography>
                       </Stack>
                       <Divider />
                       <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} py={1}>
-                        <Typography fontWeight={'bold'}>Total Tip Received(USD)</Typography>
+                        <Typography fontWeight={'bold'}>Total Tip({order?.currency})</Typography>
                         <Typography>{order?.total_tip_received || 0}</Typography>
                       </Stack>
                       <Divider />
+                      <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} py={1}>
+                        <Typography fontWeight={'bold'}>Total Discounts({order?.currency})</Typography>
+                        <Typography>{order?.total_discounts || 0}</Typography>
+                      </Stack>
+                      <Divider />
                       <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} pt={1}>
-                        <Typography fontWeight={'bold'}>Total(USD)</Typography>
+                        <Typography fontWeight={'bold'}>Total({order?.currency})</Typography>
                         <Typography>{order?.total_price || 0}</Typography>
                       </Stack>
                     </Box>
@@ -401,22 +413,32 @@ const PaymentDetails = () => {
                       </Stack>
                       <Divider />
                       <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} py={1}>
-                        <Typography fontWeight={'bold'}>Total Discounts(USD)</Typography>
-                        <Typography>{order?.total_discounts || 0}</Typography>
+                        <Typography fontWeight={'bold'}>Subtotal({order?.currency})</Typography>
+                        <Typography>{order?.sub_total_price || 0}</Typography>
                       </Stack>
                       <Divider />
                       <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} py={1}>
-                        <Typography fontWeight={'bold'}>Total Tax(USD)</Typography>
+                        <Typography fontWeight={'bold'}>Shipping({order?.currency})</Typography>
+                        <Typography>0</Typography>
+                      </Stack>
+                      <Divider />
+                      <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} py={1}>
+                        <Typography fontWeight={'bold'}>Total Tax({order?.currency})</Typography>
                         <Typography>{order?.total_tax || 0}</Typography>
                       </Stack>
                       <Divider />
                       <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} py={1}>
-                        <Typography fontWeight={'bold'}>Total Tip Received(USD)</Typography>
+                        <Typography fontWeight={'bold'}>Total Tip({order?.currency})</Typography>
                         <Typography>{order?.total_tip_received || 0}</Typography>
                       </Stack>
                       <Divider />
+                      <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} py={1}>
+                        <Typography fontWeight={'bold'}>Total Discounts({order?.currency})</Typography>
+                        <Typography>{order?.total_discounts || 0}</Typography>
+                      </Stack>
+                      <Divider />
                       <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} pt={1}>
-                        <Typography fontWeight={'bold'}>Total(USD)</Typography>
+                        <Typography fontWeight={'bold'}>Total({order?.currency})</Typography>
                         <Typography>{order?.total_price || 0}</Typography>
                       </Stack>
                     </Box>

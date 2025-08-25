@@ -61,6 +61,7 @@ type OrderType = {
   user_avatar_url: string;
   order_status_url: string;
   total_discounts: string;
+  sub_total_price: string;
   total_price: string;
   total_tax: string;
   total_tip_received: string;
@@ -156,9 +157,15 @@ const OrderDetails = () => {
                   <Typography fontWeight={'bold'}>{order?.customer_email}</Typography>
                 </Stack>
                 <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
-                  <Typography>Total discounts</Typography>
+                  <Typography>Sub total price</Typography>
                   <Typography fontWeight={'bold'}>
-                    {order?.total_discounts || 0} {order?.currency}
+                    {order?.sub_total_price || 0} {order?.currency}
+                  </Typography>
+                </Stack>
+                <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
+                  <Typography>Shipping</Typography>
+                  <Typography fontWeight={'bold'}>
+                    {0} {order?.currency}
                   </Typography>
                 </Stack>
                 <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
@@ -168,9 +175,15 @@ const OrderDetails = () => {
                   </Typography>
                 </Stack>
                 <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
-                  <Typography>Total tip received</Typography>
+                  <Typography>Total tip</Typography>
                   <Typography fontWeight={'bold'}>
                     {order?.total_tip_received || 0} {order?.currency}
+                  </Typography>
+                </Stack>
+                <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
+                  <Typography>Total discounts</Typography>
+                  <Typography fontWeight={'bold'}>
+                    {order?.total_discounts || 0} {order?.currency}
                   </Typography>
                 </Stack>
                 <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
