@@ -36,6 +36,7 @@ import {
 import { COUNTRYPROVINCES } from 'packages/constants/countryState';
 import { SHIPPING_TYPE } from 'packages/constants';
 import { CURRENCYS } from 'packages/constants/currency';
+import { IsValidEmail } from 'utils/verify';
 
 type AddressType = {
   address_id: number;
@@ -87,6 +88,7 @@ const CheckoutDetails = () => {
   const [tip, setTip] = useState<string>('0');
   const [discount, setDiscount] = useState<string>('0');
   const [total, setTotal] = useState<string>('0');
+  const [isCheckTerms, setIsCheckTerms] = useState<boolean>(false);
 
   const [ship, setShip] = useState<boolean>(true);
   const [selectDeliveryAddress, setSelectDeliveryAddress] = useState<number>(0);
@@ -200,6 +202,22 @@ const CheckoutDetails = () => {
         return;
       }
 
+      if (ship) {
+        if (!selectDeliveryAddress) {
+          setSnackSeverity('error');
+          setSnackMessage('Incorrect delivery address');
+          setSnackOpen(true);
+          return;
+        }
+      } else {
+        if (!selectPickupAddress) {
+          setSnackSeverity('error');
+          setSnackMessage('Incorrect pickup address');
+          setSnackOpen(true);
+          return;
+        }
+      }
+
       const response: any = await axios.post(Http.order, {
         seller_uuid: id,
         items: items,
@@ -225,6 +243,158 @@ const CheckoutDetails = () => {
       setSnackOpen(true);
       console.error(e);
     }
+  };
+
+  const onClickSaveAddress = async () => {
+    try {
+      if (!firstName || firstName === '') {
+        setSnackSeverity('error');
+        setSnackMessage('Incorrect first name input');
+        setSnackOpen(true);
+        return;
+      }
+
+      if (!lastName || lastName === '') {
+        setSnackSeverity('error');
+        setSnackMessage('Incorrect last name input');
+        setSnackOpen(true);
+        return;
+      }
+
+      if (!email || email === '' || !IsValidEmail(email)) {
+        setSnackSeverity('error');
+        setSnackMessage('Incorrect email input');
+        setSnackOpen(true);
+        return;
+      }
+
+      if (!company || company === '') {
+        setSnackSeverity('error');
+        setSnackMessage('Incorrect company input');
+        setSnackOpen(true);
+        return;
+      }
+
+      if (!phone || phone === '') {
+        setSnackSeverity('error');
+        setSnackMessage('Incorrect phone input');
+        setSnackOpen(true);
+        return;
+      }
+
+      if (!addressOne || addressOne === '') {
+        setSnackSeverity('error');
+        setSnackMessage('Incorrect address one input');
+        setSnackOpen(true);
+        return;
+      }
+
+      if (!country || country === '') {
+        setSnackSeverity('error');
+        setSnackMessage('Incorrect country select');
+        setSnackOpen(true);
+        return;
+      }
+
+      const countryCode = COUNTRYPROVINCES.find((item) => item.name === country)?.code;
+
+      if (!countryCode || countryCode === '') {
+        setSnackSeverity('error');
+        setSnackMessage('Incorrect country code');
+        setSnackOpen(true);
+        return;
+      }
+
+      if (!city || city === '') {
+        setSnackSeverity('error');
+        setSnackMessage('Incorrect city input');
+        setSnackOpen(true);
+        return;
+      }
+
+      if (!province || province === '') {
+        setSnackSeverity('error');
+        setSnackMessage('Incorrect province select');
+        setSnackOpen(true);
+        return;
+      }
+
+      const provinceCode = COUNTRYPROVINCES.find((item) => item.name === country)?.provinces.find(
+        (item) => item.name === province,
+      )?.code;
+
+      if (!provinceCode || provinceCode === '') {
+        setSnackSeverity('error');
+        setSnackMessage('Incorrect province code');
+        setSnackOpen(true);
+        return;
+      }
+
+      if (!zip || zip === '') {
+        setSnackSeverity('error');
+        setSnackMessage('Incorrect zip input');
+        setSnackOpen(true);
+        return;
+      }
+
+      if (!isCheckTerms) {
+        setSnackSeverity('error');
+        setSnackMessage('Please agree the terms and conditions');
+        setSnackOpen(true);
+        return;
+      }
+
+      const response: any = await axios.post(Http.address, {
+        first_name: firstName,
+        last_name: lastName,
+        email: email,
+        company: company,
+        phone: phone,
+        country: country,
+        country_code: countryCode,
+        city: city,
+        province: province,
+        province_code: provinceCode,
+        zip: zip,
+        address_one: addressOne,
+        address_two: addressTwo,
+        kind: 1,
+      });
+
+      if (response.result) {
+        clearAddressData();
+        await getAddress();
+        setSelectDeliveryAddress(response.data.address_id);
+
+        setSnackSeverity('success');
+        setSnackMessage('Save successfully');
+        setSnackOpen(true);
+      } else {
+        setSnackSeverity('error');
+        setSnackMessage('Save Failed');
+        setSnackOpen(true);
+      }
+    } catch (e) {
+      setSnackSeverity('error');
+      setSnackMessage('The network error occurred. Please try again later.');
+      setSnackOpen(true);
+      console.error(e);
+    }
+  };
+
+  const clearAddressData = () => {
+    setFirstName('');
+    setLastName('');
+    setEmail('');
+    setCompany('');
+    setPhone('');
+    setCountry('');
+    setCity('');
+    setProvince('');
+    setZip('');
+    setAddressOne('');
+    setAddressTwo('');
+    setIsCheckTerms(false);
   };
 
   return (
@@ -303,167 +473,125 @@ const CheckoutDetails = () => {
                     </Card>
                   </Box>
                   {selectDeliveryAddress === 0 && (
-                    <>
-                      <Stack direction={'row'} alignItems={'center'} gap={2} mt={4}>
-                        <Box width={'100%'}>
-                          <Typography mb={1}>First name</Typography>
+                    <Card>
+                      <CardContent>
+                        <Stack direction={'row'} alignItems={'center'} gap={2} mt={4}>
+                          <Box width={'100%'}>
+                            <Typography mb={1}>First name</Typography>
+                            <TextField
+                              hiddenLabel
+                              size="small"
+                              fullWidth
+                              value={firstName}
+                              onChange={(e: any) => {
+                                setFirstName(e.target.value);
+                              }}
+                              placeholder="Enter first name"
+                            />
+                          </Box>
+                          <Box width={'100%'}>
+                            <Typography mb={1}>Last name</Typography>
+                            <TextField
+                              hiddenLabel
+                              size="small"
+                              fullWidth
+                              value={lastName}
+                              onChange={(e: any) => {
+                                setLastName(e.target.value);
+                              }}
+                              placeholder="Enter last name"
+                            />
+                          </Box>
+                        </Stack>
+                        <Stack direction={'row'} alignItems={'center'} gap={2} mt={3}>
+                          <Box width={'100%'}>
+                            <Typography mb={1}>Email address</Typography>
+                            <TextField
+                              hiddenLabel
+                              size="small"
+                              fullWidth
+                              value={email}
+                              onChange={(e: any) => {
+                                setEmail(e.target.value);
+                              }}
+                              placeholder="Enter email address"
+                            />
+                          </Box>
+                          <Box width={'100%'}>
+                            <Typography mb={1}>Company</Typography>
+                            <TextField
+                              hiddenLabel
+                              size="small"
+                              fullWidth
+                              value={company}
+                              onChange={(e: any) => {
+                                setCompany(e.target.value);
+                              }}
+                              placeholder="Enter company"
+                            />
+                          </Box>
+                        </Stack>
+                        <Box mt={3}>
+                          <Typography mb={1}>Phone number</Typography>
                           <TextField
                             hiddenLabel
                             size="small"
                             fullWidth
-                            value={firstName}
+                            value={phone}
                             onChange={(e: any) => {
-                              setFirstName(e.target.value);
+                              setPhone(e.target.value);
                             }}
-                            placeholder="Enter first name"
+                            placeholder="Enter phone number"
                           />
                         </Box>
-                        <Box width={'100%'}>
-                          <Typography mb={1}>Last name</Typography>
+                        <Box mt={3}>
+                          <Typography mb={1}>Address line 1</Typography>
                           <TextField
                             hiddenLabel
                             size="small"
                             fullWidth
-                            value={lastName}
+                            value={addressOne}
                             onChange={(e: any) => {
-                              setLastName(e.target.value);
+                              setAddressOne(e.target.value);
                             }}
-                            placeholder="Enter last name"
+                            placeholder="Enter address"
                           />
                         </Box>
-                      </Stack>
-                      <Stack direction={'row'} alignItems={'center'} gap={2} mt={3}>
-                        <Box width={'100%'}>
-                          <Typography mb={1}>Email address</Typography>
+                        <Box mt={3}>
+                          <Typography mb={1}>Address line 2</Typography>
                           <TextField
                             hiddenLabel
                             size="small"
                             fullWidth
-                            value={email}
+                            value={addressTwo}
                             onChange={(e: any) => {
-                              setEmail(e.target.value);
+                              setAddressTwo(e.target.value);
                             }}
-                            placeholder="Enter email address"
+                            placeholder="Enter address"
                           />
                         </Box>
-                        <Box width={'100%'}>
-                          <Typography mb={1}>Company</Typography>
-                          <TextField
-                            hiddenLabel
-                            size="small"
-                            fullWidth
-                            value={company}
-                            onChange={(e: any) => {
-                              setCompany(e.target.value);
-                            }}
-                            placeholder="Enter company"
-                          />
-                        </Box>
-                      </Stack>
-                      <Box mt={3}>
-                        <Typography mb={1}>Phone number</Typography>
-                        <TextField
-                          hiddenLabel
-                          size="small"
-                          fullWidth
-                          value={phone}
-                          onChange={(e: any) => {
-                            setPhone(e.target.value);
-                          }}
-                          placeholder="Enter phone number"
-                        />
-                      </Box>
-                      <Box mt={3}>
-                        <Typography mb={1}>Address line 1</Typography>
-                        <TextField
-                          hiddenLabel
-                          size="small"
-                          fullWidth
-                          value={addressOne}
-                          onChange={(e: any) => {
-                            setAddressOne(e.target.value);
-                          }}
-                          placeholder="Enter address"
-                        />
-                      </Box>
-                      <Box mt={3}>
-                        <Typography mb={1}>Address line 2</Typography>
-                        <TextField
-                          hiddenLabel
-                          size="small"
-                          fullWidth
-                          value={addressTwo}
-                          onChange={(e: any) => {
-                            setAddressTwo(e.target.value);
-                          }}
-                          placeholder="Enter address"
-                        />
-                      </Box>
-                      <Box mt={3}>
-                        <Typography mb={1}>Country/Region</Typography>
-                        <FormControl hiddenLabel fullWidth>
-                          <Select
-                            displayEmpty
-                            value={country}
-                            onChange={(e: any) => {
-                              setProvince('');
-                              setCountry(e.target.value);
-                            }}
-                            size={'small'}
-                            inputProps={{ 'aria-label': 'Without label' }}
-                            renderValue={(selected: any) => {
-                              if (selected.length === 0) {
-                                return <em>Choose country</em>;
-                              }
-
-                              return selected;
-                            }}
-                          >
-                            {COUNTRYPROVINCES &&
-                              COUNTRYPROVINCES.map((item, index) => (
-                                <MenuItem value={item.name} key={index}>
-                                  {item.name}
-                                </MenuItem>
-                              ))}
-                          </Select>
-                        </FormControl>
-                      </Box>
-                      <Stack mt={3} direction={'row'} alignItems={'center'} justifyContent={'space-between'} gap={2}>
-                        <Box>
-                          <Typography mb={1}>City</Typography>
-                          <TextField
-                            hiddenLabel
-                            size="small"
-                            fullWidth
-                            value={city}
-                            onChange={(e: any) => {
-                              setCity(e.target.value);
-                            }}
-                            placeholder="Enter city"
-                          />
-                        </Box>
-                        <Box>
-                          <Typography mb={1}>State/Province</Typography>
+                        <Box mt={3}>
+                          <Typography mb={1}>Country/Region</Typography>
                           <FormControl hiddenLabel fullWidth>
                             <Select
                               displayEmpty
-                              value={province}
+                              value={country}
                               onChange={(e: any) => {
-                                setProvince(e.target.value);
+                                setProvince('');
+                                setCountry(e.target.value);
                               }}
                               size={'small'}
                               inputProps={{ 'aria-label': 'Without label' }}
                               renderValue={(selected: any) => {
                                 if (selected.length === 0) {
-                                  return <em>Choose state</em>;
+                                  return <em>Choose country</em>;
                                 }
 
                                 return selected;
                               }}
                             >
-                              {country &&
-                                COUNTRYPROVINCES &&
-                                COUNTRYPROVINCES.find((item) => item.name === country)?.provinces.map((item, index) => (
+                              {COUNTRYPROVINCES &&
+                                COUNTRYPROVINCES.map((item, index) => (
                                   <MenuItem value={item.name} key={index}>
                                     {item.name}
                                   </MenuItem>
@@ -471,25 +599,89 @@ const CheckoutDetails = () => {
                             </Select>
                           </FormControl>
                         </Box>
-                        <Box>
-                          <Typography mb={1}>ZIP/Postal code</Typography>
-                          <TextField
-                            hiddenLabel
-                            size="small"
-                            fullWidth
-                            value={zip}
-                            onChange={(e: any) => {
-                              setZip(e.target.value);
+                        <Stack mt={3} direction={'row'} alignItems={'center'} justifyContent={'space-between'} gap={2}>
+                          <Box>
+                            <Typography mb={1}>City</Typography>
+                            <TextField
+                              hiddenLabel
+                              size="small"
+                              fullWidth
+                              value={city}
+                              onChange={(e: any) => {
+                                setCity(e.target.value);
+                              }}
+                              placeholder="Enter city"
+                            />
+                          </Box>
+                          <Box>
+                            <Typography mb={1}>State/Province</Typography>
+                            <FormControl hiddenLabel fullWidth>
+                              <Select
+                                displayEmpty
+                                value={province}
+                                onChange={(e: any) => {
+                                  setProvince(e.target.value);
+                                }}
+                                size={'small'}
+                                inputProps={{ 'aria-label': 'Without label' }}
+                                renderValue={(selected: any) => {
+                                  if (selected.length === 0) {
+                                    return <em>Choose state</em>;
+                                  }
+
+                                  return selected;
+                                }}
+                              >
+                                {country &&
+                                  COUNTRYPROVINCES &&
+                                  COUNTRYPROVINCES.find((item) => item.name === country)?.provinces.map(
+                                    (item, index) => (
+                                      <MenuItem value={item.name} key={index}>
+                                        {item.name}
+                                      </MenuItem>
+                                    ),
+                                  )}
+                              </Select>
+                            </FormControl>
+                          </Box>
+                          <Box>
+                            <Typography mb={1}>ZIP/Postal code</Typography>
+                            <TextField
+                              hiddenLabel
+                              size="small"
+                              fullWidth
+                              value={zip}
+                              onChange={(e: any) => {
+                                setZip(e.target.value);
+                              }}
+                              placeholder="Enter ZIP"
+                            />
+                          </Box>
+                        </Stack>
+                        <Stack direction={'row'} alignItems={'center'} mt={3}>
+                          <Checkbox
+                            size={'small'}
+                            value={isCheckTerms}
+                            onChange={() => {
+                              setIsCheckTerms(!isCheckTerms);
                             }}
-                            placeholder="Enter ZIP"
                           />
-                        </Box>
-                      </Stack>
-                      <Stack direction={'row'} alignItems={'center'} mt={3}>
-                        <Checkbox defaultChecked size={'small'} />
-                        <Typography>I have read and agree to te Terms and Conditions.</Typography>
-                      </Stack>
-                    </>
+                          <Typography>I have read and agree to the Terms and Conditions.</Typography>
+                        </Stack>
+
+                        <Stack justifyContent={'right'} mt={2}>
+                          <Button
+                            variant={'contained'}
+                            color="success"
+                            onClick={() => {
+                              onClickSaveAddress();
+                            }}
+                          >
+                            Save
+                          </Button>
+                        </Stack>
+                      </CardContent>
+                    </Card>
                   )}
                 </Box>
               ) : (
