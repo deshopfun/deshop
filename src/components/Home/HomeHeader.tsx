@@ -29,7 +29,7 @@ const HomeHeader = () => {
 
   const onClickLogout = async () => {
     resetUser();
-    window.location.reload();
+    window.location.href = '/';
   };
 
   const init = async () => {

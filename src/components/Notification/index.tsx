@@ -48,9 +48,6 @@ const Notification = () => {
 
       if (response.result) {
         setNotifications(response.data);
-        setSnackSeverity('success');
-        setSnackMessage('Update successfully');
-        setSnackOpen(true);
       } else {
         setSnackSeverity('error');
         setSnackMessage(response.message);
@@ -76,6 +73,9 @@ const Notification = () => {
       });
       if (response.result) {
         await init();
+        setSnackSeverity('success');
+        setSnackMessage('Update successfully');
+        setSnackOpen(true);
       } else {
         setSnackSeverity('error');
         setSnackMessage(response.message);
