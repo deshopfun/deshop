@@ -1,10 +1,53 @@
 import { Badge, Box, Button, FormControl, IconButton, MenuItem, Select, Stack, Typography } from '@mui/material';
 import { CustomLogo } from 'components/Logo/CustomLogo';
 import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
-import { useUserPresistStore } from 'lib';
+import { useSnackPresistStore, useUserPresistStore } from 'lib';
+import { useEffect, useState } from 'react';
+import axios from 'utils/http/axios';
+import { Http } from 'utils/http/http';
 
 const SidebarHeader = () => {
+  const [notificationNumber, setNotificationNumber] = useState<number>(0);
+
+  const { setSnackOpen, setSnackMessage, setSnackSeverity } = useSnackPresistStore((state) => state);
   const { getIsLogin } = useUserPresistStore((state) => state);
+
+  const init = async () => {
+    try {
+      if (!getIsLogin()) {
+        return;
+      }
+
+      const response: any = await axios.get(Http.user_notification);
+
+      if (response.result) {
+        if (response.data) {
+          const count = response.data.reduce((total: number, item: any) => {
+            if (item.is_read && item.is_read === 2) {
+              return total + 1;
+            }
+            return total
+          }, 0);
+          setNotificationNumber(count);
+        } else {
+          setNotificationNumber(0);
+        }
+      } else {
+        setSnackSeverity('error');
+        setSnackMessage(response.message);
+        setSnackOpen(true);
+      }
+    } catch (e) {
+      setSnackSeverity('error');
+      setSnackMessage('The network error occurred. Please try again later.');
+      setSnackOpen(true);
+      console.error(e);
+    }
+  };
+
+  useEffect(() => {
+    init();
+  }, []);
 
   return (
     <Box paddingLeft={3} paddingRight={1} paddingY={3} overflow={'hidden'}>
@@ -31,7 +74,7 @@ const SidebarHeader = () => {
                 window.location.href = '/notification';
               }}
             >
-              <Badge badgeContent={0} color="error">
+              <Badge badgeContent={notificationNumber} color="error">
                 <NotificationsNoneIcon color="action" />
               </Badge>
             </IconButton>
