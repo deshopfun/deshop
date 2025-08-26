@@ -10,7 +10,7 @@ export const NOTIFICATIONS: NOTIFICATION[] = [
   },
   {
     id: 2,
-    title: 'Email update',
+    title: 'Account update',
   },
   {
     id: 3,
@@ -18,26 +18,18 @@ export const NOTIFICATIONS: NOTIFICATION[] = [
   },
   {
     id: 4,
-    title: 'Incoming update',
+    title: 'Payment update',
   },
   {
     id: 5,
-    title: 'Outgoing update',
-  },
-  {
-    id: 6,
-    title: 'Event update',
-  },
-  {
-    id: 7,
     title: 'Order update',
   },
   {
-    id: 8,
-    title: 'Crypto price update',
+    id: 6,
+    title: 'Daily update',
   },
   {
-    id: 9,
-    title: 'Daily update',
+    id: 7,
+    title: 'Server update',
   },
 ];

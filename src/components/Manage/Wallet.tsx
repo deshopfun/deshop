@@ -1,8 +1,8 @@
-import { Box, Button, Card, CardContent, Chip, Divider, Stack, Switch, Typography } from '@mui/material';
+import { Box, Button, Chip, Divider, Stack, Switch, Typography } from '@mui/material';
 import BindAddressDialog from 'components/Dialog/BindAddressDialog';
-import { useSnackPresistStore, useUserPresistStore } from 'lib';
+import { useSnackPresistStore } from 'lib';
 import Image from 'next/image';
-import { BLOCKCHAIN, BLOCKCHAINNAMES, CHAINIDS, COINS } from 'packages/constants';
+import { BLOCKCHAINNAMES, CHAINIDS, COINS } from 'packages/constants';
 import { useEffect, useState } from 'react';
 import { OmitMiddleString } from 'utils/strings';
 import axios from 'utils/http/axios';
@@ -15,37 +15,18 @@ type WalletType = {
   disable_coin: string;
 };
 
-type Props = {
-  uuid?: string;
-  username?: string;
-};
-
-const ManageWallet = (props: Props) => {
+const ManageWallet = () => {
   const [username, setUsername] = useState<string>('');
   const [wallets, setWallets] = useState<WalletType[]>([]);
-
   const [selectChain, setSelectChain] = useState<CHAINIDS>(CHAINIDS.BITCOIN);
   const [selectAddress, setSelectAddress] = useState<string>();
-
   const [openEditAddressDialog, setOpenEditAddressDialog] = useState<boolean>(false);
 
   const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore((state) => state);
-  const { getIsLogin, getUuid } = useUserPresistStore((state) => state);
 
-  const init = async (username: string) => {
+  const init = async () => {
     try {
-      if (!username || username === '') {
-        setSnackSeverity('error');
-        setSnackMessage('Incorrect username input');
-        setSnackOpen(true);
-        return;
-      }
-
-      const response: any = await axios.get(Http.wallet_by_username, {
-        params: {
-          username: props.username,
-        },
-      });
+      const response: any = await axios.get(Http.wallet);
 
       if (response.result) {
         setWallets(response.data);
@@ -61,12 +42,9 @@ const ManageWallet = (props: Props) => {
   };
 
   useEffect(() => {
-    if (props.username) {
-      setUsername(props.username);
-      init(props.username);
-    }
+    init();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [props.username]);
+  }, []);
 
   const onChangeCoin = async (chain: CHAINIDS, coin: COINS) => {
     try {
@@ -89,7 +67,7 @@ const ManageWallet = (props: Props) => {
       });
 
       if (response.result) {
-        await init(username);
+        await init();
 
         setSnackSeverity('success');
         setSnackMessage('Update successfully');
@@ -110,7 +88,7 @@ const ManageWallet = (props: Props) => {
   const handleCloseDialog = async () => {
     setSelectChain(CHAINIDS.BITCOIN);
     setSelectAddress('');
-    await init(username);
+    await init();
     setOpenEditAddressDialog(false);
   };
 
@@ -118,83 +96,73 @@ const ManageWallet = (props: Props) => {
     <Box>
       <Typography variant="h6">Setup wallet</Typography>
 
-      {getIsLogin() && getUuid() === props.uuid ? (
-        <Box mt={2}>
-          {BLOCKCHAINNAMES &&
-            BLOCKCHAINNAMES.map((item, index) => (
-              <Box key={index} pb={2}>
-                <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
-                  <Stack direction={'row'} alignItems={'center'} gap={2}>
-                    <Typography variant="h6">{item.name}</Typography>
-                    {wallets.find((walletItem) => walletItem.chain_id === item.chainId)?.address && (
-                      <Chip
-                        label={OmitMiddleString(
-                          String(wallets.find((walletItem) => walletItem.chain_id === item.chainId)?.address),
-                        )}
-                        color="primary"
-                      />
-                    )}
-                  </Stack>
-                  <Button
-                    variant={'contained'}
-                    color={'success'}
-                    onClick={() => {
-                      setSelectChain(item.chainId);
-                      setSelectAddress(wallets.find((walletItem) => walletItem.chain_id === item.chainId)?.address);
-                      setOpenEditAddressDialog(true);
-                    }}
-                  >
-                    Bind Address
-                  </Button>
+      <Box mt={2}>
+        {BLOCKCHAINNAMES &&
+          BLOCKCHAINNAMES.map((item, index) => (
+            <Box key={index} pb={2}>
+              <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
+                <Stack direction={'row'} alignItems={'center'} gap={2}>
+                  <Typography variant="h6">{item.name}</Typography>
+                  {wallets.find((walletItem) => walletItem.chain_id === item.chainId)?.address && (
+                    <Chip
+                      label={OmitMiddleString(
+                        String(wallets.find((walletItem) => walletItem.chain_id === item.chainId)?.address),
+                      )}
+                      color="primary"
+                    />
+                  )}
                 </Stack>
-                {item.coins &&
-                  item.coins.map((coinItem, coinIndex) => (
-                    <Stack
-                      direction={'row'}
-                      alignItems={'center'}
-                      justifyContent={'space-between'}
-                      key={coinIndex}
-                      py={2}
-                    >
-                      <Stack direction={'row'} alignItems={'center'} gap={1}>
-                        <Image src={coinItem.icon} alt={'image'} width={50} height={50} />
-                        <Typography>{coinItem.name}</Typography>
-                      </Stack>
-                      <Switch
-                        checked={
-                          wallets
-                            .find((walletItem) => walletItem.chain_id === item.chainId)
-                            ?.disable_coin.split(',')
-                            .includes(coinItem.name)
-                            ? false
-                            : true
-                        }
-                        onChange={() => {
-                          onChangeCoin(item.chainId, coinItem.name);
-                        }}
-                      />
+                <Button
+                  variant={'contained'}
+                  color={'success'}
+                  onClick={() => {
+                    setSelectChain(item.chainId);
+                    setSelectAddress(wallets.find((walletItem) => walletItem.chain_id === item.chainId)?.address);
+                    setOpenEditAddressDialog(true);
+                  }}
+                >
+                  Bind Address
+                </Button>
+              </Stack>
+              {item.coins &&
+                item.coins.map((coinItem, coinIndex) => (
+                  <Stack
+                    direction={'row'}
+                    alignItems={'center'}
+                    justifyContent={'space-between'}
+                    key={coinIndex}
+                    py={2}
+                  >
+                    <Stack direction={'row'} alignItems={'center'} gap={1}>
+                      <Image src={coinItem.icon} alt={'image'} width={50} height={50} />
+                      <Typography>{coinItem.name}</Typography>
                     </Stack>
-                  ))}
-                <Divider />
-              </Box>
-            ))}
+                    <Switch
+                      checked={
+                        wallets
+                          .find((walletItem) => walletItem.chain_id === item.chainId)
+                          ?.disable_coin.split(',')
+                          .includes(coinItem.name)
+                          ? false
+                          : true
+                      }
+                      onChange={() => {
+                        onChangeCoin(item.chainId, coinItem.name);
+                      }}
+                    />
+                  </Stack>
+                ))}
+              <Divider />
+            </Box>
+          ))}
 
-          <BindAddressDialog
-            chain={selectChain}
-            address={selectAddress}
-            openDialog={openEditAddressDialog}
-            handleCloseDialog={handleCloseDialog}
-          />
-        </Box>
-      ) : (
-        <Box mt={2}>
-          <Card>
-            <CardContent>
-              <Typography>Not found</Typography>
-            </CardContent>
-          </Card>
-        </Box>
-      )}
+        <BindAddressDialog
+          chain={selectChain}
+          address={selectAddress}
+          openDialog={openEditAddressDialog}
+          handleCloseDialog={handleCloseDialog}
+        />
+      </Box>
     </Box>
   );
 };

@@ -21,7 +21,7 @@ import OrderDetailsDialog from 'components/Dialog/OrderDetailsDialog';
 import OrderRatingDialog from 'components/Dialog/OrderRatingDialog';
 import PostOrderRateDialog from 'components/Dialog/PostOrderRateDialog';
 import ShippingDialog from 'components/Dialog/ShippingDialog';
-import { useSnackPresistStore, useUserPresistStore } from 'lib';
+import { useSnackPresistStore } from 'lib';
 import { useEffect, useState } from 'react';
 import axios from 'utils/http/axios';
 import { Http } from 'utils/http/http';
@@ -133,11 +133,7 @@ type OrderType = {
   shipping: ShippingType;
 };
 
-type Props = {
-  uuid?: string;
-};
-
-const ManageOrder = (props: Props) => {
+const ManageOrder = () => {
   const [openBlockchainDialog, setOpenBlockchainDialog] = useState<boolean>(false);
   const [openConfirmPaymentDialog, setOpenConfirmPaymentDialog] = useState<boolean>(false);
   const [openShippingDialog, setOpenShippingDialog] = useState<boolean>(false);
@@ -151,17 +147,9 @@ const ManageOrder = (props: Props) => {
   const [currentOrder, setCurrentOrder] = useState<OrderType>();
 
   const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore((state) => state);
-  const { getIsLogin, getUuid } = useUserPresistStore((state) => state);
 
-  const init = async (uuid: string, kind: string) => {
+  const init = async (kind: string) => {
     try {
-      if (!uuid || uuid === '') {
-        setSnackSeverity('error');
-        setSnackMessage('Need login');
-        setSnackOpen(true);
-        return;
-      }
-
       const response: any = await axios.get(Http.order, {
         params: {
           kind: kind === 'buy' ? 1 : 2,
@@ -182,49 +170,47 @@ const ManageOrder = (props: Props) => {
   };
 
   useEffect(() => {
-    if (props.uuid) {
-      init(props.uuid, 'buy');
-    }
+    init('buy');
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [props.uuid]);
+  }, []);
 
   const handleBlockchainCloseDialog = async () => {
-    props.uuid && (await init(props.uuid, alignment));
+    await init(alignment);
     setOpenBlockchainDialog(false);
   };
 
   const handleConfirmPaymentCloseDialog = async () => {
-    props.uuid && (await init(props.uuid, alignment));
+    await init(alignment);
     setOpenConfirmPaymentDialog(false);
   };
 
   const handleShippingCloseDialog = async () => {
-    props.uuid && (await init(props.uuid, alignment));
+    await init(alignment);
     setOpenShippingDialog(false);
   };
 
   const handleConfirmShippingCloseDialog = async () => {
-    props.uuid && (await init(props.uuid, alignment));
+    await init(alignment);
     setOpenConfirmShippingDialog(false);
   };
 
   const handleConfirmCloseDialog = async () => {
-    props.uuid && (await init(props.uuid, alignment));
+    await init(alignment);
     setOpenConfirmDialog(false);
   };
 
   const handleOrderDetailsCloseDialog = async () => {
-    props.uuid && (await init(props.uuid, alignment));
+    await init(alignment);
     setOpenOrderDetailsDialog(false);
   };
 
   const handlePostOrderRateCloseDialog = async () => {
-    props.uuid && (await init(props.uuid, alignment));
+    await init(alignment);
     setPostOpenOrderRateDialog(false);
   };
 
   const handleOrderRatingCloseDialog = async () => {
-    props.uuid && (await init(props.uuid, alignment));
+    await init(alignment);
     setOpenOrderRatingDialog(false);
   };
 
@@ -240,7 +226,7 @@ const ManageOrder = (props: Props) => {
           value={alignment}
           onChange={async (e: any) => {
             setAlignment(e.target.value);
-            await init(String(props.uuid), e.target.value);
+            await init(e.target.value);
           }}
         >
           <ToggleButton value={'buy'}>Buy</ToggleButton>
@@ -248,373 +234,357 @@ const ManageOrder = (props: Props) => {
         </ToggleButtonGroup>
       </Box>
 
-      {getIsLogin() && getUuid() === props.uuid ? (
-        <Box mt={2}>
-          {orders && orders.length > 0 ? (
-            orders.map((item, index) => (
-              <Box key={index} mb={4}>
-                <Card>
-                  <CardContent>
-                    <Box>
-                      <Card>
-                        <Box p={1}>
-                          <Stepper
-                            nonLinear
-                            activeStep={
-                              item.payment_confirmed === 1
-                                ? item.shipping_confirmed == 1
-                                  ? item.confirmed == 1
-                                    ? 3
-                                    : 2
-                                  : 1
-                                : 0
-                            }
-                          >
-                            {steps.map((label, index) => (
-                              <Step key={label} completed={false}>
-                                <StepButton color="inherit">
-                                  <Typography fontWeight={'bold'} textAlign={'left'}>
-                                    Step {index + 1}
-                                  </Typography>
-                                  <Typography fontSize={14}>{label}</Typography>
-                                </StepButton>
-                              </Step>
-                            ))}
-                          </Stepper>
-                        </Box>
-                      </Card>
-                    </Box>
+      <Box mt={2}>
+        {orders && orders.length > 0 ? (
+          orders.map((item, index) => (
+            <Box key={index} mb={4}>
+              <Card>
+                <CardContent>
+                  <Box>
+                    <Card>
+                      <Box p={1}>
+                        <Stepper
+                          nonLinear
+                          activeStep={
+                            item.payment_confirmed === 1
+                              ? item.shipping_confirmed == 1
+                                ? item.confirmed == 1
+                                  ? 3
+                                  : 2
+                                : 1
+                              : 0
+                          }
+                        >
+                          {steps.map((label, index) => (
+                            <Step key={label} completed={false}>
+                              <StepButton color="inherit">
+                                <Typography fontWeight={'bold'} textAlign={'left'}>
+                                  Step {index + 1}
+                                </Typography>
+                                <Typography fontSize={14}>{label}</Typography>
+                              </StepButton>
+                            </Step>
+                          ))}
+                        </Stepper>
+                      </Box>
+                    </Card>
+                  </Box>
 
-                    <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} mt={2}>
-                      <Button
-                        color={'inherit'}
-                        onClick={() => {
-                          window.location.href = `/profile/${item.username}`;
-                        }}
-                        endIcon={<ChevronRight />}
-                      >
-                        <Stack direction={'row'} alignItems={'center'} gap={1}>
-                          {item.user_avatar_url ? (
-                            <img src={item.user_avatar_url} alt={'image'} loading="lazy" width={40} height={40} />
-                          ) : (
-                            <img
-                              src={'/images/default_avatar.png'}
-                              alt={'image'}
-                              loading="lazy"
-                              width={40}
-                              height={40}
-                            />
-                          )}
-                          <Typography>{item.username}</Typography>
-                        </Stack>
-                      </Button>
-                      <Typography fontWeight={'bold'} color={'error'}>
-                        {OrderStatusText(
-                          alignment,
-                          item.payment_confirmed === 1 ? true : false,
-                          item.shipping_confirmed === 1 ? true : false,
-                          item.confirmed === 1 ? true : false,
-                          item.shipping.shipping_type,
-                        )}
-                      </Typography>
-                    </Stack>
-                    <div
+                  <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} mt={2}>
+                    <Button
+                      color={'inherit'}
                       onClick={() => {
-                        window.location.href = item.order_status_url;
+                        window.location.href = `/profile/${item.username}`;
                       }}
+                      endIcon={<ChevronRight />}
                     >
-                      {item.items.map((productItem, productIndex) => (
-                        <Stack direction={'row'} my={4} justifyContent={'space-between'} key={productIndex}>
-                          <Stack direction={'row'}>
-                            <img src={productItem.image} alt={'image'} loading="lazy" width={100} height={100} />
-                            <Box pl={2}>
-                              <Typography fontWeight={'bold'}>{productItem.title}</Typography>
-                              <Typography>{productItem.option}</Typography>
-                            </Box>
-                          </Stack>
-                          <Box textAlign={'right'}>
-                            <Typography>{`${productItem.price} ${item.currency}`}</Typography>
-                            <Typography>{`x${productItem.quantity}`}</Typography>
+                      <Stack direction={'row'} alignItems={'center'} gap={1}>
+                        {item.user_avatar_url ? (
+                          <img src={item.user_avatar_url} alt={'image'} loading="lazy" width={40} height={40} />
+                        ) : (
+                          <img src={'/images/default_avatar.png'} alt={'image'} loading="lazy" width={40} height={40} />
+                        )}
+                        <Typography>{item.username}</Typography>
+                      </Stack>
+                    </Button>
+                    <Typography fontWeight={'bold'} color={'error'}>
+                      {OrderStatusText(
+                        alignment,
+                        item.payment_confirmed === 1 ? true : false,
+                        item.shipping_confirmed === 1 ? true : false,
+                        item.confirmed === 1 ? true : false,
+                        item.shipping.shipping_type,
+                      )}
+                    </Typography>
+                  </Stack>
+                  <div
+                    onClick={() => {
+                      window.location.href = item.order_status_url;
+                    }}
+                  >
+                    {item.items.map((productItem, productIndex) => (
+                      <Stack direction={'row'} my={4} justifyContent={'space-between'} key={productIndex}>
+                        <Stack direction={'row'}>
+                          <img src={productItem.image} alt={'image'} loading="lazy" width={100} height={100} />
+                          <Box pl={2}>
+                            <Typography fontWeight={'bold'}>{productItem.title}</Typography>
+                            <Typography>{productItem.option}</Typography>
                           </Box>
                         </Stack>
-                      ))}
-                    </div>
-                    <Divider />
-                    <Box py={1}>
-                      <Typography textAlign={'right'}>{`${item.items.length} item in total`}</Typography>
-                      <Typography textAlign={'right'}>
-                        Subtotal price: <b>{`${item.sub_total_price || 0} ${item.currency}`}</b>
-                      </Typography>
-                      <Typography textAlign={'right'}>
-                        Shipping: <b>{`0 ${item.currency}`}</b>
-                      </Typography>
-                      <Typography textAlign={'right'}>
-                        Total tax: <b>{`${item.total_tax || 0} ${item.currency}`}</b>
-                      </Typography>
-                      <Typography textAlign={'right'}>
-                        Total tip: <b>{`${item.total_tip_received || 0} ${item.currency}`}</b>
-                      </Typography>
-                      <Typography textAlign={'right'}>
-                        Total discount: <b>{`${item.total_discounts || 0} ${item.currency}`}</b>
-                      </Typography>
-                      <Typography textAlign={'right'}>
-                        Total price: <b>{`${item.total_price || 0} ${item.currency}`}</b>
-                      </Typography>
-                    </Box>
-                    <Divider />
-                    <Stack direction={'row'} alignItems={'start'} justifyContent={'space-between'} mt={2} gap={2}>
-                      <Card style={{ width: '100%' }}>
-                        <CardContent>
-                          <Typography variant="h6">Payment</Typography>
-                          <Stack mt={2} gap={1}>
+                        <Box textAlign={'right'}>
+                          <Typography>{`${productItem.price} ${item.currency}`}</Typography>
+                          <Typography>{`x${productItem.quantity}`}</Typography>
+                        </Box>
+                      </Stack>
+                    ))}
+                  </div>
+                  <Divider />
+                  <Box py={1}>
+                    <Typography textAlign={'right'}>{`${item.items.length} item in total`}</Typography>
+                    <Typography textAlign={'right'}>
+                      Subtotal price: <b>{`${item.sub_total_price || 0} ${item.currency}`}</b>
+                    </Typography>
+                    <Typography textAlign={'right'}>
+                      Shipping: <b>{`0 ${item.currency}`}</b>
+                    </Typography>
+                    <Typography textAlign={'right'}>
+                      Total tax: <b>{`${item.total_tax || 0} ${item.currency}`}</b>
+                    </Typography>
+                    <Typography textAlign={'right'}>
+                      Total tip: <b>{`${item.total_tip_received || 0} ${item.currency}`}</b>
+                    </Typography>
+                    <Typography textAlign={'right'}>
+                      Total discount: <b>{`${item.total_discounts || 0} ${item.currency}`}</b>
+                    </Typography>
+                    <Typography textAlign={'right'}>
+                      Total price: <b>{`${item.total_price || 0} ${item.currency}`}</b>
+                    </Typography>
+                  </Box>
+                  <Divider />
+                  <Stack direction={'row'} alignItems={'start'} justifyContent={'space-between'} mt={2} gap={2}>
+                    <Card style={{ width: '100%' }}>
+                      <CardContent>
+                        <Typography variant="h6">Payment</Typography>
+                        <Stack mt={2} gap={1}>
+                          <Button
+                            variant={'contained'}
+                            onClick={() => {
+                              setCurrentOrder(item);
+                              setOpenBlockchainDialog(true);
+                            }}
+                            size="small"
+                          >
+                            Check blockchain
+                          </Button>
+                          {alignment === 'buy' && item.payment_confirmed === 2 && (
+                            <Button
+                              size="small"
+                              variant={'contained'}
+                              color={'error'}
+                              onClick={() => {
+                                window.location.href = `/payment/${item.order_id}`;
+                              }}
+                            >
+                              Go to pay
+                            </Button>
+                          )}
+                          {alignment === 'sell' && item.payment_confirmed === 2 && (
                             <Button
                               variant={'contained'}
+                              color={'success'}
                               onClick={() => {
                                 setCurrentOrder(item);
-                                setOpenBlockchainDialog(true);
+                                setOpenConfirmPaymentDialog(true);
                               }}
                               size="small"
                             >
-                              Check blockchain
+                              Confirm the payment
                             </Button>
-                            {alignment === 'buy' && item.payment_confirmed === 2 && (
-                              <Button
-                                size="small"
-                                variant={'contained'}
-                                color={'error'}
-                                onClick={() => {
-                                  window.location.href = `/payment/${item.order_id}`;
-                                }}
-                              >
-                                Go to pay
-                              </Button>
-                            )}
-                            {alignment === 'sell' && item.payment_confirmed === 2 && (
-                              <Button
-                                variant={'contained'}
-                                color={'success'}
-                                onClick={() => {
-                                  setCurrentOrder(item);
-                                  setOpenConfirmPaymentDialog(true);
-                                }}
-                                size="small"
-                              >
-                                Confirm the payment
-                              </Button>
-                            )}
-                          </Stack>
-                        </CardContent>
-                      </Card>
-                      <Card style={{ width: '100%' }}>
-                        <CardContent>
-                          <Typography variant="h6">Shipping</Typography>
-                          <Stack mt={2} gap={1}>
+                          )}
+                        </Stack>
+                      </CardContent>
+                    </Card>
+                    <Card style={{ width: '100%' }}>
+                      <CardContent>
+                        <Typography variant="h6">Shipping</Typography>
+                        <Stack mt={2} gap={1}>
+                          <Button
+                            variant={'contained'}
+                            onClick={() => {
+                              setCurrentOrder(item);
+                              setOpenShippingDialog(true);
+                            }}
+                            size="small"
+                          >
+                            Check shipping
+                          </Button>
+                          {alignment === 'buy' && item.payment_confirmed === 1 && item.shipping_confirmed === 2 && (
                             <Button
                               variant={'contained'}
+                              color={'success'}
                               onClick={() => {
                                 setCurrentOrder(item);
-                                setOpenShippingDialog(true);
+                                setOpenConfirmShippingDialog(true);
                               }}
                               size="small"
                             >
-                              Check shipping
+                              Confirm the receipt of goods
                             </Button>
-                            {alignment === 'buy' && item.payment_confirmed === 1 && item.shipping_confirmed === 2 && (
+                          )}
+                        </Stack>
+                      </CardContent>
+                    </Card>
+                    <Card style={{ width: '100%' }}>
+                      <CardContent>
+                        <Typography variant="h6">More</Typography>
+                        <Stack mt={2} gap={1}>
+                          <Button
+                            variant={'contained'}
+                            onClick={() => {
+                              setCurrentOrder(item);
+                              setOpenOrderDetailsDialog(true);
+                            }}
+                            size="small"
+                          >
+                            Check details
+                          </Button>
+                          {alignment === 'buy' && (
+                            <>
                               <Button
-                                variant={'contained'}
-                                color={'success'}
+                                variant={'outlined'}
+                                color={'inherit'}
                                 onClick={() => {
-                                  setCurrentOrder(item);
-                                  setOpenConfirmShippingDialog(true);
+                                  setSnackSeverity('error');
+                                  setSnackMessage('Not support');
+                                  setSnackOpen(true);
                                 }}
                                 size="small"
                               >
-                                Confirm the receipt of goods
+                                Buy again
                               </Button>
-                            )}
-                          </Stack>
-                        </CardContent>
-                      </Card>
-                      <Card style={{ width: '100%' }}>
-                        <CardContent>
-                          <Typography variant="h6">More</Typography>
-                          <Stack mt={2} gap={1}>
-                            <Button
-                              variant={'contained'}
-                              onClick={() => {
-                                setCurrentOrder(item);
-                                setOpenOrderDetailsDialog(true);
-                              }}
-                              size="small"
-                            >
-                              Check details
-                            </Button>
-                            {alignment === 'buy' && (
-                              <>
-                                <Button
-                                  variant={'outlined'}
-                                  color={'inherit'}
-                                  onClick={() => {
-                                    setSnackSeverity('error');
-                                    setSnackMessage('Not support');
-                                    setSnackOpen(true);
-                                  }}
-                                  size="small"
-                                >
-                                  Buy again
-                                </Button>
-                                {item.payment_confirmed === 1 &&
-                                  item.shipping_confirmed === 1 &&
-                                  item.confirmed !== 1 && (
+                              {item.payment_confirmed === 1 &&
+                                item.shipping_confirmed === 1 &&
+                                item.confirmed !== 1 && (
+                                  <Button
+                                    variant={'contained'}
+                                    color={'success'}
+                                    onClick={() => {
+                                      setCurrentOrder(item);
+                                      setOpenConfirmDialog(true);
+                                    }}
+                                    size="small"
+                                  >
+                                    Confirm the order
+                                  </Button>
+                                )}
+                              {item.confirmed === 1 && (
+                                <>
+                                  {item.ratings && item.ratings.length > 0 ? (
                                     <Button
                                       variant={'contained'}
-                                      color={'success'}
                                       onClick={() => {
                                         setCurrentOrder(item);
-                                        setOpenConfirmDialog(true);
+                                        setOpenOrderRatingDialog(true);
                                       }}
                                       size="small"
                                     >
-                                      Confirm the order
+                                      Check rating
+                                    </Button>
+                                  ) : (
+                                    <Button
+                                      variant={'contained'}
+                                      color={'error'}
+                                      onClick={() => {
+                                        setCurrentOrder(item);
+                                        setPostOpenOrderRateDialog(true);
+                                      }}
+                                      size="small"
+                                    >
+                                      Rating now
                                     </Button>
                                   )}
-                                {item.confirmed === 1 && (
-                                  <>
-                                    {item.ratings && item.ratings.length > 0 ? (
-                                      <Button
-                                        variant={'contained'}
-                                        onClick={() => {
-                                          setCurrentOrder(item);
-                                          setOpenOrderRatingDialog(true);
-                                        }}
-                                        size="small"
-                                      >
-                                        Check rating
-                                      </Button>
-                                    ) : (
-                                      <Button
-                                        variant={'contained'}
-                                        color={'error'}
-                                        onClick={() => {
-                                          setCurrentOrder(item);
-                                          setPostOpenOrderRateDialog(true);
-                                        }}
-                                        size="small"
-                                      >
-                                        Rating now
-                                      </Button>
-                                    )}
 
-                                    <Button
-                                      variant={'outlined'}
-                                      color={'inherit'}
-                                      onClick={() => {
-                                        setSnackSeverity('error');
-                                        setSnackMessage('Not support');
-                                        setSnackOpen(true);
-                                      }}
-                                      size="small"
-                                    >
-                                      Apply for a refund
-                                    </Button>
-                                    <Button
-                                      variant={'outlined'}
-                                      color={'inherit'}
-                                      onClick={() => {
-                                        setSnackSeverity('error');
-                                        setSnackMessage('Not support');
-                                        setSnackOpen(true);
-                                      }}
-                                      size="small"
-                                    >
-                                      Delete an order
-                                    </Button>
-                                  </>
-                                )}
-                              </>
-                            )}
-                          </Stack>
-                        </CardContent>
-                      </Card>
-                    </Stack>
-                  </CardContent>
-                </Card>
-              </Box>
-            ))
-          ) : (
-            <Card>
-              <CardContent>
-                <Box py={2} textAlign={'center'}>
-                  <Typography variant="h6">Your order is empty</Typography>
-                  <Typography mt={2}>When there is a new order, it will be displayed here.</Typography>
-                </Box>
-              </CardContent>
-            </Card>
-          )}
-
-          {currentOrder && (
-            <>
-              <BlockchainDialog
-                currency={currentOrder.currency}
-                transactions={currentOrder.transactions}
-                openDialog={openBlockchainDialog}
-                handleCloseDialog={handleBlockchainCloseDialog}
-              />
-              <ConfirmPaymentDialog
-                orderId={currentOrder.order_id}
-                confirmNumber={currentOrder.payment_confirmed_number}
-                transactions={currentOrder.transactions}
-                openDialog={openConfirmPaymentDialog}
-                handleCloseDialog={handleConfirmPaymentCloseDialog}
-              />
-              <ShippingDialog
-                alignment={alignment}
-                shippingConfirmed={currentOrder.shipping_confirmed}
-                shipping={currentOrder.shipping}
-                openDialog={openShippingDialog}
-                handleCloseDialog={handleShippingCloseDialog}
-              />
-              <ConfirmShippingDialog
-                orderId={currentOrder.order_id}
-                confirmNumber={currentOrder.shipping_confirmed_number}
-                shipping={currentOrder.shipping}
-                openDialog={openConfirmShippingDialog}
-                handleCloseDialog={handleConfirmShippingCloseDialog}
-              />
-              <ConfirmOrderDialog
-                orderId={currentOrder.order_id}
-                confirmNumber={currentOrder.confirmed_number}
-                openDialog={openConfirmDialog}
-                handleCloseDialog={handleConfirmCloseDialog}
-              />
-              <OrderDetailsDialog
-                order={currentOrder}
-                openDialog={openOrderDetailsDialog}
-                handleCloseDialog={handleOrderDetailsCloseDialog}
-              />
-              <PostOrderRateDialog
-                orderId={currentOrder.order_id}
-                orderItems={currentOrder.items}
-                openDialog={openPostOrderRateDialog}
-                handleCloseDialog={handlePostOrderRateCloseDialog}
-              />
-              <OrderRatingDialog
-                ratings={currentOrder.ratings}
-                openDialog={openOrderRatingDialog}
-                handleCloseDialog={handleOrderRatingCloseDialog}
-              />
-            </>
-          )}
-        </Box>
-      ) : (
-        <Box mt={2}>
+                                  <Button
+                                    variant={'outlined'}
+                                    color={'inherit'}
+                                    onClick={() => {
+                                      setSnackSeverity('error');
+                                      setSnackMessage('Not support');
+                                      setSnackOpen(true);
+                                    }}
+                                    size="small"
+                                  >
+                                    Apply for a refund
+                                  </Button>
+                                  <Button
+                                    variant={'outlined'}
+                                    color={'inherit'}
+                                    onClick={() => {
+                                      setSnackSeverity('error');
+                                      setSnackMessage('Not support');
+                                      setSnackOpen(true);
+                                    }}
+                                    size="small"
+                                  >
+                                    Delete an order
+                                  </Button>
+                                </>
+                              )}
+                            </>
+                          )}
+                        </Stack>
+                      </CardContent>
+                    </Card>
+                  </Stack>
+                </CardContent>
+              </Card>
+            </Box>
+          ))
+        ) : (
           <Card>
             <CardContent>
-              <Typography>Not found</Typography>
+              <Box py={2} textAlign={'center'}>
+                <Typography variant="h6">Your order is empty</Typography>
+                <Typography mt={2}>When there is a new order, it will be displayed here.</Typography>
+              </Box>
             </CardContent>
           </Card>
-        </Box>
-      )}
+        )}
+
+        {currentOrder && (
+          <>
+            <BlockchainDialog
+              currency={currentOrder.currency}
+              transactions={currentOrder.transactions}
+              openDialog={openBlockchainDialog}
+              handleCloseDialog={handleBlockchainCloseDialog}
+            />
+            <ConfirmPaymentDialog
+              orderId={currentOrder.order_id}
+              confirmNumber={currentOrder.payment_confirmed_number}
+              transactions={currentOrder.transactions}
+              openDialog={openConfirmPaymentDialog}
+              handleCloseDialog={handleConfirmPaymentCloseDialog}
+            />
+            <ShippingDialog
+              alignment={alignment}
+              shippingConfirmed={currentOrder.shipping_confirmed}
+              shipping={currentOrder.shipping}
+              openDialog={openShippingDialog}
+              handleCloseDialog={handleShippingCloseDialog}
+            />
+            <ConfirmShippingDialog
+              orderId={currentOrder.order_id}
+              confirmNumber={currentOrder.shipping_confirmed_number}
+              shipping={currentOrder.shipping}
+              openDialog={openConfirmShippingDialog}
+              handleCloseDialog={handleConfirmShippingCloseDialog}
+            />
+            <ConfirmOrderDialog
+              orderId={currentOrder.order_id}
+              confirmNumber={currentOrder.confirmed_number}
+              openDialog={openConfirmDialog}
+              handleCloseDialog={handleConfirmCloseDialog}
+            />
+            <OrderDetailsDialog
+              order={currentOrder}
+              openDialog={openOrderDetailsDialog}
+              handleCloseDialog={handleOrderDetailsCloseDialog}
+            />
+            <PostOrderRateDialog
+              orderId={currentOrder.order_id}
+              orderItems={currentOrder.items}
+              openDialog={openPostOrderRateDialog}
+              handleCloseDialog={handlePostOrderRateCloseDialog}
+            />
+            <OrderRatingDialog
+              ratings={currentOrder.ratings}
+              openDialog={openOrderRatingDialog}
+              handleCloseDialog={handleOrderRatingCloseDialog}
+            />
+          </>
+        )}
+      </Box>
     </Box>
   );
 };

@@ -24,10 +24,9 @@ export class Http {
   // user
   static user_setting = this.httpPath + '/client/user/user-setting';
   static user_notification_setting = this.httpPath + '/client/user/user-notification-setting';
-  static user_notification_setting_by_username = this.httpPath + '/client/user/user-notification-setting-by-username';
   static user_notification = this.httpPath + '/client/user/user-notification';
   static user_balance = this.httpPath + '/client/user/user-balance';
-  static user_manage_by_uuid = this.httpPath + '/client/user/user-manage-by-uuid';
+  static user_manage = this.httpPath + '/client/user/user-manage';
 
   // product
   static product = this.httpPath + '/client/product/product';
@@ -50,14 +49,11 @@ export class Http {
 
   // wallet
   static wallet = this.httpPath + '/client/wallet/wallet';
-  static wallet_by_username = this.httpPath + '/client/wallet/wallet-by-username';
 
   // address
   static address = this.httpPath + '/client/address/address';
-  static address_by_username = this.httpPath + '/client/address/address-by-username';
   static address_by_uuid = this.httpPath + '/client/address/address-by-uuid';
 
   // collect
   static collect = this.httpPath + '/client/collect/collect';
-  static collect_by_username = this.httpPath + '/client/collect/collect_by_username';
 }

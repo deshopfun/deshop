@@ -1,4 +1,4 @@
-import { Box, Container, Tab, Tabs, Typography } from '@mui/material';
+import { Box, Card, CardContent, Container, Tab, Tabs, Typography } from '@mui/material';
 import { useSnackPresistStore, useUserPresistStore } from 'lib';
 import { useRouter } from 'next/router';
 import { MANAGE_TAB_DATAS } from 'packages/constants';
@@ -54,7 +54,7 @@ const ManageDetails = () => {
     tab && initTab(tab);
   }, [tab]);
 
-  const init = async (username: any) => {
+  const init = async () => {
     try {
       if (!getUuid() || getUuid() === '') {
         setSnackSeverity('error');
@@ -63,11 +63,7 @@ const ManageDetails = () => {
         return;
       }
 
-      const response: any = await axios.get(Http.user_manage_by_uuid, {
-        params: {
-          uuid: getUuid(),
-        },
-      });
+      const response: any = await axios.get(Http.user_manage);
 
       if (response.result) {
         setUser({
@@ -88,37 +84,52 @@ const ManageDetails = () => {
 
   useEffect(() => {
     if (id) {
-      init(id);
+      init();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
   return (
     <Container>
-      <Typography variant="h6">User Management</Typography>
-      <Box mt={2} sx={{ borderBottom: 1, borderColor: 'divider' }}>
-        <Tabs value={tabValue} onChange={handleChange} variant="scrollable" scrollButtons="auto">
-          {MANAGE_TAB_DATAS &&
-            MANAGE_TAB_DATAS.length > 0 &&
-            MANAGE_TAB_DATAS.map((item, index) => <Tab key={index} label={item.title} {...a11yProps(item.id)} />)}
-        </Tabs>
-      </Box>
+      <Typography variant="h6" mb={2}>
+        User Management
+      </Typography>
+      {id === user?.profile.username ? (
+        <Box>
+          <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+            <Tabs value={tabValue} onChange={handleChange} variant="scrollable" scrollButtons="auto">
+              {MANAGE_TAB_DATAS &&
+                MANAGE_TAB_DATAS.length > 0 &&
+                MANAGE_TAB_DATAS.map((item, index) => <Tab key={index} label={item.title} {...a11yProps(item.id)} />)}
+            </Tabs>
+          </Box>
 
-      <CustomTabPanel value={tabValue} index={0}>
-        <ManageOrder uuid={user?.profile.uuid} />
-      </CustomTabPanel>
-      <CustomTabPanel value={tabValue} index={1}>
-        <ManageWallet uuid={user?.profile.uuid} username={user?.profile.username} />
-      </CustomTabPanel>
-      <CustomTabPanel value={tabValue} index={2}>
-        <ManageAddress uuid={user?.profile.uuid} username={user?.profile.username} />
-      </CustomTabPanel>
-      <CustomTabPanel value={tabValue} index={3}>
-        <ManageNotification uuid={user?.profile.uuid} username={user?.profile.username} />
-      </CustomTabPanel>
-      <CustomTabPanel value={tabValue} index={4}>
-        <ManageSetting uuid={user?.profile.uuid} />
-      </CustomTabPanel>
+          <CustomTabPanel value={tabValue} index={0}>
+            <ManageOrder />
+          </CustomTabPanel>
+          <CustomTabPanel value={tabValue} index={1}>
+            <ManageWallet />
+          </CustomTabPanel>
+          <CustomTabPanel value={tabValue} index={2}>
+            <ManageAddress />
+          </CustomTabPanel>
+          <CustomTabPanel value={tabValue} index={3}>
+            <ManageNotification />
+          </CustomTabPanel>
+          <CustomTabPanel value={tabValue} index={4}>
+            <ManageSetting />
+          </CustomTabPanel>
+        </Box>
+      ) : (
+        <Card>
+          <CardContent>
+            <Box py={2} textAlign={'center'}>
+              <Typography variant="h6">not found the page</Typography>
+              <Typography mt={2}>No information was found about the manage.</Typography>
+            </Box>
+          </CardContent>
+        </Card>
+      )}
     </Container>
   );
 };
