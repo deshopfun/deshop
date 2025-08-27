@@ -70,7 +70,9 @@ type OrderType = {
   payment_confirmed: number;
   shipping_confirmed: number;
   financial_status: number;
-  processed_at: number;
+  process_time: number;
+  create_time: number;
+  update_time: number;
   items: OrderItemType[];
   wallets: WalletType[];
   transactions: TransactionType[];

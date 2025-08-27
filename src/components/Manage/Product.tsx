@@ -1,35 +1,8 @@
-import { ChevronRight } from '@mui/icons-material';
-import {
-  Box,
-  Button,
-  Card,
-  CardActionArea,
-  CardContent,
-  CardMedia,
-  Chip,
-  Divider,
-  Grid,
-  Stack,
-  Step,
-  StepButton,
-  Stepper,
-  ToggleButton,
-  ToggleButtonGroup,
-  Typography,
-} from '@mui/material';
-import BlockchainDialog from 'components/Dialog/BlockchainDialog';
-import ConfirmOrderDialog from 'components/Dialog/ConfirmOrderDialog';
-import ConfirmPaymentDialog from 'components/Dialog/ConfirmPaymentDialog';
-import ConfirmShippingDialog from 'components/Dialog/ConfirmShippingDialog';
-import OrderDetailsDialog from 'components/Dialog/OrderDetailsDialog';
-import OrderRatingDialog from 'components/Dialog/OrderRatingDialog';
-import PostOrderRateDialog from 'components/Dialog/PostOrderRateDialog';
-import ShippingDialog from 'components/Dialog/ShippingDialog';
+import { Box, Card, CardActionArea, CardContent, CardMedia, Chip, Grid, Stack, Typography } from '@mui/material';
 import { useSnackPresistStore } from 'lib';
 import { useEffect, useState } from 'react';
 import axios from 'utils/http/axios';
 import { Http } from 'utils/http/http';
-import { OrderStatusText } from 'utils/strings';
 
 type ProductType = {
   product_id: number;

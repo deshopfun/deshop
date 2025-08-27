@@ -5,7 +5,7 @@ import { CURRENCYS } from 'packages/constants/currency';
 import { useEffect, useState } from 'react';
 
 const Cart = () => {
-  const [subtotal, setSubtotal] = useState<string>('0');
+  const [total, setTotal] = useState<string>('0');
 
   const { getCart, setCart, resetCart } = useCartPresistStore((state) => state);
 
@@ -20,7 +20,7 @@ const Cart = () => {
           }, 0);
           return total + cartItemTotal;
         }, 0);
-        setSubtotal(String(newTotal));
+        setTotal(String(newTotal));
       }
     }
   }, [getCart()]);
@@ -186,7 +186,7 @@ const Cart = () => {
                       ))}
                     <Box textAlign={'right'} mt={6}>
                       <Typography fontWeight={'bold'} mb={1}>
-                        {`Subtotal: ${CURRENCYS.find((c) => c.name === item.currency)?.code}${item.variant.reduce(
+                        {`Total: ${CURRENCYS.find((c) => c.name === item.currency)?.code}${item.variant.reduce(
                           (itemTotal, variant) => {
                             const price = parseFloat(variant.price) || 0;
                             return itemTotal + price * variant.quantity;

@@ -21,7 +21,7 @@ type RatingType = {
   number: number;
   image: string;
   body: string;
-  created_at: number;
+  create_time: number;
 };
 
 type DialogType = {
@@ -58,7 +58,7 @@ export default function OrderRatingDialog(props: DialogType) {
                 <Typography>{item.product_option}</Typography>
               </Stack>
               <Typography fontWeight={'bold'} mt={1} textAlign={'right'}>
-                {new Date(item.created_at).toLocaleString()}
+                {new Date(item.create_time).toLocaleString()}
               </Typography>
               <Box py={2}>
                 <Divider />

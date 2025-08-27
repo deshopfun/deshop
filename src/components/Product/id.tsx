@@ -86,7 +86,7 @@ type ProductRating = {
   number: number;
   image: string;
   body: string;
-  created_at: number;
+  create_time: number;
 };
 
 type ProductImage = {
@@ -635,7 +635,7 @@ const ProductDetails = () => {
                         <Grid size={{ xs: 6, md: 6 }} key={index}>
                           <Rating size="small" value={item.number} readOnly />
                           <Typography fontSize={14}>{`${item.username} · ${new Date(
-                            item.created_at,
+                            item.create_time,
                           ).toLocaleString()}`}</Typography>
                           <Stack direction={'row'} alignItems={'center'} mt={1} gap={1}>
                             {item.product_option.split(',').map((optionItem, optionIndex) => (

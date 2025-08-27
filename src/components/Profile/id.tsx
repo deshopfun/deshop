@@ -158,16 +158,16 @@ const ProfileDetails = () => {
 
           <Stack direction={'row'} alignItems={'center'} mt={2} gap={4}>
             <Box textAlign={'center'}>
-              <Typography variant="h6">{user?.products?.length || 0}</Typography>
-              <Typography>Created products</Typography>
-            </Box>
-            <Box textAlign={'center'}>
               <Typography variant="h6">0</Typography>
               <Typography>Followers</Typography>
             </Box>
             <Box textAlign={'center'}>
-              <Typography variant="h6">1</Typography>
+              <Typography variant="h6">0</Typography>
               <Typography>Following</Typography>
+            </Box>
+            <Box textAlign={'center'}>
+              <Typography variant="h6">{user?.products?.length || 0}</Typography>
+              <Typography>Created products</Typography>
             </Box>
           </Stack>
 
@@ -192,7 +192,7 @@ const ProfileDetails = () => {
         <Grid size={{ xs: 12, md: 4 }}>
           <Typography variant="h6">Who to follow</Typography>
 
-          <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} mt={2}>
+          {/* <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} mt={2}>
             <Stack direction={'row'} alignItems={'center'}>
               <Avatar sx={{ width: 40, height: 40 }} alt="Avatar" src={'/images/default_avatar.png'} />
               <Box ml={2}>
@@ -207,39 +207,7 @@ const ProfileDetails = () => {
             <Button size="small" variant={'contained'} onClick={onClickFollow}>
               Follow
             </Button>
-          </Stack>
-          <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} mt={2}>
-            <Stack direction={'row'} alignItems={'center'}>
-              <Avatar sx={{ width: 40, height: 40 }} alt="Avatar" src={'/images/default_avatar.png'} />
-              <Box ml={2}>
-                <Typography fontWeight={'bold'}>test123</Typography>
-                <Stack direction={'row'} alignItems={'center'} gap={1}>
-                  <Typography>123456</Typography>
-                  <Typography>followers</Typography>
-                </Stack>
-              </Box>
-            </Stack>
-
-            <Button size="small" variant={'contained'} onClick={onClickFollow}>
-              Follow
-            </Button>
-          </Stack>
-          <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} mt={2}>
-            <Stack direction={'row'} alignItems={'center'}>
-              <Avatar sx={{ width: 40, height: 40 }} alt="Avatar" src={'/images/default_avatar.png'} />
-              <Box ml={2}>
-                <Typography fontWeight={'bold'}>test123</Typography>
-                <Stack direction={'row'} alignItems={'center'} gap={1}>
-                  <Typography>123456</Typography>
-                  <Typography>followers</Typography>
-                </Stack>
-              </Box>
-            </Stack>
-
-            <Button size="small" variant={'contained'} onClick={onClickFollow}>
-              Follow
-            </Button>
-          </Stack>
+          </Stack> */}
         </Grid>
       </Grid>
 

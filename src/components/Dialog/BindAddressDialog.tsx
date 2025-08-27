@@ -63,6 +63,7 @@ export default function BindAddressDialog(props: DialogType) {
     <Dialog
       open={props.openDialog}
       onClose={() => {
+        setAddress('');
         props.handleCloseDialog();
       }}
       fullWidth
@@ -90,6 +91,7 @@ export default function BindAddressDialog(props: DialogType) {
         <Button
           variant={'contained'}
           onClick={() => {
+            setAddress('');
             props.handleCloseDialog();
           }}
         >

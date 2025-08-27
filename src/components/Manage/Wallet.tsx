@@ -86,8 +86,6 @@ const ManageWallet = () => {
   };
 
   const handleCloseDialog = async () => {
-    setSelectChain(CHAINIDS.BITCOIN);
-    setSelectAddress('');
     await init();
     setOpenEditAddressDialog(false);
   };

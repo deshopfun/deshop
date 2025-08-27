@@ -29,7 +29,7 @@ type NotificationType = {
   url: string;
   notification_type: number;
   is_read: number;
-  created_at: number;
+  create_time: number;
 };
 
 const Notification = () => {
@@ -97,6 +97,7 @@ const Notification = () => {
         </Typography>
         {notifications && notifications.length > 0 && (
           <Button
+            color={'success'}
             variant={'contained'}
             onClick={() => {
               onClickSeen(1);
@@ -121,7 +122,9 @@ const Notification = () => {
             <TableBody>
               {notifications.map((row, rowId) => (
                 <TableRow key={rowId} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                  <TableCell>{row.title}</TableCell>
+                  <TableCell>
+                    <Typography fontWeight={'bold'}>{row.title}</Typography>
+                  </TableCell>
                   <TableCell component="th" scope="row">
                     <Chip
                       label={NOTIFICATIONS.find((item) => item.id === row.notification_type)?.title}
@@ -130,7 +133,7 @@ const Notification = () => {
                   </TableCell>
                   <TableCell>{row.description}</TableCell>
                   <TableCell component="th" scope="row">
-                    {new Date(row.created_at).toLocaleString()}
+                    {new Date(row.create_time).toLocaleString()}
                   </TableCell>
                   <TableCell align="right">
                     <Stack direction={'row'} alignItems={'center'} justifyContent={'right'} gap={1}>

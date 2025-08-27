@@ -98,7 +98,7 @@ type RatingType = {
   number: number;
   image: string;
   body: string;
-  created_at: number;
+  create_time: number;
 };
 
 type OrderType = {
@@ -125,7 +125,9 @@ type OrderType = {
   shipping_confirmed: number;
   shipping_confirmed_number: string;
   financial_status: number;
-  processed_at: number;
+  process_time: number;
+  create_time: number;
+  update_time: number;
   items: OrderItemType[];
   ratings: RatingType[];
   wallets: WalletType[];

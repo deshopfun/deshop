@@ -1,5 +1,4 @@
 import { Box, Card, CardActionArea, CardContent, CardMedia, Chip, Grid, Stack, Typography } from '@mui/material';
-import { useUserPresistStore } from 'lib';
 
 type ProductType = {
   product_id: number;
@@ -30,8 +29,6 @@ type Props = {
 };
 
 const ProfileProduct = (props: Props) => {
-  const { getUuid } = useUserPresistStore((state) => state);
-
   return (
     <Box>
       <Typography variant="h6">All products</Typography>

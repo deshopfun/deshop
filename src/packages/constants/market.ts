@@ -63,8 +63,8 @@ export const PROFILE_TAB_DATAS: TAB_DATA[] = [
   },
   {
     id: 2,
-    title: 'Following',
-    tabId: 'following',
+    title: 'Followers',
+    tabId: 'followers',
   },
 ];
 
