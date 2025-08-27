@@ -56,7 +56,7 @@ const ProfileProduct = (props: Props) => {
                         alt="image"
                       />
                       <CardContent>
-                        <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} mt={1} gap={1}>
+                        <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} gap={1}>
                           <Stack direction={'row'} alignItems={'center'} gap={1}>
                             <Typography variant="h6">{item.title}</Typography>
                             <Chip label={item.product_type} color="primary" size="small" />
@@ -67,14 +67,9 @@ const ProfileProduct = (props: Props) => {
                           {item.tags &&
                             item.tags.split(',').map((item, index) => <Chip size="small" label={item} key={index} />)}
                         </Stack>
-                        {getUuid() === props.uuid && (
-                          <Stack direction={'row'} alignItems={'center'} mt={1} gap={1} justifyContent={'right'}>
-                            <Typography fontWeight={'bold'}>Status:</Typography>
-                            {item.product_status === 1 && <Chip label={'Active'} color={'success'} size="small" />}
-                            {item.product_status === 2 && <Chip label={'Archived'} size="small" />}
-                            {item.product_status === 3 && <Chip label={'Draft'} color={'warning'} size="small" />}
-                          </Stack>
-                        )}
+                        <Stack direction={'row'} alignItems={'center'} mt={1} gap={1} justifyContent={'right'}>
+                          {item.product_status === 1 && <Chip label={'Active'} color={'success'} size="small" />}
+                        </Stack>
                       </CardContent>
                     </CardActionArea>
                   </Card>

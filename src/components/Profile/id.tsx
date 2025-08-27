@@ -134,8 +134,12 @@ const ProfileDetails = () => {
               <Box ml={4}>
                 <Typography variant="h6">{user?.profile.username}</Typography>
                 <Stack direction={'row'} alignItems={'center'} gap={1}>
-                  <Typography>Code:</Typography>
-                  <Typography fontWeight={'bold'}>{user?.profile.invitation_code}</Typography>
+                  <Typography>Email:</Typography>
+                  <Typography fontWeight={'bold'}>{user?.profile.email}</Typography>
+                </Stack>
+                <Stack direction={'row'} alignItems={'center'} gap={1}>
+                  <Typography>Bio:</Typography>
+                  <Typography fontWeight={'bold'}>{user?.profile.bio}</Typography>
                 </Stack>
               </Box>
             </Stack>

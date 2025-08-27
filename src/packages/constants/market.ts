@@ -89,26 +89,31 @@ export const PRODUCT_TAB_DATAS: TAB_DATA[] = [
 export const MANAGE_TAB_DATAS: TAB_DATA[] = [
   {
     id: 0,
+    title: 'Products',
+    tabId: 'products',
+  },
+  {
+    id: 1,
     title: 'Orders',
     tabId: 'orders',
   },
   {
-    id: 1,
+    id: 2,
     title: 'Wallets',
     tabId: 'wallets',
   },
   {
-    id: 2,
+    id: 3,
     title: 'Addresses',
     tabId: 'Addresses',
   },
   {
-    id: 3,
+    id: 4,
     title: 'Notifications',
     tabId: 'notifications',
   },
   {
-    id: 4,
+    id: 5,
     title: 'Settings',
     tabId: 'settings',
   },

@@ -596,24 +596,17 @@ const Product = (props: Props) => {
                       }}
                     />
                     <Collections fontSize={'large'} />
-                    <Typography mt={1}>Select video or image to upload</Typography>
-                    <Typography>or drag or drop it here</Typography>
+                    <Typography mt={1}>Select image to upload</Typography>
                   </Box>
                 </Button>
               )}
             </Box>
-            <Stack direction={'row'} mt={2} gap={2} justifyContent={'space-between'}>
-              <Box>
-                <Typography variant="h6">file size and type</Typography>
-                <Typography>- image - max 15mb. ".jpg", ".gif" or ".png" recommended</Typography>
-                <Typography>- video - max 30mb. ".mp4" recommended</Typography>
-              </Box>
-              <Box>
-                <Typography variant="h6">resolution and aspect ratio</Typography>
-                <Typography>- image - min. 1000x1000px, 1:1 square recommended</Typography>
-                <Typography>- video - 16:9 or 9:16, 1080p+ recommended</Typography>
-              </Box>
-            </Stack>
+            <Box mt={2}>
+              <Typography variant="h6">File size and type</Typography>
+              <Typography>- image - max 15mb. ".jpg", ".gif" or ".png" recommended</Typography>
+              <Typography variant="h6">Resolution and aspect ratio</Typography>
+              <Typography>- image - min 100x100px. 1:1 square recommended</Typography>
+            </Box>
           </CardContent>
         </Card>
       </Box>

@@ -10,6 +10,7 @@ import ManageWallet from './Wallet';
 import ManageAddress from './Address';
 import ManageNotification from './Notification';
 import ManageSetting from './Setting';
+import ManageProduct from './Product';
 
 type ProfileType = {
   uuid: string;
@@ -105,18 +106,21 @@ const ManageDetails = () => {
           </Box>
 
           <CustomTabPanel value={tabValue} index={0}>
-            <ManageOrder />
+            <ManageProduct />
           </CustomTabPanel>
           <CustomTabPanel value={tabValue} index={1}>
-            <ManageWallet />
+            <ManageOrder />
           </CustomTabPanel>
           <CustomTabPanel value={tabValue} index={2}>
-            <ManageAddress />
+            <ManageWallet />
           </CustomTabPanel>
           <CustomTabPanel value={tabValue} index={3}>
-            <ManageNotification />
+            <ManageAddress />
           </CustomTabPanel>
           <CustomTabPanel value={tabValue} index={4}>
+            <ManageNotification />
+          </CustomTabPanel>
+          <CustomTabPanel value={tabValue} index={5}>
             <ManageSetting />
           </CustomTabPanel>
         </Box>

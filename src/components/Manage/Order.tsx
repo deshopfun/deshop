@@ -216,7 +216,7 @@ const ManageOrder = () => {
 
   return (
     <Box>
-      <Typography variant="h6">All order</Typography>
+      <Typography variant="h6">All orders</Typography>
 
       <Box mt={2}>
         <ToggleButtonGroup

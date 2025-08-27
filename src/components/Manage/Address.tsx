@@ -133,7 +133,7 @@ const ManageAddress = () => {
 
   return (
     <Box>
-      <Typography variant="h6">All address</Typography>
+      <Typography variant="h6">All addresses</Typography>
 
       <Box mt={2}>
         <ToggleButtonGroup

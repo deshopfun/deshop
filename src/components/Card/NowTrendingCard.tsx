@@ -1,5 +1,6 @@
 import { Box, Card, CardActionArea, CardContent, CardMedia, Chip, Grid, Stack, Typography } from '@mui/material';
 import { useSnackPresistStore } from 'lib';
+import { CURRENCYS } from 'packages/constants/currency';
 import { useEffect, useState } from 'react';
 import axios from 'utils/http/axios';
 import { Http } from 'utils/http/http';
@@ -11,6 +12,7 @@ type ProductType = {
   product_type: string;
   tags: string;
   vendor: string;
+  currency: string;
   product_status: number;
   images: ProductImage[];
   options: ProductOption[];
@@ -41,7 +43,7 @@ type Props = {
 };
 
 const NowTrendingCard = (props: Props) => {
-  const [product, setProduct] = useState<ProductType[]>();
+  const [products, setProducts] = useState<ProductType[]>();
 
   const { setSnackSeverity, setSnackOpen, setSnackMessage } = useSnackPresistStore((state) => state);
 
@@ -55,9 +57,9 @@ const NowTrendingCard = (props: Props) => {
       });
 
       if (response.result) {
-        setProduct(response.data);
+        setProducts(response.data);
       } else {
-        setProduct([]);
+        setProducts([]);
       }
     } catch (e) {
       setSnackSeverity('error');
@@ -74,9 +76,9 @@ const NowTrendingCard = (props: Props) => {
 
   return (
     <Box>
-      {product && product.length > 0 ? (
+      {products && products.length > 0 ? (
         <Grid container spacing={2}>
-          {product.map((item, index) => (
+          {products.map((item, index) => (
             <Grid size={{ xs: 12, md: 2 }} key={index}>
               <div
                 onClick={() => {
@@ -92,10 +94,9 @@ const NowTrendingCard = (props: Props) => {
                         <Box>
                           <Typography>{item.variants[0].option}</Typography>
                           <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} mt={1}>
-                            <Typography
-                              color={'error'}
-                              fontWeight={'bold'}
-                            >{`US$${item.variants[0].price}`}</Typography>
+                            <Typography color={'error'} fontWeight={'bold'}>{`${
+                              CURRENCYS.find((c) => c.name === item.currency)?.code
+                            }${item.variants[0].price}`}</Typography>
                             <Typography>{`RM:${item.variants[0].inventory_quantity}`}</Typography>
                           </Stack>
                         </Box>

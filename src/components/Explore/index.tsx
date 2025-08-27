@@ -17,6 +17,7 @@ import axios from 'utils/http/axios';
 import { Http } from 'utils/http/http';
 import { useSnackPresistStore } from 'lib';
 import { useRouter } from 'next/router';
+import { CURRENCYS } from 'packages/constants/currency';
 
 type ProductType = {
   product_id: number;
@@ -25,6 +26,7 @@ type ProductType = {
   product_type: string;
   tags: string;
   vendor: string;
+  currency: string;
   product_status: number;
   images: ProductImage[];
   options: ProductOption[];
@@ -55,7 +57,7 @@ const Explore = () => {
   const { type } = router.query;
 
   const [open, setOpen] = useState<boolean>(false);
-  const [product, setProduct] = useState<ProductType[]>();
+  const [products, setProducts] = useState<ProductType[]>();
   const [currentProductType, setCurrentProductType] = useState<string>(PRODUCT_TYPE.WOMEN);
 
   const { setSnackSeverity, setSnackOpen, setSnackMessage } = useSnackPresistStore((state) => state);
@@ -69,9 +71,9 @@ const Explore = () => {
       });
 
       if (response.result) {
-        setProduct(response.data);
+        setProducts(response.data);
       } else {
-        setProduct([]);
+        setProducts([]);
       }
     } catch (e) {
       setSnackSeverity('error');
@@ -138,9 +140,9 @@ const Explore = () => {
       <Box mt={2}>
         <Typography variant="h6">{currentProductType}</Typography>
         <Box mt={2}>
-          {product && product.length > 0 ? (
+          {products && products.length > 0 ? (
             <Grid container spacing={2}>
-              {product.map((item, index) => (
+              {products.map((item, index) => (
                 <Grid size={{ xs: 12, md: 2 }} key={index}>
                   <div
                     onClick={() => {
@@ -156,10 +158,9 @@ const Explore = () => {
                             <Box>
                               <Typography>{item.variants[0].option}</Typography>
                               <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} mt={1}>
-                                <Typography
-                                  color={'error'}
-                                  fontWeight={'bold'}
-                                >{`US$${item.variants[0].price}`}</Typography>
+                                <Typography color={'error'} fontWeight={'bold'}>{`${
+                                  CURRENCYS.find((c) => c.name === item.currency)?.code
+                                }${item.variants[0].price}`}</Typography>
                                 <Typography>{`RM:${item.variants[0].inventory_quantity}`}</Typography>
                               </Stack>
                             </Box>
