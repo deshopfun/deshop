@@ -202,7 +202,7 @@ const ProductVariant = (props: Props) => {
         return;
       }
 
-      if (!position || parseInt(position) === 0) {
+      if (!position || parseInt(position) <= 0) {
         setSnackSeverity('error');
         setSnackMessage('Incorrect position input');
         setSnackOpen(true);
@@ -223,7 +223,7 @@ const ProductVariant = (props: Props) => {
         return;
       }
 
-      if (!compareAtPrice || parseFloat(compareAtPrice) <= 0) {
+      if (compareAtPrice && parseFloat(compareAtPrice) <= 0) {
         setSnackSeverity('error');
         setSnackMessage('Incorrect compare at price input');
         setSnackOpen(true);
@@ -237,23 +237,14 @@ const ProductVariant = (props: Props) => {
         return;
       }
 
-      if (taxable) {
-        if (!tax || parseFloat(tax) <= 0) {
-          setSnackSeverity('error');
-          setSnackMessage('Incorrect tax input');
-          setSnackOpen(true);
-          return;
-        }
-      }
-
-      if (!tipReceived || parseFloat(tipReceived) <= 0) {
+      if (tipReceived && parseFloat(tipReceived) <= 0) {
         setSnackSeverity('error');
         setSnackMessage('Incorrect tip input');
         setSnackOpen(true);
         return;
       }
 
-      if (!discounts || parseFloat(discounts) <= 0) {
+      if (discounts && parseFloat(discounts) <= 0) {
         setSnackSeverity('error');
         setSnackMessage('Incorrect discounts input');
         setSnackOpen(true);
@@ -267,11 +258,20 @@ const ProductVariant = (props: Props) => {
         return;
       }
 
-      if (!sku || sku === '') {
+      if (weight && (parseFloat(weight) <= 0 || weightUnit === '')) {
         setSnackSeverity('error');
-        setSnackMessage('Incorrect sku input');
+        setSnackMessage('Incorrect weight and unit of weight input');
         setSnackOpen(true);
         return;
+      }
+
+      if (taxable) {
+        if (!tax || parseFloat(tax) <= 0) {
+          setSnackSeverity('error');
+          setSnackMessage('Incorrect tax input');
+          setSnackOpen(true);
+          return;
+        }
       }
 
       let option = '';
@@ -298,21 +298,21 @@ const ProductVariant = (props: Props) => {
 
       const response: any = await axios.post(Http.product_variant, {
         product_id: props.product_id,
-        title: title,
         image: image,
-        barcode: barcode,
-        compare_at_price: compareAtPrice,
-        inventory_policy: inventoryPolicy ? 1 : 2,
-        inventory_quantity: parseInt(inventoryQuantity),
-        price: price,
         position: parseInt(position),
-        sku: sku,
-        taxable: taxable ? 1 : 2,
-        tax: taxable ? tax : undefined,
-        discounts: discounts,
+        title: title,
+        price: price,
+        compare_at_price: compareAtPrice,
         tip_received: tipReceived,
+        discounts: discounts,
+        barcode: barcode,
+        inventory_quantity: parseInt(inventoryQuantity),
+        sku: sku,
         weight: weight,
         weight_unit: weightUnit,
+        inventory_policy: inventoryPolicy ? 1 : 2,
+        taxable: taxable ? 1 : 2,
+        tax: taxable ? tax : undefined,
         requires_shipping: requiresShipping ? 1 : 2,
         option: option,
       });

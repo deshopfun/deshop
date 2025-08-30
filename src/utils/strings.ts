@@ -27,7 +27,7 @@ export function GetUniqueRandomIndices(max: number, count: number): number[] {
 
 export function OmitMiddleString(str: string, hideLength: number = 5): string {
   if (!str) return '';
-  if (str.length <= hideLength * 2) return '...';
+  if (str.length <= hideLength * 2) return str;
 
   const startPart = str.substring(0, hideLength);
   const endPart = str.substring(str.length - hideLength);
