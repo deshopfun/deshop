@@ -116,7 +116,8 @@ type OrderType = {
   sub_total_price: string;
   total_price: string;
   total_tax: string;
-  total_tip_received: string;
+  total_tip: string;
+  total_shipping: string;
   currency: string;
   confirmed: number;
   confirmed_number: string;
@@ -323,23 +324,33 @@ const ManageOrder = () => {
                   <Divider />
                   <Box py={1}>
                     <Typography textAlign={'right'}>{`${item.items.length} item in total`}</Typography>
+                    {Number(item.sub_total_price) > 0 && (
+                      <Typography textAlign={'right'}>
+                        Subtotal: <b>{`${item.sub_total_price} ${item.currency}`}</b>
+                      </Typography>
+                    )}
+                    {Number(item.total_shipping) > 0 && (
+                      <Typography textAlign={'right'}>
+                        Shipping: <b>{`${item.total_shipping} ${item.currency}`}</b>
+                      </Typography>
+                    )}
+                    {Number(item.total_tax) > 0 && (
+                      <Typography textAlign={'right'}>
+                        Tax: <b>{`${item.total_tax} ${item.currency}`}</b>
+                      </Typography>
+                    )}
+                    {Number(item.total_tip) > 0 && (
+                      <Typography textAlign={'right'}>
+                        Tip: <b>{`${item.total_tip} ${item.currency}`}</b>
+                      </Typography>
+                    )}
+                    {Number(item.total_discounts) > 0 && (
+                      <Typography textAlign={'right'}>
+                        Discounts: <b>{`${item.total_discounts} ${item.currency}`}</b>
+                      </Typography>
+                    )}
                     <Typography textAlign={'right'}>
-                      Subtotal price: <b>{`${item.sub_total_price || 0} ${item.currency}`}</b>
-                    </Typography>
-                    <Typography textAlign={'right'}>
-                      Shipping: <b>{`0 ${item.currency}`}</b>
-                    </Typography>
-                    <Typography textAlign={'right'}>
-                      Total tax: <b>{`${item.total_tax || 0} ${item.currency}`}</b>
-                    </Typography>
-                    <Typography textAlign={'right'}>
-                      Total tip: <b>{`${item.total_tip_received || 0} ${item.currency}`}</b>
-                    </Typography>
-                    <Typography textAlign={'right'}>
-                      Total discount: <b>{`${item.total_discounts || 0} ${item.currency}`}</b>
-                    </Typography>
-                    <Typography textAlign={'right'}>
-                      Total price: <b>{`${item.total_price || 0} ${item.currency}`}</b>
+                      Total: <b>{`${item.total_price || 0} ${item.currency}`}</b>
                     </Typography>
                   </Box>
                   <Divider />
@@ -390,28 +401,38 @@ const ManageOrder = () => {
                       <CardContent>
                         <Typography variant="h6">Shipping</Typography>
                         <Stack mt={2} gap={1}>
-                          <Button
-                            variant={'contained'}
-                            onClick={() => {
-                              setCurrentOrder(item);
-                              setOpenShippingDialog(true);
-                            }}
-                            size="small"
-                          >
-                            Check shipping
-                          </Button>
-                          {alignment === 'buy' && item.payment_confirmed === 1 && item.shipping_confirmed === 2 && (
-                            <Button
-                              variant={'contained'}
-                              color={'success'}
-                              onClick={() => {
-                                setCurrentOrder(item);
-                                setOpenConfirmShippingDialog(true);
-                              }}
-                              size="small"
-                            >
-                              Confirm the receipt of goods
-                            </Button>
+                          {Number(item.total_shipping) > 0 ? (
+                            <>
+                              <Button
+                                variant={'contained'}
+                                onClick={() => {
+                                  setCurrentOrder(item);
+                                  setOpenShippingDialog(true);
+                                }}
+                                size="small"
+                              >
+                                Check shipping
+                              </Button>
+                              {alignment === 'buy' && item.payment_confirmed === 1 && item.shipping_confirmed === 2 && (
+                                <Button
+                                  variant={'contained'}
+                                  color={'success'}
+                                  onClick={() => {
+                                    setCurrentOrder(item);
+                                    setOpenConfirmShippingDialog(true);
+                                  }}
+                                  size="small"
+                                >
+                                  Confirm the receipt of goods
+                                </Button>
+                              )}
+                            </>
+                          ) : (
+                            <Card>
+                              <CardContent>
+                                <Typography textAlign={'center'}>No shipping required for order</Typography>
+                              </CardContent>
+                            </Card>
                           )}
                         </Stack>
                       </CardContent>

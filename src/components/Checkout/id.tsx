@@ -170,7 +170,10 @@ const CheckoutDetails = () => {
           if (item.taxable) {
             tax += (parseFloat(item.tax) || 0) * item.quantity;
           }
-          tip += (parseFloat(item.tipReceived) || 0) * item.quantity;
+          if (item.shippable) {
+            shipping += (parseFloat(item.shipping) || 0) * item.quantity;
+          }
+          tip += (parseFloat(item.tip) || 0) * item.quantity;
           discounts += (parseFloat(item.discounts) || 0) * item.quantity;
         });
         setSubTotal(String(price));
@@ -202,19 +205,21 @@ const CheckoutDetails = () => {
         return;
       }
 
-      if (ship) {
-        if (!selectDeliveryAddress) {
-          setSnackSeverity('error');
-          setSnackMessage('Incorrect delivery address');
-          setSnackOpen(true);
-          return;
-        }
-      } else {
-        if (!selectPickupAddress) {
-          setSnackSeverity('error');
-          setSnackMessage('Incorrect pickup address');
-          setSnackOpen(true);
-          return;
+      if (shipping && Number(shipping) > 0) {
+        if (ship) {
+          if (!selectDeliveryAddress) {
+            setSnackSeverity('error');
+            setSnackMessage('Incorrect delivery address');
+            setSnackOpen(true);
+            return;
+          }
+        } else {
+          if (!selectPickupAddress) {
+            setSnackSeverity('error');
+            setSnackMessage('Incorrect pickup address');
+            setSnackOpen(true);
+            return;
+          }
         }
       }
 
@@ -404,336 +409,357 @@ const CheckoutDetails = () => {
           <Grid size={{ xs: 12, md: 6 }}>
             <Typography variant="h5">Checkout</Typography>
             <Box mt={4}>
-              <Typography variant="h6">Shipping Information</Typography>
-              <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} gap={2} mt={3}>
-                <Button
-                  startIcon={<Album />}
-                  variant={ship ? 'contained' : 'outlined'}
-                  size="large"
-                  fullWidth
-                  onClick={() => {
-                    setShip(true);
-                  }}
-                >
-                  <LocalShipping />
-                  <Typography pl={1}>Delivery</Typography>
-                </Button>
-                <Button
-                  startIcon={<Adjust />}
-                  variant={ship ? 'outlined' : 'contained'}
-                  size="large"
-                  fullWidth
-                  onClick={() => {
-                    setShip(false);
-                  }}
-                >
-                  <LocalMall />
-                  <Typography pl={1}>Pick up</Typography>
-                </Button>
-              </Stack>
-              {ship ? (
-                <Box mt={3}>
-                  {addresses &&
-                    addresses.length > 0 &&
-                    addresses.map((item, index) => (
-                      <Box key={index} mb={2}>
+              <Typography variant="h6" mb={2}>
+                Shipping Information
+              </Typography>
+              {shipping && Number(shipping) > 0 ? (
+                <Box>
+                  <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} gap={2}>
+                    <Button
+                      startIcon={<Album />}
+                      variant={ship ? 'contained' : 'outlined'}
+                      size="large"
+                      fullWidth
+                      onClick={() => {
+                        setShip(true);
+                      }}
+                    >
+                      <LocalShipping />
+                      <Typography pl={1}>Delivery</Typography>
+                    </Button>
+                    <Button
+                      startIcon={<Adjust />}
+                      variant={ship ? 'outlined' : 'contained'}
+                      size="large"
+                      fullWidth
+                      onClick={() => {
+                        setShip(false);
+                      }}
+                    >
+                      <LocalMall />
+                      <Typography pl={1}>Pick up</Typography>
+                    </Button>
+                  </Stack>
+                  {ship ? (
+                    <Box mt={3}>
+                      {addresses &&
+                        addresses.length > 0 &&
+                        addresses.map((item, index) => (
+                          <Box key={index} mb={2}>
+                            <Card>
+                              <CardContent>
+                                <Stack direction={'row'} alignItems={'start'} gap={1}>
+                                  <Radio
+                                    checked={selectDeliveryAddress === item.address_id ? true : false}
+                                    onClick={() => {
+                                      setSelectDeliveryAddress(item.address_id);
+                                    }}
+                                  />
+                                  <Box>
+                                    <Typography
+                                      fontWeight={'bold'}
+                                    >{`${item.first_name} ${item.last_name} , ${item.phone}`}</Typography>
+                                    <Typography>{`${item.country} ${item.province} ${item.address_one}`}</Typography>
+                                  </Box>
+                                </Stack>
+                              </CardContent>
+                            </Card>
+                          </Box>
+                        ))}
+                      <Box mb={2}>
                         <Card>
                           <CardContent>
-                            <Stack direction={'row'} alignItems={'start'} gap={1}>
+                            <Stack direction={'row'} alignItems={'center'} gap={1}>
                               <Radio
-                                checked={selectDeliveryAddress === item.address_id ? true : false}
+                                checked={selectDeliveryAddress === 0 ? true : false}
                                 onClick={() => {
-                                  setSelectDeliveryAddress(item.address_id);
+                                  setSelectDeliveryAddress(0);
                                 }}
                               />
-                              <Box>
-                                <Typography
-                                  fontWeight={'bold'}
-                                >{`${item.first_name} ${item.last_name} , ${item.phone}`}</Typography>
-                                <Typography>{`${item.country} ${item.province} ${item.address_one}`}</Typography>
-                              </Box>
+                              <Typography fontWeight={'bold'}>Add new </Typography>
                             </Stack>
                           </CardContent>
                         </Card>
                       </Box>
-                    ))}
-                  <Box mb={2}>
-                    <Card>
-                      <CardContent>
-                        <Stack direction={'row'} alignItems={'center'} gap={1}>
-                          <Radio
-                            checked={selectDeliveryAddress === 0 ? true : false}
-                            onClick={() => {
-                              setSelectDeliveryAddress(0);
-                            }}
-                          />
-                          <Typography fontWeight={'bold'}>Add new </Typography>
-                        </Stack>
-                      </CardContent>
-                    </Card>
-                  </Box>
-                  {selectDeliveryAddress === 0 && (
-                    <Card>
-                      <CardContent>
-                        <Stack direction={'row'} alignItems={'center'} gap={2} mt={4}>
-                          <Box width={'100%'}>
-                            <Typography mb={1}>First name</Typography>
-                            <TextField
-                              hiddenLabel
-                              size="small"
-                              fullWidth
-                              value={firstName}
-                              onChange={(e: any) => {
-                                setFirstName(e.target.value);
-                              }}
-                              placeholder="Enter first name"
-                            />
-                          </Box>
-                          <Box width={'100%'}>
-                            <Typography mb={1}>Last name</Typography>
-                            <TextField
-                              hiddenLabel
-                              size="small"
-                              fullWidth
-                              value={lastName}
-                              onChange={(e: any) => {
-                                setLastName(e.target.value);
-                              }}
-                              placeholder="Enter last name"
-                            />
-                          </Box>
-                        </Stack>
-                        <Stack direction={'row'} alignItems={'center'} gap={2} mt={3}>
-                          <Box width={'100%'}>
-                            <Typography mb={1}>Email address</Typography>
-                            <TextField
-                              hiddenLabel
-                              size="small"
-                              fullWidth
-                              value={email}
-                              onChange={(e: any) => {
-                                setEmail(e.target.value);
-                              }}
-                              placeholder="Enter email address"
-                            />
-                          </Box>
-                          <Box width={'100%'}>
-                            <Typography mb={1}>Company</Typography>
-                            <TextField
-                              hiddenLabel
-                              size="small"
-                              fullWidth
-                              value={company}
-                              onChange={(e: any) => {
-                                setCompany(e.target.value);
-                              }}
-                              placeholder="Enter company"
-                            />
-                          </Box>
-                        </Stack>
-                        <Box mt={3}>
-                          <Typography mb={1}>Phone number</Typography>
-                          <TextField
-                            hiddenLabel
-                            size="small"
-                            fullWidth
-                            value={phone}
-                            onChange={(e: any) => {
-                              setPhone(e.target.value);
-                            }}
-                            placeholder="Enter phone number"
-                          />
-                        </Box>
-                        <Box mt={3}>
-                          <Typography mb={1}>Address line 1</Typography>
-                          <TextField
-                            hiddenLabel
-                            size="small"
-                            fullWidth
-                            value={addressOne}
-                            onChange={(e: any) => {
-                              setAddressOne(e.target.value);
-                            }}
-                            placeholder="Enter address"
-                          />
-                        </Box>
-                        <Box mt={3}>
-                          <Typography mb={1}>Address line 2</Typography>
-                          <TextField
-                            hiddenLabel
-                            size="small"
-                            fullWidth
-                            value={addressTwo}
-                            onChange={(e: any) => {
-                              setAddressTwo(e.target.value);
-                            }}
-                            placeholder="Enter address"
-                          />
-                        </Box>
-                        <Box mt={3}>
-                          <Typography mb={1}>Country/Region</Typography>
-                          <FormControl hiddenLabel fullWidth>
-                            <Select
-                              displayEmpty
-                              value={country}
-                              onChange={(e: any) => {
-                                setProvince('');
-                                setCountry(e.target.value);
-                              }}
-                              size={'small'}
-                              inputProps={{ 'aria-label': 'Without label' }}
-                              renderValue={(selected: any) => {
-                                if (selected.length === 0) {
-                                  return <em>Choose country</em>;
-                                }
-
-                                return selected;
-                              }}
-                            >
-                              {COUNTRYPROVINCES &&
-                                COUNTRYPROVINCES.map((item, index) => (
-                                  <MenuItem value={item.name} key={index}>
-                                    {item.name}
-                                  </MenuItem>
-                                ))}
-                            </Select>
-                          </FormControl>
-                        </Box>
-                        <Stack mt={3} direction={'row'} alignItems={'center'} justifyContent={'space-between'} gap={2}>
-                          <Box>
-                            <Typography mb={1}>City</Typography>
-                            <TextField
-                              hiddenLabel
-                              size="small"
-                              fullWidth
-                              value={city}
-                              onChange={(e: any) => {
-                                setCity(e.target.value);
-                              }}
-                              placeholder="Enter city"
-                            />
-                          </Box>
-                          <Box>
-                            <Typography mb={1}>State/Province</Typography>
-                            <FormControl hiddenLabel fullWidth>
-                              <Select
-                                displayEmpty
-                                value={province}
+                      {selectDeliveryAddress === 0 && (
+                        <Card>
+                          <CardContent>
+                            <Stack direction={'row'} alignItems={'center'} gap={2} mt={4}>
+                              <Box width={'100%'}>
+                                <Typography mb={1}>First name</Typography>
+                                <TextField
+                                  hiddenLabel
+                                  size="small"
+                                  fullWidth
+                                  value={firstName}
+                                  onChange={(e: any) => {
+                                    setFirstName(e.target.value);
+                                  }}
+                                  placeholder="Enter first name"
+                                />
+                              </Box>
+                              <Box width={'100%'}>
+                                <Typography mb={1}>Last name</Typography>
+                                <TextField
+                                  hiddenLabel
+                                  size="small"
+                                  fullWidth
+                                  value={lastName}
+                                  onChange={(e: any) => {
+                                    setLastName(e.target.value);
+                                  }}
+                                  placeholder="Enter last name"
+                                />
+                              </Box>
+                            </Stack>
+                            <Stack direction={'row'} alignItems={'center'} gap={2} mt={3}>
+                              <Box width={'100%'}>
+                                <Typography mb={1}>Email address</Typography>
+                                <TextField
+                                  hiddenLabel
+                                  size="small"
+                                  fullWidth
+                                  value={email}
+                                  onChange={(e: any) => {
+                                    setEmail(e.target.value);
+                                  }}
+                                  placeholder="Enter email address"
+                                />
+                              </Box>
+                              <Box width={'100%'}>
+                                <Typography mb={1}>Company</Typography>
+                                <TextField
+                                  hiddenLabel
+                                  size="small"
+                                  fullWidth
+                                  value={company}
+                                  onChange={(e: any) => {
+                                    setCompany(e.target.value);
+                                  }}
+                                  placeholder="Enter company"
+                                />
+                              </Box>
+                            </Stack>
+                            <Box mt={3}>
+                              <Typography mb={1}>Phone number</Typography>
+                              <TextField
+                                hiddenLabel
+                                size="small"
+                                fullWidth
+                                value={phone}
                                 onChange={(e: any) => {
-                                  setProvince(e.target.value);
+                                  setPhone(e.target.value);
                                 }}
-                                size={'small'}
-                                inputProps={{ 'aria-label': 'Without label' }}
-                                renderValue={(selected: any) => {
-                                  if (selected.length === 0) {
-                                    return <em>Choose state</em>;
-                                  }
+                                placeholder="Enter phone number"
+                              />
+                            </Box>
+                            <Box mt={3}>
+                              <Typography mb={1}>Address line 1</Typography>
+                              <TextField
+                                hiddenLabel
+                                size="small"
+                                fullWidth
+                                value={addressOne}
+                                onChange={(e: any) => {
+                                  setAddressOne(e.target.value);
+                                }}
+                                placeholder="Enter address"
+                              />
+                            </Box>
+                            <Box mt={3}>
+                              <Typography mb={1}>Address line 2</Typography>
+                              <TextField
+                                hiddenLabel
+                                size="small"
+                                fullWidth
+                                value={addressTwo}
+                                onChange={(e: any) => {
+                                  setAddressTwo(e.target.value);
+                                }}
+                                placeholder="Enter address"
+                              />
+                            </Box>
+                            <Box mt={3}>
+                              <Typography mb={1}>Country/Region</Typography>
+                              <FormControl hiddenLabel fullWidth>
+                                <Select
+                                  displayEmpty
+                                  value={country}
+                                  onChange={(e: any) => {
+                                    setProvince('');
+                                    setCountry(e.target.value);
+                                  }}
+                                  size={'small'}
+                                  inputProps={{ 'aria-label': 'Without label' }}
+                                  renderValue={(selected: any) => {
+                                    if (selected.length === 0) {
+                                      return <em>Choose country</em>;
+                                    }
 
-                                  return selected;
-                                }}
-                              >
-                                {country &&
-                                  COUNTRYPROVINCES &&
-                                  COUNTRYPROVINCES.find((item) => item.name === country)?.provinces.map(
-                                    (item, index) => (
+                                    return selected;
+                                  }}
+                                >
+                                  {COUNTRYPROVINCES &&
+                                    COUNTRYPROVINCES.map((item, index) => (
                                       <MenuItem value={item.name} key={index}>
                                         {item.name}
                                       </MenuItem>
-                                    ),
-                                  )}
-                              </Select>
-                            </FormControl>
-                          </Box>
-                          <Box>
-                            <Typography mb={1}>ZIP/Postal code</Typography>
-                            <TextField
-                              hiddenLabel
-                              size="small"
-                              fullWidth
-                              value={zip}
-                              onChange={(e: any) => {
-                                setZip(e.target.value);
-                              }}
-                              placeholder="Enter ZIP"
-                            />
-                          </Box>
-                        </Stack>
-                        <Stack direction={'row'} alignItems={'center'} mt={3}>
-                          <Checkbox
-                            size={'small'}
-                            value={isCheckTerms}
-                            onChange={() => {
-                              setIsCheckTerms(!isCheckTerms);
-                            }}
-                          />
-                          <Typography>I have read and agree to the Terms and Conditions.</Typography>
-                        </Stack>
+                                    ))}
+                                </Select>
+                              </FormControl>
+                            </Box>
+                            <Stack
+                              mt={3}
+                              direction={'row'}
+                              alignItems={'center'}
+                              justifyContent={'space-between'}
+                              gap={2}
+                            >
+                              <Box>
+                                <Typography mb={1}>City</Typography>
+                                <TextField
+                                  hiddenLabel
+                                  size="small"
+                                  fullWidth
+                                  value={city}
+                                  onChange={(e: any) => {
+                                    setCity(e.target.value);
+                                  }}
+                                  placeholder="Enter city"
+                                />
+                              </Box>
+                              <Box>
+                                <Typography mb={1}>State/Province</Typography>
+                                <FormControl hiddenLabel fullWidth>
+                                  <Select
+                                    displayEmpty
+                                    value={province}
+                                    onChange={(e: any) => {
+                                      setProvince(e.target.value);
+                                    }}
+                                    size={'small'}
+                                    inputProps={{ 'aria-label': 'Without label' }}
+                                    renderValue={(selected: any) => {
+                                      if (selected.length === 0) {
+                                        return <em>Choose state</em>;
+                                      }
 
-                        <Stack justifyContent={'right'} mt={2}>
-                          <Button
-                            variant={'contained'}
-                            color="success"
-                            onClick={() => {
-                              onClickSaveAddress();
-                            }}
-                          >
-                            Save
-                          </Button>
-                        </Stack>
-                      </CardContent>
-                    </Card>
+                                      return selected;
+                                    }}
+                                  >
+                                    {country &&
+                                      COUNTRYPROVINCES &&
+                                      COUNTRYPROVINCES.find((item) => item.name === country)?.provinces.map(
+                                        (item, index) => (
+                                          <MenuItem value={item.name} key={index}>
+                                            {item.name}
+                                          </MenuItem>
+                                        ),
+                                      )}
+                                  </Select>
+                                </FormControl>
+                              </Box>
+                              <Box>
+                                <Typography mb={1}>ZIP/Postal code</Typography>
+                                <TextField
+                                  hiddenLabel
+                                  size="small"
+                                  fullWidth
+                                  value={zip}
+                                  onChange={(e: any) => {
+                                    setZip(e.target.value);
+                                  }}
+                                  placeholder="Enter ZIP"
+                                />
+                              </Box>
+                            </Stack>
+                            <Stack direction={'row'} alignItems={'center'} mt={3}>
+                              <Checkbox
+                                size={'small'}
+                                value={isCheckTerms}
+                                onChange={() => {
+                                  setIsCheckTerms(!isCheckTerms);
+                                }}
+                              />
+                              <Typography>I have read and agree to the Terms and Conditions.</Typography>
+                            </Stack>
+
+                            <Stack justifyContent={'right'} mt={2}>
+                              <Button
+                                variant={'contained'}
+                                color="success"
+                                onClick={() => {
+                                  onClickSaveAddress();
+                                }}
+                              >
+                                Save
+                              </Button>
+                            </Stack>
+                          </CardContent>
+                        </Card>
+                      )}
+                    </Box>
+                  ) : (
+                    <Box mt={3}>
+                      {sellerAddresses && sellerAddresses.length > 0 ? (
+                        <>
+                          {sellerAddresses.map((item, index) => (
+                            <Box key={index} mb={2}>
+                              <Card>
+                                <CardContent>
+                                  <Stack direction={'row'} alignItems={'center'}>
+                                    <Radio
+                                      checked={selectPickupAddress === item.address_id ? true : false}
+                                      onClick={() => {
+                                        setSelectPickupAddress(item.address_id);
+                                      }}
+                                    />
+                                    <Stack
+                                      direction={'row'}
+                                      alignItems={'center'}
+                                      justifyContent={'space-between'}
+                                      width={'100%'}
+                                    >
+                                      <Box>
+                                        <Typography
+                                          fontWeight={'bold'}
+                                          pl={1}
+                                        >{`${item.first_name} ${item.last_name} , ${item.phone}`}</Typography>
+                                        <Stack direction={'row'} alignItems={'center'} mt={1} gap={1}>
+                                          <LocationOnOutlined />
+                                          <Typography>{`${item.country} ${item.province} ${item.address_one}`}</Typography>
+                                        </Stack>
+                                      </Box>
+                                      <Typography variant="h6">FREE</Typography>
+                                    </Stack>
+                                  </Stack>
+                                </CardContent>
+                              </Card>
+                            </Box>
+                          ))}
+                        </>
+                      ) : (
+                        <Card>
+                          <CardContent>
+                            <Box py={2} textAlign={'center'}>
+                              <Typography variant="h6">Not support</Typography>
+                              <Typography mt={2}>You can contact the seller to obtain a pick up address</Typography>
+                            </Box>
+                          </CardContent>
+                        </Card>
+                      )}
+                    </Box>
                   )}
                 </Box>
               ) : (
-                <Box mt={3}>
-                  {sellerAddresses && sellerAddresses.length > 0 ? (
-                    <>
-                      {sellerAddresses.map((item, index) => (
-                        <Box key={index} mb={2}>
-                          <Card>
-                            <CardContent>
-                              <Stack direction={'row'} alignItems={'center'}>
-                                <Radio
-                                  checked={selectPickupAddress === item.address_id ? true : false}
-                                  onClick={() => {
-                                    setSelectPickupAddress(item.address_id);
-                                  }}
-                                />
-                                <Stack
-                                  direction={'row'}
-                                  alignItems={'center'}
-                                  justifyContent={'space-between'}
-                                  width={'100%'}
-                                >
-                                  <Box>
-                                    <Typography
-                                      fontWeight={'bold'}
-                                      pl={1}
-                                    >{`${item.first_name} ${item.last_name} , ${item.phone}`}</Typography>
-                                    <Stack direction={'row'} alignItems={'center'} mt={1} gap={1}>
-                                      <LocationOnOutlined />
-                                      <Typography>{`${item.country} ${item.province} ${item.address_one}`}</Typography>
-                                    </Stack>
-                                  </Box>
-                                  <Typography variant="h6">FREE</Typography>
-                                </Stack>
-                              </Stack>
-                            </CardContent>
-                          </Card>
-                        </Box>
-                      ))}
-                    </>
-                  ) : (
-                    <Card>
-                      <CardContent>
-                        <Box py={2} textAlign={'center'}>
-                          <Typography variant="h6">Not support</Typography>
-                          <Typography mt={2}>You can contact the seller to obtain a pick up address</Typography>
-                        </Box>
-                      </CardContent>
-                    </Card>
-                  )}
-                </Box>
+                <Card>
+                  <CardContent>
+                    <Box py={2} textAlign={'center'}>
+                      <Typography variant="h6">The order does not require shipping.</Typography>
+                      <Typography mt={2}>When the product needs shipping, it will be displayed here</Typography>
+                    </Box>
+                  </CardContent>
+                </Card>
               )}
             </Box>
           </Grid>
@@ -779,16 +805,16 @@ const CheckoutDetails = () => {
                         </Typography>
                       </Stack>
                     )}
-                    {item.tipReceived && parseFloat(item.tipReceived) > 0 && (
+                    {item.tip && Number(item.tip) > 0 && (
                       <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
                         <Typography>Tip</Typography>
                         <Typography variant="h6">
                           {CURRENCYS.find((c) => c.name === cartList.currency)?.code}
-                          {parseFloat(item.tipReceived) * item.quantity}
+                          {parseFloat(item.tip) * item.quantity}
                         </Typography>
                       </Stack>
                     )}
-                    {item.discounts && parseFloat(item.discounts) > 0 && (
+                    {item.discounts && Number(item.discounts) > 0 && (
                       <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
                         <Typography>Discounts</Typography>
                         <Typography variant="h6">

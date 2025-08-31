@@ -10,6 +10,7 @@ import {
   Grid,
   ImageList,
   ImageListItem,
+  InputAdornment,
   MenuItem,
   Radio,
   RadioGroup,
@@ -22,6 +23,7 @@ import {
 } from '@mui/material';
 import { useSnackPresistStore } from 'lib';
 import { FILE_TYPE, WEIGHT_UNIT_TYPE } from 'packages/constants';
+import { CURRENCYS } from 'packages/constants/currency';
 import { useEffect, useState } from 'react';
 import axios from 'utils/http/axios';
 import { Http } from 'utils/http/http';
@@ -37,6 +39,7 @@ type ProductOption = {
 };
 
 const ProductVariant = (props: Props) => {
+  const [currency, setCurrency] = useState<string>('');
   const [title, setTitle] = useState<string>('');
   const [image, setImage] = useState<string>('');
   const [barcode, setBarcode] = useState<string>('');
@@ -48,11 +51,12 @@ const ProductVariant = (props: Props) => {
   const [sku, setSku] = useState<string>('');
   const [tax, setTax] = useState<string>('');
   const [taxable, setTaxable] = useState<boolean>(false);
+  const [shipping, setShipping] = useState<string>('');
+  const [shippable, setShippable] = useState<boolean>(false);
   const [discounts, setDiscounts] = useState<string>('');
-  const [tipReceived, setTipReceived] = useState<string>('');
+  const [tip, setTip] = useState<string>('');
   const [weight, setWeight] = useState<string>('');
   const [weightUnit, setWeightUnit] = useState<string>('');
-  const [requiresShipping, setRequiresShipping] = useState<boolean>(false);
   const [options, setOptions] = useState<ProductOption[]>([]);
   const [optionOneValue, setOptionOneValue] = useState<string>('');
   const [optionTwoValue, setOptionTwoValue] = useState<string>('');
@@ -89,7 +93,7 @@ const ProductVariant = (props: Props) => {
           return;
       }
 
-      const response: any = await axios.get(Http.product_variant_by_option, {
+      const response: any = await axios.get(Http.product_variant, {
         params: {
           product_id: props.product_id,
           option: option,
@@ -97,6 +101,7 @@ const ProductVariant = (props: Props) => {
       });
 
       if (response.result) {
+        setCurrency(response.data.currency);
         setTitle(response.data.title);
         setImage(response.data.image);
         setBarcode(response.data.barcode);
@@ -109,10 +114,11 @@ const ProductVariant = (props: Props) => {
         setTax(response.data.tax);
         setTaxable(response.data.taxable === 1 ? true : false);
         setDiscounts(response.data.discounts);
-        setTipReceived(response.data.tip_received);
+        setTip(response.data.tip);
         setWeight(response.data.weight);
         setWeightUnit(response.data.weight_unit);
-        setRequiresShipping(response.data.requires_shipping === 1 ? true : false);
+        setShipping(response.data.shipping);
+        setShippable(response.data.shippable === 1 ? true : false);
       } else {
         setTitle('');
         setImage('');
@@ -126,10 +132,11 @@ const ProductVariant = (props: Props) => {
         setTax('');
         setTaxable(false);
         setDiscounts('');
-        setTipReceived('');
+        setTip('');
         setWeight('');
         setWeightUnit('');
-        setRequiresShipping(false);
+        setShipping('');
+        setShippable(false);
       }
     } catch (e) {
       setSnackSeverity('error');
@@ -216,35 +223,42 @@ const ProductVariant = (props: Props) => {
         return;
       }
 
-      if (!price || parseFloat(price) <= 0) {
+      if (!price || Number(price) <= 0) {
         setSnackSeverity('error');
         setSnackMessage('Incorrect price input');
         setSnackOpen(true);
         return;
       }
 
-      if (compareAtPrice && parseFloat(compareAtPrice) <= 0) {
+      if (compareAtPrice && Number(compareAtPrice) <= 0) {
         setSnackSeverity('error');
         setSnackMessage('Incorrect compare at price input');
         setSnackOpen(true);
         return;
       }
 
-      if (parseFloat(price) < parseFloat(compareAtPrice)) {
+      if (Number(price) < Number(compareAtPrice)) {
         setSnackSeverity('error');
         setSnackMessage('Incorrect price and compare at price input');
         setSnackOpen(true);
         return;
       }
 
-      if (tipReceived && parseFloat(tipReceived) <= 0) {
+      if (tip && Number(tip) <= 0) {
         setSnackSeverity('error');
         setSnackMessage('Incorrect tip input');
         setSnackOpen(true);
         return;
       }
 
-      if (discounts && parseFloat(discounts) <= 0) {
+      if (discounts && Number(discounts) <= 0) {
+        setSnackSeverity('error');
+        setSnackMessage('Incorrect discounts input');
+        setSnackOpen(true);
+        return;
+      }
+
+      if (Number(discounts) > Number(price)) {
         setSnackSeverity('error');
         setSnackMessage('Incorrect discounts input');
         setSnackOpen(true);
@@ -258,7 +272,7 @@ const ProductVariant = (props: Props) => {
         return;
       }
 
-      if (weight && (parseFloat(weight) <= 0 || weightUnit === '')) {
+      if (weight && (Number(weight) <= 0 || weightUnit === '')) {
         setSnackSeverity('error');
         setSnackMessage('Incorrect weight and unit of weight input');
         setSnackOpen(true);
@@ -266,9 +280,18 @@ const ProductVariant = (props: Props) => {
       }
 
       if (taxable) {
-        if (!tax || parseFloat(tax) <= 0) {
+        if (!tax || Number(tax) <= 0) {
           setSnackSeverity('error');
           setSnackMessage('Incorrect tax input');
+          setSnackOpen(true);
+          return;
+        }
+      }
+
+      if (shippable) {
+        if (!shipping || Number(shipping) <= 0) {
+          setSnackSeverity('error');
+          setSnackMessage('Incorrect shipping input');
           setSnackOpen(true);
           return;
         }
@@ -303,7 +326,7 @@ const ProductVariant = (props: Props) => {
         title: title,
         price: price,
         compare_at_price: compareAtPrice,
-        tip_received: tipReceived,
+        tip: tip,
         discounts: discounts,
         barcode: barcode,
         inventory_quantity: parseInt(inventoryQuantity),
@@ -313,12 +336,13 @@ const ProductVariant = (props: Props) => {
         inventory_policy: inventoryPolicy ? 1 : 2,
         taxable: taxable ? 1 : 2,
         tax: taxable ? tax : undefined,
-        requires_shipping: requiresShipping ? 1 : 2,
+        shippable: shippable ? 1 : 2,
+        shipping: shippable ? shipping : undefined,
         option: option,
       });
 
       if (response.result) {
-        window.location.reload();
+        await init(optionOneValue, optionTwoValue, optionThreeValue);
         setSnackSeverity('success');
         setSnackMessage('Update successfully');
         setSnackOpen(true);
@@ -464,6 +488,15 @@ const ProductVariant = (props: Props) => {
             <Box mt={2}>
               <Typography mb={1}>Price</Typography>
               <TextField
+                slotProps={{
+                  input: {
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        {CURRENCYS.find((item) => item.name === currency)?.code}
+                      </InputAdornment>
+                    ),
+                  },
+                }}
                 hiddenLabel
                 size="small"
                 fullWidth
@@ -480,6 +513,15 @@ const ProductVariant = (props: Props) => {
                 Compare at price(the original price of the item before an adjustment or a sale)
               </Typography>
               <TextField
+                slotProps={{
+                  input: {
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        {CURRENCYS.find((item) => item.name === currency)?.code}
+                      </InputAdornment>
+                    ),
+                  },
+                }}
                 hiddenLabel
                 size="small"
                 fullWidth
@@ -494,13 +536,22 @@ const ProductVariant = (props: Props) => {
             <Box mt={2}>
               <Typography mb={1}>Tip</Typography>
               <TextField
+                slotProps={{
+                  input: {
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        {CURRENCYS.find((item) => item.name === currency)?.code}
+                      </InputAdornment>
+                    ),
+                  },
+                }}
                 hiddenLabel
                 size="small"
                 fullWidth
                 type="number"
-                value={tipReceived}
+                value={tip}
                 onChange={(e: any) => {
-                  setTipReceived(e.target.value);
+                  setTip(e.target.value);
                 }}
                 placeholder="tip at price your variant"
               />
@@ -508,6 +559,15 @@ const ProductVariant = (props: Props) => {
             <Box mt={2}>
               <Typography mb={1}>Discounts</Typography>
               <TextField
+                slotProps={{
+                  input: {
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        {CURRENCYS.find((item) => item.name === currency)?.code}
+                      </InputAdornment>
+                    ),
+                  },
+                }}
                 hiddenLabel
                 size="small"
                 fullWidth
@@ -603,19 +663,7 @@ const ProductVariant = (props: Props) => {
                 </FormControl>
               </Box>
             </Stack>
-            <Stack mt={2} direction={'row'} alignItems={'center'}>
-              <Switch
-                checked={inventoryPolicy}
-                onChange={() => {
-                  setInventoryPolicy(!inventoryPolicy);
-                }}
-              />
-              <Typography>
-                Inventory policy(whether customers are allowed to place an order for the product variant when it's out
-                of stock)
-              </Typography>
-            </Stack>
-            <Stack direction={'row'} alignItems={'center'}>
+            <Stack direction={'row'} alignItems={'center'} mt={2}>
               <Switch
                 checked={taxable}
                 onChange={() => {
@@ -628,6 +676,15 @@ const ProductVariant = (props: Props) => {
               <Box py={1}>
                 <Typography mb={1}>Tax</Typography>
                 <TextField
+                  slotProps={{
+                    input: {
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          {CURRENCYS.find((item) => item.name === currency)?.code}
+                        </InputAdornment>
+                      ),
+                    },
+                  }}
                   hiddenLabel
                   size="small"
                   fullWidth
@@ -642,12 +699,49 @@ const ProductVariant = (props: Props) => {
             )}
             <Stack direction={'row'} alignItems={'center'}>
               <Switch
-                checked={requiresShipping}
+                checked={shippable}
                 onChange={() => {
-                  setRequiresShipping(!requiresShipping);
+                  setShippable(!shippable);
                 }}
               />
-              <Typography>Requires shipping</Typography>
+              <Typography>Shippable</Typography>
+            </Stack>
+            {shippable && (
+              <Box py={1}>
+                <Typography mb={1}>Shipping</Typography>
+                <TextField
+                  slotProps={{
+                    input: {
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          {CURRENCYS.find((item) => item.name === currency)?.code}
+                        </InputAdornment>
+                      ),
+                    },
+                  }}
+                  hiddenLabel
+                  size="small"
+                  fullWidth
+                  type="number"
+                  value={shipping}
+                  onChange={(e: any) => {
+                    setShipping(e.target.value);
+                  }}
+                  placeholder="shipping your variant"
+                />
+              </Box>
+            )}
+            <Stack direction={'row'} alignItems={'center'}>
+              <Switch
+                checked={inventoryPolicy}
+                onChange={() => {
+                  setInventoryPolicy(!inventoryPolicy);
+                }}
+              />
+              <Typography>
+                Inventory policy(whether customers are allowed to place an order for the product variant when it's out
+                of stock)
+              </Typography>
             </Stack>
           </CardContent>
         </Card>

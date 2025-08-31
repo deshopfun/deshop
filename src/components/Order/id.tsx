@@ -64,7 +64,8 @@ type OrderType = {
   sub_total_price: string;
   total_price: string;
   total_tax: string;
-  total_tip_received: string;
+  total_tip: string;
+  total_shipping: string;
   currency: string;
   confirmed: number;
   payment_confirmed: number;
@@ -158,38 +159,48 @@ const OrderDetails = () => {
                   <Typography>Customer email</Typography>
                   <Typography fontWeight={'bold'}>{order?.customer_email}</Typography>
                 </Stack>
+                {Number(order?.sub_total_price) > 0 && (
+                  <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
+                    <Typography>Subtotal</Typography>
+                    <Typography fontWeight={'bold'}>
+                      {order?.sub_total_price} {order?.currency}
+                    </Typography>
+                  </Stack>
+                )}
+                {Number(order?.total_shipping) > 0 && (
+                  <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
+                    <Typography>Shipping</Typography>
+                    <Typography fontWeight={'bold'}>
+                      {order?.total_shipping} {order?.currency}
+                    </Typography>
+                  </Stack>
+                )}
+                {Number(order?.total_tax) > 0 && (
+                  <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
+                    <Typography>Tax</Typography>
+                    <Typography fontWeight={'bold'}>
+                      {order?.total_tax} {order?.currency}
+                    </Typography>
+                  </Stack>
+                )}
+                {Number(order?.total_tip) > 0 && (
+                  <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
+                    <Typography>Tip</Typography>
+                    <Typography fontWeight={'bold'}>
+                      {order?.total_tip} {order?.currency}
+                    </Typography>
+                  </Stack>
+                )}
+                {Number(order?.total_discounts) > 0 && (
+                  <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
+                    <Typography>Discounts</Typography>
+                    <Typography fontWeight={'bold'}>
+                      {order?.total_discounts} {order?.currency}
+                    </Typography>
+                  </Stack>
+                )}
                 <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
-                  <Typography>Sub total price</Typography>
-                  <Typography fontWeight={'bold'}>
-                    {order?.sub_total_price || 0} {order?.currency}
-                  </Typography>
-                </Stack>
-                <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
-                  <Typography>Shipping</Typography>
-                  <Typography fontWeight={'bold'}>
-                    {0} {order?.currency}
-                  </Typography>
-                </Stack>
-                <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
-                  <Typography>Total tax</Typography>
-                  <Typography fontWeight={'bold'}>
-                    {order?.total_tax || 0} {order?.currency}
-                  </Typography>
-                </Stack>
-                <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
-                  <Typography>Total tip</Typography>
-                  <Typography fontWeight={'bold'}>
-                    {order?.total_tip_received || 0} {order?.currency}
-                  </Typography>
-                </Stack>
-                <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
-                  <Typography>Total discounts</Typography>
-                  <Typography fontWeight={'bold'}>
-                    {order?.total_discounts || 0} {order?.currency}
-                  </Typography>
-                </Stack>
-                <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
-                  <Typography>Total price</Typography>
+                  <Typography>Total</Typography>
                   <Typography fontWeight={'bold'}>
                     {order?.total_price || 0} {order?.currency}
                   </Typography>

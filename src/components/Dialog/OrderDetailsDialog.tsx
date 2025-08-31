@@ -6,7 +6,8 @@ type OrderType = {
   sub_total_price: string;
   total_discounts: string;
   total_tax: string;
-  total_tip_received: string;
+  total_tip: string;
+  total_shipping: string;
   total_price: string;
   currency: string;
   confirmed: number;
@@ -41,30 +42,38 @@ export default function OrderDetailsDialog(props: DialogType) {
           <Typography>Merchant Username</Typography>
           <Typography fontWeight={'bold'}>{props.order.username}</Typography>
         </Stack>
+        {Number(props.order.sub_total_price) > 0 && (
+          <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
+            <Typography>Subtotal</Typography>
+            <Typography fontWeight={'bold'}>{`${props.order.sub_total_price} ${props.order.currency}`}</Typography>
+          </Stack>
+        )}
+        {Number(props.order.total_shipping) > 0 && (
+          <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
+            <Typography>Shipping</Typography>
+            <Typography fontWeight={'bold'}>{`${props.order.total_shipping} ${props.order.currency}`}</Typography>
+          </Stack>
+        )}
+        {Number(props.order.total_tax) > 0 && (
+          <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
+            <Typography>Tax</Typography>
+            <Typography fontWeight={'bold'}>{`${props.order.total_tax} ${props.order.currency}`}</Typography>
+          </Stack>
+        )}
+        {Number(props.order.total_tip) > 0 && (
+          <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
+            <Typography>Tip</Typography>
+            <Typography fontWeight={'bold'}>{`${props.order.total_tip} ${props.order.currency}`}</Typography>
+          </Stack>
+        )}
+        {Number(props.order.total_discounts) > 0 && (
+          <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
+            <Typography>Discounts</Typography>
+            <Typography fontWeight={'bold'}>{`${props.order.total_discounts} ${props.order.currency}`}</Typography>
+          </Stack>
+        )}
         <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
-          <Typography>Subtotal price</Typography>
-          <Typography fontWeight={'bold'}>{`${props.order.sub_total_price || 0} ${props.order.currency}`}</Typography>
-        </Stack>
-        <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
-          <Typography>Shipping</Typography>
-          <Typography fontWeight={'bold'}>{`0 ${props.order.currency}`}</Typography>
-        </Stack>
-        <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
-          <Typography>Total tax</Typography>
-          <Typography fontWeight={'bold'}>{`${props.order.total_tax || 0} ${props.order.currency}`}</Typography>
-        </Stack>
-        <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
-          <Typography>Total tip</Typography>
-          <Typography fontWeight={'bold'}>{`${props.order.total_tip_received || 0} ${
-            props.order.currency
-          }`}</Typography>
-        </Stack>
-        <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
-          <Typography>Total discounts</Typography>
-          <Typography fontWeight={'bold'}>{`${props.order.total_discounts || 0} ${props.order.currency}`}</Typography>
-        </Stack>
-        <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
-          <Typography>Total price</Typography>
+          <Typography>Total</Typography>
           <Typography fontWeight={'bold'}>{`${props.order.total_price || 0} ${props.order.currency}`}</Typography>
         </Stack>
         <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>

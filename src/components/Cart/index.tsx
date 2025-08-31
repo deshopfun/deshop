@@ -223,7 +223,7 @@ const Cart = () => {
                   Clear Cart
                 </Button>
                 <Typography mt={2} textAlign={'center'} fontWeight={'bold'}>
-                  Taxes & shipping & tip & discounts & weight
+                  Shipping & tax & tip & discounts & weight
                 </Typography>
                 <Typography textAlign={'center'}>calculated at checkout page</Typography>
               </CardContent>

@@ -10,7 +10,9 @@ type VariantType = {
   discounts: string;
   taxable: boolean;
   tax: string;
-  tipReceived: string;
+  shippable: boolean;
+  shipping: string;
+  tip: string;
   weight: string;
   weightUnit: string;
   quantity: number;

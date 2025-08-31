@@ -37,6 +37,7 @@ import {
   BorderColor,
   ChatBubbleOutline,
   ChevronRight,
+  Discount,
   FavoriteBorder,
   FavoriteBorderOutlined,
   FavoriteBorderTwoTone,
@@ -49,6 +50,7 @@ import {
   Star,
   ThumbUpAlt,
   ThumbUpOffAlt,
+  Wallet,
 } from '@mui/icons-material';
 import RecentViewCard from 'components/Card/RecentViewCard';
 import ProductRatingsDialog from 'components/Dialog/ProductRatingsDialog';
@@ -110,11 +112,12 @@ type ProductVariant = {
   position: number;
   price: string;
   discounts: string;
-  tax: string;
-  tip_received: string;
-  requires_shipping: boolean;
-  sku: string;
   taxable: boolean;
+  tax: string;
+  tip: string;
+  shippable: boolean;
+  shipping: string;
+  sku: string;
   weight: string;
   weight_unit: string;
 };
@@ -235,7 +238,7 @@ const ProductDetails = () => {
         setCurrentProductVariant({
           ...response.data,
           inventory_policy: response.data.inventory_policy === 1 ? true : false,
-          requires_shipping: response.data.requires_shipping === 1 ? true : false,
+          shippable: response.data.shippable === 1 ? true : false,
           taxable: response.data.taxable === 1 ? true : false,
         });
       } else {
@@ -379,7 +382,9 @@ const ProductDetails = () => {
       discounts: String(currentProductVariant?.discounts ?? ''),
       taxable: currentProductVariant?.taxable,
       tax: String(currentProductVariant?.tax ?? ''),
-      tipReceived: String(currentProductVariant?.tip_received ?? ''),
+      shippable: currentProductVariant?.shippable,
+      shipping: String(currentProductVariant?.shipping ?? ''),
+      tip: String(currentProductVariant?.tip ?? ''),
       weight: String(currentProductVariant?.weight ?? ''),
       weightUnit: String(currentProductVariant?.weight_unit ?? ''),
       quantity,
@@ -753,32 +758,70 @@ const ProductDetails = () => {
               </Stack>
 
               {currentProductVariant && isSelectOption && (
-                <Box mt={2}>
-                  <Stack direction={'row'} alignItems={'center'} gap={1}>
+                <Box>
+                  <Stack direction={'row'} alignItems={'center'} gap={1} py={1}>
                     <Typography variant="h5">{`${CURRENCYS.find((item) => item.name === product.currency)?.code}${
                       currentProductVariant.price
                     }`}</Typography>
                   </Stack>
-                  <Stack direction={'row'} alignItems={'center'} gap={1} mt={2}>
-                    <LocalShipping fontSize={'small'} />
-                    {currentProductVariant.requires_shipping ? (
-                      <Typography>Shipping calculated at checkout</Typography>
+
+                  <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} mt={1}>
+                    <Stack direction={'row'} alignItems={'center'} gap={1}>
+                      <LocalShipping fontSize={'small'} />
+                      <Typography>SHIPPING</Typography>
+                    </Stack>
+                    {currentProductVariant.shippable ? (
+                      <Typography fontWeight={'bold'}>
+                        {CURRENCYS.find((item) => item.name === product.currency)?.code}
+                        {parseFloat(currentProductVariant.shipping) * quantity}
+                      </Typography>
                     ) : (
-                      <Typography>Shipping for free</Typography>
+                      <Typography>Shipping free</Typography>
                     )}
                   </Stack>
-                  <Stack direction={'row'} alignItems={'center'} gap={1} mt={1}>
-                    <BorderColor fontSize={'small'} />
+
+                  <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
+                    <Stack direction={'row'} alignItems={'center'} gap={1}>
+                      <BorderColor fontSize={'small'} />
+                      <Typography>TAX</Typography>
+                    </Stack>
                     {currentProductVariant.taxable ? (
-                      <Stack direction={'row'} alignItems={'center'} gap={1}>
-                        <Typography>Tax:</Typography>
-                        <Typography fontWeight={'bold'} variant="h6">
-                          {CURRENCYS.find((item) => item.name === product.currency)?.code}
-                          {parseFloat(currentProductVariant.tax) * quantity}
-                        </Typography>
-                      </Stack>
+                      <Typography fontWeight={'bold'}>
+                        {CURRENCYS.find((item) => item.name === product.currency)?.code}
+                        {parseFloat(currentProductVariant.tax) * quantity}
+                      </Typography>
                     ) : (
-                      <Typography>Product do not include tax</Typography>
+                      <Typography>Tax free</Typography>
+                    )}
+                  </Stack>
+
+                  <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
+                    <Stack direction={'row'} alignItems={'center'} gap={1}>
+                      <Wallet fontSize={'small'} />
+                      <Typography>TIP</Typography>
+                    </Stack>
+                    {Number(currentProductVariant.tip) > 0 ? (
+                      <Typography fontWeight={'bold'}>
+                        {CURRENCYS.find((item) => item.name === product.currency)?.code}
+                        {parseFloat(currentProductVariant.tip) * quantity}
+                      </Typography>
+                    ) : (
+                      <Typography>No Tip</Typography>
+                    )}
+                  </Stack>
+
+                  <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
+                    <Stack direction={'row'} alignItems={'center'} gap={1}>
+                      <Discount fontSize={'small'} />
+                      <Typography>DISCOUNTS</Typography>
+                    </Stack>
+                    {Number(currentProductVariant.discounts) > 0 ? (
+                      <Typography fontWeight={'bold'}>
+                        {CURRENCYS.find((item) => item.name === product.currency)?.code}
+                        {parseFloat(currentProductVariant.discounts) * quantity}
+                      </Typography>
+                    ) : (
+                      <Typography>No Discounts</Typography>
                     )}
                   </Stack>
                 </Box>
@@ -826,6 +869,9 @@ const ProductDetails = () => {
                             ))}
                         </Grid>
                       </Box>
+                      <Box py={2}>
+                        <Divider />
+                      </Box>
                     </Box>
                   ))}
               </Box>
@@ -834,12 +880,13 @@ const ProductDetails = () => {
                 <>
                   {currentProductVariant && currentProductVariant?.inventory_quantity > 0 ? (
                     <>
-                      <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} mt={2} gap={2}>
-                        <Typography>Quantity</Typography>
+                      <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} gap={2}>
+                        <Typography fontWeight={'bold'}>Quantity</Typography>
                         <Input
                           fullWidth
                           startAdornment={
                             <IconButton
+                              disabled={quantity <= 1 ? true : false}
                               onClick={() => {
                                 if (quantity - 1 >= 0) {
                                   setQuantity(quantity - 1);
@@ -851,6 +898,7 @@ const ProductDetails = () => {
                           }
                           endAdornment={
                             <IconButton
+                              disabled={quantity >= currentProductVariant.inventory_quantity ? true : false}
                               onClick={() => {
                                 if (quantity + 1 <= currentProductVariant.inventory_quantity) {
                                   setQuantity(quantity + 1);
