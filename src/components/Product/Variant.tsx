@@ -31,6 +31,7 @@ import { Http } from 'utils/http/http';
 type Props = {
   product_id: number;
   options?: ProductOption[];
+  currency: string;
 };
 
 type ProductOption = {
@@ -70,6 +71,7 @@ const ProductVariant = (props: Props) => {
       props.options[0] && setOptionOneValue(props.options[0].value.split(',')[0] || '');
       props.options[1] && setOptionTwoValue(props.options[1].value.split(',')[0] || '');
       props.options[2] && setOptionThreeValue(props.options[2].value.split(',')[0] || '');
+      setCurrency(props.currency);
     }
   }, [props]);
 
@@ -101,7 +103,6 @@ const ProductVariant = (props: Props) => {
       });
 
       if (response.result) {
-        setCurrency(response.data.currency);
         setTitle(response.data.title);
         setImage(response.data.image);
         setBarcode(response.data.barcode);

@@ -1039,7 +1039,11 @@ const ProductDetails = () => {
                 />
               </CustomTabPanel>
               <CustomTabPanel value={tabValue} index={1}>
-                <ProductVariant product_id={product?.product_id} options={product?.options} />
+                <ProductVariant
+                  product_id={product?.product_id}
+                  options={product?.options}
+                  currency={product?.currency}
+                />
               </CustomTabPanel>
               <CustomTabPanel value={tabValue} index={2}>
                 <ProductRating />
