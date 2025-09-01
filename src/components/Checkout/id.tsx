@@ -47,7 +47,6 @@ type AddressType = {
   company: string;
   country: string;
   country_code: string;
-  country_name: string;
   city: string;
   province: string;
   province_code: string;
@@ -95,7 +94,7 @@ const CheckoutDetails = () => {
   const [selectPickupAddress, setSelectPickupAddress] = useState<number>(0);
 
   const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore((state) => state);
-  const { getUuid } = useUserPresistStore((state) => state);
+  const { getUuid, getIsLogin } = useUserPresistStore((state) => state);
   const { getCart, setCart } = useCartPresistStore((state) => state);
 
   const getAddress = async () => {
@@ -189,6 +188,13 @@ const CheckoutDetails = () => {
 
   const onClickPayNow = async () => {
     try {
+      if (!getIsLogin()) {
+        setSnackSeverity('error');
+        setSnackMessage('Need login');
+        setSnackOpen(true);
+        return;
+      }
+
       let items: ProductItem[] = [];
       cartList?.variant.forEach((item) => {
         items.push({
@@ -796,6 +802,15 @@ const CheckoutDetails = () => {
                         {parseFloat(item.price) * item.quantity}
                       </Typography>
                     </Stack>
+                    {item.shippable && (
+                      <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
+                        <Typography>Shipping</Typography>
+                        <Typography variant="h6">
+                          {CURRENCYS.find((c) => c.name === cartList.currency)?.code}
+                          {parseFloat(item.shipping) * item.quantity}
+                        </Typography>
+                      </Stack>
+                    )}
                     {item.taxable && (
                       <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
                         <Typography>Tax</Typography>

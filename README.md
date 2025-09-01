@@ -1,3 +1,3 @@
-# Decentralized cryptocurrency exchange.
+# Decentralized cryptocurrency trading platform
 
-Decentralized cryptocurrency exchange.
+Decentralized cryptocurrency trading platform

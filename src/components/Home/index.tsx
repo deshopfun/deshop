@@ -5,6 +5,8 @@ import {
   AlertTitle,
   Box,
   Button,
+  Card,
+  CardContent,
   Container,
   IconButton,
   LinearProgress,
@@ -24,6 +26,14 @@ const Home = () => {
 
   return (
     <Container>
+      <Card>
+        <CardContent>
+          <Typography variant="h4" textAlign={'center'}>
+            Decentralized cryptocurrency trading platform
+          </Typography>
+        </CardContent>
+      </Card>
+
       {/* <Box>
         <Box display={'flex'} alignItems={'center'}>
           <Button color={'inherit'}  endIcon={<ChevronRight  />}>

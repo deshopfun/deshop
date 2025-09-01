@@ -26,7 +26,6 @@ type AddressType = {
   company: string;
   country: string;
   country_code: string;
-  country_name: string;
   city: string;
   province: string;
   province_code: string;

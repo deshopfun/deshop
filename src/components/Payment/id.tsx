@@ -907,7 +907,7 @@ const PaymentDetails = () => {
                   <Grid size={{ xs: 12, md: 4 }}>
                     <Typography variant="h6">QUESTIONS ABOUT YOUR PRODUCT</Typography>
                     <Typography>
-                      Deshop is a decentralized cryptocurrency exchange, if you have any question regarding your
+                      Deshop is a decentralized cryptocurrency trading platform, if you have any question regarding your
                       products/goods/services please contact here.
                     </Typography>
                   </Grid>
