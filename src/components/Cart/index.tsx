@@ -15,8 +15,8 @@ const Cart = () => {
       if (cart.length > 0) {
         const newTotal = cart.reduce((total, cartItem) => {
           const cartItemTotal = cartItem.variant.reduce((itemTotal, variant) => {
-            const price = parseFloat(variant.price) || 0;
-            return itemTotal + price * variant.quantity;
+            const price = parseFloat(variant.price);
+            return Number((itemTotal + price * variant.quantity).toFixed(2));
           }, 0);
           return total + cartItemTotal;
         }, 0);
@@ -188,8 +188,8 @@ const Cart = () => {
                       <Typography fontWeight={'bold'} mb={1}>
                         {`Total: ${CURRENCYS.find((c) => c.name === item.currency)?.code}${item.variant.reduce(
                           (itemTotal, variant) => {
-                            const price = parseFloat(variant.price) || 0;
-                            return itemTotal + price * variant.quantity;
+                            const price = parseFloat(variant.price);
+                            return Number((itemTotal + price * variant.quantity).toFixed(2));
                           },
                           0,
                         )}`}

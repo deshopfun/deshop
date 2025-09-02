@@ -165,15 +165,15 @@ const CheckoutDetails = () => {
           discounts = 0;
 
         cartItem.variant.forEach((item) => {
-          price += (parseFloat(item.price) || 0) * item.quantity;
+          price += Number((parseFloat(item.price) * item.quantity).toFixed(2));
           if (item.taxable) {
-            tax += (parseFloat(item.tax) || 0) * item.quantity;
+            tax += Number((parseFloat(item.tax) * item.quantity).toFixed(2));
           }
           if (item.shippable) {
-            shipping += (parseFloat(item.shipping) || 0) * item.quantity;
+            shipping += Number((parseFloat(item.shipping) * item.quantity).toFixed(2));
           }
-          tip += (parseFloat(item.tip) || 0) * item.quantity;
-          discounts += (parseFloat(item.discounts) || 0) * item.quantity;
+          tip += Number((parseFloat(item.tip) * item.quantity).toFixed(2));
+          discounts += Number((parseFloat(item.discounts) * item.quantity).toFixed(2));
         });
         setSubTotal(String(price));
         setShipping(String(shipping));
@@ -799,7 +799,7 @@ const CheckoutDetails = () => {
                       <Typography>Price</Typography>
                       <Typography variant="h6">
                         {CURRENCYS.find((c) => c.name === cartList.currency)?.code}
-                        {parseFloat(item.price) * item.quantity}
+                        {(parseFloat(item.price) * item.quantity).toFixed(2)}
                       </Typography>
                     </Stack>
                     {item.shippable && (
@@ -807,7 +807,7 @@ const CheckoutDetails = () => {
                         <Typography>Shipping</Typography>
                         <Typography variant="h6">
                           {CURRENCYS.find((c) => c.name === cartList.currency)?.code}
-                          {parseFloat(item.shipping) * item.quantity}
+                          {(parseFloat(item.shipping) * item.quantity).toFixed(2)}
                         </Typography>
                       </Stack>
                     )}
@@ -816,7 +816,7 @@ const CheckoutDetails = () => {
                         <Typography>Tax</Typography>
                         <Typography variant="h6">
                           {CURRENCYS.find((c) => c.name === cartList.currency)?.code}
-                          {parseFloat(item.tax) * item.quantity}
+                          {(parseFloat(item.tax) * item.quantity).toFixed(2)}
                         </Typography>
                       </Stack>
                     )}
@@ -825,7 +825,7 @@ const CheckoutDetails = () => {
                         <Typography>Tip</Typography>
                         <Typography variant="h6">
                           {CURRENCYS.find((c) => c.name === cartList.currency)?.code}
-                          {parseFloat(item.tip) * item.quantity}
+                          {(parseFloat(item.tip) * item.quantity).toFixed(2)}
                         </Typography>
                       </Stack>
                     )}
@@ -834,7 +834,7 @@ const CheckoutDetails = () => {
                         <Typography>Discounts</Typography>
                         <Typography variant="h6">
                           {CURRENCYS.find((c) => c.name === cartList.currency)?.code}
-                          {parseFloat(item.discounts) * item.quantity}
+                          {(parseFloat(item.discounts) * item.quantity).toFixed(2)}
                         </Typography>
                       </Stack>
                     )}

@@ -773,7 +773,7 @@ const ProductDetails = () => {
                     {currentProductVariant.shippable ? (
                       <Typography fontWeight={'bold'}>
                         {CURRENCYS.find((item) => item.name === product.currency)?.code}
-                        {parseFloat(currentProductVariant.shipping) * quantity}
+                        {(parseFloat(currentProductVariant.shipping) * quantity).toFixed(2)}
                       </Typography>
                     ) : (
                       <Typography>Shipping free</Typography>
@@ -788,7 +788,7 @@ const ProductDetails = () => {
                     {currentProductVariant.taxable ? (
                       <Typography fontWeight={'bold'}>
                         {CURRENCYS.find((item) => item.name === product.currency)?.code}
-                        {parseFloat(currentProductVariant.tax) * quantity}
+                        {(parseFloat(currentProductVariant.tax) * quantity).toFixed(2)}
                       </Typography>
                     ) : (
                       <Typography>Tax free</Typography>
@@ -803,7 +803,7 @@ const ProductDetails = () => {
                     {Number(currentProductVariant.tip) > 0 ? (
                       <Typography fontWeight={'bold'}>
                         {CURRENCYS.find((item) => item.name === product.currency)?.code}
-                        {parseFloat(currentProductVariant.tip) * quantity}
+                        {(parseFloat(currentProductVariant.tip) * quantity).toFixed(2)}
                       </Typography>
                     ) : (
                       <Typography>No Tip</Typography>
@@ -818,7 +818,7 @@ const ProductDetails = () => {
                     {Number(currentProductVariant.discounts) > 0 ? (
                       <Typography fontWeight={'bold'}>
                         {CURRENCYS.find((item) => item.name === product.currency)?.code}
-                        {parseFloat(currentProductVariant.discounts) * quantity}
+                        {(parseFloat(currentProductVariant.discounts) * quantity).toFixed(2)}
                       </Typography>
                     ) : (
                       <Typography>No Discounts</Typography>
