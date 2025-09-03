@@ -20,19 +20,16 @@ import RecentViewCard from 'components/Card/RecentViewCard';
 import { ChevronRight } from '@mui/icons-material';
 import NowTrendingCard from 'components/Card/NowTrendingCard';
 import ExploreCard from 'components/Card/ExploreCard';
+import IntroCard from 'components/Card/IntroCard';
 
 const Home = () => {
   const router = useRouter();
 
   return (
     <Container>
-      <Card>
-        <CardContent>
-          <Typography variant="h4" textAlign={'center'}>
-            Decentralized cryptocurrency trading platform
-          </Typography>
-        </CardContent>
-      </Card>
+      <Box>
+        <IntroCard />
+      </Box>
 
       {/* <Box>
         <Box display={'flex'} alignItems={'center'}>

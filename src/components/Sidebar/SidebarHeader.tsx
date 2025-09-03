@@ -26,7 +26,7 @@ const SidebarHeader = () => {
             if (item.is_read && item.is_read === 2) {
               return total + 1;
             }
-            return total
+            return total;
           }, 0);
           setNotificationNumber(count);
         } else {
@@ -58,7 +58,7 @@ const SidebarHeader = () => {
             window.location.href = '/';
           }}
         >
-          <Stack direction={'row'} alignItems={'center'}>
+          <Stack direction={'row'} alignItems={'center'} gap={1}>
             <CustomLogo>D</CustomLogo>
             <Typography fontWeight={'bold'} color="#0098e5" fontSize={'large'}>
               Deshop

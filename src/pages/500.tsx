@@ -18,7 +18,7 @@ const Custom500 = () => {
               window.location.href = '/';
             }}
           >
-            <Stack direction={'row'} alignItems={'center'}>
+            <Stack direction={'row'} alignItems={'center'} gap={1}>
               <CustomLogo>D</CustomLogo>
               <Typography fontWeight={'bold'} color="#0098e5" fontSize={'large'}>
                 Deshop

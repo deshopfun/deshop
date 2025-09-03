@@ -14,6 +14,4 @@ export const CustomLogo = styled.div`
   font-weight: 700;
   background-color: #009fdb;
   background: linear-gradient(45deg, rgb(21 87 205) 0%, rgb(90 225 255) 100%);
-  margin-right: 10px;
-  margin-left: 4px;
 `;
