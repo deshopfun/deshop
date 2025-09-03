@@ -52,7 +52,6 @@ import {
   ThumbUpOffAlt,
   Wallet,
 } from '@mui/icons-material';
-import RecentViewCard from 'components/Card/RecentViewCard';
 import ProductRatingsDialog from 'components/Dialog/ProductRatingsDialog';
 import RefundPolicyDialog from 'components/Dialog/RefundPolicyDialog';
 import { COLLECT_TYPE, PRODUCT_TAB_DATAS, PRODUCT_TYPE } from 'packages/constants';
@@ -61,6 +60,8 @@ import ProductVariant from './Variant';
 import ProductRating from './Rating';
 import NowTrendingCard from 'components/Card/NowTrendingCard';
 import { CURRENCYS } from 'packages/constants/currency';
+import { marked } from 'marked';
+import DOMPurify from 'dompurify';
 
 type ProductType = {
   product_id: number;
@@ -70,6 +71,7 @@ type ProductType = {
   user_avatar_url: string;
   title: string;
   body_html: string;
+  render_body_html: string;
   product_type: string;
   tags: string;
   vendor: string;
@@ -187,7 +189,10 @@ const ProductDetails = () => {
       }
 
       if (response.result) {
-        setProduct(response.data);
+        setProduct({
+          ...response.data,
+          render_body_html: DOMPurify.sanitize(await marked(response.data.body_html)),
+        });
       } else {
         setSnackSeverity('error');
         setSnackMessage(response.message);
@@ -958,7 +963,9 @@ const ProductDetails = () => {
               )}
               <Box mt={2} overflow={'auto'}>
                 <Typography variant="h6">Description</Typography>
-                {product?.body_html && <Box mt={1} dangerouslySetInnerHTML={{ __html: product?.body_html }}></Box>}
+                {product?.render_body_html && (
+                  <Box mt={1} dangerouslySetInnerHTML={{ __html: product?.render_body_html }}></Box>
+                )}
               </Box>
 
               <Box mt={2}>

@@ -3,6 +3,9 @@ import Chat from 'components/Chat';
 import CheckoutDetails from 'components/Checkout/id';
 import Collect from 'components/Collect';
 import Create from 'components/Create';
+import DocsFees from 'components/Docs/Fees';
+import DocsPrivacyPolicy from 'components/Docs/PrivacyPolicy';
+import DocsTermsAndConditions from 'components/Docs/TermsAndConditions';
 import EmailConfirm from 'components/EmailConfirm';
 import Explore from 'components/Explore';
 import ForgotPassword from 'components/ForgotPassword';
@@ -205,6 +208,36 @@ export const routes: RouteType[] = [
     name: 'Manage',
     title: 'Manage',
     component: <ManageDetails />,
+    enableSidebar: true,
+    enableHomeHeader: true,
+    enableHomeFooter: true,
+    needLogin: false,
+  },
+  {
+    path: '/docs/fees',
+    name: 'Fees',
+    title: 'Fees',
+    component: <DocsFees />,
+    enableSidebar: true,
+    enableHomeHeader: true,
+    enableHomeFooter: true,
+    needLogin: false,
+  },
+  {
+    path: '/docs/privacy-policy',
+    name: 'Privacy policy',
+    title: 'Privacy policy',
+    component: <DocsPrivacyPolicy />,
+    enableSidebar: true,
+    enableHomeHeader: true,
+    enableHomeFooter: true,
+    needLogin: false,
+  },
+  {
+    path: '/docs/terms-and-conditions',
+    name: 'Terms and conditions',
+    title: 'Terms and conditions',
+    component: <DocsTermsAndConditions />,
     enableSidebar: true,
     enableHomeHeader: true,
     enableHomeFooter: true,

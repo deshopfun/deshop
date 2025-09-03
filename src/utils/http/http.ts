@@ -1,6 +1,12 @@
 import { IS_DEVELOPMENT } from 'packages/constants';
 
 export class Http {
+  static httpClient = IS_DEVELOPMENT ? 'http://localhost:9999' : 'https://deshop.fun';
+
+  static privacy_policy_md = this.httpClient + '/docs/privacy_policy.md';
+  static terms_and_conditions_md = this.httpClient + '/docs/terms_and_conditions.md';
+  static fees_md = this.httpClient + '/docs/fees.md';
+
   static httpPath = IS_DEVELOPMENT ? 'http://127.0.0.1:8899/api' : 'https://api.deshop.fun/api';
 
   static test = this.httpPath + '/client/test';
