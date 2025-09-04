@@ -150,13 +150,13 @@ const OrderDetails = () => {
                   Base info
                 </Typography>
                 <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
-                  <Typography>Customer username</Typography>
+                  <Typography>Buyer username</Typography>
                   <Link href={`/profile/${order?.customer_username}`}>
                     <Typography>{order?.customer_username}</Typography>
                   </Link>
                 </Stack>
                 <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
-                  <Typography>Customer email</Typography>
+                  <Typography>Buyer email</Typography>
                   <Typography fontWeight={'bold'}>{order?.customer_email}</Typography>
                 </Stack>
                 {Number(order?.sub_total_price) > 0 && (

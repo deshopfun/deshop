@@ -131,14 +131,14 @@ export function OrderStatusText(
   shipping_type: number,
 ): string {
   if (!payment_confirm) {
-    return alignment === 'buy' ? 'To be paid' : 'Waiting for payment by customers';
+    return alignment === 'buy' ? 'To be paid' : 'Waiting for payment by buyers';
   }
 
   if (!shipping_confirm) {
     if (shipping_type === 1) {
       return alignment === 'buy' ? 'Goods to be received' : 'Waiting for delivery';
     }
-    return alignment === 'buy' ? 'To be picked up' : 'Waiting for customers to pick up';
+    return alignment === 'buy' ? 'To be picked up' : 'Waiting for buyers to pick up';
   }
 
   return confirm ? 'Order successful' : 'Waiting for order to be confirmed';
@@ -153,7 +153,7 @@ export function OrderShippingStatusText(
     if (shipping_type === 1) {
       return alignment === 'buy' ? 'Goods to be received' : 'Waiting for delivery';
     }
-    return alignment === 'buy' ? 'To be picked up' : 'Waiting for customers to pick up';
+    return alignment === 'buy' ? 'To be picked up' : 'Waiting for buyers to pick up';
   } else {
     return 'Shipping transaction successful';
   }

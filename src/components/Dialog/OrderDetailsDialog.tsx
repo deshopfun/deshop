@@ -35,11 +35,11 @@ export default function OrderDetailsDialog(props: DialogType) {
       <DialogTitle>Order details</DialogTitle>
       <DialogContent>
         <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
-          <Typography>Customer Username</Typography>
+          <Typography>Buyer Username</Typography>
           <Typography fontWeight={'bold'}>{props.order.customer_username}</Typography>
         </Stack>
         <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
-          <Typography>Merchant Username</Typography>
+          <Typography>Seller Username</Typography>
           <Typography fontWeight={'bold'}>{props.order.username}</Typography>
         </Stack>
         {Number(props.order.sub_total_price) > 0 && (

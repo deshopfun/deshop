@@ -740,7 +740,7 @@ const ProductVariant = (props: Props) => {
                 }}
               />
               <Typography>
-                Inventory policy(whether customers are allowed to place an order for the product variant when it's out
+                Inventory policy(whether buyers are allowed to place an order for the product variant when it's out
                 of stock)
               </Typography>
             </Stack>

@@ -1,6 +1,6 @@
 # Privacy Notice
 
-<u>Last Updated: 3 September 2025</u>
+<u>Last Updated: 5 September 2025</u>
 
 This "**Privacy Notice**" describes the privacy practices of Deshop and Deshop Affiliates (collectively, "**Deshop**", "**our**", "**us**" or "**we**"), in connection with the Sites and the Deshop Platform (collectively, "**Services**"). This Privacy Notice also explains the rights and choices available to individuals with respect to their information.
 
@@ -21,11 +21,8 @@ A Personal Data controller is a person or organisation who controls the collecti
 The types of Personal Data that we may collect from you or through third parties will depend on our interactions with you and may include:
 
 - Financial information such as your wallet addresses;
-
 - Transaction information such as the wallet addresses of senders and recipients of Digital Assets, activities on the Deshop Platform, your inquiries and our responses;
-
 - Usage Data which can include your IP address, your country of origin, the features of the browser or operating system utilised by you, how you use the Deshop Platform, among other identifiers;
-
 - Other personal data or commercial and/identification information that we, in our sole discretion, may deem necessary to comply with various applicable anti-money laundering laws and regulations.
 
 We may also collect Personal Data about you from third parties and other sources such as publicly available sources of information.
@@ -53,11 +50,8 @@ For the avoidance of doubt, we do not combine or link data or information gather
 We use both session Cookies (which expire once you close your web browser) and persistent Cookies (which stay on your device until you delete them). To make it easier for you to understand why we need them, the Cookies we use on our Site can be grouped into the following categories:
 
 - Strictly Necessary: These Cookies are necessary for the Site to work properly. They include any essential authentication and authorisation Cookies for our Site.
-
 - Functionality: These Cookies enable technical performance and allow us to remember the choices you make while browsing our Site, including any preferences you set. They also include sign-in and authentication Cookies and IDs that enable you to return without additional sign-in.
-
 - Performance/Analytical: These Cookies allow us to collect certain information about how you navigate the Site and services running on your device. They help us understand which areas you use and what we can do to improve them.
-
 - Targeting: These Cookies are used to deliver relevant information related to our Site to an identified machine or other device (not a named or otherwise identifiable person) which has previously been used to visit our Site. Some of these types of Cookies on our Site are operated by third parties with our permission and are used to identify advertising sources that are effectively driving customers to our Site.
 
 ## How to Control and Delete Cookies
@@ -89,11 +83,8 @@ We may process Personal Data relating to you if one of the following applies:
 You have given your consent for one or more specific purposes. Note: Under some legislation we may be allowed to process Personal Data until you object to such processing ("opt-out"), without having to rely on consent or any other of the following legal bases:
 
 - Provision of Personal Data is necessary for the performance of an agreement with you and/or for any pre-contractual obligations thereof;
-
 - Processing is necessary for compliance with a legal obligation to which we are subject;
-
 - Processing is related to a task that is carried out in the public interest or in the exercise of official authority vested in us;
-
 - Processing is necessary for the purposes of the legitimate interests pursued by us or by a third party.
 
 ## How We Use Personal Data
@@ -101,39 +92,22 @@ You have given your consent for one or more specific purposes. Note: Under some 
 Data we collect about you is collected to:
 
 - Provide the Site and Deshop Platform and customer support you request;
-
 - Process transactions and send notices about your transactions on the Deshop Platform;
-
 - Detect any malicious or fraudulent activity;
-
 - Enable us to monitor and analyse your behaviour ("Analytics");
-
 - Beta test certain features or the Deshop Platform;
-
 - Contact you;
-
 - Display content from external platforms;
-
 - Handle productivity related activities;
-
 - Provide social features;
-
 - Optimise traffic and performance of the Deshop Platform;
-
 - Allow us to register you as a user of the Deshop Platform and authenticate your credentials;
-
 - Comply with legal obligations and respond to enforcement requests;
-
 - Protect the rights and interests of Deshop and Deshop Affiliates (or those of our users and third parties);
-
 - Infrastructure monitoring;
-
 - Interaction with external social networks and platforms;
-
 - Location-based interactions;
-
 - Tag management (tags are pieces of code that allow us to better analyse and track activities on the Deshop Platform);
-
 - Engage in traffic optimisation and distribution.
 
 ## How We Share Personal Data
@@ -181,17 +155,11 @@ For purposes of relevant data protection legislation, Deshop is the Personal Dat
 Residents of the EEA and the UK are granted certain rights over their Personal Data, which include:
 
 - The right to obtain confirmation of the Personal Data we process.
-
 - The right to rectify inaccurate Personal Data that we process.
-
 - The right to request erasure of your Personal Data, subject to exceptions provided under the law.
-
 - The right to restrict certain processing of your Personal Data, so long as the processing is not necessary for the performance of or in relation to a contract or service to which you are a party.
-
 - The right to receive your Personal Data in a structured, commonly used and machine readable format
-
 - The right to object to the processing of your Personal Data, including the right to object to automated decision-making and profiling.
-
 - The right to withdraw your consent where you have previously given it for the processing of your Personal Data
 
 You are generally entitled to access Personal Data that we hold about you. If you request access to your Personal Data, in ordinary circumstances we will give you full access to your Personal Data. Depending on the nature of the request, we may charge for providing access to this information, however such charge will not be excessive. However, there may be some legal or administrative reasons to deny access. If we refuse your request to access your Personal Data, we will provide you with reasons for the refusal where we are required by law to give those reasons.

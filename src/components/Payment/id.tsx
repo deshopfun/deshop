@@ -568,13 +568,13 @@ const PaymentDetails = () => {
                             However, If your money still does not appear to have been received, please contact us. With
                             your,
                           </Typography>
-                          <Typography>1, Transaction hash/link</Typography>
+                          <Typography>1 Transaction hash/link</Typography>
                           <Stack direction={'row'} alignItems={'center'} gap={1}>
-                            <Typography>2, order id:</Typography>
+                            <Typography>2 Order id:</Typography>
                             <Typography fontWeight={'bold'}>{order?.order_id}</Typography>
                           </Stack>
                           <Typography>
-                            at <Link href="#">Contact telegram</Link>
+                            at <Link href="https://t.me/deshopfunsupport" target="_blank">Contact telegram</Link>
                           </Typography>
                         </Box>
                         <Divider />
@@ -896,27 +896,49 @@ const PaymentDetails = () => {
                   <Grid size={{ xs: 12, md: 4 }}>
                     <Typography variant="h6">FAQ</Typography>
                     <Typography>
-                      Q: I made a payment and tried to contact the store owner/merchant, but they haven't responded.
-                      What should I do?
+                      Q: I made a payment and tried to contact the seller, but they haven't responded. What should I do?
                     </Typography>
                     <Typography>A: Please reach out to our telegram support for assistance.</Typography>
-                    <Typography mt={1}>@Deshop</Typography>
-                    <Typography>Fait to crypto exchange rate(Live)</Typography>
-                    <Typography>Deshop privacy policy</Typography>
+                    <Stack gap={1}>
+                      <Link color={'textPrimary'} href="https://t.me/deshopfunsupport" target="_blank">
+                        @Deshop
+                      </Link>
+                      <Link color={'textPrimary'} href="#">
+                        Fait to crypto exchange rate(Live)
+                      </Link>
+                      <Link color={'textPrimary'} href="/docs/privacy-policy">
+                        Deshop privacy policy
+                      </Link>
+                    </Stack>
                   </Grid>
                   <Grid size={{ xs: 12, md: 4 }}>
                     <Typography variant="h6">QUESTIONS ABOUT YOUR PRODUCT</Typography>
                     <Typography>
                       Deshop is a decentralized cryptocurrency trading platform, if you have any question regarding your
-                      products/goods/services please contact here.
+                      products/orders/payments/services please
                     </Typography>
+                    <Link color={'textPrimary'} href="https://t.me/deshopfunsupport" target="_blank">
+                      contact me
+                    </Link>
                   </Grid>
                   <Grid size={{ xs: 12, md: 4 }}>
                     <Stack direction={'row'} alignItems={'center'} gap={2}>
-                      <img src={'/images/default_avatar.png'} alt={'image'} loading="lazy" width={80} height={80} />
-                      <img src={'/images/default_avatar.png'} alt={'image'} loading="lazy" width={80} height={80} />
+                      <img
+                        src={'/images/ssl_secure_connection.png'}
+                        alt={'image'}
+                        loading="lazy"
+                        width={100}
+                        height={50}
+                      />
+                      <img
+                        src={'/images/ssl_secure_connection.png'}
+                        alt={'image'}
+                        loading="lazy"
+                        width={100}
+                        height={50}
+                      />
                     </Stack>
-                    <Typography mt={1}>Serial Number: 123123123123123</Typography>
+                    {/* <Typography mt={1}>Serial Number: 123123123123123</Typography> */}
                   </Grid>
                 </Grid>
               </Box>

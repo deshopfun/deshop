@@ -1,5 +1,3 @@
 # Fees
 
-<u>Last Updated: 3 September 2025</u>
-
-These Terms of Use constitute a legally 
+<u>Last Updated: 5 September 2025</u>
