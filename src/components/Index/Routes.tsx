@@ -19,6 +19,7 @@ import PaymentDetails from 'components/Payment/id';
 import ProductDetails from 'components/Product/id';
 import ProfileDetails from 'components/Profile/id';
 import Register from 'components/Register';
+import ReportProductDetails from 'components/Report/Products/id';
 import Support from 'components/Support';
 
 export type RouteType = {
@@ -238,6 +239,16 @@ export const routes: RouteType[] = [
     name: 'Terms and conditions',
     title: 'Terms and conditions',
     component: <DocsTermsAndConditions />,
+    enableSidebar: true,
+    enableHomeHeader: true,
+    enableHomeFooter: true,
+    needLogin: false,
+  },
+  {
+    path: '/report/products/[id]',
+    name: 'ReportProductDetails',
+    title: 'ReportProductDetails',
+    component: <ReportProductDetails />,
     enableSidebar: true,
     enableHomeHeader: true,
     enableHomeFooter: true,

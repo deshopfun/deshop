@@ -21,6 +21,12 @@ export const COLLECT_TYPE = {
   CHAT: 3,
 };
 
+export const REPORT_TYPE = {
+  PRODUCT: 1,
+  LIVE: 2,
+  CHAT: 3,
+};
+
 export const SHIPPING_TYPE = {
   DELIVERY: 1,
   PICKUP: 2,

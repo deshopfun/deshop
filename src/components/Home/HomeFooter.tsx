@@ -1,9 +1,12 @@
 import { Container, Link, Stack, Typography } from '@mui/material';
+import { useRouter } from 'next/router';
 
 const HomeFooter = () => {
+  const router = useRouter();
+
   return (
     <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} p={4}>
-      <Typography>© deshop.fun 2025</Typography>
+      <Typography width={200}>© deshop.fun 2025</Typography>
       <Stack direction={'row'} alignItems={'center'} justifyContent={'center'} gap={1}>
         <Link color={'textPrimary'} href="/docs/privacy-policy">
           Privacy policy
@@ -25,9 +28,13 @@ const HomeFooter = () => {
           Tech updates
         </Link>
       </Stack>
-      <Link underline={'none'} color={'textPrimary'} href="">
-        Report
-      </Link>
+      <Stack width={200}>
+        {router.pathname === '/products/[id]' && router.query.id && (
+          <Link underline={'none'} color={'textPrimary'} href={`/report/products/${router.query.id}`} textAlign={'right'}>
+            Report
+          </Link>
+        )}
+      </Stack>
     </Stack>
   );
 };

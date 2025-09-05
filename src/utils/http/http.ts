@@ -24,6 +24,7 @@ export class Http {
   static order_by_id = this.httpPath + '/client/order-by-id';
   static transaction_paste_tx_id = this.httpPath + '/client/transaction-paste-tx-id';
   static home_stat = this.httpPath + '/client/home-stat';
+  static report = this.httpPath + '/client/report';
 
   // upload
   static upload_file = this.httpPath + '/client/upload-file';

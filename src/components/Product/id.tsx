@@ -721,7 +721,9 @@ const ProductDetails = () => {
                   <MenuItem onClick={() => {}}>
                     <Stack direction={'row'} alignItems={'center'} gap={1}>
                       <HelpOutline color={'error'} fontSize={'small'} />
-                      <Typography color={'error'}>Report product</Typography>
+                      <Link color={'error'} href={`/report/products/${product.product_id}`} underline='none'>
+                        Report product
+                      </Link>
                     </Stack>
                   </MenuItem>
                 </Menu>
