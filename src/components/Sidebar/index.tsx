@@ -2,7 +2,16 @@ import { useRouter } from 'next/router';
 import { useState } from 'react';
 import { Menu, menuClasses, MenuItem, MenuItemStyles, Sidebar, SubMenu } from 'react-pro-sidebar';
 import { Box, Button, Icon, Link, Stack, SvgIcon, Typography } from '@mui/material';
-import { Home, VideoCall, Chat, AccountCircle, SupportAgent, MoreVert, Explore } from '@mui/icons-material';
+import {
+  Home,
+  VideoCall,
+  Chat,
+  AccountCircle,
+  SupportAgent,
+  MoreVert,
+  Explore,
+  CurrencyBitcoin,
+} from '@mui/icons-material';
 import SidebarHeader from './SidebarHeader';
 
 type Theme = 'light' | 'dark';
@@ -133,6 +142,13 @@ const HomeSidebar = () => {
               component={<Link href={'/explore'} />}
             >
               Explore
+            </MenuItem>
+            <MenuItem
+              icon={<CurrencyBitcoin />}
+              active={router.pathname === '/blockchain' ? true : false}
+              component={<Link href={'/blockchain'} />}
+            >
+              Blockchain
             </MenuItem>
             <MenuItem
               icon={<VideoCall />}

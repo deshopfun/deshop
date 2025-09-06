@@ -1,3 +1,4 @@
+import Blockchain from 'components/Blockchain';
 import Cart from 'components/Cart';
 import Chat from 'components/Chat';
 import CheckoutDetails from 'components/Checkout/id';
@@ -249,6 +250,16 @@ export const routes: RouteType[] = [
     name: 'ReportProductDetails',
     title: 'ReportProductDetails',
     component: <ReportProductDetails />,
+    enableSidebar: true,
+    enableHomeHeader: true,
+    enableHomeFooter: true,
+    needLogin: false,
+  },
+  {
+    path: '/blockchain',
+    name: 'Blockchain',
+    title: 'Blockchain',
+    component: <Blockchain />,
     enableSidebar: true,
     enableHomeHeader: true,
     enableHomeFooter: true,
