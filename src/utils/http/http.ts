@@ -25,6 +25,7 @@ export class Http {
   static transaction_paste_tx_id = this.httpPath + '/client/transaction-paste-tx-id';
   static home_stat = this.httpPath + '/client/home-stat';
   static report = this.httpPath + '/client/report';
+  static blockchainOrder = this.httpPath + '/client/blockchain-order';
 
   // upload
   static upload_file = this.httpPath + '/client/upload-file';

@@ -504,7 +504,7 @@ export const BLOCKCHAINNAMES: BLOCKCHAIN[] = [
     explorerUrl: 'https://explorer.solana.com',
     websiteUrl: 'https://solana.com',
     coins: SOLANA_COINS,
-    rpc: ['https://solana-mainnet.g.alchemy.com/v2/7aSbxCv3DXvyH8Xno06Mer9tEX2LFSD0'],
+    rpc: [],
     icon: require('assets/chain/solana.svg'),
   },
   {
