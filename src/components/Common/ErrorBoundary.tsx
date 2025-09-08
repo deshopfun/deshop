@@ -2,13 +2,13 @@ import Custom500 from 'pages/500';
 import type { ReactNode } from 'react';
 import React, { Component } from 'react';
 
-interface Props {
+type Props = {
   children?: ReactNode;
-}
+};
 
-interface State {
+type State = {
   hasError: boolean;
-}
+};
 
 class ErrorBoundary extends Component<Props, State> {
   state = {

@@ -1,10 +1,10 @@
-import { Box, Typography } from '@mui/material';
+import { Box, Container, Typography } from '@mui/material';
 
 const Support = () => {
   return (
-    <Box>
-      <Typography>Support</Typography>
-    </Box>
+    <Container>
+      <Typography variant="h6">Support</Typography>
+    </Container>
   );
 };
 

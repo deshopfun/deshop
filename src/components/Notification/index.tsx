@@ -20,17 +20,7 @@ import { useEffect, useState } from 'react';
 import axios from 'utils/http/axios';
 import { Http } from 'utils/http/http';
 import { NOTIFICATIONS } from 'packages/constants/notification';
-
-type NotificationType = {
-  notification_id: number;
-  title: string;
-  description: string;
-  content: string;
-  url: string;
-  notification_type: number;
-  is_read: number;
-  create_time: number;
-};
+import { NotificationType } from 'utils/types';
 
 const Notification = () => {
   const [notifications, setNotifications] = useState<NotificationType[]>([]);

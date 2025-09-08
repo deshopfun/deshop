@@ -27,16 +27,12 @@ import { CURRENCYS } from 'packages/constants/currency';
 import { useEffect, useState } from 'react';
 import axios from 'utils/http/axios';
 import { Http } from 'utils/http/http';
+import { ProductOptionType } from 'utils/types';
 
 type Props = {
   product_id: number;
-  options?: ProductOption[];
+  options?: ProductOptionType[];
   currency: string;
-};
-
-type ProductOption = {
-  name: string;
-  value: string;
 };
 
 const ProductVariant = (props: Props) => {
@@ -58,7 +54,7 @@ const ProductVariant = (props: Props) => {
   const [tip, setTip] = useState<string>('');
   const [weight, setWeight] = useState<string>('');
   const [weightUnit, setWeightUnit] = useState<string>('');
-  const [options, setOptions] = useState<ProductOption[]>([]);
+  const [options, setOptions] = useState<ProductOptionType[]>([]);
   const [optionOneValue, setOptionOneValue] = useState<string>('');
   const [optionTwoValue, setOptionTwoValue] = useState<string>('');
   const [optionThreeValue, setOptionThreeValue] = useState<string>('');
@@ -740,8 +736,8 @@ const ProductVariant = (props: Props) => {
                 }}
               />
               <Typography>
-                Inventory policy(whether buyers are allowed to place an order for the product variant when it's out
-                of stock)
+                Inventory policy(whether buyers are allowed to place an order for the product variant when it's out of
+                stock)
               </Typography>
             </Stack>
           </CardContent>

@@ -14,28 +14,12 @@ import { useSnackPresistStore } from 'lib';
 import { useState } from 'react';
 import axios from 'utils/http/axios';
 import { Http } from 'utils/http/http';
-
-type ShippingType = {
-  address_one: string;
-  address_two: string;
-  city: string;
-  company: string;
-  country: string;
-  country_code: string;
-  email: string;
-  first_name: string;
-  last_name: string;
-  phone: string;
-  province: string;
-  province_code: string;
-  shipping_type: number;
-  zip: string;
-};
+import { AddressType } from 'utils/types';
 
 type DialogType = {
   orderId: number;
   confirmNumber: string;
-  shipping: ShippingType;
+  shipping: AddressType;
   openDialog: boolean;
   handleCloseDialog: () => Promise<void>;
 };

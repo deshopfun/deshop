@@ -37,30 +37,7 @@ import { COUNTRYPROVINCES } from 'packages/constants/countryState';
 import { SHIPPING_TYPE } from 'packages/constants';
 import { CURRENCYS } from 'packages/constants/currency';
 import { IsValidEmail } from 'utils/verify';
-
-type AddressType = {
-  address_id: number;
-  first_name: string;
-  last_name: string;
-  phone: string;
-  email: string;
-  company: string;
-  country: string;
-  country_code: string;
-  city: string;
-  province: string;
-  province_code: string;
-  address_one: string;
-  address_two: string;
-  zip: string;
-  is_default: number;
-};
-
-type ProductItem = {
-  product_id: number;
-  option: string;
-  quantity: number;
-};
+import { AddressType, ProductItemType } from 'utils/types';
 
 const CheckoutDetails = () => {
   const router = useRouter();
@@ -195,7 +172,7 @@ const CheckoutDetails = () => {
         return;
       }
 
-      let items: ProductItem[] = [];
+      let items: ProductItemType[] = [];
       cartList?.variant.forEach((item) => {
         items.push({
           product_id: item.productId,

@@ -18,30 +18,7 @@ import axios from 'utils/http/axios';
 import { Http } from 'utils/http/http';
 import { useEffect, useState } from 'react';
 import { REPORT, REPORT_TYPE, REPORTS } from 'packages/constants';
-
-type ProductImage = {
-  src: string;
-  width: number;
-  height: number;
-};
-
-type ProductType = {
-  product_id: number;
-  user_uuid: string;
-  user_email: string;
-  username: string;
-  user_avatar_url: string;
-  title: string;
-  body_html: string;
-  render_body_html: string;
-  product_type: string;
-  tags: string;
-  vendor: string;
-  currency: string;
-  product_status: number;
-  collect_status: number;
-  images: ProductImage[];
-};
+import { ProductType } from 'utils/types';
 
 const ReportProductDetails = () => {
   const router = useRouter();

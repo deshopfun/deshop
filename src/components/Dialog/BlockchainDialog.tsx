@@ -15,31 +15,8 @@ import {
 import Link from 'next/link';
 import { CHAINIDS } from 'packages/constants';
 import { OmitMiddleString } from 'utils/strings';
+import { TransactionType } from 'utils/types';
 import { FindChainNamesByChainids, GetBlockchainAddressUrlByChainIds, GetBlockchainTxUrlByChainIds } from 'utils/web3';
-
-type BlockchainType = {
-  rate: string;
-  chain_id: number;
-  hash: string;
-  address: string;
-  from_address: string;
-  to_address: string;
-  token: string;
-  crypto_amount: string;
-  block_timestamp: number;
-};
-
-type TransactionType = {
-  select: number;
-  transaction_id: number;
-  amount: string;
-  currency: number;
-  gateway: string;
-  message: string;
-  source_name: number;
-  transaction_status: number;
-  blockchain: BlockchainType;
-};
 
 type DialogType = {
   currency: string;

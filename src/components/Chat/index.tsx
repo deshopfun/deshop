@@ -1,10 +1,10 @@
-import { Box, Typography } from '@mui/material';
+import { Box, Container, Typography } from '@mui/material';
 
 const Chat = () => {
   return (
-    <Box>
-      <Typography>Chat</Typography>
-    </Box>
+    <Container>
+      <Typography variant="h6">Chat</Typography>
+    </Container>
   );
 };
 

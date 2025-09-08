@@ -9,44 +9,8 @@ import ProfileProduct from './Product';
 import EditProfileDialog from 'components/Dialog/EditProfileDialog';
 import ProfileRepile from './Repile';
 import ProfileFollow from './Follow';
-
-type UserType = {
-  profile: ProfileType;
-  products: ProductType[];
-};
-
-type ProfileType = {
-  uuid: string;
-  avatar_url: string;
-  bio: string;
-  username: string;
-  email: string;
-  invitation_code: string;
-  created_time: number;
-};
-
-type ProductType = {
-  product_id: number;
-  title: string;
-  body_html: string;
-  product_type: string;
-  tags: string;
-  vendor: string;
-  product_status: number;
-  images: ProductImage[];
-  options: ProductOption[];
-};
-
-type ProductImage = {
-  src: string;
-  width: number;
-  height: number;
-};
-
-type ProductOption = {
-  name: string;
-  value: string;
-};
+import { UserType } from 'utils/types';
+import { a11yProps, CustomTabPanel } from 'components/Tab';
 
 const ProfileDetails = () => {
   const router = useRouter();
@@ -56,7 +20,7 @@ const ProfileDetails = () => {
   const [tabValue, setTabValue] = useState(0);
   const [openEditProfileDialog, setOpenEditProfileDialog] = useState<boolean>(false);
 
-  const { getUuid } = useUserPresistStore((state) => state);
+  const { getUuid, getIsLogin } = useUserPresistStore((state) => state);
   const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore((state) => state);
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
@@ -190,9 +154,11 @@ const ProfileDetails = () => {
           </CustomTabPanel>
         </Grid>
         <Grid size={{ xs: 12, md: 4 }}>
-          <Typography variant="h6">Who to follow</Typography>
+          {getIsLogin() && (
+            <Box>
+              <Typography variant="h6">Who to follow</Typography>
 
-          {/* <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} mt={2}>
+              {/* <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} mt={2}>
             <Stack direction={'row'} alignItems={'center'}>
               <Avatar sx={{ width: 40, height: 40 }} alt="Avatar" src={'/images/default_avatar.png'} />
               <Box ml={2}>
@@ -208,6 +174,8 @@ const ProfileDetails = () => {
               Follow
             </Button>
           </Stack> */}
+            </Box>
+          )}
         </Grid>
       </Grid>
 
@@ -223,32 +191,3 @@ const ProfileDetails = () => {
 };
 
 export default ProfileDetails;
-
-interface TabPanelProps {
-  children?: React.ReactNode;
-  index: number;
-  value: number;
-}
-
-function CustomTabPanel(props: TabPanelProps) {
-  const { children, value, index, ...other } = props;
-
-  return (
-    <Box
-      role="tabpanel"
-      hidden={value !== index}
-      id={`simple-tabpanel-${index}`}
-      aria-labelledby={`simple-tab-${index}`}
-      {...other}
-    >
-      {value === index && <Box sx={{ p: 3 }}>{children}</Box>}
-    </Box>
-  );
-}
-
-function a11yProps(index: number) {
-  return {
-    id: `simple-tab-${index}`,
-    'aria-controls': `simple-tabpanel-${index}`,
-  };
-}

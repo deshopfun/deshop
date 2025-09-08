@@ -11,20 +11,8 @@ import ManageAddress from './Address';
 import ManageNotification from './Notification';
 import ManageSetting from './Setting';
 import ManageProduct from './Product';
-
-type ProfileType = {
-  uuid: string;
-  avatar_url: string;
-  bio: string;
-  username: string;
-  email: string;
-  invitation_code: string;
-  created_time: number;
-};
-
-type UserType = {
-  profile: ProfileType;
-};
+import { UserType } from 'utils/types';
+import { a11yProps, CustomTabPanel } from 'components/Tab';
 
 const ManageDetails = () => {
   const router = useRouter();
@@ -67,9 +55,7 @@ const ManageDetails = () => {
       const response: any = await axios.get(Http.user_manage);
 
       if (response.result) {
-        setUser({
-          profile: response.data.profile,
-        });
+        setUser(response.data);
       } else {
         setSnackSeverity('error');
         setSnackMessage(response.message);
@@ -139,32 +125,3 @@ const ManageDetails = () => {
 };
 
 export default ManageDetails;
-
-interface TabPanelProps {
-  children?: React.ReactNode;
-  index: number;
-  value: number;
-}
-
-function CustomTabPanel(props: TabPanelProps) {
-  const { children, value, index, ...other } = props;
-
-  return (
-    <Box
-      role="tabpanel"
-      hidden={value !== index}
-      id={`simple-tabpanel-${index}`}
-      aria-labelledby={`simple-tab-${index}`}
-      {...other}
-    >
-      {value === index && <Box sx={{ p: 3 }}>{children}</Box>}
-    </Box>
-  );
-}
-
-function a11yProps(index: number) {
-  return {
-    id: `simple-tab-${index}`,
-    'aria-controls': `simple-tabpanel-${index}`,
-  };
-}

@@ -4,19 +4,10 @@ import { CURRENCYS } from 'packages/constants/currency';
 import { useEffect, useState } from 'react';
 import axios from 'utils/http/axios';
 import { Http } from 'utils/http/http';
-
-type UserType = {
-  avatar_url: string;
-  username: string;
-  email: string;
-  invitation_code: string;
-  bio: string;
-  currency: string;
-  created_time: number;
-};
+import { ProfileType } from 'utils/types';
 
 const ManageSetting = () => {
-  const [user, setUser] = useState<UserType>();
+  const [user, setUser] = useState<ProfileType>();
   const [currency, setCurrency] = useState<string>('');
 
   const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore((state) => state);

@@ -22,17 +22,7 @@ import ProfileDetails from 'components/Profile/id';
 import Register from 'components/Register';
 import ReportProductDetails from 'components/Report/Products/id';
 import Support from 'components/Support';
-
-export type RouteType = {
-  path: string;
-  name: string;
-  title: string;
-  component: any;
-  enableSidebar: boolean;
-  enableHomeHeader: boolean;
-  enableHomeFooter: boolean;
-  needLogin: boolean;
-};
+import { RouteType } from 'utils/types';
 
 export const routes: RouteType[] = [
   {
@@ -113,7 +103,7 @@ export const routes: RouteType[] = [
     enableSidebar: true,
     enableHomeHeader: true,
     enableHomeFooter: true,
-    needLogin: true,
+    needLogin: false,
   },
   {
     path: '/profile/[id]',

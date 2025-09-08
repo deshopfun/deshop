@@ -20,26 +20,17 @@ import { useEffect, useState } from 'react';
 import { Http } from 'utils/http/http';
 import axios from 'utils/http/axios';
 import { useSnackPresistStore } from 'lib';
-
-type ProductRating = {
-  username: string;
-  rating_id: number;
-  product_option: string;
-  number: number;
-  image: string;
-  body: string;
-  create_time: number;
-};
+import { RatingType } from 'utils/types';
 
 type DialogType = {
   product_id: number;
-  ratings: ProductRating[];
+  ratings: RatingType[];
   openDialog: boolean;
   setOpenDialog: (value: boolean) => void;
 };
 
 export default function ProductRatingsDialog(props: DialogType) {
-  const [ratings, setRatings] = useState<ProductRating[]>([]);
+  const [ratings, setRatings] = useState<RatingType[]>([]);
   const [reviewSearch, setReviewSearch] = useState<string>('');
   const [selectSortBy, setSelectSortBy] = useState<string>('');
   const [selectRating, setSelectRating] = useState<string>('');

@@ -1,21 +1,5 @@
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Stack, Typography } from '@mui/material';
-
-type OrderType = {
-  customer_username: string;
-  username: string;
-  sub_total_price: string;
-  total_discounts: string;
-  total_tax: string;
-  total_tip: string;
-  total_shipping: string;
-  total_price: string;
-  currency: string;
-  confirmed: number;
-  payment_confirmed: number;
-  shipping_confirmed: number;
-  create_time: number;
-  update_time: number;
-};
+import { OrderType } from 'utils/types';
 
 type DialogType = {
   order: OrderType;

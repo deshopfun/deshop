@@ -21,6 +21,7 @@ import { FILE_TYPE, PRODUCT_TYPE } from 'packages/constants';
 import { useEffect, useState } from 'react';
 import axios from 'utils/http/axios';
 import { Http } from 'utils/http/http';
+import { ProductImageType, ProductOptionType } from 'utils/types';
 
 type Props = {
   product_id: number;
@@ -29,20 +30,9 @@ type Props = {
   productType?: string;
   tags?: string;
   description?: string;
-  options?: ProductOption[];
-  images?: ProductImage[];
+  options?: ProductOptionType[];
+  images?: ProductImageType[];
   productStatus?: number;
-};
-
-type ProductImage = {
-  src: string;
-  width: number;
-  height: number;
-};
-
-type ProductOption = {
-  name: string;
-  value: string;
 };
 
 const Product = (props: Props) => {
@@ -195,7 +185,7 @@ const Product = (props: Props) => {
 
   const onClickUpdateProductOption = async () => {
     try {
-      const productOption: ProductOption[] = [];
+      const productOption: ProductOptionType[] = [];
       if (optionOne && optionOneValue && optionOne != '' && optionOneValue != '') {
         productOption.push({
           name: optionOne,
@@ -247,7 +237,7 @@ const Product = (props: Props) => {
 
   const onClickUpdateProductImage = async () => {
     try {
-      const productImages: ProductImage[] = [];
+      const productImages: ProductImageType[] = [];
       if (imageList && imageList.length > 0) {
         imageList.forEach((item) => {
           productImages.push({

@@ -4,14 +4,7 @@ import { useSnackPresistStore } from 'lib';
 import { useEffect, useState } from 'react';
 import axios from 'utils/http/axios';
 import { Http } from 'utils/http/http';
-
-type CollectType = {
-  bind_id: number;
-  collect_type: number;
-  title: string;
-  description: string;
-  image_srcs: string[];
-};
+import { CollectType } from 'utils/types';
 
 const Collect = () => {
   const [collect, setCollect] = useState<CollectType[]>([]);

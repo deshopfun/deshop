@@ -23,17 +23,7 @@ import { FILE_TYPE, PRODUCT_TYPE } from 'packages/constants';
 import { useState } from 'react';
 import axios from 'utils/http/axios';
 import { Http } from 'utils/http/http';
-
-type ProductImage = {
-  src: string;
-  width: number;
-  height: number;
-};
-
-type ProductOption = {
-  name: string;
-  value: string;
-};
+import { ProductImageType, ProductOptionType } from 'utils/types';
 
 const Create = () => {
   const [title, setTitle] = useState<string>('');
@@ -132,7 +122,7 @@ const Create = () => {
         return;
       }
 
-      const productOption: ProductOption[] = [];
+      const productOption: ProductOptionType[] = [];
       if (optionOne && optionOneValue && optionOne != '' && optionOneValue != '') {
         productOption.push({
           name: optionOne,
@@ -159,7 +149,7 @@ const Create = () => {
         return;
       }
 
-      const productImages: ProductImage[] = [];
+      const productImages: ProductImageType[] = [];
       if (imageList && imageList.length > 0) {
         imageList.forEach((item) => {
           productImages.push({

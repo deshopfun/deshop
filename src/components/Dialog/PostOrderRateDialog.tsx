@@ -18,29 +18,18 @@ import { FILE_TYPE } from 'packages/constants';
 import { useEffect, useState } from 'react';
 import axios from 'utils/http/axios';
 import { Http } from 'utils/http/http';
-
-type RatingType = {
-  product_id: number;
-  option: string;
-  quantity: number;
-  price: string;
-  title: string;
-  image: string;
-  rating_number?: number;
-  rating_image?: string;
-  rating_body?: string;
-};
+import { PostRatingType } from 'utils/types';
 
 type DialogType = {
   orderId: number;
-  orderItems: RatingType[];
+  orderItems: PostRatingType[];
   openDialog: boolean;
   handleCloseDialog: () => Promise<void>;
 };
 
 export default function PostOrderRateDialog(props: DialogType) {
   const [countRating, setCountRating] = useState<number>(0);
-  const [ratings, setRatings] = useState<RatingType[]>([]);
+  const [ratings, setRatings] = useState<PostRatingType[]>([]);
 
   const { setSnackSeverity, setSnackOpen, setSnackMessage } = useSnackPresistStore((state) => state);
 
@@ -176,7 +165,9 @@ export default function PostOrderRateDialog(props: DialogType) {
                       onChange={(e: any) => {
                         const newRating = e.target.value;
                         setRatings((prev) =>
-                          prev.map((rating, i) => (i === index ? { ...rating, rating_number: Number(newRating) } : rating)),
+                          prev.map((rating, i) =>
+                            i === index ? { ...rating, rating_number: Number(newRating) } : rating,
+                          ),
                         );
                       }}
                     />

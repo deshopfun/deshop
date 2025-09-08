@@ -5,15 +5,7 @@ import { CURRENCYS } from 'packages/constants/currency';
 import { useEffect, useState } from 'react';
 import axios from 'utils/http/axios';
 import { Http } from 'utils/http/http';
-
-type StatType = {
-  product_number: number;
-  order_number: number;
-  trading_volume: number;
-  currency: string;
-  transaction_number: number;
-  variant_number: number;
-};
+import { StatType } from 'utils/types';
 
 const IntroCard = () => {
   const [stats, setStats] = useState<StatType>();

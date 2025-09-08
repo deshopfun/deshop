@@ -62,67 +62,8 @@ import NowTrendingCard from 'components/Card/NowTrendingCard';
 import { CURRENCYS } from 'packages/constants/currency';
 import { marked } from 'marked';
 import DOMPurify from 'dompurify';
-
-type ProductType = {
-  product_id: number;
-  user_uuid: string;
-  user_email: string;
-  username: string;
-  user_avatar_url: string;
-  title: string;
-  body_html: string;
-  render_body_html: string;
-  product_type: string;
-  tags: string;
-  vendor: string;
-  currency: string;
-  product_status: number;
-  collect_status: number;
-  images: ProductImage[];
-  options: ProductOption[];
-  ratings: ProductRating[];
-};
-
-type ProductRating = {
-  username: string;
-  rating_id: number;
-  product_option: string;
-  number: number;
-  image: string;
-  body: string;
-  create_time: number;
-};
-
-type ProductImage = {
-  src: string;
-  width: number;
-  height: number;
-};
-
-type ProductOption = {
-  name: string;
-  value: string;
-};
-
-type ProductVariant = {
-  title: string;
-  barcode: string;
-  compare_at_price: string;
-  image: string;
-  inventory_policy: boolean;
-  inventory_quantity: number;
-  position: number;
-  price: string;
-  discounts: string;
-  taxable: boolean;
-  tax: string;
-  tip: string;
-  shippable: boolean;
-  shipping: string;
-  sku: string;
-  weight: string;
-  weight_unit: string;
-};
+import { ProductType, ProductVariantType } from 'utils/types';
+import { a11yProps, CustomTabPanel } from 'components/Tab';
 
 const ProductDetails = () => {
   const router = useRouter();
@@ -136,7 +77,7 @@ const ProductDetails = () => {
   const [optionOneValue, setOptionOneValue] = useState<string>('');
   const [optionTwoValue, setOptionTwoValue] = useState<string>('');
   const [optionThreeValue, setOptionThreeValue] = useState<string>('');
-  const [currentProductVariant, setCurrentProductVariant] = useState<ProductVariant>();
+  const [currentProductVariant, setCurrentProductVariant] = useState<ProductVariantType>();
   const [isSelectOption, setIsSelectOption] = useState<boolean>(false);
   const [quantity, setQuantity] = useState<number>(1);
 
@@ -721,7 +662,7 @@ const ProductDetails = () => {
                   <MenuItem onClick={() => {}}>
                     <Stack direction={'row'} alignItems={'center'} gap={1}>
                       <HelpOutline color={'error'} fontSize={'small'} />
-                      <Link color={'error'} href={`/report/products/${product.product_id}`} underline='none'>
+                      <Link color={'error'} href={`/report/products/${product.product_id}`} underline="none">
                         Report product
                       </Link>
                     </Stack>
@@ -1074,32 +1015,3 @@ const ProductDetails = () => {
 };
 
 export default ProductDetails;
-
-interface TabPanelProps {
-  children?: React.ReactNode;
-  index: number;
-  value: number;
-}
-
-function CustomTabPanel(props: TabPanelProps) {
-  const { children, value, index, ...other } = props;
-
-  return (
-    <Box
-      role="tabpanel"
-      hidden={value !== index}
-      id={`simple-tabpanel-${index}`}
-      aria-labelledby={`simple-tab-${index}`}
-      {...other}
-    >
-      {value === index && <Box sx={{ p: 3 }}>{children}</Box>}
-    </Box>
-  );
-}
-
-function a11yProps(index: number) {
-  return {
-    id: `simple-tab-${index}`,
-    'aria-controls': `simple-tabpanel-${index}`,
-  };
-}

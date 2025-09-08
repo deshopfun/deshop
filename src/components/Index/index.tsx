@@ -1,12 +1,13 @@
 import { useRouter } from 'next/router';
 import { Alert, AlertTitle, Box, IconButton, LinearProgress, Snackbar, Stack, Typography } from '@mui/material';
-import { routes, RouteType } from './Routes';
+import { routes } from './Routes';
 import MetaTags from 'components/Common/MetaTags';
 import { useEffect, useState } from 'react';
 import HomeSidebar from 'components/Sidebar';
 import HomeHeader from 'components/Home/HomeHeader';
 import { useSnackPresistStore } from 'lib';
 import HomeFooter from 'components/Home/HomeFooter';
+import { RouteType } from 'utils/types';
 
 const Home = () => {
   const router = useRouter();

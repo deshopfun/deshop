@@ -1,10 +1,10 @@
-import { Box, Typography } from '@mui/material';
+import { Box, Container, Typography } from '@mui/material';
 
 const Live = () => {
   return (
-    <Box>
-      <Typography>Live</Typography>
-    </Box>
+    <Container>
+      <Typography variant="h6">Livestreams</Typography>
+    </Container>
   );
 };
 

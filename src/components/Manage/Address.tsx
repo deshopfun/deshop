@@ -16,25 +16,7 @@ import { useSnackPresistStore } from 'lib';
 import { useEffect, useState } from 'react';
 import axios from 'utils/http/axios';
 import { Http } from 'utils/http/http';
-
-type AddressType = {
-  address_id: number;
-  first_name: string;
-  last_name: string;
-  phone: string;
-  email: string;
-  company: string;
-  country: string;
-  country_code: string;
-  city: string;
-  province: string;
-  province_code: string;
-  address_one: string;
-  address_two: string;
-  zip: string;
-  kind: number;
-  is_default: number;
-};
+import { AddressType } from 'utils/types';
 
 const ManageAddress = () => {
   const [alignment, setAlignment] = useState<'received' | 'delivery'>('received');

@@ -13,16 +13,8 @@ import {
 import Link from 'next/link';
 import { CHAINIDS } from 'packages/constants';
 import { OmitMiddleString } from 'utils/strings';
+import { RatingType } from 'utils/types';
 import { FindChainNamesByChainids, GetBlockchainAddressUrlByChainIds, GetBlockchainTxUrlByChainIds } from 'utils/web3';
-
-type RatingType = {
-  rating_id: number;
-  product_option: string;
-  number: number;
-  image: string;
-  body: string;
-  create_time: number;
-};
 
 type DialogType = {
   ratings: RatingType[];

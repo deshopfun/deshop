@@ -4,39 +4,7 @@ import { CURRENCYS } from 'packages/constants/currency';
 import { useEffect, useState } from 'react';
 import axios from 'utils/http/axios';
 import { Http } from 'utils/http/http';
-
-type ProductType = {
-  product_id: number;
-  title: string;
-  body_html: string;
-  product_type: string;
-  tags: string;
-  vendor: string;
-  currency: string;
-  product_status: number;
-  images: ProductImage[];
-  options: ProductOption[];
-  variants: ProductVariant[];
-};
-
-type ProductImage = {
-  src: string;
-  width: number;
-  height: number;
-};
-
-type ProductOption = {
-  name: string;
-  value: string;
-};
-
-type ProductVariant = {
-  title: string;
-  image: string;
-  price: string;
-  option: string;
-  inventory_quantity: number;
-};
+import { ProductType } from 'utils/types';
 
 type Props = {
   productType?: string;

@@ -7,13 +7,7 @@ import { useEffect, useState } from 'react';
 import { OmitMiddleString } from 'utils/strings';
 import axios from 'utils/http/axios';
 import { Http } from 'utils/http/http';
-
-type WalletType = {
-  address: string;
-  chain_id: number;
-  chain_name: string;
-  disable_coin: string;
-};
+import { WalletType } from 'utils/types';
 
 const ManageWallet = () => {
   const [username, setUsername] = useState<string>('');

@@ -1,8 +1,7 @@
 import { Box, Card, CardContent, Typography } from '@mui/material';
 import { useSnackPresistStore, useUserPresistStore } from 'lib';
 import { useState } from 'react';
-
-type ReplyType = {};
+import { ReplyType } from 'utils/types';
 
 type Props = {
   uuid?: string;

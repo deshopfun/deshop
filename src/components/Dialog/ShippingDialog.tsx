@@ -2,29 +2,13 @@ import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Stack, Typog
 import Link from 'next/link';
 import { CHAINIDS, SHIPPING_TYPE } from 'packages/constants';
 import { OmitMiddleString, OrderShippingStatusText } from 'utils/strings';
+import { AddressType } from 'utils/types';
 import { FindChainNamesByChainids, GetBlockchainAddressUrlByChainIds, GetBlockchainTxUrlByChainIds } from 'utils/web3';
-
-type ShippingType = {
-  address_one: string;
-  address_two: string;
-  city: string;
-  company: string;
-  country: string;
-  country_code: string;
-  email: string;
-  first_name: string;
-  last_name: string;
-  phone: string;
-  province: string;
-  province_code: string;
-  shipping_type: number;
-  zip: string;
-};
 
 type DialogType = {
   alignment: 'buy' | 'sell';
   shippingConfirmed: number;
-  shipping: ShippingType;
+  shipping: AddressType;
   openDialog: boolean;
   handleCloseDialog: () => Promise<void>;
 };

@@ -13,18 +13,7 @@ import { IsHexAddress } from 'utils/strings';
 import { ERC20Abi } from 'packages/web3/abi/erc20';
 import { useSnackPresistStore } from 'lib';
 import { GetWalletConnectNetworkByChainids } from 'utils/web3';
-
-type WalletConnectType = {
-  chainIds: CHAINIDS;
-  address: string;
-  contractAddress?: string;
-  decimals?: number;
-  value: string;
-  buttonSize?: 'small' | 'medium' | 'large';
-  buttonVariant?: 'text' | 'outlined' | 'contained';
-  fullWidth?: boolean;
-  color?: 'inherit' | 'primary' | 'secondary' | 'success' | 'error' | 'info' | 'warning';
-};
+import { WalletConnectType } from 'utils/types';
 
 const WalletConnectButton = (props: WalletConnectType) => {
   const [connectNetwork, setConnectNetwork] = useState<AppKitNetwork>();

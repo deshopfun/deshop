@@ -1,27 +1,5 @@
 import { Box, Card, CardActionArea, CardContent, CardMedia, Chip, Grid, Stack, Typography } from '@mui/material';
-
-type ProductType = {
-  product_id: number;
-  title: string;
-  body_html: string;
-  product_type: string;
-  tags: string;
-  vendor: string;
-  product_status: number;
-  images: ProductImage[];
-  options: ProductOption[];
-};
-
-type ProductImage = {
-  src: string;
-  width: number;
-  height: number;
-};
-
-type ProductOption = {
-  name: string;
-  value: string;
-};
+import { ProductType } from 'utils/types';
 
 type Props = {
   uuid?: string;

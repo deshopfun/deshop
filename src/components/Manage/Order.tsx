@@ -26,6 +26,7 @@ import { useEffect, useState } from 'react';
 import axios from 'utils/http/axios';
 import { Http } from 'utils/http/http';
 import { OrderStatusText } from 'utils/strings';
+import { OrderType } from 'utils/types';
 
 const steps = [
   'Waiting for payment',
@@ -34,107 +35,6 @@ const steps = [
   'Waiting for order confirm',
   'Order complete',
 ];
-
-type WalletType = {
-  address: string;
-  chain_id: number;
-  chain_name: string;
-  disable_coin: string;
-};
-
-type OrderItemType = {
-  product_id: number;
-  option: string;
-  quantity: number;
-  price: string;
-  title: string;
-  image: string;
-};
-
-type TransactionType = {
-  select: number;
-  transaction_id: number;
-  amount: string;
-  currency: number;
-  gateway: string;
-  message: string;
-  source_name: number;
-  transaction_status: number;
-  blockchain: BlockchainType;
-};
-
-type BlockchainType = {
-  rate: string;
-  chain_id: number;
-  hash: string;
-  address: string;
-  from_address: string;
-  to_address: string;
-  token: string;
-  crypto_amount: string;
-  block_timestamp: number;
-};
-
-type ShippingType = {
-  address_one: string;
-  address_two: string;
-  city: string;
-  company: string;
-  country: string;
-  country_code: string;
-  email: string;
-  first_name: string;
-  last_name: string;
-  phone: string;
-  province: string;
-  province_code: string;
-  shipping_type: number;
-  zip: string;
-};
-
-type RatingType = {
-  rating_id: number;
-  product_option: string;
-  number: number;
-  image: string;
-  body: string;
-  create_time: number;
-};
-
-type OrderType = {
-  order_id: number;
-  customer_uuid: string;
-  customer_email: string;
-  customer_username: string;
-  customer_avatar_url: string;
-  user_uuid: string;
-  user_email: string;
-  username: string;
-  user_avatar_url: string;
-  order_status_url: string;
-  total_discounts: string;
-  sub_total_price: string;
-  total_price: string;
-  total_tax: string;
-  total_tip: string;
-  total_shipping: string;
-  currency: string;
-  confirmed: number;
-  confirmed_number: string;
-  payment_confirmed: number;
-  payment_confirmed_number: string;
-  shipping_confirmed: number;
-  shipping_confirmed_number: string;
-  financial_status: number;
-  process_time: number;
-  create_time: number;
-  update_time: number;
-  items: OrderItemType[];
-  ratings: RatingType[];
-  wallets: WalletType[];
-  transactions: TransactionType[];
-  shipping: ShippingType;
-};
 
 const ManageOrder = () => {
   const [openBlockchainDialog, setOpenBlockchainDialog] = useState<boolean>(false);

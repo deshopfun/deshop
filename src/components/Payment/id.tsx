@@ -15,13 +15,8 @@ import {
   InputAdornment,
   LinearProgress,
   Link,
-  List,
-  ListItem,
-  ListItemButton,
-  MenuItem,
   OutlinedInput,
   Paper,
-  Select,
   Stack,
   Step,
   StepButton,
@@ -37,7 +32,7 @@ import Image from 'next/image';
 import axios from 'utils/http/axios';
 import { Http } from 'utils/http/http';
 import { useRouter } from 'next/router';
-import { useSnackPresistStore, useUserPresistStore } from 'lib';
+import { useSnackPresistStore } from 'lib';
 import {
   FindChainNamesByChainids,
   FindTokenByChainIdsAndSymbol,
@@ -47,6 +42,7 @@ import {
 import { GetImgSrcByChain, GetImgSrcByCrypto } from 'utils/qrcode';
 import WalletConnectButton from 'components/Button/WalletConnectButton';
 import { OmitMiddleString } from 'utils/strings';
+import { OrderType, WalletType } from 'utils/types';
 
 const steps = [
   'Payment section',
@@ -55,74 +51,6 @@ const steps = [
   'Transaction confirmation',
   'Transaction complete',
 ];
-
-type WalletType = {
-  address: string;
-  chain_id: number;
-  chain_name: string;
-  disable_coin: string;
-};
-
-type OrderItemType = {
-  product_id: number;
-  option: string;
-  quantity: number;
-  price: string;
-  title: string;
-  image: string;
-};
-
-type TransactionType = {
-  transaction_id: number;
-  amount: string;
-  currency: number;
-  gateway: string;
-  message: string;
-  source_name: number;
-  transaction_status: number;
-  blockchain: BlockchainType;
-};
-
-type BlockchainType = {
-  qrcode: string;
-  rate: string;
-  chain_id: number;
-  hash: string;
-  address: string;
-  from_address: string;
-  to_address: string;
-  token: string;
-  transact_type: string;
-  crypto_amount: string;
-  block_timestamp: number;
-};
-
-type OrderType = {
-  order_id: number;
-  customer_uuid: string;
-  customer_email: string;
-  customer_username: string;
-  customer_avatar_url: string;
-  user_uuid: string;
-  user_email: string;
-  username: string;
-  user_avatar_url: string;
-  order_status_url: string;
-  total_discounts: string;
-  sub_total_price: string;
-  total_price: string;
-  total_tax: string;
-  total_tip: string;
-  total_shipping: string;
-  currency: string;
-  financial_status: number;
-  process_time: number;
-  create_time: number;
-  update_time: number;
-  items: OrderItemType[];
-  wallets: WalletType[];
-  transactions: TransactionType[];
-};
 
 const PaymentDetails = () => {
   const router = useRouter();

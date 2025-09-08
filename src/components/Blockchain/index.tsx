@@ -20,70 +20,11 @@ import { useEffect, useState } from 'react';
 import axios from 'utils/http/axios';
 import { Http } from 'utils/http/http';
 import { OmitMiddleString } from 'utils/strings';
+import { BlockchainOrderType } from 'utils/types';
 import { GetBlockchainTxUrlByChainIds } from 'utils/web3';
 
-type OrderType = {
-  order_id: number;
-  customer_uuid: string;
-  customer_email: string;
-  customer_username: string;
-  customer_avatar_url: string;
-  user_uuid: string;
-  user_email: string;
-  username: string;
-  user_avatar_url: string;
-  order_status_url: string;
-  total_discounts: string;
-  sub_total_price: string;
-  total_price: string;
-  total_tax: string;
-  total_tip: string;
-  total_shipping: string;
-  currency: string;
-  confirmed: number;
-  payment_confirmed: number;
-  shipping_confirmed: number;
-  financial_status: number;
-  process_time: number;
-  create_time: number;
-  update_time: number;
-  transactions: TransactionType[];
-};
-
-type TransactionType = {
-  select: number;
-  transaction_id: number;
-  amount: string;
-  currency: number;
-  gateway: string;
-  message: string;
-  source_name: number;
-  transaction_status: number;
-  blockchain: BlockchainType;
-};
-
-type BlockchainType = {
-  rate: string;
-  chain_id: number;
-  hash: string;
-  address: string;
-  from_address: string;
-  to_address: string;
-  token: string;
-  crypto_amount: string;
-  block_timestamp: number;
-};
-
-type BlockchainOrder = {
-  chain_id: number;
-  latest_block: string;
-  cache_block: string;
-  sweep_block: string;
-  orders: OrderType[];
-};
-
 const Blockchain = () => {
-  const [blockchainOrder, setBlockchainOrder] = useState<BlockchainOrder>();
+  const [blockchainOrder, setBlockchainOrder] = useState<BlockchainOrderType>();
   const [selectBlockchain, setSelectBlockchain] = useState<BLOCKCHAIN>(BLOCKCHAINNAMES[0]);
 
   const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore((state) => state);
