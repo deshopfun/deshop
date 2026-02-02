@@ -28,6 +28,10 @@ const Home = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [router.pathname]);
 
+  useEffect(() => {
+    setSnackOpen(false);
+  }, []);
+
   return (
     <Box height={'100%'}>
       <MetaTags title={currentRoute?.title} />
@@ -62,7 +66,7 @@ const Home = () => {
         </Box>
       )}
 
-      <Snackbar anchorOrigin={{ vertical: 'top', horizontal: 'right' }} open={snackOpen}>
+      <Snackbar anchorOrigin={{ vertical: 'top', horizontal: 'right' }} open={snackOpen} autoHideDuration={2000}>
         <Alert
           onClose={() => {
             setSnackOpen(false);

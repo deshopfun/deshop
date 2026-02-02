@@ -1,5 +1,5 @@
 import { Alert, AlertTitle, Box, Button, Card, CardContent, Container, Stack, Typography } from '@mui/material';
-import { useSnackPresistStore } from 'lib';
+import { useSnackPresistStore, useUserPresistStore } from 'lib';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { CHAINIDS } from 'packages/constants';
@@ -17,6 +17,7 @@ const OrderDetails = () => {
   const [order, setOrder] = useState<OrderType>();
 
   const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore((state) => state);
+  const { getUuid } = useUserPresistStore((state) => state);
 
   const init = async (orderId: any) => {
     try {
@@ -64,12 +65,12 @@ const OrderDetails = () => {
                     {order?.payment_confirmed === 1 ? 'Complete' : 'Waiting for confirm'}
                   </Typography>
                 </Stack>
-                <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
+                {/* <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
                   <Typography>Shipping status</Typography>
                   <Typography fontWeight={'bold'} color={order?.shipping_confirmed === 1 ? 'success' : 'error'}>
                     {order?.shipping_confirmed === 1 ? 'Complete' : 'Waiting for confirm'}
                   </Typography>
-                </Stack>
+                </Stack> */}
                 <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
                   <Typography>Order status</Typography>
                   <Typography fontWeight={'bold'} color={order?.confirmed === 1 ? 'success' : 'error'}>
@@ -98,14 +99,14 @@ const OrderDetails = () => {
                     </Typography>
                   </Stack>
                 )}
-                {Number(order?.total_shipping) > 0 && (
+                {/* {Number(order?.total_shipping) > 0 && (
                   <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
                     <Typography>Shipping</Typography>
                     <Typography fontWeight={'bold'}>
                       {order?.total_shipping} {order?.currency}
                     </Typography>
                   </Stack>
-                )}
+                )} */}
                 {Number(order?.total_tax) > 0 && (
                   <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
                     <Typography>Tax</Typography>
@@ -287,7 +288,7 @@ const OrderDetails = () => {
                 )}
 
                 <Box mt={4}>
-                  {order?.payment_confirmed !== 1 ? (
+                  {order?.payment_confirmed !== 1 && getUuid() !== order?.user_uuid ? (
                     <Button
                       variant={'contained'}
                       color="success"
@@ -298,12 +299,12 @@ const OrderDetails = () => {
                     >
                       Go to pay
                     </Button>
-                  ) : order?.shipping_confirmed !== 1 ? (
-                    <Button variant={'contained'} color="inherit" fullWidth onClick={() => {}}>
-                      Waiting for shipping
-                    </Button>
-                  ) : order?.confirmed !== 1 ? (
-                    <Button variant={'contained'} color="inherit" fullWidth onClick={() => {}}>
+                  ) : // ) : order?.shipping_confirmed !== 1 ? (
+                  //   <Button variant={'contained'} color="inherit" fullWidth onClick={() => {}}>
+                  //     Waiting for shipping
+                  //   </Button>
+                  order?.confirmed !== 1 ? (
+                    <Button variant={'contained'} color="inherit" fullWidth onClick={() => {}} disabled>
                       Waiting for order confirm
                     </Button>
                   ) : (

@@ -116,18 +116,18 @@ export const MANAGE_TAB_DATAS: TAB_DATA[] = [
     title: 'Wallets',
     tabId: 'wallets',
   },
+  // {
+  //   id: 3,
+  //   title: 'Addresses',
+  //   tabId: 'Addresses',
+  // },
   {
     id: 3,
-    title: 'Addresses',
-    tabId: 'Addresses',
-  },
-  {
-    id: 4,
     title: 'Notifications',
     tabId: 'notifications',
   },
   {
-    id: 5,
+    id: 4,
     title: 'Settings',
     tabId: 'settings',
   },

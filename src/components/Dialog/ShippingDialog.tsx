@@ -26,13 +26,13 @@ export default function ShippingDialog(props: DialogType) {
       <DialogContent>
         <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
           <Typography>Shipping type</Typography>
-          <Typography fontWeight={'bold'} color={'error'}>
+          {/* <Typography fontWeight={'bold'} color={'error'}>
             {OrderShippingStatusText(
               props.alignment,
               props.shippingConfirmed === 1 ? true : false,
               props.shipping.shipping_type,
             )}
-          </Typography>
+          </Typography> */}
         </Stack>
         <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
           <Typography>Username</Typography>

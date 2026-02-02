@@ -126,20 +126,20 @@ export function FormatNumberToEnglish(num: number, decimals: number = 1): string
 export function OrderStatusText(
   alignment: 'buy' | 'sell',
   payment_confirm: boolean,
-  shipping_confirm: boolean,
+  // shipping_confirm: boolean,
   confirm: boolean,
-  shipping_type: number,
+  // shipping_type: number,
 ): string {
   if (!payment_confirm) {
     return alignment === 'buy' ? 'To be paid' : 'Waiting for payment by buyers';
   }
 
-  if (!shipping_confirm) {
-    if (shipping_type === 1) {
-      return alignment === 'buy' ? 'Goods to be received' : 'Waiting for delivery';
-    }
-    return alignment === 'buy' ? 'To be picked up' : 'Waiting for buyers to pick up';
-  }
+  // if (!shipping_confirm) {
+  //   if (shipping_type === 1) {
+  //     return alignment === 'buy' ? 'Goods to be received' : 'Waiting for delivery';
+  //   }
+  //   return alignment === 'buy' ? 'To be picked up' : 'Waiting for buyers to pick up';
+  // }
 
   return confirm ? 'Order successful' : 'Waiting for order to be confirmed';
 }

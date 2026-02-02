@@ -100,13 +100,13 @@ const ManageDetails = () => {
           <CustomTabPanel value={tabValue} index={2}>
             <ManageWallet />
           </CustomTabPanel>
-          <CustomTabPanel value={tabValue} index={3}>
+          {/* <CustomTabPanel value={tabValue} index={3}>
             <ManageAddress />
-          </CustomTabPanel>
-          <CustomTabPanel value={tabValue} index={4}>
+          </CustomTabPanel> */}
+          <CustomTabPanel value={tabValue} index={3}>
             <ManageNotification />
           </CustomTabPanel>
-          <CustomTabPanel value={tabValue} index={5}>
+          <CustomTabPanel value={tabValue} index={4}>
             <ManageSetting />
           </CustomTabPanel>
         </Box>

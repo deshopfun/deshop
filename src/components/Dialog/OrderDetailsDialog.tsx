@@ -32,12 +32,12 @@ export default function OrderDetailsDialog(props: DialogType) {
             <Typography fontWeight={'bold'}>{`${props.order.sub_total_price} ${props.order.currency}`}</Typography>
           </Stack>
         )}
-        {Number(props.order.total_shipping) > 0 && (
+        {/* {Number(props.order.total_shipping) > 0 && (
           <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
             <Typography>Shipping</Typography>
             <Typography fontWeight={'bold'}>{`${props.order.total_shipping} ${props.order.currency}`}</Typography>
           </Stack>
-        )}
+        )} */}
         {Number(props.order.total_tax) > 0 && (
           <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
             <Typography>Tax</Typography>
@@ -66,12 +66,12 @@ export default function OrderDetailsDialog(props: DialogType) {
             {props.order.payment_confirmed === 1 ? 'Complete' : 'Waiting for confirm'}
           </Typography>
         </Stack>
-        <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
+        {/* <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
           <Typography>Shipping status</Typography>
           <Typography fontWeight={'bold'} color={props.order.shipping_confirmed === 1 ? 'success' : 'error'}>
             {props.order.shipping_confirmed === 1 ? 'Complete' : 'Waiting for confirm'}
           </Typography>
-        </Stack>
+        </Stack> */}
         <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
           <Typography>Order status</Typography>
           <Typography fontWeight={'bold'} color={props.order.confirmed === 1 ? 'success' : 'error'}>

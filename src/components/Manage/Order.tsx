@@ -31,7 +31,7 @@ import { OrderType } from 'utils/types';
 const steps = [
   'Waiting for payment',
   // 'Payment confirmation',
-  'Waiting for shipping',
+  // 'Waiting for shipping',
   'Waiting for order confirm',
   'Order complete',
 ];
@@ -39,8 +39,8 @@ const steps = [
 const ManageOrder = () => {
   const [openBlockchainDialog, setOpenBlockchainDialog] = useState<boolean>(false);
   const [openConfirmPaymentDialog, setOpenConfirmPaymentDialog] = useState<boolean>(false);
-  const [openShippingDialog, setOpenShippingDialog] = useState<boolean>(false);
-  const [openConfirmShippingDialog, setOpenConfirmShippingDialog] = useState<boolean>(false);
+  // const [openShippingDialog, setOpenShippingDialog] = useState<boolean>(false);
+  // const [openConfirmShippingDialog, setOpenConfirmShippingDialog] = useState<boolean>(false);
   const [openConfirmDialog, setOpenConfirmDialog] = useState<boolean>(false);
   const [openOrderDetailsDialog, setOpenOrderDetailsDialog] = useState<boolean>(false);
   const [openPostOrderRateDialog, setPostOpenOrderRateDialog] = useState<boolean>(false);
@@ -87,15 +87,15 @@ const ManageOrder = () => {
     setOpenConfirmPaymentDialog(false);
   };
 
-  const handleShippingCloseDialog = async () => {
-    await init(alignment);
-    setOpenShippingDialog(false);
-  };
+  // const handleShippingCloseDialog = async () => {
+  //   await init(alignment);
+  //   setOpenShippingDialog(false);
+  // };
 
-  const handleConfirmShippingCloseDialog = async () => {
-    await init(alignment);
-    setOpenConfirmShippingDialog(false);
-  };
+  // const handleConfirmShippingCloseDialog = async () => {
+  //   await init(alignment);
+  //   setOpenConfirmShippingDialog(false);
+  // };
 
   const handleConfirmCloseDialog = async () => {
     await init(alignment);
@@ -150,12 +150,12 @@ const ManageOrder = () => {
                           nonLinear
                           activeStep={
                             item.payment_confirmed === 1
-                              ? item.shipping_confirmed == 1
-                                ? item.confirmed == 1
-                                  ? 3
-                                  : 2
+                              ? // ? item.shipping_confirmed == 1
+                                item.confirmed == 1
+                                ? 2
                                 : 1
-                              : 0
+                              : // : 1
+                                0
                           }
                         >
                           {steps.map((label, index) => (
@@ -194,9 +194,9 @@ const ManageOrder = () => {
                       {OrderStatusText(
                         alignment,
                         item.payment_confirmed === 1 ? true : false,
-                        item.shipping_confirmed === 1 ? true : false,
+                        // item.shipping_confirmed === 1 ? true : false,
                         item.confirmed === 1 ? true : false,
-                        item.shipping.shipping_type,
+                        // item.shipping.shipping_type,
                       )}
                     </Typography>
                   </Stack>
@@ -229,11 +229,11 @@ const ManageOrder = () => {
                         Subtotal: <b>{`${item.sub_total_price} ${item.currency}`}</b>
                       </Typography>
                     )}
-                    {Number(item.total_shipping) > 0 && (
+                    {/* {Number(item.total_shipping) > 0 && (
                       <Typography textAlign={'right'}>
                         Shipping: <b>{`${item.total_shipping} ${item.currency}`}</b>
                       </Typography>
-                    )}
+                    )} */}
                     {Number(item.total_tax) > 0 && (
                       <Typography textAlign={'right'}>
                         Tax: <b>{`${item.total_tax} ${item.currency}`}</b>
@@ -297,7 +297,7 @@ const ManageOrder = () => {
                         </Stack>
                       </CardContent>
                     </Card>
-                    <Card style={{ width: '100%' }}>
+                    {/* <Card style={{ width: '100%' }}>
                       <CardContent>
                         <Typography variant="h6">Shipping</Typography>
                         <Stack mt={2} gap={1}>
@@ -336,7 +336,7 @@ const ManageOrder = () => {
                           )}
                         </Stack>
                       </CardContent>
-                    </Card>
+                    </Card> */}
                     <Card style={{ width: '100%' }}>
                       <CardContent>
                         <Typography variant="h6">More</Typography>
@@ -366,7 +366,7 @@ const ManageOrder = () => {
                                 Buy again
                               </Button>
                               {item.payment_confirmed === 1 &&
-                                item.shipping_confirmed === 1 &&
+                                // item.shipping_confirmed === 1 &&
                                 item.confirmed !== 1 && (
                                   <Button
                                     variant={'contained'}
@@ -469,7 +469,7 @@ const ManageOrder = () => {
               openDialog={openConfirmPaymentDialog}
               handleCloseDialog={handleConfirmPaymentCloseDialog}
             />
-            <ShippingDialog
+            {/* <ShippingDialog
               alignment={alignment}
               shippingConfirmed={currentOrder.shipping_confirmed}
               shipping={currentOrder.shipping}
@@ -482,7 +482,7 @@ const ManageOrder = () => {
               shipping={currentOrder.shipping}
               openDialog={openConfirmShippingDialog}
               handleCloseDialog={handleConfirmShippingCloseDialog}
-            />
+            /> */}
             <ConfirmOrderDialog
               orderId={currentOrder.order_id}
               confirmNumber={currentOrder.confirmed_number}

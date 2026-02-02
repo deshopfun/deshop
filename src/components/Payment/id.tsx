@@ -2,6 +2,8 @@ import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
+  Alert,
+  AlertTitle,
   Box,
   Button,
   Card,
@@ -32,7 +34,7 @@ import Image from 'next/image';
 import axios from 'utils/http/axios';
 import { Http } from 'utils/http/http';
 import { useRouter } from 'next/router';
-import { useSnackPresistStore } from 'lib';
+import { useSnackPresistStore, useUserPresistStore } from 'lib';
 import {
   FindChainNamesByChainids,
   FindTokenByChainIdsAndSymbol,
@@ -69,6 +71,7 @@ const PaymentDetails = () => {
   }>({});
 
   const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore((state) => state);
+  const { getUuid } = useUserPresistStore((state) => state);
 
   const handleChangeBlockchain = (panel: string) => (event: React.SyntheticEvent, isExpanded: boolean) => {
     setExpanded(isExpanded ? panel : false);
@@ -202,7 +205,7 @@ const PaymentDetails = () => {
 
   return (
     <Container>
-      {order ? (
+      {order && getUuid() !== order?.user_uuid ? (
         <>
           {page === 1 && (
             <Box>
@@ -346,6 +349,14 @@ const PaymentDetails = () => {
               <Typography variant="h4" textAlign={'center'}>
                 Payment Page
               </Typography>
+              {order.transactions && order.transactions.length > 0 && (
+                <Box mt={4}>
+                  <Alert severity={'success'}>
+                    <AlertTitle>Payment successfully</AlertTitle>
+                    <Typography>{`Detected that some transactions have been successful, please wait for confirmation from the seller.`}</Typography>
+                  </Alert>
+                </Box>
+              )}
               <Grid container spacing={2} mt={4}>
                 <Grid size={{ xs: 12, md: 7 }}>
                   <Card>

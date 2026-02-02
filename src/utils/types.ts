@@ -73,8 +73,8 @@ export type ProductVariantType = {
   taxable: boolean;
   tax: string;
   tip: string;
-  shippable: boolean;
-  shipping: string;
+  // shippable: boolean;
+  // shipping: string;
   sku: string;
   weight: string;
   weight_unit: string;
@@ -102,14 +102,14 @@ export type OrderType = {
   total_price: string;
   total_tax: string;
   total_tip: string;
-  total_shipping: string;
+  // total_shipping: string;
   currency: string;
   confirmed: number;
   confirmed_number: string;
   payment_confirmed: number;
   payment_confirmed_number: string;
-  shipping_confirmed: number;
-  shipping_confirmed_number: string;
+  // shipping_confirmed: number;
+  // shipping_confirmed_number: string;
   financial_status: number;
   process_time: number;
   create_time: number;
@@ -118,7 +118,7 @@ export type OrderType = {
   ratings: RatingType[];
   wallets: WalletType[];
   transactions: TransactionType[];
-  shipping: AddressType;
+  // shipping: AddressType;
 };
 
 export type OrderItemType = {
@@ -205,7 +205,7 @@ export type AddressType = {
   address_one: string;
   address_two: string;
   zip: string;
-  shipping_type: number;
+  // shipping_type: number;
   is_default: number;
 };
 

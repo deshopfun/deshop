@@ -184,7 +184,7 @@ const ProductDetails = () => {
         setCurrentProductVariant({
           ...response.data,
           inventory_policy: response.data.inventory_policy === 1 ? true : false,
-          shippable: response.data.shippable === 1 ? true : false,
+          // shippable: response.data.shippable === 1 ? true : false,
           taxable: response.data.taxable === 1 ? true : false,
         });
       } else {
@@ -328,8 +328,8 @@ const ProductDetails = () => {
       discounts: String(currentProductVariant?.discounts ?? ''),
       taxable: currentProductVariant?.taxable,
       tax: String(currentProductVariant?.tax ?? ''),
-      shippable: currentProductVariant?.shippable,
-      shipping: String(currentProductVariant?.shipping ?? ''),
+      // shippable: currentProductVariant?.shippable,
+      // shipping: String(currentProductVariant?.shipping ?? ''),
       tip: String(currentProductVariant?.tip ?? ''),
       weight: String(currentProductVariant?.weight ?? ''),
       weightUnit: String(currentProductVariant?.weight_unit ?? ''),
