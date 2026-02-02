@@ -33,12 +33,13 @@ type Props = {
   options?: ProductOptionType[];
   images?: ProductImageType[];
   productStatus?: number;
+  init: (id: any) => Promise<void>;
 };
 
 const Product = (props: Props) => {
   const [title, setTitle] = useState<string>('');
   const [vendor, setVendor] = useState<string>('');
-  const [productType, setProductType] = useState<string>(PRODUCT_TYPE.WOMEN);
+  const [productType, setProductType] = useState<string>(PRODUCT_TYPE.GAMING);
   const [tags, setTags] = useState<string>('');
   const [description, setDescription] = useState<string>('');
   const [optionOne, setOptionOne] = useState<string>('');
@@ -166,7 +167,7 @@ const Product = (props: Props) => {
       });
 
       if (response.result) {
-        window.location.reload();
+        await props.init(props.product_id);
         setSnackSeverity('success');
         setSnackMessage('Update successfully');
         setSnackOpen(true);
@@ -187,18 +188,39 @@ const Product = (props: Props) => {
     try {
       const productOption: ProductOptionType[] = [];
       if (optionOne && optionOneValue && optionOne != '' && optionOneValue != '') {
+        const oneValueArray = optionOneValue.split(',');
+        if (new Set(oneValueArray).size !== oneValueArray.length) {
+          setSnackSeverity('error');
+          setSnackMessage('Product option has same value');
+          setSnackOpen(true);
+          return;
+        }
         productOption.push({
           name: optionOne,
           value: optionOneValue,
         });
       }
       if (optionTwo && optionTwoValue && optionTwo != '' && optionTwoValue != '') {
+        const twoValueArray = optionTwoValue.split(',');
+        if (new Set(twoValueArray).size !== twoValueArray.length) {
+          setSnackSeverity('error');
+          setSnackMessage('Product option has same value');
+          setSnackOpen(true);
+          return;
+        }
         productOption.push({
           name: optionTwo,
           value: optionTwoValue,
         });
       }
       if (optionThree && optionThreeValue && optionThree != '' && optionThreeValue != '') {
+        const threeValueArray = optionThreeValue.split(',');
+        if (new Set(threeValueArray).size !== threeValueArray.length) {
+          setSnackSeverity('error');
+          setSnackMessage('Product option has same value');
+          setSnackOpen(true);
+          return;
+        }
         productOption.push({
           name: optionThree,
           value: optionThreeValue,
@@ -218,7 +240,7 @@ const Product = (props: Props) => {
       });
 
       if (response.result) {
-        window.location.reload();
+        await props.init(props.product_id);
         setSnackSeverity('success');
         setSnackMessage('Update successfully');
         setSnackOpen(true);
@@ -261,7 +283,7 @@ const Product = (props: Props) => {
       });
 
       if (response.result) {
-        window.location.reload();
+        await props.init(props.product_id);
         setSnackSeverity('success');
         setSnackMessage('Update successfully');
         setSnackOpen(true);
@@ -293,7 +315,7 @@ const Product = (props: Props) => {
       });
 
       if (response.result) {
-        window.location.reload();
+        await props.init(props.product_id);
         setSnackSeverity('success');
         setSnackMessage('Update successfully');
         setSnackOpen(true);

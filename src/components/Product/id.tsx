@@ -713,7 +713,7 @@ const ProductDetails = () => {
                     }`}</Typography>
                   </Stack>
 
-                  <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} mt={1}>
+                  {/* <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} mt={1}>
                     <Stack direction={'row'} alignItems={'center'} gap={1}>
                       <LocalShipping fontSize={'small'} />
                       <Typography>SHIPPING</Typography>
@@ -726,7 +726,7 @@ const ProductDetails = () => {
                     ) : (
                       <Typography>Shipping free</Typography>
                     )}
-                  </Stack>
+                  </Stack> */}
 
                   <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
                     <Stack direction={'row'} alignItems={'center'} gap={1}>
@@ -796,10 +796,10 @@ const ProductDetails = () => {
                                     index === 0 && innerItem === optionOneValue
                                       ? 'success'
                                       : index === 1 && innerItem === optionTwoValue
-                                      ? 'success'
-                                      : index === 2 && innerItem === optionThreeValue
-                                      ? 'success'
-                                      : 'primary'
+                                        ? 'success'
+                                        : index === 2 && innerItem === optionThreeValue
+                                          ? 'success'
+                                          : 'primary'
                                   }
                                   onClick={() => {
                                     if (index === 0) {
@@ -986,6 +986,7 @@ const ProductDetails = () => {
                   options={product?.options}
                   images={product?.images}
                   productStatus={product?.product_status}
+                  init={init}
                 />
               </CustomTabPanel>
               <CustomTabPanel value={tabValue} index={1}>

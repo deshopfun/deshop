@@ -41,6 +41,7 @@ const ManageProduct = () => {
           <Grid container spacing={2}>
             {products.map((item, index) => (
               <Grid size={{ xs: 12, md: 4 }} key={index}>
+                {item.product_id}
                 <div
                   onClick={() => {
                     window.location.href = `/products/${item.product_id}`;

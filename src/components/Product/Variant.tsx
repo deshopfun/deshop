@@ -285,14 +285,14 @@ const ProductVariant = (props: Props) => {
         }
       }
 
-      if (shippable) {
-        if (!shipping || Number(shipping) <= 0) {
-          setSnackSeverity('error');
-          setSnackMessage('Incorrect shipping input');
-          setSnackOpen(true);
-          return;
-        }
-      }
+      // if (shippable) {
+      //   if (!shipping || Number(shipping) <= 0) {
+      //     setSnackSeverity('error');
+      //     setSnackMessage('Incorrect shipping input');
+      //     setSnackOpen(true);
+      //     return;
+      //   }
+      // }
 
       let option = '';
       switch (options.length) {
@@ -328,13 +328,13 @@ const ProductVariant = (props: Props) => {
         barcode: barcode,
         inventory_quantity: parseInt(inventoryQuantity),
         sku: sku,
-        weight: weight,
-        weight_unit: weightUnit,
+        // weight: weight,
+        // weight_unit: weightUnit,
         inventory_policy: inventoryPolicy ? 1 : 2,
         taxable: taxable ? 1 : 2,
         tax: taxable ? tax : undefined,
-        shippable: shippable ? 1 : 2,
-        shipping: shippable ? shipping : undefined,
+        // shippable: shippable ? 1 : 2,
+        // shipping: shippable ? shipping : undefined,
         option: option,
       });
 
@@ -616,7 +616,7 @@ const ProductVariant = (props: Props) => {
                 placeholder="sku your variant"
               />
             </Box>
-            <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} gap={1} mt={2}>
+            {/* <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} gap={1} mt={2}>
               <Box width={'100%'}>
                 <Typography mb={1}>Weight</Typography>
                 <TextField
@@ -659,7 +659,7 @@ const ProductVariant = (props: Props) => {
                   </Select>
                 </FormControl>
               </Box>
-            </Stack>
+            </Stack> */}
             <Stack direction={'row'} alignItems={'center'} mt={2}>
               <Switch
                 checked={taxable}
@@ -694,7 +694,7 @@ const ProductVariant = (props: Props) => {
                 />
               </Box>
             )}
-            <Stack direction={'row'} alignItems={'center'}>
+            {/* <Stack direction={'row'} alignItems={'center'}>
               <Switch
                 checked={shippable}
                 onChange={() => {
@@ -727,7 +727,7 @@ const ProductVariant = (props: Props) => {
                   placeholder="shipping your variant"
                 />
               </Box>
-            )}
+            )} */}
             <Stack direction={'row'} alignItems={'center'}>
               <Switch
                 checked={inventoryPolicy}

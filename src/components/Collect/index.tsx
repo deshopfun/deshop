@@ -145,7 +145,7 @@ const Collect = () => {
           </Card>
         )}
       </Box>
-      <Box mt={4}>
+      {/* <Box mt={4}>
         <Typography variant="h6" mb={2}>
           LIVE
         </Typography>
@@ -258,7 +258,7 @@ const Collect = () => {
             </CardContent>
           </Card>
         )}
-      </Box>
+      </Box> */}
     </Container>
   );
 };

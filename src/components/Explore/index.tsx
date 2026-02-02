@@ -26,7 +26,7 @@ const Explore = () => {
 
   const [open, setOpen] = useState<boolean>(false);
   const [products, setProducts] = useState<ProductType[]>();
-  const [currentProductType, setCurrentProductType] = useState<string>(PRODUCT_TYPE.WOMEN);
+  const [currentProductType, setCurrentProductType] = useState<string>(PRODUCT_TYPE.GAMING);
 
   const { setSnackSeverity, setSnackOpen, setSnackMessage } = useSnackPresistStore((state) => state);
 
@@ -56,7 +56,7 @@ const Explore = () => {
       setCurrentProductType(String(Object.entries(PRODUCT_TYPE).find((item) => item[0] === type)?.[1]));
       init(String(Object.entries(PRODUCT_TYPE).find((item) => item[0] === type)?.[1]));
     } else {
-      init(PRODUCT_TYPE.WOMEN);
+      init(PRODUCT_TYPE.GAMING);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [type]);

@@ -1,3 +1,3 @@
-# Decentralized cryptocurrency trading platform
+# Decentralized Digital Exchange Platform
 
-Decentralized cryptocurrency trading platform
+Decentralized Digital Exchange Platform

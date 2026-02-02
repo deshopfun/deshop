@@ -41,7 +41,7 @@ const IntroCard = () => {
               <Box textAlign={'center'}>
                 <Stack direction={'row'} alignItems={'center'} justifyContent={'center'} gap={1}>
                   <CustomLogo>D</CustomLogo>
-                  <Typography variant="h4">Decentralized cryptocurrency trading platform</Typography>
+                  <Typography variant="h4">Decentralized Digital Exchange Platform</Typography>
                 </Stack>
                 <Typography mt={2}>
                   Deshop allows anyone to list their products and conduct online transactions using cryptocurrency.

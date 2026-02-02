@@ -95,7 +95,7 @@ const ManageWallet = () => {
               <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
                 <Stack direction={'row'} alignItems={'center'} gap={2}>
                   <Typography variant="h6">{item.name}</Typography>
-                  {wallets.find((walletItem) => walletItem.chain_id === item.chainId)?.address && (
+                  {wallets && wallets.find((walletItem) => walletItem.chain_id === item.chainId)?.address && (
                     <Chip
                       label={OmitMiddleString(
                         String(wallets.find((walletItem) => walletItem.chain_id === item.chainId)?.address),
@@ -109,7 +109,9 @@ const ManageWallet = () => {
                   color={'success'}
                   onClick={() => {
                     setSelectChain(item.chainId);
-                    setSelectAddress(wallets.find((walletItem) => walletItem.chain_id === item.chainId)?.address);
+                    setSelectAddress(
+                      wallets ? wallets.find((walletItem) => walletItem.chain_id === item.chainId)?.address : '',
+                    );
                     setOpenEditAddressDialog(true);
                   }}
                 >
@@ -131,6 +133,7 @@ const ManageWallet = () => {
                     </Stack>
                     <Switch
                       checked={
+                        wallets &&
                         wallets
                           .find((walletItem) => walletItem.chain_id === item.chainId)
                           ?.disable_coin.split(',')

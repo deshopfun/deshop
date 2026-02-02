@@ -156,7 +156,7 @@ const ProfileDetails = () => {
         <Grid size={{ xs: 12, md: 4 }}>
           {getIsLogin() && (
             <Box>
-              <Typography variant="h6">Who to follow</Typography>
+              {/* <Typography variant="h6">Who to follow</Typography> */}
 
               {/* <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} mt={2}>
             <Stack direction={'row'} alignItems={'center'}>

@@ -68,7 +68,7 @@ const Register = () => {
             Welcome to Deshop
           </Typography>
           <Typography mt={2}>
-            This is a decentralized platform where anyone can list products, anyone can purchase products, and no
+            This is a decentralized digital exchange platform where anyone can list products, anyone can purchase products, and no
             third-party constraints.
           </Typography>
 

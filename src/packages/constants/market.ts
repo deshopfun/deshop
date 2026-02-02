@@ -1,18 +1,26 @@
+// export const PRODUCT_TYPE = {
+//   WOMEN: 'Women',
+//   MEN: 'Men',
+//   BEAUTY: 'Beauty',
+//   FOOD: 'Food & drinks',
+//   BABY: 'Baby & toddler',
+//   HOME: 'Home',
+//   FITNESS: 'Fitness & nutrition',
+//   ACCESSORIES: 'Accessories',
+//   PET: 'Pet supplies',
+//   GAMES: 'Toys & games',
+//   ELECTRONICS: 'Electronics',
+//   ARTS: 'Arts & crafts',
+//   LUGGAGE: 'Luggage & bags',
+//   SPORTING: 'Sporting goods',
+// };
+
 export const PRODUCT_TYPE = {
-  WOMEN: 'Women',
-  MEN: 'Men',
-  BEAUTY: 'Beauty',
-  FOOD: 'Food & drinks',
-  BABY: 'Baby & toddler',
-  HOME: 'Home',
-  FITNESS: 'Fitness & nutrition',
-  ACCESSORIES: 'Accessories',
-  PET: 'Pet supplies',
-  GAMES: 'Toys & games',
-  ELECTRONICS: 'Electronics',
-  ARTS: 'Arts & crafts',
-  LUGGAGE: 'Luggage & bags',
-  SPORTING: 'Sporting goods',
+  GAMING: 'Gaming',
+  CGAMING: 'Companion Gaming',
+  EDUCATION: 'Education',
+  SOCIAL: 'Social',
+  RWA: 'RWA',
 };
 
 export const COLLECT_TYPE = {

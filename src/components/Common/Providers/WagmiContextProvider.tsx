@@ -11,7 +11,7 @@ const queryClient = new QueryClient();
 
 const metadata = {
   name: 'Deshop',
-  description: 'Decentralized cryptocurrency trading platform',
+  description: 'Decentralized Digital Exchange Platform',
   url: 'https://deshop.fun',
   icons: ['https://deshop.fun/favicon.ico'],
 };

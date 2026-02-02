@@ -142,15 +142,15 @@ const CheckoutDetails = () => {
           discounts = 0;
 
         cartItem.variant.forEach((item) => {
-          price += Number((parseFloat(item.price) * item.quantity).toFixed(2));
+          price += Number((parseFloat(item.price) * item.quantity).toFixed(2)) || 0;
           if (item.taxable) {
-            tax += Number((parseFloat(item.tax) * item.quantity).toFixed(2));
+            tax += Number((parseFloat(item.tax) * item.quantity).toFixed(2)) || 0;
           }
           if (item.shippable) {
-            shipping += Number((parseFloat(item.shipping) * item.quantity).toFixed(2));
+            shipping += Number((parseFloat(item.shipping) * item.quantity).toFixed(2)) || 0;
           }
-          tip += Number((parseFloat(item.tip) * item.quantity).toFixed(2));
-          discounts += Number((parseFloat(item.discounts) * item.quantity).toFixed(2));
+          tip += Number((parseFloat(item.tip) * item.quantity).toFixed(2)) || 0;
+          discounts += Number((parseFloat(item.discounts) * item.quantity).toFixed(2)) || 0;
         });
         setSubTotal(String(price));
         setShipping(String(shipping));
@@ -391,7 +391,7 @@ const CheckoutDetails = () => {
         <Grid container spacing={8} mt={4}>
           <Grid size={{ xs: 12, md: 6 }}>
             <Typography variant="h5">Checkout</Typography>
-            <Box mt={4}>
+            {/* <Box mt={4}>
               <Typography variant="h6" mb={2}>
                 Shipping Information
               </Typography>
@@ -744,7 +744,7 @@ const CheckoutDetails = () => {
                   </CardContent>
                 </Card>
               )}
-            </Box>
+            </Box> */}
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
             <Typography variant="h5" mb={4}>
@@ -779,7 +779,7 @@ const CheckoutDetails = () => {
                         {(parseFloat(item.price) * item.quantity).toFixed(2)}
                       </Typography>
                     </Stack>
-                    {item.shippable && (
+                    {/* {item.shippable && (
                       <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
                         <Typography>Shipping</Typography>
                         <Typography variant="h6">
@@ -787,7 +787,7 @@ const CheckoutDetails = () => {
                           {(parseFloat(item.shipping) * item.quantity).toFixed(2)}
                         </Typography>
                       </Stack>
-                    )}
+                    )} */}
                     {item.taxable && (
                       <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
                         <Typography>Tax</Typography>
@@ -855,12 +855,12 @@ const CheckoutDetails = () => {
                 CURRENCYS.find((c) => c.name === cartList.currency)?.code
               }${subTotal}`}</Typography>
             </Stack>
-            <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} mt={2}>
+            {/* <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} mt={2}>
               <Typography>Shipping</Typography>
               <Typography fontWeight={'bold'}>{`${
                 CURRENCYS.find((c) => c.name === cartList.currency)?.code
               }${shipping}`}</Typography>
-            </Stack>
+            </Stack> */}
             <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} mt={2}>
               <Typography>Tax</Typography>
               <Typography fontWeight={'bold'}>{`${

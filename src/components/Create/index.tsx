@@ -18,7 +18,7 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import { useSnackPresistStore } from 'lib';
+import { useSnackPresistStore, useUserPresistStore } from 'lib';
 import { FILE_TYPE, PRODUCT_TYPE } from 'packages/constants';
 import { useState } from 'react';
 import axios from 'utils/http/axios';
@@ -28,7 +28,7 @@ import { ProductImageType, ProductOptionType } from 'utils/types';
 const Create = () => {
   const [title, setTitle] = useState<string>('');
   const [vendor, setVendor] = useState<string>('');
-  const [productType, setProductType] = useState<string>(PRODUCT_TYPE.WOMEN);
+  const [productType, setProductType] = useState<string>(PRODUCT_TYPE.GAMING);
   const [tags, setTags] = useState<string>('');
   const [currency, setCurrency] = useState<string>('');
   const [description, setDescription] = useState<string>('');
@@ -41,6 +41,7 @@ const Create = () => {
   const [imageList, setImageList] = useState<string[]>([]);
 
   const { setSnackSeverity, setSnackOpen, setSnackMessage } = useSnackPresistStore((state) => state);
+  const { getIsLogin } = useUserPresistStore((state) => state);
 
   const VisuallyHiddenInput = styled('input')({
     clip: 'rect(0 0 0 0)',
@@ -94,6 +95,13 @@ const Create = () => {
 
   const onClickCreateProduct = async () => {
     try {
+      if (!getIsLogin()) {
+        setSnackSeverity('error');
+        setSnackMessage('Need login');
+        setSnackOpen(true);
+        return;
+      }
+
       if (!title || title === '') {
         setSnackSeverity('error');
         setSnackMessage('Incorrect title input');
@@ -124,18 +132,39 @@ const Create = () => {
 
       const productOption: ProductOptionType[] = [];
       if (optionOne && optionOneValue && optionOne != '' && optionOneValue != '') {
+        const oneValueArray = optionOneValue.split(',');
+        if (new Set(oneValueArray).size !== oneValueArray.length) {
+          setSnackSeverity('error');
+          setSnackMessage('Product option has same value');
+          setSnackOpen(true);
+          return;
+        }
         productOption.push({
           name: optionOne,
           value: optionOneValue,
         });
       }
       if (optionTwo && optionTwoValue && optionTwo != '' && optionTwoValue != '') {
+        const twoValueArray = optionTwoValue.split(',');
+        if (new Set(twoValueArray).size !== twoValueArray.length) {
+          setSnackSeverity('error');
+          setSnackMessage('Product option has same value');
+          setSnackOpen(true);
+          return;
+        }
         productOption.push({
           name: optionTwo,
           value: optionTwoValue,
         });
       }
       if (optionThree && optionThreeValue && optionThree != '' && optionThreeValue != '') {
+        const threeValueArray = optionThreeValue.split(',');
+        if (new Set(threeValueArray).size !== threeValueArray.length) {
+          setSnackSeverity('error');
+          setSnackMessage('Product option has same value');
+          setSnackOpen(true);
+          return;
+        }
         productOption.push({
           name: optionThree,
           value: optionThreeValue,

@@ -143,7 +143,7 @@ const HomeSidebar = () => {
             >
               Explore
             </MenuItem>
-            <MenuItem
+            {/* <MenuItem
               icon={<CurrencyBitcoin />}
               active={router.pathname === '/blockchain' ? true : false}
               component={<Link href={'/blockchain'} />}
@@ -177,7 +177,7 @@ const HomeSidebar = () => {
               component={<Link href={'#'} />}
             >
               More
-            </MenuItem>
+            </MenuItem> */}
           </Menu>
 
           <Box mt={2} px={1}>

@@ -84,7 +84,9 @@ const PaymentDetails = () => {
 
       if (response.result) {
         const newBlockchain: BLOCKCHAIN[] = BLOCKCHAINNAMES.reduce((acc: BLOCKCHAIN[], chain) => {
-          const wallet = response.data.wallets.find((w: WalletType) => w.chain_id === chain.chainId);
+          const wallet = response.data.wallets
+            ? response.data.wallets.find((w: WalletType) => w.chain_id === chain.chainId)
+            : null;
           if (wallet?.address) {
             const coins = chain.coins.filter((coin) => !wallet.disable_coin?.includes(coin.name));
             if (coins.length > 0) {
@@ -277,7 +279,7 @@ const PaymentDetails = () => {
                           <Divider />
                         </>
                       )}
-                      {Number(order?.total_shipping) > 0 && (
+                      {/* {Number(order?.total_shipping) > 0 && (
                         <>
                           <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} py={1}>
                             <Typography fontWeight={'bold'}>Total Shipping({order?.currency})</Typography>
@@ -285,7 +287,7 @@ const PaymentDetails = () => {
                           </Stack>
                           <Divider />
                         </>
-                      )}
+                      )} */}
                       {Number(order?.total_tax) > 0 && (
                         <>
                           <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} py={1}>
@@ -372,7 +374,7 @@ const PaymentDetails = () => {
                           <Divider />
                         </>
                       )}
-                      {Number(order?.total_shipping) > 0 && (
+                      {/* {Number(order?.total_shipping) > 0 && (
                         <>
                           <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} py={1}>
                             <Typography fontWeight={'bold'}>Total Shipping({order?.currency})</Typography>
@@ -380,7 +382,7 @@ const PaymentDetails = () => {
                           </Stack>
                           <Divider />
                         </>
-                      )}
+                      )} */}
                       {Number(order?.total_tax) > 0 && (
                         <>
                           <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} py={1}>
@@ -502,7 +504,10 @@ const PaymentDetails = () => {
                             <Typography fontWeight={'bold'}>{order?.order_id}</Typography>
                           </Stack>
                           <Typography>
-                            at <Link href="https://t.me/deshopfunsupport" target="_blank">Contact telegram</Link>
+                            at{' '}
+                            <Link href="https://t.me/deshopfunsupport" target="_blank">
+                              Contact telegram
+                            </Link>
                           </Typography>
                         </Box>
                         <Divider />
@@ -842,7 +847,7 @@ const PaymentDetails = () => {
                   <Grid size={{ xs: 12, md: 4 }}>
                     <Typography variant="h6">QUESTIONS ABOUT YOUR PRODUCT</Typography>
                     <Typography>
-                      Deshop is a decentralized cryptocurrency trading platform, if you have any question regarding your
+                      Deshop is a decentralized digital exchange platform, if you have any question regarding your
                       products/orders/payments/services please
                     </Typography>
                     <Link color={'textPrimary'} href="https://t.me/deshopfunsupport" target="_blank">
