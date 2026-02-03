@@ -349,7 +349,7 @@ const PaymentDetails = () => {
               <Typography variant="h4" textAlign={'center'}>
                 Payment Page
               </Typography>
-              {order.transactions && order.transactions.length > 0 && (
+              {order.transactions && order.detect_transaction === 1 && (
                 <Box mt={4}>
                   <Alert severity={'success'}>
                     <AlertTitle>Payment successfully</AlertTitle>

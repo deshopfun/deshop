@@ -119,6 +119,7 @@ export type OrderType = {
   wallets: WalletType[];
   transactions: TransactionType[];
   // shipping: AddressType;
+  detect_transaction: number;
 };
 
 export type OrderItemType = {
