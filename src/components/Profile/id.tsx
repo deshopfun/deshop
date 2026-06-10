@@ -101,10 +101,12 @@ const ProfileDetails = () => {
                   <Typography>Email:</Typography>
                   <Typography fontWeight={'bold'}>{user?.profile.email}</Typography>
                 </Stack>
-                <Stack direction={'row'} alignItems={'center'} gap={1}>
-                  <Typography>Bio:</Typography>
-                  <Typography fontWeight={'bold'}>{user?.profile.bio}</Typography>
-                </Stack>
+                {user?.profile.bio && (
+                  <Stack direction={'row'} alignItems={'center'} gap={1}>
+                    <Typography>Bio:</Typography>
+                    <Typography fontWeight={'bold'}>{user?.profile.bio}</Typography>
+                  </Stack>
+                )}
               </Box>
             </Stack>
 

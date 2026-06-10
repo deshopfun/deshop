@@ -440,7 +440,7 @@ const Create = () => {
                 </Box>
                 <Box mt={2}>
                   <Typography variant="h6">File size and type</Typography>
-                  <Typography>- image - max 15mb. ".jpg", ".gif" or ".png" recommended</Typography>
+                  <Typography>- image - max 1mb. ".jpg", ".gif" or ".png" recommended</Typography>
                   <Typography variant="h6">Resolution and aspect ratio</Typography>
                   <Typography>- image - min 100x100px. 1:1 square recommended</Typography>
                 </Box>
@@ -482,7 +482,7 @@ const Create = () => {
                     <Box mt={2} dangerouslySetInnerHTML={{ __html: description }}></Box>
                   </Box>
                 ) : (
-                  <Typography py={20}>a preview of how the product will look like</Typography>
+                  <Typography py={20}>A preview of how the product will look like</Typography>
                 )}
               </CardContent>
             </Card>
