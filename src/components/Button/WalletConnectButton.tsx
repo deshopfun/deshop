@@ -1,61 +1,193 @@
+// import { useEffect, useState } from 'react';
+// import { AppKit, createAppKit, useAppKitNetwork } from '@reown/appkit/react';
+// import { AppKitNetwork } from '@reown/appkit/networks';
+// import { CHAINIDS } from 'packages/constants/blockchain';
+// import { useAppKitAccount } from '@reown/appkit/react';
+// import { useSendTransaction } from 'wagmi';
+// import { Hex, parseGwei, type Address } from 'viem';
+// import { useAppKit } from '@reown/appkit/react';
+// import { ethers } from 'ethers';
+// import { IsHexAddress } from 'utils/strings';
+// import { ERC20Abi } from 'packages/web3/abi/erc20';
+// import { useSnackPresistStore } from 'lib';
+// import { GetWalletConnectNetworkByChainids } from 'utils/web3';
+// import { WalletConnectType } from 'utils/types';
+
+// const WalletConnectButton = (props: WalletConnectType) => {
+//   const [connectNetwork, setConnectNetwork] = useState<AppKitNetwork>();
+//   const { chainId, switchNetwork } = useAppKitNetwork();
+
+//   const { setSnackOpen, setSnackSeverity, setSnackMessage } = useSnackPresistStore((state) => state);
+
+//   const { open, close } = useAppKit();
+//   const { address, isConnected } = useAppKitAccount();
+
+//   const { data: hash, sendTransaction } = useSendTransaction();
+
+//   const handleSendTx = async () => {
+//     try {
+//       if (!connectNetwork) return;
+
+//       if (connectNetwork.id != chainId) {
+//         setSnackSeverity('error');
+//         setSnackMessage(
+//           'The current network is incorrect, please switch to the correct network environment: ' + connectNetwork.name,
+//         );
+//         setSnackOpen(true);
+//         await open();
+//         return;
+//       }
+
+//       if (!IsHexAddress(props.address)) {
+//         return;
+//       }
+
+//       if (props.address === address) {
+//         setSnackSeverity('error');
+//         setSnackMessage('The sending address and receiving address are the same');
+//         setSnackOpen(true);
+//         return;
+//       }
+
+//       if (props.contractAddress) {
+//         const value = ethers.parseUnits(String(props.value), props.decimals).toString();
+//         const iface = new ethers.Interface(ERC20Abi);
+//         const data = iface.encodeFunctionData('transfer', [props.address, value]);
+
+//         sendTransaction({
+//           data: data as `0x${string}`,
+//           to: props.contractAddress as `0x${string}`,
+//           value: 0 as any,
+//         });
+//       } else {
+//         sendTransaction({
+//           to: props.address,
+//           value: ethers.parseEther(String(props.value)),
+//         });
+//       }
+//     } catch (e) {
+//       console.error(e);
+//     }
+//   };
+
+//   const onClickWalletConnect = async () => {
+//     try {
+//       if (!connectNetwork) {
+//         return;
+//       }
+
+//       if (connectNetwork.id != chainId) {
+//         switchNetwork(connectNetwork);
+//         return;
+//       }
+
+//       if (isConnected) {
+//         await handleSendTx();
+//       } else {
+//         await open();
+//       }
+//     } catch (e) {
+//       console.error(e);
+//     }
+//   };
+
+//   useEffect(() => {
+//     if (hash) {
+//       setSnackSeverity('success');
+//       setSnackMessage('You sent a transaction successfully');
+//       setSnackOpen(true);
+//     }
+//   }, [hash, setSnackSeverity, setSnackMessage, setSnackOpen]);
+
+//   useEffect(() => {
+//     if (!props.chainIds || !props.address) {
+//       return;
+//     }
+
+//     const connectNetwork = GetWalletConnectNetworkByChainids(props.chainIds);
+
+//     if (!connectNetwork) {
+//       return;
+//     }
+
+//     setConnectNetwork(connectNetwork);
+//   }, [props.chainIds, props.address]);
+
+//   return (
+//     <>
+//       {connectNetwork && (
+//         <Button
+//           color={props.color ? props.color : 'primary'}
+//           fullWidth={props.fullWidth}
+//           variant={props.buttonVariant ? props.buttonVariant : 'contained'}
+//           size={props.buttonSize ? props.buttonSize : 'medium'}
+//           // endIcon={<Send />}
+//           onClick={() => {
+//             onClickWalletConnect();
+//           }}
+//         >
+//           {isConnected ? 'Send Transaction' : 'Connect Wallet'}
+//         </Button>
+//       )}
+//     </>
+//   );
+// };
+
+// export default WalletConnectButton;
+
 import { useEffect, useState } from 'react';
-import { Button } from '@mui/material';
-import { Send } from '@mui/icons-material';
-import { AppKit, createAppKit, useAppKitNetwork } from '@reown/appkit/react';
+import { useAppKitNetwork, useAppKitAccount, useAppKit } from '@reown/appkit/react';
 import { AppKitNetwork } from '@reown/appkit/networks';
-import { CHAINIDS } from 'packages/constants/blockchain';
-import { useAppKitAccount } from '@reown/appkit/react';
 import { useSendTransaction } from 'wagmi';
-import { Hex, parseGwei, type Address } from 'viem';
-import { useAppKit } from '@reown/appkit/react';
 import { ethers } from 'ethers';
 import { IsHexAddress } from 'utils/strings';
 import { ERC20Abi } from 'packages/web3/abi/erc20';
 import { useSnackPresistStore } from 'lib';
 import { GetWalletConnectNetworkByChainids } from 'utils/web3';
 import { WalletConnectType } from 'utils/types';
+import { Button } from '@/components/ui/button';
+import { Wallet, Send, Loader2, AlertTriangle } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 const WalletConnectButton = (props: WalletConnectType) => {
   const [connectNetwork, setConnectNetwork] = useState<AppKitNetwork>();
+  const [sending, setSending] = useState(false);
+
   const { chainId, switchNetwork } = useAppKitNetwork();
+  const { open } = useAppKit();
+  const { address, isConnected } = useAppKitAccount();
+  const { data: hash, sendTransaction } = useSendTransaction();
 
   const { setSnackOpen, setSnackSeverity, setSnackMessage } = useSnackPresistStore((state) => state);
 
-  const { open, close } = useAppKit();
-  const { address, isConnected } = useAppKitAccount();
+  const showError = (msg: string) => {
+    setSnackSeverity('error');
+    setSnackMessage(msg);
+    setSnackOpen(true);
+  };
 
-  const { data: hash, sendTransaction } = useSendTransaction();
+  // 网络不匹配
+  const isWrongNetwork = connectNetwork && connectNetwork.id !== chainId;
 
   const handleSendTx = async () => {
     try {
       if (!connectNetwork) return;
-
-      if (connectNetwork.id != chainId) {
-        setSnackSeverity('error');
-        setSnackMessage(
-          'The current network is incorrect, please switch to the correct network environment: ' + connectNetwork.name,
-        );
-        setSnackOpen(true);
+      if (isWrongNetwork) {
+        showError(`Please switch to the correct network: ${connectNetwork.name}`);
         await open();
         return;
       }
-
-      if (!IsHexAddress(props.address)) {
-        return;
-      }
-
+      if (!IsHexAddress(props.address)) return;
       if (props.address === address) {
-        setSnackSeverity('error');
-        setSnackMessage('The sending address and receiving address are the same');
-        setSnackOpen(true);
+        showError('Sending and receiving address cannot be the same');
         return;
       }
 
+      setSending(true);
       if (props.contractAddress) {
         const value = ethers.parseUnits(String(props.value), props.decimals).toString();
         const iface = new ethers.Interface(ERC20Abi);
         const data = iface.encodeFunctionData('transfer', [props.address, value]);
-
         sendTransaction({
           data: data as `0x${string}`,
           to: props.contractAddress as `0x${string}`,
@@ -69,20 +201,17 @@ const WalletConnectButton = (props: WalletConnectType) => {
       }
     } catch (e) {
       console.error(e);
+      setSending(false);
     }
   };
 
   const onClickWalletConnect = async () => {
     try {
-      if (!connectNetwork) {
-        return;
-      }
-
-      if (connectNetwork.id != chainId) {
+      if (!connectNetwork) return;
+      if (isWrongNetwork) {
         switchNetwork(connectNetwork);
         return;
       }
-
       if (isConnected) {
         await handleSendTx();
       } else {
@@ -95,43 +224,63 @@ const WalletConnectButton = (props: WalletConnectType) => {
 
   useEffect(() => {
     if (hash) {
+      setSending(false);
       setSnackSeverity('success');
-      setSnackMessage('You sent a transaction successfully');
+      setSnackMessage('Transaction sent successfully');
       setSnackOpen(true);
     }
-  }, [hash, setSnackSeverity, setSnackMessage, setSnackOpen]);
+  }, [hash]);
 
   useEffect(() => {
-    if (!props.chainIds || !props.address) {
-      return;
-    }
-
-    const connectNetwork = GetWalletConnectNetworkByChainids(props.chainIds);
-
-    if (!connectNetwork) {
-      return;
-    }
-
-    setConnectNetwork(connectNetwork);
+    if (!props.chainIds || !props.address) return;
+    const network = GetWalletConnectNetworkByChainids(props.chainIds);
+    if (network) setConnectNetwork(network);
   }, [props.chainIds, props.address]);
 
+  if (!connectNetwork) return null;
+
+  // 按钮状态配置
+  const buttonConfig = () => {
+    if (sending)
+      return {
+        label: 'Sending...',
+        icon: <Loader2 className="h-4 w-4 animate-spin" />,
+        className: 'bg-sky-400 cursor-not-allowed',
+      };
+    if (isWrongNetwork)
+      return {
+        label: `Switch to ${connectNetwork.name}`,
+        icon: <AlertTriangle className="h-4 w-4" />,
+        className: 'bg-amber-500 hover:bg-amber-600',
+      };
+    if (isConnected)
+      return {
+        label: 'Send Transaction',
+        icon: <Send className="h-4 w-4" />,
+        className: 'bg-sky-500 hover:bg-sky-600',
+      };
+    return {
+      label: 'Connect Wallet',
+      icon: <Wallet className="h-4 w-4" />,
+      className: 'bg-sky-500 hover:bg-sky-600',
+    };
+  };
+
+  const config = buttonConfig();
+
   return (
-    <>
-      {connectNetwork && (
-        <Button
-          color={props.color ? props.color : 'primary'}
-          fullWidth={props.fullWidth}
-          variant={props.buttonVariant ? props.buttonVariant : 'contained'}
-          size={props.buttonSize ? props.buttonSize : 'medium'}
-          endIcon={<Send />}
-          onClick={() => {
-            onClickWalletConnect();
-          }}
-        >
-          {isConnected ? 'Send Transaction' : 'Connect Wallet'}
-        </Button>
+    <Button
+      onClick={onClickWalletConnect}
+      disabled={sending}
+      className={cn(
+        'text-white font-semibold gap-2 transition-all duration-200',
+        props.fullWidth && 'w-full',
+        config.className,
       )}
-    </>
+    >
+      {config.icon}
+      {config.label}
+    </Button>
   );
 };
 

@@ -1,10 +1,8 @@
-import { Box, Typography } from '@mui/material';
-
 const Checkout = () => {
   return (
-    <Box>
-      <Typography>Checkout</Typography>
-    </Box>
+    <div>
+      <p>Checkout</p>
+    </div>
   );
 };
 

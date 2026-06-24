@@ -1,7 +1,7 @@
-import { Box, Card, CardContent, Typography } from '@mui/material';
 import { useSnackPresistStore, useUserPresistStore } from 'lib';
 import { useState } from 'react';
 import { FollowType } from 'utils/types';
+import { Card, CardContent } from '@/components/ui/card'
 
 type Props = {
   uuid?: string;
@@ -14,23 +14,23 @@ const ProfileFollow = (props: Props) => {
   const { getIsLogin } = useUserPresistStore((state) => state);
 
   return (
-    <Box>
-      <Typography variant="h6">All followers</Typography>
+    <div>
+      <p className=''>All followers</p>
 
-      <Box mt={2}>
+      <div className='mt-2'>
         {followers && followers.length > 0 ? (
           <></>
         ) : (
-          <Box mt={2}>
+          <div className='mt-2'>
             <Card>
               <CardContent>
-                <Typography>Not found</Typography>
+                <p>Not found</p>
               </CardContent>
             </Card>
-          </Box>
+          </div>
         )}
-      </Box>
-    </Box>
+      </div>
+    </div>
   );
 };
 

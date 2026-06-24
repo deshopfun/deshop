@@ -1,80 +1,60 @@
-import { useRouter } from 'next/router';
-
-import {
-  Alert,
-  AlertTitle,
-  Box,
-  Button,
-  Card,
-  CardContent,
-  Container,
-  IconButton,
-  LinearProgress,
-  Snackbar,
-  Stack,
-  TextField,
-  Typography,
-} from '@mui/material';
-import { useState } from 'react';
 import RecentViewCard from 'components/Card/RecentViewCard';
-import { ChevronRight } from '@mui/icons-material';
 import NowTrendingCard from 'components/Card/NowTrendingCard';
 import ExploreCard from 'components/Card/ExploreCard';
 import IntroCard from 'components/Card/IntroCard';
+import { Button } from '@/components/ui/button';
+import { ChevronRight } from 'lucide-react';
 
 const Home = () => {
-  const router = useRouter();
-
   return (
-    <Container>
-      <Box>
+    <div className="container mx-auto">
+      <div>
         <IntroCard />
-      </Box>
+      </div>
 
-      {/* <Box>
-        <Box display={'flex'} alignItems={'center'}>
-          <Button color={'inherit'}  endIcon={<ChevronRight  />}>
-            <Typography variant="h6" >
-              Recently viewed
-            </Typography>
+      {/* <div>
+        <div className="flex items-center">
+          <Button variant="ghost">
+            <p className="text-lg">Recently viewed</p>
+            <ChevronRight />
           </Button>
-        </Box>
+        </div>
 
-        <Box mt={2}>
+        <div className="mt-4">
           <RecentViewCard />
-        </Box>
-      </Box> */}
+        </div>
+      </div> */}
 
-      <Box mt={4}>
-        <Box display={'flex'} alignItems={'center'}>
-          <Typography variant="h6" color={'textPrimary'}>
+      <div className="mt-8">
+        <div className="flex items-center">
+          <p className="text-lg" color={'textPrimary'}>
             Now trending
-          </Typography>
-        </Box>
+          </p>
+        </div>
 
-        <Box mt={2}>
+        <div className="mt-4">
           <NowTrendingCard />
-        </Box>
-      </Box>
+        </div>
+      </div>
 
-      <Box mt={4}>
-        <Box display={'flex'} alignItems={'center'}>
+      <div className="mt-8">
+        <div className="flex items-center">
           <Button
-            color={'inherit'}
-            endIcon={<ChevronRight />}
+            variant="ghost"
             onClick={() => {
               window.location.href = '/explore';
             }}
           >
-            <Typography variant="h6">Explore</Typography>
+            <p className="text-lg">Explore</p>
+            <ChevronRight />
           </Button>
-        </Box>
+        </div>
 
-        <Box mt={2}>
+        <div className="mt-4">
           <ExploreCard />
-        </Box>
-      </Box>
-    </Container>
+        </div>
+      </div>
+    </div>
   );
 };
 

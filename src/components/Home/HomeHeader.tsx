@@ -1,11 +1,22 @@
-import { AccountCircle, AddShoppingCart, FavoriteBorder, KeyboardArrowDown } from '@mui/icons-material';
-import { Avatar, Badge, Box, Button, Divider, Grid, IconButton, Menu, MenuItem, Typography } from '@mui/material';
 import Search from 'components/Search';
 import { useCartPresistStore, useSnackPresistStore, useUserPresistStore } from 'lib';
 import { useEffect, useState } from 'react';
 import axios from 'utils/http/axios';
 import { Http } from 'utils/http/http';
 import { OmitMiddleString } from 'utils/strings';
+import { Button } from '@/components/ui/button';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { Badge } from '@/components/ui/badge';
+import { ShoppingCart, Heart, Plus, User, Settings, LayoutDashboard, LogOut } from 'lucide-react';
 
 const HomeHeader = () => {
   const [avatarUrl, setAvatarUrl] = useState<string>();
@@ -34,7 +45,7 @@ const HomeHeader = () => {
 
   const init = async () => {
     try {
-      if (!getIsLogin()) {
+      if (!getIsLogin || !getIsLogin()) {
         return;
       }
 
@@ -62,111 +73,138 @@ const HomeHeader = () => {
   }, []);
 
   return (
-    <Box p={2}>
-      <Grid container>
-        <Grid size={{ xs: 12, md: 4 }}></Grid>
-        <Grid size={{ xs: 12, md: 4 }}>
+    <header className="sticky top-0 z-50 w-full border-b bg-white/80 backdrop-blur-md shadow-sm">
+      <div className="container mx-auto px-4 h-16 grid grid-cols-3 items-center gap-4">
+        <div></div>
+
+        <div className="flex justify-center">
           <Search />
-        </Grid>
-        <Grid size={{ xs: 12, md: 4 }}>
-          <Box display={'flex'} alignItems={'center'} justifyContent={'right'} gap={2}>
-            <IconButton
+        </div>
+
+        <div className="flex items-center justify-end gap-2">
+          <div className="relative">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-11 w-11"
               onClick={() => {
                 window.location.href = '/cart';
               }}
             >
-              <Badge badgeContent={getCart().length} color={'info'}>
-                <AddShoppingCart color="action" />
-              </Badge>
-            </IconButton>
-            {getIsLogin() && (
-              <>
-                <IconButton
-                  onClick={() => {
-                    window.location.href = '/collect';
-                  }}
-                >
-                  <Badge badgeContent={collectNumber} color={'info'}>
-                    <FavoriteBorder color="action" />
-                  </Badge>
-                </IconButton>
-              </>
-            )}
-
-            <Button
-              onClick={() => {
-                window.location.href = '/create';
-              }}
-              variant="contained"
-              color={'success'}
-            >
-              Create Product
+              <ShoppingCart className="h-6 w-6" />
             </Button>
-            {getIsLogin() ? (
-              <>
-                <Button
-                  variant={'outlined'}
-                  onClick={handleClick}
-                  endIcon={<KeyboardArrowDown />}
-                  style={{ width: 180 }}
-                >
-                  {avatarUrl ? (
-                    <Avatar sx={{ width: 25, height: 25 }} alt="Avatar" src={avatarUrl} />
-                  ) : (
-                    <Avatar sx={{ width: 25, height: 25 }} alt="Avatar" src={'/images/default_avatar.png'} />
-                  )}
-                  <Typography pl={1} fontSize={16}>
-                    {OmitMiddleString(String(username), 3)}
-                  </Typography>
+            {getCart().length > 0 && (
+              <Badge className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs bg-sky-500">
+                {getCart().length > 99 ? '99+' : getCart().length}
+              </Badge>
+            )}
+          </div>
+
+          {getIsLogin() && (
+            <div className="relative">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-11 w-11"
+                onClick={() => {
+                  window.location.href = '/collect';
+                }}
+              >
+                <Heart className="h-6 w-6" />
+              </Button>
+              {collectNumber > 0 && (
+                <Badge className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs bg-sky-500">
+                  {collectNumber > 99 ? '99+' : collectNumber}
+                </Badge>
+              )}
+            </div>
+          )}
+
+          <Button
+            onClick={() => {
+              window.location.href = '/create';
+            }}
+            className="h-11 px-5 text-base bg-green-700 hover:bg-green-900 text-white gap-1 hidden md:flex"
+          >
+            <Plus className="h-5 w-5" />
+            Create
+          </Button>
+
+          {getIsLogin() ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="h-11 flex items-center gap-2 px-3">
+                  <Avatar className="h-9 w-9">
+                    <AvatarImage src={avatarUrl || '/images/default_avatar.png'} />
+                    <AvatarFallback>{username?.[0]?.toUpperCase()}</AvatarFallback>
+                  </Avatar>
+                  <span className="text-sm font-medium hidden md:block">{OmitMiddleString(String(username), 3)}</span>
                 </Button>
-                <Menu
-                  open={open}
-                  anchorEl={anchorEl}
-                  onClose={handleClose}
-                  anchorOrigin={{
-                    vertical: 'bottom',
-                    horizontal: 'right',
-                  }}
-                  transformOrigin={{
-                    vertical: 'top',
-                    horizontal: 'right',
-                  }}
-                >
-                  <MenuItem
-                    style={{ width: 180 }}
+              </DropdownMenuTrigger>
+
+              <DropdownMenuContent className="w-52" align="end">
+                <div className="flex items-center gap-2 p-2 mb-1">
+                  <Avatar className="h-8 w-8">
+                    <AvatarImage src={avatarUrl || '/images/default_avatar.png'} />
+                    <AvatarFallback>{username?.[0]?.toUpperCase()}</AvatarFallback>
+                  </Avatar>
+                  <div className="flex flex-col">
+                    <p className="text-sm font-medium">{username}</p>
+                    <p className="text-xs text-muted-foreground">Account</p>
+                  </div>
+                </div>
+
+                <DropdownMenuSeparator />
+
+                <DropdownMenuGroup>
+                  <DropdownMenuLabel className="text-xs text-muted-foreground">Account</DropdownMenuLabel>
+                  <DropdownMenuItem
                     onClick={() => {
                       window.location.href = `/profile/${username}`;
                     }}
                   >
+                    <User className="mr-2 h-4 w-4" />
                     Profile
-                  </MenuItem>
-                  <MenuItem
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
                     onClick={() => {
                       window.location.href = `/manage/${username}`;
                     }}
                   >
+                    <LayoutDashboard className="mr-2 h-4 w-4" />
                     Manage
-                  </MenuItem>
-                  <Divider />
-                  <MenuItem onClick={onClickLogout}>
-                    <Typography color={'error'}>Log out</Typography>
-                  </MenuItem>
-                </Menu>
-              </>
-            ) : (
-              <Button
-                onClick={() => {
-                  window.location.href = '/login';
-                }}
-                variant="contained"
-              >
-                Log in
-              </Button>
-            )}
-          </Box>
-        </Grid>
-      </Grid>
-    </Box>
+                  </DropdownMenuItem>
+                  {/* <DropdownMenuItem
+                    onClick={() => {
+                      window.location.href = '/settings';
+                    }}
+                  >
+                    <Settings className="mr-2 h-4 w-4" />
+                    Settings
+                  </DropdownMenuItem> */}
+                </DropdownMenuGroup>
+
+                <DropdownMenuSeparator />
+
+                <DropdownMenuItem className="text-red-500 focus:text-red-500 focus:bg-red-50" onClick={onClickLogout}>
+                  <LogOut className="mr-2 h-4 w-4" />
+                  Log out
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : (
+            <Button
+              onClick={() => {
+                window.location.href = '/login';
+              }}
+              className="h-11 text-base px-5 bg-sky-500 hover:bg-sky-600 text-white"
+            >
+              Log in
+            </Button>
+          )}
+        </div>
+      </div>
+    </header>
   );
 };
 

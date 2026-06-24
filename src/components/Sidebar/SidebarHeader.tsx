@@ -1,10 +1,11 @@
-import { Badge, Box, Button, FormControl, IconButton, MenuItem, Select, Stack, Typography } from '@mui/material';
-import { CustomLogo } from 'components/Logo/CustomLogo';
-import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
 import { useSnackPresistStore, useUserPresistStore } from 'lib';
 import { useEffect, useState } from 'react';
 import axios from 'utils/http/axios';
 import { Http } from 'utils/http/http';
+import { Button } from '@/components/ui/button';
+import { Bell } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { SiteLogo } from 'components/Logo/SiteLogo';
 
 const SidebarHeader = () => {
   const [notificationNumber, setNotificationNumber] = useState<number>(0);
@@ -14,7 +15,7 @@ const SidebarHeader = () => {
 
   const init = async () => {
     try {
-      if (!getIsLogin()) {
+      if (!getIsLogin || !getIsLogin()) {
         return;
       }
 
@@ -50,38 +51,34 @@ const SidebarHeader = () => {
   }, []);
 
   return (
-    <Box paddingLeft={3} paddingRight={1} paddingY={3} overflow={'hidden'}>
-      <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
-        <Button
-          style={{ padding: 0 }}
-          onClick={() => {
-            window.location.href = '/';
-          }}
-        >
-          <Stack direction={'row'} alignItems={'center'} gap={1}>
-            <CustomLogo>D</CustomLogo>
-            <Typography fontWeight={'bold'} color="#0098e5" fontSize={'large'}>
-              Deshop
-            </Typography>
-          </Stack>
-        </Button>
-
+    <div className="p-4 overflow-hidden">
+      <div className="flex flex-row items-center justify-between">
+        <SiteLogo />
         {getIsLogin() && (
-          <Box>
-            <IconButton
-              size="small"
+          <div className="relative inline-flex">
+            <Button
+              variant="ghost"
+              size="icon"
+              color="red"
               onClick={() => {
                 window.location.href = '/notification';
               }}
             >
-              <Badge badgeContent={notificationNumber} color="error">
-                <NotificationsNoneIcon color="action" />
+              <Bell className="h-5 w-5" />
+            </Button>
+            {notificationNumber > 0 && (
+              <Badge
+                className={
+                  'absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs bg-red-500 hover:bg-red-600'
+                }
+              >
+                {notificationNumber > 99 ? '99+' : notificationNumber}
               </Badge>
-            </IconButton>
-          </Box>
+            )}
+          </div>
         )}
-      </Stack>
-    </Box>
+      </div>
+    </div>
   );
 };
 

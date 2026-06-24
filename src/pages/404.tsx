@@ -1,47 +1,30 @@
-import { Box, Button, Container, Stack, Typography } from '@mui/material';
 import MetaTags from 'components/Common/MetaTags';
-import { CustomLogo } from 'components/Logo/CustomLogo';
+import { Button } from '@/components/ui/button';
+import Link from 'next/link';
+import { SiteLogo } from 'components/Logo/SiteLogo';
 
 const Custom404 = () => {
-  const onClickButton = async () => {
-    window.location.href = '/';
-  };
-
   return (
     <>
       <MetaTags title="Not found" />
-      <Container>
-        <Box mt={20}>
-          <Button
-            style={{ padding: 0 }}
-            onClick={() => {
-              window.location.href = '/';
-            }}
-          >
-            <Stack direction={'row'} alignItems={'center'} gap={1}>
-              <CustomLogo>D</CustomLogo>
-              <Typography fontWeight={'bold'} color="#0098e5" fontSize={'large'}>
-                Deshop
-              </Typography>
-            </Stack>
-          </Button>
+      <div className="container mx-auto mt-20">
+        <SiteLogo />
 
-          <Stack mt={4} direction={'row'} alignItems={'center'}>
-            <Typography fontWeight={'bold'}>404.</Typography>
-            <Typography ml={1}>That&apos;s an error.</Typography>
-          </Stack>
+        <div className="mt-8 flex flex-row items-center">
+          <p className="font-bold">404.</p>
+          <p className="ml-1">That&apos;s an error.</p>
+        </div>
 
-          <Box mt={4}>
-            <Typography>The requested URL was not found on this server. That&apos;s all we know.</Typography>
-          </Box>
+        <div className="mt-4">
+          <p>The requested URL was not found on this server. That&apos;s all we know.</p>
+        </div>
 
-          <Box mt={6}>
-            <Button variant={'contained'} onClick={onClickButton} size="large">
-              Go Home
-            </Button>
-          </Box>
-        </Box>
-      </Container>
+        <Button className="mt-8 bg-sky-500" size="lg">
+          <Link href="/" className="text-lg">
+            Go Home
+          </Link>
+        </Button>
+      </div>
     </>
   );
 };

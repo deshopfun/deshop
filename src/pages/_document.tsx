@@ -1,12 +1,11 @@
 import Document, { Html, Head, Main, NextScript } from 'next/document';
 import { APP_NAME, STATIC_ASSETS } from 'packages/constants';
-import { DocumentHeadTags, documentGetInitialProps } from '@mui/material-nextjs/v13-pagesRouter';
 
 export default function MyDocument(props: any) {
   return (
     <Html lang="en">
       <Head>
-        <DocumentHeadTags {...props} />
+        {/* <DocumentHeadTags {...props} /> */}
         <meta charSet="utf-8" />
         <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
         {/* <link
@@ -31,7 +30,7 @@ export default function MyDocument(props: any) {
   );
 }
 
-MyDocument.getInitialProps = async (ctx: any) => {
-  const finalProps = await documentGetInitialProps(ctx);
-  return finalProps;
-};
+// MyDocument.getInitialProps = async (ctx: any) => {
+//   const finalProps = await documentGetInitialProps(ctx);
+//   return finalProps;
+// };

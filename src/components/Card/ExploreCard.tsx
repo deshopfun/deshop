@@ -1,28 +1,26 @@
-import { Box, Card, CardActionArea, CardContent, CardMedia, Grid, Typography } from '@mui/material';
 import { PRODUCT_TYPE } from 'packages/constants';
 import { GetImgSrcByProductType } from 'utils/image';
+import { Card, CardContent } from '@/components/ui/card';
 
 const ExploreCard = () => {
   return (
-    <Grid container spacing={2}>
+    <div className="container mx-auto grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
       {PRODUCT_TYPE &&
         Object.entries(PRODUCT_TYPE).map((item, index) => (
-          <Grid size={{ xs: 12, md: 2 }} key={index}>
-            <Card>
-              <CardActionArea
-                onClick={() => {
-                  window.location.href = `/explore?type=${item[0]}`;
-                }}
-              >
-                <CardMedia component="img" height="140" image={GetImgSrcByProductType(item[1])} alt="image" />
-                <CardContent>
-                  <Typography textAlign={'center'}>{item[1]}</Typography>
-                </CardContent>
-              </CardActionArea>
-            </Card>
-          </Grid>
+          <Card
+            key={index}
+            className="cursor-pointer hover:shadow-md hover:-translate-y-1 transition-all duration-200 overflow-hidden"
+            onClick={() => {
+              window.location.href = `/explore?type=${item[0]}`;
+            }}
+          >
+            <img src={GetImgSrcByProductType(item[1])} alt={item[1]} className="w-full h-32 object-cover" />
+            <CardContent className="p-2">
+              <p className="text-center text-sm font-medium truncate">{item[1]}</p>
+            </CardContent>
+          </Card>
         ))}
-    </Grid>
+    </div>
   );
 };
 

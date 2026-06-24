@@ -1,41 +1,43 @@
-import { Container, Link, Stack, Typography } from '@mui/material';
+import Link from 'next/link';
 import { useRouter } from 'next/router';
 
 const HomeFooter = () => {
   const router = useRouter();
 
   return (
-    <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} p={4}>
-      <Typography width={200}>© deshop.fun 2025</Typography>
-      <Stack direction={'row'} alignItems={'center'} justifyContent={'center'} gap={1}>
+    <div className="flex flex-row items-center p-4">
+      <div className="flex-1">
+        <p>© deshop.fun 2026</p>
+      </div>
+      <div className="flex flex-row items-center justify-center gap-4">
         <Link color={'textPrimary'} href="/docs/privacy-policy">
           Privacy policy
         </Link>
-        <Typography>|</Typography>
+        <p>|</p>
         <Link color={'textPrimary'} href="/docs/terms-and-conditions">
           Terms of service
         </Link>
-        <Typography>|</Typography>
+        <p>|</p>
         <Link color={'textPrimary'} href="/docs/fees">
           Fees
         </Link>
-        <Typography>|</Typography>
+        <p>|</p>
         <Link color={'textPrimary'} href="#">
           Revenue
         </Link>
-        <Typography>|</Typography>
+        <p>|</p>
         <Link color={'textPrimary'} href="https://t.me/deshop_tech_updates" target="_blank">
           Tech updates
         </Link>
-      </Stack>
-      <Stack width={200}>
+      </div>
+      <div className="flex-1 flex justify-end">
         {router.pathname === '/products/[id]' && router.query.id && (
-          <Link underline={'none'} color={'textPrimary'} href={`/report/products/${router.query.id}`} textAlign={'right'}>
+          <Link className="no-underline text-right" color={'textPrimary'} href={`/report/products/${router.query.id}`}>
             Report
           </Link>
         )}
-      </Stack>
-    </Stack>
+      </div>
+    </div>
   );
 };
 

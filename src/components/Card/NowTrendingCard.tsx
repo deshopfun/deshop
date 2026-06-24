@@ -1,10 +1,11 @@
-import { Box, Card, CardActionArea, CardContent, CardMedia, Chip, Grid, Stack, Typography } from '@mui/material';
 import { useSnackPresistStore } from 'lib';
 import { CURRENCYS } from 'packages/constants/currency';
 import { useEffect, useState } from 'react';
 import axios from 'utils/http/axios';
 import { Http } from 'utils/http/http';
 import { ProductType } from 'utils/types';
+import { Card, CardContent } from '@/components/ui/card';
+import { PackageOpen } from 'lucide-react';
 
 type Props = {
   productType?: string;
@@ -43,50 +44,47 @@ const NowTrendingCard = (props: Props) => {
   }, []);
 
   return (
-    <Box>
+    <div>
       {products && products.length > 0 ? (
-        <Grid container spacing={2}>
+        <div className="container mx-auto grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
           {products.map((item, index) => (
-            <Grid size={{ xs: 12, md: 2 }} key={index}>
-              <div
-                onClick={() => {
-                  window.location.href = `/products/${item.product_id}`;
-                }}
-              >
-                <Card>
-                  <CardActionArea>
-                    <CardMedia component="img" width={100} height={150} image={item.images[0].src} alt="image" />
-                    <CardContent>
-                      <Typography fontWeight={'bold'}>{item.title}</Typography>
-                      {item.variants && item.variants.length > 0 && (
-                        <Box>
-                          <Typography>{item.variants[0].option}</Typography>
-                          <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} mt={1}>
-                            <Typography color={'error'} fontWeight={'bold'}>{`${
-                              CURRENCYS.find((c) => c.name === item.currency)?.code
-                            }${item.variants[0].price}`}</Typography>
-                            <Typography>{`RM:${item.variants[0].inventory_quantity}`}</Typography>
-                          </Stack>
-                        </Box>
-                      )}
-                    </CardContent>
-                  </CardActionArea>
-                </Card>
+            <Card
+              key={index}
+              className="cursor-pointer hover:shadow-md hover:-translate-y-1 transition-all duration-200 overflow-hidden"
+              onClick={() => {
+                window.location.href = `/products/${item.product_id}`;
+              }}
+            >
+              <div className="relative">
+                <img src={item.images?.[0]?.src} alt={item.title} className="w-full h-48 object-cover" />
               </div>
-            </Grid>
+
+              <CardContent className="p-3 flex flex-col gap-1">
+                <p className="font-semibold text-sm line-clamp-2">{item.title}</p>
+
+                {item.variants && item.variants.length > 0 && (
+                  <>
+                    <p className="text-xs text-muted-foreground">{item.variants[0].option}</p>
+                    <div className="flex items-center justify-between mt-1">
+                      <p className="font-bold text-red-500 text-base">
+                        {CURRENCYS.find((c) => c.name === item.currency)?.code}
+                        {item.variants[0].price}
+                      </p>
+                      <p className="text-xs text-muted-foreground">{item.variants[0].inventory_quantity} in stock</p>
+                    </div>
+                  </>
+                )}
+              </CardContent>
+            </Card>
           ))}
-        </Grid>
+        </div>
       ) : (
-        <Card>
-          <CardContent>
-            <Box py={2} textAlign={'center'}>
-              <Typography variant="h6">product is empty</Typography>
-              <Typography mt={2}>More products will be displayed here in the future.</Typography>
-            </Box>
-          </CardContent>
-        </Card>
+        <div className="flex flex-col items-center justify-center py-24 text-muted-foreground">
+          <PackageOpen className="h-16 w-16 mb-4 opacity-30" />
+          <p className="text-sm mt-1">More products will be displayed here in the future.</p>
+        </div>
       )}
-    </Box>
+    </div>
   );
 };
 
