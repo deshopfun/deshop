@@ -141,7 +141,7 @@ const ManageProduct = () => {
           </div>
           <div>
             <h3 className="font-semibold">All Products</h3>
-            <p className="text-xs text-muted-foreground">{products.length} product{products.length !== 1 ? 's' : ''}</p>
+            <p className="text-xs text-muted-foreground">{products?.length} product{products?.length !== 1 ? 's' : ''}</p>
           </div>
         </div>
         <Button
@@ -153,7 +153,7 @@ const ManageProduct = () => {
       </div>
 
       {/* 产品网格 */}
-      {products.length > 0 ? (
+      {products?.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {products.map((item, index) => {
             const status = statusConfig[item.product_status ?? 3]

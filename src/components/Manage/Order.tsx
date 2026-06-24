@@ -603,7 +603,7 @@ const ManageOrder = () => {
           </div>
           <div>
             <h3 className="font-semibold">All Orders</h3>
-            <p className="text-xs text-muted-foreground">{orders.length} order{orders.length !== 1 ? 's' : ''}</p>
+            <p className="text-xs text-muted-foreground">{orders?.length} order{orders?.length !== 1 ? 's' : ''}</p>
           </div>
         </div>
 
@@ -631,7 +631,7 @@ const ManageOrder = () => {
       </div>
 
       {/* 订单列表 */}
-      {orders.length > 0 ? (
+      {orders?.length > 0 ? (
         <div className="flex flex-col gap-4">
           {orders.map((item, index) => (
             <Card key={index} className="border-0 shadow-sm overflow-hidden">

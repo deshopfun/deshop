@@ -202,8 +202,8 @@ import { Http } from 'utils/http/http';
 
 import ProfileProduct from './Product';
 import EditProfileDialog from 'components/Dialog/EditProfileDialog';
-import ProfileRepile from './Repile';
-import ProfileFollow from './Follow';
+import ProfileReply from './Reply';
+import ProfileFollower from './Follower';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
@@ -349,12 +349,12 @@ const ProfileDetails = () => {
               <ProfileProduct product={user?.products} uuid={user?.profile?.uuid} />
             </TabsContent>
 
-            <TabsContent value="repile" className="mt-0">
-              <ProfileRepile uuid={user?.profile?.uuid} />
+            <TabsContent value="replies" className="mt-0">
+              <ProfileReply uuid={user?.profile?.uuid} />
             </TabsContent>
 
-            <TabsContent value="follow" className="mt-0">
-              <ProfileFollow uuid={user?.profile?.uuid} />
+            <TabsContent value="followers" className="mt-0">
+              <ProfileFollower uuid={user?.profile?.uuid} />
             </TabsContent>
           </Tabs>
         </div>

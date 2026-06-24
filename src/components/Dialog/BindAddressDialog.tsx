@@ -130,7 +130,7 @@ export default function BindAddressDialog({ chain, address: propsAddress, openDi
   }
 
   const onClickSave = async () => {
-    if (!address.trim()) return showError('Please enter a valid address')
+    // if (!address.trim()) return showError('Please enter a valid address')
     setLoading(true)
     try {
       const response: any = await axios.put(Http.wallet, {

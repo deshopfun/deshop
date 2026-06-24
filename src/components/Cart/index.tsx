@@ -258,7 +258,7 @@ import { Badge } from '@/components/ui/badge';
 import { Plus, Minus, Trash2, ShoppingCart, User } from 'lucide-react';
 
 const Cart = () => {
-  const [total, setTotal] = useState<string>('0');
+  const [total, setTotal] = useState('0');
 
   const { getCart, setCart, resetCart } = useCartPresistStore((state) => state);
 

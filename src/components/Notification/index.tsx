@@ -203,7 +203,7 @@ const Notification = () => {
 
   useEffect(() => { init() }, [])
 
-  const unreadCount = notifications.filter((n) => n.is_read === 2).length
+  const unreadCount = notifications?.filter((n) => n.is_read === 2).length
 
   return (
     <div className="container mx-auto py-8 px-4 flex flex-col gap-6">
@@ -221,7 +221,7 @@ const Notification = () => {
             </p>
           </div>
         </div>
-        {notifications.length > 0 && unreadCount > 0 && (
+        {notifications?.length > 0 && unreadCount > 0 && (
           <Button
             className="h-9 bg-sky-500 hover:bg-sky-600 text-white gap-1.5"
             onClick={() => onClickSeen(1)}
@@ -232,7 +232,7 @@ const Notification = () => {
       </div>
 
       {/* 通知列表 */}
-      {notifications.length > 0 ? (
+      {notifications?.length > 0 ? (
         <div className="flex flex-col gap-3">
           {notifications.map((row, i) => {
             const isUnread = row.is_read === 2

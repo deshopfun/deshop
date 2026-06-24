@@ -160,7 +160,7 @@ const Home = () => {
       {/* Snackbar 通知 */}
       <div
         className={cn(
-          'fixed top-6 right-6 z-50 flex items-center gap-3 px-4 py-3 rounded-xl shadow-lg bg-white border transition-all duration-300',
+          'fixed top-6 right-6 z-50 flex items-center gap-3 px-4 py-3 rounded-xl shadow-lg bg-white border transition-all duration-300 z-999',
           snackOpen ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-2 pointer-events-none',
         )}
       >

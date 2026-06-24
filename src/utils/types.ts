@@ -251,7 +251,7 @@ export type NotificationType = {
   create_time: number;
 };
 
-export type FollowType = {};
+export type FollowerType = {};
 
 export type ReplyType = {};
 
