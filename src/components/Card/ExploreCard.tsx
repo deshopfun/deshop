@@ -1,5 +1,5 @@
-import { PRODUCT_TYPE } from 'packages/constants';
-import { GetImgSrcByProductType } from 'utils/image';
+import { PRODUCT_TYPE } from '@/packages/constants';
+import { GetImgSrcByProductType } from '@/utils/image';
 import { Card, CardContent } from '@/components/ui/card';
 
 const ExploreCard = () => {

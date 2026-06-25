@@ -1,4 +1,4 @@
-import { CHAINIDS } from 'packages/constants/blockchain';
+import { CHAINIDS } from '@/packages/constants/blockchain';
 
 export type WalletAccountType = {
   isGenerate: boolean;

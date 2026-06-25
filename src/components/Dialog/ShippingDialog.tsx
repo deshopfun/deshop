@@ -84,7 +84,7 @@
 //   );
 // }
 
-import { AddressType } from 'utils/types'
+import { AddressType } from '@/utils/types'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Truck, User, Mail, Building2, Phone, MapPin } from 'lucide-react'

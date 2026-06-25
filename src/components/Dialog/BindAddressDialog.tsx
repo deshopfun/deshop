@@ -94,12 +94,12 @@
 //   );
 // }
 
-import { useSnackPresistStore } from 'lib'
-import { CHAINIDS } from 'packages/constants'
+import { useSnackPresistStore } from '@/lib'
+import { CHAINIDS } from '@/packages/constants'
 import { useEffect, useState } from 'react'
-import axios from 'utils/http/axios'
-import { Http } from 'utils/http/http'
-import { FindChainNamesByChainids } from 'utils/web3'
+import axios from '@/utils/http/axios'
+import { Http } from '@/utils/http/http'
+import { FindChainNamesByChainids } from '@/utils/web3'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'

@@ -1,7 +1,7 @@
 import { cookieStorage, createStorage } from '@wagmi/core';
 import { WagmiAdapter } from '@reown/appkit-adapter-wagmi';
-import { GetAllSupportAppKitNetwork } from 'utils/web3';
-import { WALLETCONNECT_PROJECT_ID } from 'packages/constants';
+import { GetAllSupportAppKitNetwork } from '@/utils/web3';
+import { WALLETCONNECT_PROJECT_ID } from '@/packages/constants';
 
 export const networks = GetAllSupportAppKitNetwork();
 

@@ -145,11 +145,11 @@
 //   );
 // }
 
-import { useSnackPresistStore } from 'lib'
+import { useSnackPresistStore } from '@/lib'
 import { useState } from 'react'
-import axios from 'utils/http/axios'
-import { Http } from 'utils/http/http'
-import { AddressType } from 'utils/types'
+import axios from '@/utils/http/axios'
+import { Http } from '@/utils/http/http'
+import { AddressType } from '@/utils/types'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'

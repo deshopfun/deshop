@@ -1,12 +1,12 @@
-import { useSnackPresistStore } from 'lib';
-import { CURRENCYS } from 'packages/constants/currency';
+import { useSnackPresistStore } from '@/lib';
+import { CURRENCYS } from '@/packages/constants/currency';
 import { useEffect, useState } from 'react';
-import axios from 'utils/http/axios';
-import { Http } from 'utils/http/http';
-import { StatType } from 'utils/types';
+import axios from '@/utils/http/axios';
+import { Http } from '@/utils/http/http';
+import { StatType } from '@/utils/types';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { SiteLogo } from 'components/Logo/SiteLogo';
+import { SiteLogo } from '@/components/Logo/SiteLogo';
 import { ArrowRight, ShoppingBag, BarChart3, RefreshCw, Package, Layers } from 'lucide-react';
 
 const IntroCard = () => {

@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { useUserPresistStore } from 'lib';
+import { useUserPresistStore } from '@/lib';
 const { setShowProgress, getAuth, resetUser } = useUserPresistStore.getState();
 
 axios.interceptors.request.use(

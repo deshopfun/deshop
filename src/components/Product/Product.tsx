@@ -610,12 +610,12 @@
 
 // export default Product;
 
-import { useSnackPresistStore } from 'lib';
-import { FILE_TYPE, PRODUCT_TYPE } from 'packages/constants';
+import { useSnackPresistStore } from '@/lib';
+import { FILE_TYPE, PRODUCT_TYPE } from '@/packages/constants';
 import { useEffect, useState } from 'react';
-import axios from 'utils/http/axios';
-import { Http } from 'utils/http/http';
-import { ProductImageType, ProductOptionType } from 'utils/types';
+import axios from '@/utils/http/axios';
+import { Http } from '@/utils/http/http';
+import { ProductImageType, ProductOptionType } from '@/utils/types';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';

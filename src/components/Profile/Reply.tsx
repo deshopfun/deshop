@@ -1,4 +1,4 @@
-import { ReplyType } from 'utils/types';
+import { ReplyType } from '@/utils/types';
 import { Card, CardContent } from '@/components/ui/card'
 
 type Props = {

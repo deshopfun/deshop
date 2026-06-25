@@ -70,10 +70,10 @@
 
 // export default ForgotPassword;
 
-import { SiteLogo } from 'components/Logo/SiteLogo'
-import { useUserPresistStore } from 'lib'
+import { SiteLogo } from '@/components/Logo/SiteLogo'
+import { useUserPresistStore } from '@/lib'
 import { useEffect, useState } from 'react'
-import { IsValidEmail } from 'utils/verify'
+import { IsValidEmail } from '@/utils/verify'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'

@@ -102,9 +102,9 @@
 // }
 
 import { useState } from 'react'
-import { useSnackPresistStore } from 'lib'
-import axios from 'utils/http/axios'
-import { Http } from 'utils/http/http'
+import { useSnackPresistStore } from '@/lib'
+import axios from '@/utils/http/axios'
+import { Http } from '@/utils/http/http'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'

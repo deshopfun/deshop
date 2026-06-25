@@ -1,9 +1,9 @@
-import { useSnackPresistStore } from 'lib';
-import { CURRENCYS } from 'packages/constants/currency';
+import { useSnackPresistStore } from '@/lib';
+import { CURRENCYS } from '@/packages/constants/currency';
 import { useEffect, useState } from 'react';
-import axios from 'utils/http/axios';
-import { Http } from 'utils/http/http';
-import { ProductType } from 'utils/types';
+import axios from '@/utils/http/axios';
+import { Http } from '@/utils/http/http';
+import { ProductType } from '@/utils/types';
 import { Card, CardContent } from '@/components/ui/card';
 import { PackageOpen } from 'lucide-react';
 

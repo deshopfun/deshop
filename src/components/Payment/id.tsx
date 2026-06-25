@@ -878,23 +878,23 @@
 
 import { useEffect, useState } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
-import { BLOCKCHAIN, BLOCKCHAINNAMES, CHAINIDS, COINS } from 'packages/constants';
+import { BLOCKCHAIN, BLOCKCHAINNAMES, CHAINIDS, COINS } from '@/packages/constants';
 import Image from 'next/image';
-import axios from 'utils/http/axios';
-import { Http } from 'utils/http/http';
+import axios from '@/utils/http/axios';
+import { Http } from '@/utils/http/http';
 import { useRouter } from 'next/router';
-import { useSnackPresistStore, useUserPresistStore } from 'lib';
+import { useSnackPresistStore, useUserPresistStore } from '@/lib';
 
 import {
   FindChainNamesByChainids,
   FindTokenByChainIdsAndSymbol,
   GetBlockchainAddressUrlByChainIds,
   GetBlockchainTxUrlByChainIds,
-} from 'utils/web3';
-import { GetImgSrcByChain, GetImgSrcByCrypto } from 'utils/qrcode';
-import { OmitMiddleString } from 'utils/strings';
+} from '@/utils/web3';
+import { GetImgSrcByChain, GetImgSrcByCrypto } from '@/utils/qrcode';
+import { OmitMiddleString } from '@/utils/strings';
 
-import WalletConnectButton from 'components/Button/WalletConnectButton';
+import WalletConnectButton from '@/components/Button/WalletConnectButton';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';

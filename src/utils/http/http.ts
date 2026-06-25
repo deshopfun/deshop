@@ -1,7 +1,7 @@
-import { IS_DEVELOPMENT } from 'packages/constants';
+import { IS_DEVELOPMENT } from '@/packages/constants';
 
 export class Http {
-  static httpClient = IS_DEVELOPMENT ? 'http://localhost:9999' : 'https://deshop.fun';
+  static httpClient = IS_DEVELOPMENT ? 'http://127.0.0.1:9999' : 'https://deshop.fun';
 
   static privacy_policy_md = this.httpClient + '/docs/privacy_policy.md';
   static terms_and_conditions_md = this.httpClient + '/docs/terms_and_conditions.md';

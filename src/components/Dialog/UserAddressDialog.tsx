@@ -450,12 +450,12 @@
 //   );
 // }
 
-import { useSnackPresistStore } from 'lib'
-import { COUNTRYPROVINCES } from 'packages/constants/countryState'
+import { useSnackPresistStore } from '@/lib'
+import { COUNTRYPROVINCES } from '@/packages/constants/countryState'
 import { useEffect, useState } from 'react'
-import axios from 'utils/http/axios'
-import { Http } from 'utils/http/http'
-import { IsValidEmail } from 'utils/verify'
+import axios from '@/utils/http/axios'
+import { Http } from '@/utils/http/http'
+import { IsValidEmail } from '@/utils/verify'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'

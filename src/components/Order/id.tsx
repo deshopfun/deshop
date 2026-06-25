@@ -330,16 +330,16 @@
 
 // export default OrderDetails;
 
-import { useSnackPresistStore, useUserPresistStore } from 'lib'
+import { useSnackPresistStore, useUserPresistStore } from '@/lib'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
-import { CHAINIDS } from 'packages/constants'
+import { CHAINIDS } from '@/packages/constants'
 import { useEffect, useState } from 'react'
-import axios from 'utils/http/axios'
-import { Http } from 'utils/http/http'
-import { OmitMiddleString } from 'utils/strings'
-import { OrderType } from 'utils/types'
-import { FindChainNamesByChainids, GetBlockchainAddressUrlByChainIds, GetBlockchainTxUrlByChainIds } from 'utils/web3'
+import axios from '@/utils/http/axios'
+import { Http } from '@/utils/http/http'
+import { OmitMiddleString } from '@/utils/strings'
+import { OrderType } from '@/utils/types'
+import { FindChainNamesByChainids, GetBlockchainAddressUrlByChainIds, GetBlockchainTxUrlByChainIds } from '@/utils/web3'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'

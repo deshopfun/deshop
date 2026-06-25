@@ -1,4 +1,4 @@
-import { BLOCKCHAINNAMES, CHAINIDS, CHAINNAMES, COIN, COINS } from 'packages/constants';
+import { BLOCKCHAINNAMES, CHAINIDS, CHAINNAMES, COIN, COINS } from '@/packages/constants';
 import {
   bitcoin,
   mainnet,

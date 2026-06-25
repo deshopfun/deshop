@@ -1,39 +1,12 @@
-import 'styles/globals.css';
-import 'styles/index.css';
-import 'styles/theme.config.css';
-import Providers from 'components/Common/Providers';
-import { useSnackPresistStore } from 'lib';
+import '@/styles/globals.css';
+import '@/styles/index.css';
+import '@/styles/theme.config.css';
+import Providers from '@/components/Common/Providers';
 
 import type { AppProps } from 'next/app';
-import { useEffect, Suspense } from 'react';
-import axios from 'utils/http/axios';
-import { Http } from 'utils/http/http';
+import { Suspense } from 'react';
 
 const MyApp = ({ Component, pageProps, cookies }: AppProps & { cookies: string | null }) => {
-  const { setSnackSeverity, setSnackOpen, setSnackMessage } = useSnackPresistStore((state) => state);
-
-  const test = async () => {
-    try {
-      const response: any = await axios.get(Http.test);
-      if (response.result) {
-        console.log('Test connection successfully');
-      }
-    } catch (e) {
-      setSnackSeverity('error');
-      setSnackMessage('The network error occurred. Please try again later.');
-      setSnackOpen(true);
-      console.error(e);
-    }
-  };
-
-  const init = async () => {
-    // await test();
-  };
-
-  useEffect(() => {
-    init();
-  }, []);
-
   return (
     <Suspense fallback="loading">
       <Providers cookies={cookies}>

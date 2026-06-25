@@ -234,59 +234,57 @@
 
 // export default Blockchain;
 
-import { useSnackPresistStore } from 'lib';
-import Image from 'next/image';
-import { BLOCKCHAIN, BLOCKCHAINNAMES, CURRENCYS } from 'packages/constants';
-import { useEffect, useState } from 'react';
-import axios from 'utils/http/axios';
-import { Http } from 'utils/http/http';
-import { OmitMiddleString } from 'utils/strings';
-import { BlockchainOrderType } from 'utils/types';
-import { GetBlockchainTxUrlByChainIds } from 'utils/web3';
-
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
-
-import { ExternalLink, ChevronRight, Wallet } from 'lucide-react';
+import { useSnackPresistStore } from '@/lib'
+import Image from 'next/image'
+import { BLOCKCHAIN, BLOCKCHAINNAMES, CURRENCYS } from '@/packages/constants'
+import { useEffect, useState } from 'react'
+import axios from '@/utils/http/axios'
+import { Http } from '@/utils/http/http'
+import { OmitMiddleString } from '@/utils/strings'
+import { BlockchainOrderType } from '@/utils/types'
+import { GetBlockchainTxUrlByChainIds } from '@/utils/web3'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { Badge } from '@/components/ui/badge'
+import { Separator } from '@/components/ui/separator'
+import { ExternalLink, ChevronRight, Wallet } from 'lucide-react'
 
 const Blockchain = () => {
-  const [blockchainOrder, setBlockchainOrder] = useState<BlockchainOrderType>();
-  const [selectBlockchain, setSelectBlockchain] = useState<BLOCKCHAIN>(BLOCKCHAINNAMES[0]);
+  const [blockchainOrder, setBlockchainOrder] = useState<BlockchainOrderType>()
+  const [selectBlockchain, setSelectBlockchain] = useState<BLOCKCHAIN>(BLOCKCHAINNAMES[0])
 
-  const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore((state) => state);
+  const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore((state) => state)
 
   const init = async (block: BLOCKCHAIN) => {
     try {
-      if (!block) return;
+      if (!block) return
 
       const response: any = await axios.get(Http.blockchainOrder, {
         params: { chain_id: Number(block.chainId) },
-      });
+      })
 
       if (response.result) {
-        setBlockchainOrder(response.data);
+        setBlockchainOrder(response.data)
       } else {
-        setBlockchainOrder(undefined);
+        setBlockchainOrder(undefined)
       }
     } catch (e) {
-      setSnackSeverity('error');
-      setSnackMessage('The network error occurred. Please try again later.');
-      setSnackOpen(true);
-      console.error(e);
+      setSnackSeverity('error')
+      setSnackMessage('The network error occurred. Please try again later.')
+      setSnackOpen(true)
+      console.error(e)
     }
-  };
+  }
 
   useEffect(() => {
-    init(BLOCKCHAINNAMES[0]);
-  }, []);
+    init(BLOCKCHAINNAMES[0])
+  }, [])
 
   const handleSelectBlockchain = async (item: BLOCKCHAIN) => {
-    setSelectBlockchain(item);
-    await init(item);
-  };
+    setSelectBlockchain(item)
+    await init(item)
+  }
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
@@ -311,7 +309,13 @@ const Blockchain = () => {
                   onClick={() => handleSelectBlockchain(item)}
                 >
                   <div className="flex items-center gap-3 w-full">
-                    <Image src={item.icon} alt={item.name} width={28} height={28} className="rounded-full" />
+                    <Image
+                      src={item.icon}
+                      alt={item.name}
+                      width={28}
+                      height={28}
+                      className="rounded-full"
+                    />
                     <span className="font-medium">{item.name}</span>
                   </div>
                 </Button>
@@ -331,8 +335,9 @@ const Blockchain = () => {
               {blockchainOrder?.orders && blockchainOrder.orders.length > 0 ? (
                 <div className="space-y-4">
                   {blockchainOrder.orders.map((item, index) => {
-                    const tx = item.transactions[0];
-                    const currencySymbol = CURRENCYS.find((c) => c.name === item.currency)?.code || '$';
+                    const tx = item.transactions[0]
+                    const currencySymbol =
+                      CURRENCYS.find((c) => c.name === item.currency)?.code || '$'
 
                     return (
                       <Card key={index} className="p-4">
@@ -362,7 +367,7 @@ const Blockchain = () => {
                               <a
                                 href={GetBlockchainTxUrlByChainIds(
                                   selectBlockchain.chainId,
-                                  String(tx.blockchain.hash),
+                                  String(tx.blockchain.hash)
                                 )}
                                 target="_blank"
                                 rel="noopener noreferrer"
@@ -400,7 +405,7 @@ const Blockchain = () => {
                           </div>
                         </div>
                       </Card>
-                    );
+                    )
                   })}
                 </div>
               ) : (
@@ -503,7 +508,7 @@ const Blockchain = () => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default Blockchain;
+export default Blockchain

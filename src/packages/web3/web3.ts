@@ -1,6 +1,6 @@
 import { ChainAccountType, QRCodeText, WalletAccountType } from './types';
 import { Bip39 } from './bip39';
-import { CHAINIDS } from 'packages/constants';
+import { CHAINIDS } from '@/packages/constants';
 import { BTC } from './chain/btc';
 import { ETH } from './chain/eth';
 import { SOLANA } from './chain/solana';

@@ -1,4 +1,4 @@
-import { CHAINIDS } from 'packages/constants';
+import { CHAINIDS } from '@/packages/constants';
 
 export type RouteType = {
   path: string;

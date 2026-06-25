@@ -95,11 +95,11 @@
 
 // export default ManageProduct;
 
-import { useSnackPresistStore } from 'lib'
+import { useSnackPresistStore } from '@/lib'
 import { useEffect, useState } from 'react'
-import axios from 'utils/http/axios'
-import { Http } from 'utils/http/http'
-import { ProductType } from 'utils/types'
+import axios from '@/utils/http/axios'
+import { Http } from '@/utils/http/http'
+import { ProductType } from '@/utils/types'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'

@@ -324,12 +324,12 @@
 //   );
 // }
 
-import { RATING_TYPE, SORT_BY_TYPE } from 'packages/constants';
+import { RATING_TYPE, SORT_BY_TYPE } from '@/packages/constants';
 import { useEffect, useState } from 'react';
-import { Http } from 'utils/http/http';
-import axios from 'utils/http/axios';
-import { useSnackPresistStore } from 'lib';
-import { RatingType } from 'utils/types';
+import { Http } from '@/utils/http/http';
+import axios from '@/utils/http/axios';
+import { useSnackPresistStore } from '@/lib';
+import { RatingType } from '@/utils/types';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';

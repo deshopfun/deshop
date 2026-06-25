@@ -232,12 +232,12 @@
 
 // export default ManageAddress;
 
-import UserAddressDialog from 'components/Dialog/UserAddressDialog'
-import { useSnackPresistStore } from 'lib'
+import UserAddressDialog from '@/components/Dialog/UserAddressDialog'
+import { useSnackPresistStore } from '@/lib'
 import { useEffect, useState } from 'react'
-import axios from 'utils/http/axios'
-import { Http } from 'utils/http/http'
-import { AddressType } from 'utils/types'
+import axios from '@/utils/http/axios'
+import { Http } from '@/utils/http/http'
+import { AddressType } from '@/utils/types'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { MapPin, Plus, Trash2, Copy, Pencil, CheckCircle2, Star } from 'lucide-react'

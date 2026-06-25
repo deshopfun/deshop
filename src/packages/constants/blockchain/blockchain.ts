@@ -20,7 +20,7 @@ export const BITCOIN_COINS: COIN[] = [
     symbol: COINS.BTC,
     decimals: 8,
     displayDecimals: 8,
-    icon: require('assets/coin/btc.svg'),
+    icon: require('@/assets/coin/btc.svg'),
   },
 ];
 
@@ -32,7 +32,7 @@ export const LITECOIN_COINS: COIN[] = [
     symbol: COINS.LTC,
     decimals: 8,
     displayDecimals: 8,
-    icon: require('assets/coin/ltc.svg'),
+    icon: require('@/assets/coin/ltc.svg'),
   },
 ];
 
@@ -44,7 +44,7 @@ export const XRP_COINS: COIN[] = [
     symbol: COINS.XRP,
     decimals: 18,
     displayDecimals: 8,
-    icon: require('assets/coin/xrp.svg'),
+    icon: require('@/assets/coin/xrp.svg'),
   },
 ];
 
@@ -56,7 +56,7 @@ export const BITCOINCASH_COINS: COIN[] = [
     symbol: COINS.BCH,
     decimals: 8,
     displayDecimals: 8,
-    icon: require('assets/coin/bch.svg'),
+    icon: require('@/assets/coin/bch.svg'),
   },
 ];
 
@@ -68,7 +68,7 @@ export const ETHEREUM_COINS: COIN[] = [
     symbol: COINS.ETH,
     decimals: 18,
     displayDecimals: 8,
-    icon: require('assets/coin/eth.svg'),
+    icon: require('@/assets/coin/eth.svg'),
   },
   {
     chainId: CHAINIDS.ETHEREUM,
@@ -78,7 +78,7 @@ export const ETHEREUM_COINS: COIN[] = [
     decimals: 6,
     displayDecimals: 2,
     contractAddress: '0xdac17f958d2ee523a2206206994597c13d831ec7',
-    icon: require('assets/coin/usdt.svg'),
+    icon: require('@/assets/coin/usdt.svg'),
   },
   {
     chainId: CHAINIDS.ETHEREUM,
@@ -88,7 +88,7 @@ export const ETHEREUM_COINS: COIN[] = [
     decimals: 6,
     displayDecimals: 2,
     contractAddress: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
-    icon: require('assets/coin/usdc.svg'),
+    icon: require('@/assets/coin/usdc.svg'),
   },
   {
     chainId: CHAINIDS.ETHEREUM,
@@ -98,7 +98,7 @@ export const ETHEREUM_COINS: COIN[] = [
     decimals: 18,
     displayDecimals: 2,
     contractAddress: '0x6B175474E89094C44Da98b954EedeAC495271d0F',
-    icon: require('assets/coin/dai.svg'),
+    icon: require('@/assets/coin/dai.svg'),
   },
 ];
 
@@ -110,7 +110,7 @@ export const TRON_COINS: COIN[] = [
     symbol: COINS.TRX,
     decimals: 6,
     displayDecimals: 4,
-    icon: require('assets/coin/trx.svg'),
+    icon: require('@/assets/coin/trx.svg'),
   },
   {
     chainId: CHAINIDS.TRON,
@@ -120,7 +120,7 @@ export const TRON_COINS: COIN[] = [
     decimals: 6,
     displayDecimals: 4,
     contractAddress: 'TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t',
-    icon: require('assets/coin/usdt.svg'),
+    icon: require('@/assets/coin/usdt.svg'),
   },
   {
     chainId: CHAINIDS.TRON,
@@ -130,7 +130,7 @@ export const TRON_COINS: COIN[] = [
     decimals: 6,
     displayDecimals: 4,
     contractAddress: 'TEkxiTehnzSmSe2XqrBj4w32RUN966rdz8',
-    icon: require('assets/coin/usdc.svg'),
+    icon: require('@/assets/coin/usdc.svg'),
   },
 ];
 
@@ -142,7 +142,7 @@ export const SOLANA_COINS: COIN[] = [
     symbol: COINS.SOL,
     decimals: 9,
     displayDecimals: 6,
-    icon: require('assets/coin/sol.svg'),
+    icon: require('@/assets/coin/sol.svg'),
   },
   {
     chainId: CHAINIDS.SOLANA,
@@ -152,7 +152,7 @@ export const SOLANA_COINS: COIN[] = [
     decimals: 6,
     displayDecimals: 2,
     contractAddress: 'Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB',
-    icon: require('assets/coin/usdt.svg'),
+    icon: require('@/assets/coin/usdt.svg'),
   },
   {
     chainId: CHAINIDS.SOLANA,
@@ -162,7 +162,7 @@ export const SOLANA_COINS: COIN[] = [
     decimals: 6,
     displayDecimals: 2,
     contractAddress: 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',
-    icon: require('assets/coin/usdc.svg'),
+    icon: require('@/assets/coin/usdc.svg'),
   },
 ];
 
@@ -174,7 +174,7 @@ export const BSC_COINS: COIN[] = [
     symbol: COINS.BNB,
     decimals: 18,
     displayDecimals: 8,
-    icon: require('assets/coin/bnb.svg'),
+    icon: require('@/assets/coin/bnb.svg'),
   },
   {
     chainId: CHAINIDS.BSC,
@@ -184,7 +184,7 @@ export const BSC_COINS: COIN[] = [
     decimals: 18,
     displayDecimals: 8,
     contractAddress: '0x55d398326f99059ff775485246999027b3197955',
-    icon: require('assets/coin/usdt.svg'),
+    icon: require('@/assets/coin/usdt.svg'),
   },
   {
     chainId: CHAINIDS.BSC,
@@ -194,7 +194,7 @@ export const BSC_COINS: COIN[] = [
     decimals: 18,
     displayDecimals: 8,
     contractAddress: '0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d',
-    icon: require('assets/coin/usdc.svg'),
+    icon: require('@/assets/coin/usdc.svg'),
   },
 ];
 
@@ -206,7 +206,7 @@ export const ARBITRUM_COINS: COIN[] = [
     symbol: COINS.ETH,
     decimals: 18,
     displayDecimals: 8,
-    icon: require('assets/coin/eth.svg'),
+    icon: require('@/assets/coin/eth.svg'),
   },
   {
     chainId: CHAINIDS.ARBITRUM_ONE,
@@ -216,7 +216,7 @@ export const ARBITRUM_COINS: COIN[] = [
     decimals: 6,
     displayDecimals: 2,
     contractAddress: '0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9',
-    icon: require('assets/coin/usdt.svg'),
+    icon: require('@/assets/coin/usdt.svg'),
   },
   {
     chainId: CHAINIDS.ARBITRUM_ONE,
@@ -226,7 +226,7 @@ export const ARBITRUM_COINS: COIN[] = [
     decimals: 6,
     displayDecimals: 2,
     contractAddress: '0xaf88d065e77c8cc2239327c5edb3a432268e5831',
-    icon: require('assets/coin/usdc.svg'),
+    icon: require('@/assets/coin/usdc.svg'),
   },
   {
     chainId: CHAINIDS.ARBITRUM_ONE,
@@ -236,7 +236,7 @@ export const ARBITRUM_COINS: COIN[] = [
     decimals: 18,
     displayDecimals: 2,
     contractAddress: '0xda10009cbd5d07dd0cecc66161fc93d7c9000da1',
-    icon: require('assets/coin/dai.svg'),
+    icon: require('@/assets/coin/dai.svg'),
   },
 ];
 
@@ -248,7 +248,7 @@ export const ARBITRUM_NOVA_COINS: COIN[] = [
     symbol: COINS.ETH,
     decimals: 18,
     displayDecimals: 8,
-    icon: require('assets/coin/eth.svg'),
+    icon: require('@/assets/coin/eth.svg'),
   },
   {
     chainId: CHAINIDS.ARBITRUM_ONE,
@@ -258,7 +258,7 @@ export const ARBITRUM_NOVA_COINS: COIN[] = [
     decimals: 6,
     displayDecimals: 2,
     contractAddress: '0x750ba8b76187092b0d1e87e28daaf484d1b5273b',
-    icon: require('assets/coin/usdc.svg'),
+    icon: require('@/assets/coin/usdc.svg'),
   },
   {
     chainId: CHAINIDS.ARBITRUM_ONE,
@@ -268,7 +268,7 @@ export const ARBITRUM_NOVA_COINS: COIN[] = [
     decimals: 18,
     displayDecimals: 2,
     contractAddress: '0xda10009cbd5d07dd0cecc66161fc93d7c9000da1',
-    icon: require('assets/coin/dai.svg'),
+    icon: require('@/assets/coin/dai.svg'),
   },
 ];
 
@@ -280,7 +280,7 @@ export const AVALANCHE_COINS: COIN[] = [
     symbol: COINS.AVAX,
     decimals: 18,
     displayDecimals: 8,
-    icon: require('assets/coin/avax.svg'),
+    icon: require('@/assets/coin/avax.svg'),
   },
   {
     chainId: CHAINIDS.AVALANCHE,
@@ -290,7 +290,7 @@ export const AVALANCHE_COINS: COIN[] = [
     decimals: 6,
     displayDecimals: 2,
     contractAddress: '0x9702230A8Ea53601f5cD2dc00fDBc13d4dF4A8c7',
-    icon: require('assets/coin/usdt.svg'),
+    icon: require('@/assets/coin/usdt.svg'),
   },
   {
     chainId: CHAINIDS.AVALANCHE,
@@ -300,7 +300,7 @@ export const AVALANCHE_COINS: COIN[] = [
     decimals: 6,
     displayDecimals: 2,
     contractAddress: '0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E',
-    icon: require('assets/coin/usdc.svg'),
+    icon: require('@/assets/coin/usdc.svg'),
   },
 ];
 
@@ -312,7 +312,7 @@ export const POLYGON_COINS: COIN[] = [
     symbol: COINS.POL,
     decimals: 18,
     displayDecimals: 8,
-    icon: require('assets/coin/pol.svg'),
+    icon: require('@/assets/coin/pol.svg'),
   },
   {
     chainId: CHAINIDS.POLYGON,
@@ -322,7 +322,7 @@ export const POLYGON_COINS: COIN[] = [
     decimals: 6,
     displayDecimals: 2,
     contractAddress: '0xc2132d05d31c914a87c6611c10748aeb04b58e8f',
-    icon: require('assets/coin/usdt.svg'),
+    icon: require('@/assets/coin/usdt.svg'),
   },
   {
     chainId: CHAINIDS.POLYGON,
@@ -332,7 +332,7 @@ export const POLYGON_COINS: COIN[] = [
     decimals: 6,
     displayDecimals: 2,
     contractAddress: '0x3c499c542cEF5E3811e1192ce70d8cC03d5c3359',
-    icon: require('assets/coin/usdc.svg'),
+    icon: require('@/assets/coin/usdc.svg'),
   },
 ];
 
@@ -344,7 +344,7 @@ export const BASE_COINS: COIN[] = [
     symbol: COINS.ETH,
     decimals: 18,
     displayDecimals: 8,
-    icon: require('assets/coin/eth.svg'),
+    icon: require('@/assets/coin/eth.svg'),
   },
   {
     chainId: CHAINIDS.BASE,
@@ -354,7 +354,7 @@ export const BASE_COINS: COIN[] = [
     decimals: 6,
     displayDecimals: 2,
     contractAddress: '0x833589fcd6edb6e08f4c7c32d4f71b54bda02913',
-    icon: require('assets/coin/usdc.svg'),
+    icon: require('@/assets/coin/usdc.svg'),
   },
 ];
 
@@ -366,7 +366,7 @@ export const OPTIMISM_COINS: COIN[] = [
     symbol: COINS.ETH,
     decimals: 18,
     displayDecimals: 8,
-    icon: require('assets/coin/eth.svg'),
+    icon: require('@/assets/coin/eth.svg'),
   },
   {
     chainId: CHAINIDS.OPTIMISM,
@@ -376,7 +376,7 @@ export const OPTIMISM_COINS: COIN[] = [
     decimals: 6,
     displayDecimals: 4,
     contractAddress: '0x94b008aa00579c1307b0ef2c499ad98a8ce58e58',
-    icon: require('assets/coin/usdt.svg'),
+    icon: require('@/assets/coin/usdt.svg'),
   },
   {
     chainId: CHAINIDS.OPTIMISM,
@@ -386,7 +386,7 @@ export const OPTIMISM_COINS: COIN[] = [
     decimals: 6,
     displayDecimals: 4,
     contractAddress: '0x0b2c639c533813f4aa9d7837caf62653d097ff85',
-    icon: require('assets/coin/usdc.svg'),
+    icon: require('@/assets/coin/usdc.svg'),
   },
   {
     chainId: CHAINIDS.OPTIMISM,
@@ -396,7 +396,7 @@ export const OPTIMISM_COINS: COIN[] = [
     decimals: 18,
     displayDecimals: 2,
     contractAddress: '0xda10009cbd5d07dd0cecc66161fc93d7c9000da1',
-    icon: require('assets/coin/dai.svg'),
+    icon: require('@/assets/coin/dai.svg'),
   },
 ];
 
@@ -408,7 +408,7 @@ export const TON_COINS: COIN[] = [
     symbol: COINS.TON,
     decimals: 9,
     displayDecimals: 9,
-    icon: require('assets/coin/ton.svg'),
+    icon: require('@/assets/coin/ton.svg'),
   },
   {
     chainId: CHAINIDS.TON,
@@ -418,7 +418,7 @@ export const TON_COINS: COIN[] = [
     decimals: 6,
     displayDecimals: 4,
     contractAddress: 'EQCxE6mUtQJKFnGfaROTKOt1lZbDiiX1kCixRv7Nw2Id_sDs',
-    icon: require('assets/coin/usdt.svg'),
+    icon: require('@/assets/coin/usdt.svg'),
   },
 ];
 
@@ -445,7 +445,7 @@ export const BLOCKCHAINNAMES: BLOCKCHAIN[] = [
     websiteUrl: 'https://bitcoin.org',
     coins: BITCOIN_COINS,
     rpc: ['https://mempool.space'],
-    icon: require('assets/chain/bitcoin.svg'),
+    icon: require('@/assets/chain/bitcoin.svg'),
   },
   {
     name: CHAINNAMES.LITECOIN,
@@ -455,7 +455,7 @@ export const BLOCKCHAINNAMES: BLOCKCHAIN[] = [
     websiteUrl: 'https://litecoin.org',
     coins: LITECOIN_COINS,
     rpc: ['https://litecoinspace.org'],
-    icon: require('assets/chain/litecoin.svg'),
+    icon: require('@/assets/chain/litecoin.svg'),
   },
   {
     name: CHAINNAMES.XRP,
@@ -465,7 +465,7 @@ export const BLOCKCHAINNAMES: BLOCKCHAIN[] = [
     websiteUrl: 'https://xrpl.org',
     coins: XRP_COINS,
     rpc: [],
-    icon: require('assets/chain/xrp.svg'),
+    icon: require('@/assets/chain/xrp.svg'),
   },
   {
     name: CHAINNAMES.BITCOINCASH,
@@ -475,7 +475,7 @@ export const BLOCKCHAINNAMES: BLOCKCHAIN[] = [
     websiteUrl: 'https://bitcoincash.org',
     coins: BITCOINCASH_COINS,
     rpc: [],
-    icon: require('assets/chain/bitcoincash.svg'),
+    icon: require('@/assets/chain/bitcoincash.svg'),
   },
   {
     name: CHAINNAMES.ETHEREUM,
@@ -485,7 +485,7 @@ export const BLOCKCHAINNAMES: BLOCKCHAIN[] = [
     websiteUrl: 'https://ethereum.org/en',
     coins: ETHEREUM_COINS,
     rpc: ['https://ethereum-rpc.publicnode.com'],
-    icon: require('assets/chain/ethereum.svg'),
+    icon: require('@/assets/chain/ethereum.svg'),
   },
   {
     name: CHAINNAMES.TRON,
@@ -495,7 +495,7 @@ export const BLOCKCHAINNAMES: BLOCKCHAIN[] = [
     websiteUrl: 'https://tron.network',
     coins: TRON_COINS,
     rpc: [],
-    icon: require('assets/chain/tron.svg'),
+    icon: require('@/assets/chain/tron.svg'),
   },
   {
     name: CHAINNAMES.SOLANA,
@@ -505,7 +505,7 @@ export const BLOCKCHAINNAMES: BLOCKCHAIN[] = [
     websiteUrl: 'https://solana.com',
     coins: SOLANA_COINS,
     rpc: [],
-    icon: require('assets/chain/solana.svg'),
+    icon: require('@/assets/chain/solana.svg'),
   },
   {
     name: CHAINNAMES.BSC,
@@ -528,7 +528,7 @@ export const BLOCKCHAINNAMES: BLOCKCHAIN[] = [
       'https://bsc-dataseed3.ninicoin.io',
       'https://bsc-dataseed4.ninicoin.io',
     ],
-    icon: require('assets/chain/bsc.svg'),
+    icon: require('@/assets/chain/bsc.svg'),
   },
   {
     name: CHAINNAMES.ARBITRUM,
@@ -544,7 +544,7 @@ export const BLOCKCHAINNAMES: BLOCKCHAIN[] = [
       'https://arbitrum-one-rpc.publicnode.com',
       'https://1rpc.io/arb',
     ],
-    icon: require('assets/chain/arbitrum.svg'),
+    icon: require('@/assets/chain/arbitrum.svg'),
   },
   {
     name: CHAINNAMES.ARBITRUMNOVA,
@@ -554,7 +554,7 @@ export const BLOCKCHAINNAMES: BLOCKCHAIN[] = [
     websiteUrl: 'https://nova.arbitrum.io',
     coins: ARBITRUM_NOVA_COINS,
     rpc: ['https://nova.arbitrum.io/rpc'],
-    icon: require('assets/chain/arbitrumnova.svg'),
+    icon: require('@/assets/chain/arbitrumnova.svg'),
   },
   {
     name: CHAINNAMES.AVALANCHE,
@@ -564,7 +564,7 @@ export const BLOCKCHAINNAMES: BLOCKCHAIN[] = [
     websiteUrl: 'https://www.avax.network',
     coins: AVALANCHE_COINS,
     rpc: ['https://avalanche-c-chain-rpc.publicnode.com', 'https://avalanche.drpc.org', 'https://1rpc.io/avax/c'],
-    icon: require('assets/chain/avalanche.svg'),
+    icon: require('@/assets/chain/avalanche.svg'),
   },
   {
     name: CHAINNAMES.POLYGON,
@@ -574,7 +574,7 @@ export const BLOCKCHAINNAMES: BLOCKCHAIN[] = [
     websiteUrl: 'https://polygon.technology',
     coins: POLYGON_COINS,
     rpc: ['https://polygon-bor-rpc.publicnode.com', 'https://polygon-pokt.nodies.app', 'https://1rpc.io/matic'],
-    icon: require('assets/chain/polygon.svg'),
+    icon: require('@/assets/chain/polygon.svg'),
   },
   {
     name: CHAINNAMES.BASE,
@@ -590,7 +590,7 @@ export const BLOCKCHAINNAMES: BLOCKCHAIN[] = [
       'https://base-pokt.nodies.app',
       'https://base-rpc.publicnode.com',
     ],
-    icon: require('assets/chain/base.svg'),
+    icon: require('@/assets/chain/base.svg'),
   },
   {
     name: CHAINNAMES.OPTIMISM,
@@ -605,7 +605,7 @@ export const BLOCKCHAINNAMES: BLOCKCHAIN[] = [
       'https://op-pokt.nodies.app',
       'https://1rpc.io/op',
     ],
-    icon: require('assets/chain/optimism.svg'),
+    icon: require('@/assets/chain/optimism.svg'),
   },
   {
     name: CHAINNAMES.TON,
@@ -615,6 +615,6 @@ export const BLOCKCHAINNAMES: BLOCKCHAIN[] = [
     websiteUrl: 'https://ton.org',
     coins: TON_COINS,
     rpc: ['https://tonscan.org'],
-    icon: require('assets/chain/ton.svg'),
+    icon: require('@/assets/chain/ton.svg'),
   },
 ];

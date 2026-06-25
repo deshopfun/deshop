@@ -193,15 +193,15 @@
 
 // export default ProfileDetails;
 
-import { useSnackPresistStore, useUserPresistStore } from 'lib';
+import { useSnackPresistStore, useUserPresistStore } from '@/lib';
 import { useRouter } from 'next/router';
-import { PROFILE_TAB_DATAS } from 'packages/constants';
+import { PROFILE_TAB_DATAS } from '@/packages/constants';
 import { useEffect, useState } from 'react';
-import axios from 'utils/http/axios';
-import { Http } from 'utils/http/http';
+import axios from '@/utils/http/axios';
+import { Http } from '@/utils/http/http';
 
 import ProfileProduct from './Product';
-import EditProfileDialog from 'components/Dialog/EditProfileDialog';
+import EditProfileDialog from '@/components/Dialog/EditProfileDialog';
 import ProfileReply from './Reply';
 import ProfileFollower from './Follower';
 
@@ -210,7 +210,7 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent } from '@/components/ui/card';
 import { User, Edit } from 'lucide-react';
-import { UserType } from 'utils/types';
+import { UserType } from '@/utils/types';
 
 const ProfileDetails = () => {
   const router = useRouter();

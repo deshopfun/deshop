@@ -474,12 +474,12 @@
 // };
 
 // export default Create;
-import { useSnackPresistStore, useUserPresistStore } from 'lib';
-import { FILE_TYPE, PRODUCT_TYPE } from 'packages/constants';
+import { useSnackPresistStore, useUserPresistStore } from '@/lib';
+import { FILE_TYPE, PRODUCT_TYPE } from '@/packages/constants';
 import { useState } from 'react';
-import axios from 'utils/http/axios';
-import { Http } from 'utils/http/http';
-import { ProductImageType, ProductOptionType } from 'utils/types';
+import axios from '@/utils/http/axios';
+import { Http } from '@/utils/http/http';
+import { ProductImageType, ProductOptionType } from '@/utils/types';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -505,7 +505,7 @@ const OptionRow = ({
 }) => (
   <div className="grid grid-cols-2 gap-3">
     <div className="flex flex-col gap-1.5">
-      <Label className="text-xs text-muted-foreground">Option {index} Name</Label>
+      <Label className="text-xs text-muted-foreground">Option {index} Name {index === 1 && <span className="text-red-500">*</span>}</Label>
       <Input
         value={name}
         onChange={(e) => onNameChange(e.target.value)}
@@ -513,7 +513,7 @@ const OptionRow = ({
       />
     </div>
     <div className="flex flex-col gap-1.5">
-      <Label className="text-xs text-muted-foreground">Values (comma separated)</Label>
+      <Label className="text-xs text-muted-foreground">Values (comma separated) {index === 1 && <span className="text-red-500">*</span>}</Label>
       <Input value={value} onChange={(e) => onValueChange(e.target.value)} placeholder="e.g. Red,Blue,Green" />
     </div>
   </div>
@@ -745,7 +745,7 @@ const Create = () => {
             <CardContent className="p-6 flex flex-col gap-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <h2 className="font-semibold text-base">Product Images</h2>
+                  <h2 className="font-semibold text-base">Product Images <span className="text-red-500">*</span></h2>
                   <p className="text-xs text-muted-foreground mt-0.5">Max 1MB · JPG / PNG / GIF · Min 100×100px</p>
                 </div>
                 {imageList.length > 0 && (

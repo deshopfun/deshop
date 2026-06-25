@@ -56,7 +56,7 @@
 //   );
 // }
 
-import { RatingType } from 'utils/types';
+import { RatingType } from '@/utils/types';
 import {
   Dialog,
   DialogContent,

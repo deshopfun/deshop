@@ -40,11 +40,11 @@
 
 // export default DocsFees;
 
-import { useSnackPresistStore } from 'lib'
+import { useSnackPresistStore } from '@/lib'
 import { marked } from 'marked'
 import DOMPurify from 'dompurify'
 import { useEffect, useState } from 'react'
-import { Http } from 'utils/http/http'
+import { Http } from '@/utils/http/http'
 import { Card, CardContent } from '@/components/ui/card'
 import { FileText, Loader2 } from 'lucide-react'
 

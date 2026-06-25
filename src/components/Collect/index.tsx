@@ -263,11 +263,11 @@
 
 // export default Collect;
 
-import { useSnackPresistStore } from 'lib';
+import { useSnackPresistStore } from '@/lib';
 import { useEffect, useState } from 'react';
-import axios from 'utils/http/axios';
-import { Http } from 'utils/http/http';
-import { CollectType } from 'utils/types';
+import axios from '@/utils/http/axios';
+import { Http } from '@/utils/http/http';
+import { CollectType } from '@/utils/types';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';

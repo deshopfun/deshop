@@ -125,18 +125,18 @@
 
 // export default ManageDetails;
 
-import { useSnackPresistStore, useUserPresistStore } from 'lib'
+import { useSnackPresistStore, useUserPresistStore } from '@/lib'
 import { useRouter } from 'next/router'
-import { MANAGE_TAB_DATAS } from 'packages/constants'
+import { MANAGE_TAB_DATAS } from '@/packages/constants'
 import { useEffect, useState } from 'react'
-import axios from 'utils/http/axios'
-import { Http } from 'utils/http/http'
+import axios from '@/utils/http/axios'
+import { Http } from '@/utils/http/http'
 import ManageOrder from './Order'
 import ManageWallet from './Wallet'
 import ManageNotification from './Notification'
 import ManageSetting from './Setting'
 import ManageProduct from './Product'
-import { UserType } from 'utils/types'
+import { UserType } from '@/utils/types'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
 import { ShieldAlert, LayoutDashboard } from 'lucide-react'
 import { Button } from '@/components/ui/button'

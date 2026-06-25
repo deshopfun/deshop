@@ -149,12 +149,12 @@
 
 // export default Login;
 
-import { useSnackPresistStore, useUserPresistStore } from 'lib';
+import { useSnackPresistStore, useUserPresistStore } from '@/lib';
 import { useEffect, useState } from 'react';
-import { IsValidEmail } from 'utils/verify';
-import axios from 'utils/http/axios';
-import { Http } from 'utils/http/http';
-import { SiteLogo } from 'components/Logo/SiteLogo';
+import { IsValidEmail } from '@/utils/verify';
+import axios from '@/utils/http/axios';
+import { Http } from '@/utils/http/http';
+import { SiteLogo } from '@/components/Logo/SiteLogo';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';

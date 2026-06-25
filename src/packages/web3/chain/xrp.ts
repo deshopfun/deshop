@@ -1,4 +1,4 @@
-import { CHAINIDS, COINS, INNERCHAINNAMES } from 'packages/constants/blockchain';
+import { CHAINIDS, COINS, INNERCHAINNAMES } from '@/packages/constants/blockchain';
 import { ChainAccountType, QRCodeText } from '../types';
 import { Client, isValidAddress, Wallet } from 'xrpl';
 

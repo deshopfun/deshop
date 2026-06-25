@@ -111,12 +111,12 @@
 
 // export default ManageSetting;
 
-import { useSnackPresistStore } from 'lib'
-import { CURRENCYS } from 'packages/constants/currency'
+import { useSnackPresistStore } from '@/lib'
+import { CURRENCYS } from '@/packages/constants/currency'
 import { useEffect, useState } from 'react'
-import axios from 'utils/http/axios'
-import { Http } from 'utils/http/http'
-import { ProfileType } from 'utils/types'
+import axios from '@/utils/http/axios'
+import { Http } from '@/utils/http/http'
+import { ProfileType } from '@/utils/types'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'

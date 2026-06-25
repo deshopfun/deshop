@@ -163,15 +163,15 @@
 
 // export default ManageWallet;
 
-import BindAddressDialog from 'components/Dialog/BindAddressDialog'
-import { useSnackPresistStore } from 'lib'
+import BindAddressDialog from '@/components/Dialog/BindAddressDialog'
+import { useSnackPresistStore } from '@/lib'
 import Image from 'next/image'
-import { BLOCKCHAINNAMES, CHAINIDS, COINS } from 'packages/constants'
+import { BLOCKCHAINNAMES, CHAINIDS, COINS } from '@/packages/constants'
 import { useEffect, useState } from 'react'
-import { OmitMiddleString } from 'utils/strings'
-import axios from 'utils/http/axios'
-import { Http } from 'utils/http/http'
-import { WalletType } from 'utils/types'
+import { OmitMiddleString } from '@/utils/strings'
+import axios from '@/utils/http/axios'
+import { Http } from '@/utils/http/http'
+import { WalletType } from '@/utils/types'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Switch } from '@/components/ui/switch'

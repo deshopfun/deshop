@@ -154,12 +154,12 @@
 
 // export default Notification;
 
-import { useSnackPresistStore, useUserPresistStore } from 'lib'
+import { useSnackPresistStore, useUserPresistStore } from '@/lib'
 import { useEffect, useState } from 'react'
-import axios from 'utils/http/axios'
-import { Http } from 'utils/http/http'
-import { NOTIFICATIONS } from 'packages/constants/notification'
-import { NotificationType } from 'utils/types'
+import axios from '@/utils/http/axios'
+import { Http } from '@/utils/http/http'
+import { NOTIFICATIONS } from '@/packages/constants/notification'
+import { NotificationType } from '@/utils/types'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Bell, BellOff, CheckCheck, ExternalLink, Eye } from 'lucide-react'

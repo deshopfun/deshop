@@ -1,7 +1,7 @@
-import MetaTags from 'components/Common/MetaTags';
+import MetaTags from '@/components/Common/MetaTags';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-import { SiteLogo } from 'components/Logo/SiteLogo';
+import { SiteLogo } from '@/components/Logo/SiteLogo';
 
 const Custom500 = () => {
   return (
@@ -19,7 +19,7 @@ const Custom500 = () => {
           <p>There was an error. Please try again later. That&apos;s all we know.</p>
         </div>
 
-        <Button className="mt-8 bg-sky-500" size="lg">
+        <Button className="mt-8 bg-sky-500 hover:bg-sky-600" size="lg">
           <Link href="/" className="text-lg">
             Go Home
           </Link>

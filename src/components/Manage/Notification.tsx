@@ -103,11 +103,11 @@
 
 // export default ManageNotification;
 
-import { useSnackPresistStore } from 'lib'
-import { NOTIFICATION, NOTIFICATIONS } from 'packages/constants/notification'
+import { useSnackPresistStore } from '@/lib'
+import { NOTIFICATION, NOTIFICATIONS } from '@/packages/constants/notification'
 import { useEffect, useState } from 'react'
-import axios from 'utils/http/axios'
-import { Http } from 'utils/http/http'
+import axios from '@/utils/http/axios'
+import { Http } from '@/utils/http/http'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Switch } from '@/components/ui/switch'

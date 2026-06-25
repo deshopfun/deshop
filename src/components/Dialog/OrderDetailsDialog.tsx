@@ -110,7 +110,7 @@
 // }
 
 
-import { OrderType } from 'utils/types';
+import { OrderType } from '@/utils/types';
 import {
   Dialog,
   DialogContent,

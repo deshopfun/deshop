@@ -244,8 +244,8 @@
 
 // export default Cart;
 
-import { useCartPresistStore } from 'lib';
-import { CURRENCYS } from 'packages/constants/currency';
+import { useCartPresistStore } from '@/lib';
+import { CURRENCYS } from '@/packages/constants/currency';
 import { useEffect, useState } from 'react';
 
 import { Button } from '@/components/ui/button';

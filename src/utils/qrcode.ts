@@ -1,4 +1,4 @@
-import { CHAINIDS, COINS } from 'packages/constants/blockchain';
+import { CHAINIDS, COINS } from '@/packages/constants/blockchain';
 // import QRCode from 'qrcode';
 
 // export function GenerateQrCode(content: string) {

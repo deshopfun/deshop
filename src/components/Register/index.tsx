@@ -120,12 +120,12 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
-import { IsValidEmail } from 'utils/verify';
-import { useSnackPresistStore, useUserPresistStore } from 'lib';
-import axios from 'utils/http/axios';
-import { Http } from 'utils/http/http';
-import RegisterDialog from 'components/Dialog/RegisterDialog';
-import { SiteLogo } from 'components/Logo/SiteLogo';
+import { IsValidEmail } from '@/utils/verify';
+import { useSnackPresistStore, useUserPresistStore } from '@/lib';
+import axios from '@/utils/http/axios';
+import { Http } from '@/utils/http/http';
+import RegisterDialog from '@/components/Dialog/RegisterDialog';
+import { SiteLogo } from '@/components/Logo/SiteLogo';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';

@@ -190,14 +190,14 @@
 
 // export default ReportProductDetails;
 
-import { useSnackPresistStore } from 'lib';
+import { useSnackPresistStore } from '@/lib';
 import { useRouter } from 'next/router';
-import axios from 'utils/http/axios';
-import { Http } from 'utils/http/http';
+import axios from '@/utils/http/axios';
+import { Http } from '@/utils/http/http';
 import { useEffect, useState } from 'react';
 
-import { REPORTS, REPORT_TYPE } from 'packages/constants';
-import { ProductType } from 'utils/types';
+import { REPORTS, REPORT_TYPE } from '@/packages/constants';
+import { ProductType } from '@/utils/types';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';

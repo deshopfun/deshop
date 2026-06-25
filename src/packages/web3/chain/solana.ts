@@ -1,7 +1,7 @@
-import { CHAINIDS, COINS, INNERCHAINNAMES } from 'packages/constants/blockchain';
+import { CHAINIDS, COINS, INNERCHAINNAMES } from '@/packages/constants/blockchain';
 import { ChainAccountType, QRCodeText } from '../types';
 import { Keypair, PublicKey } from '@solana/web3.js';
-import { FindTokenByChainIdsAndContractAddress } from 'utils/web3';
+import { FindTokenByChainIdsAndContractAddress } from '@/utils/web3';
 
 export class SOLANA {
   static getChainIds(): CHAINIDS {

@@ -1,8 +1,8 @@
-import { CHAINIDS, COINS, INNERCHAINNAMES } from 'packages/constants/blockchain';
+import { CHAINIDS, COINS, INNERCHAINNAMES } from '@/packages/constants/blockchain';
 import { ChainAccountType, QRCodeText } from '../types';
 import { HDKey } from 'ethereum-cryptography/hdkey';
 import { TronWeb } from 'tronweb';
-import { FindTokenByChainIdsAndContractAddress } from 'utils/web3';
+import { FindTokenByChainIdsAndContractAddress } from '@/utils/web3';
 
 export class TRON {
   static getChainIds(): CHAINIDS {

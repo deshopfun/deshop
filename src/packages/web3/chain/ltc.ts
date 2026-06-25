@@ -1,5 +1,5 @@
 import * as bitcoin from 'bitcoinjs-lib';
-import { CHAINIDS, COINS, INNERCHAINNAMES } from 'packages/constants/blockchain';
+import { CHAINIDS, COINS, INNERCHAINNAMES } from '@/packages/constants/blockchain';
 import { ChainAccountType, QRCodeText } from '../types';
 // import * as ecc from 'tiny-secp256k1';
 import BIP32Factory from 'bip32';

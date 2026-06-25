@@ -1,9 +1,9 @@
-import Search from 'components/Search';
-import { useCartPresistStore, useSnackPresistStore, useUserPresistStore } from 'lib';
+import Search from '@/components/Search';
+import { useCartPresistStore, useSnackPresistStore, useUserPresistStore } from '@/lib';
 import { useEffect, useState } from 'react';
-import axios from 'utils/http/axios';
-import { Http } from 'utils/http/http';
-import { OmitMiddleString } from 'utils/strings';
+import axios from '@/utils/http/axios';
+import { Http } from '@/utils/http/http';
+import { OmitMiddleString } from '@/utils/strings';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {

@@ -146,15 +146,15 @@
 
 // export default Explore;
 
-import { PRODUCT_TYPE } from 'packages/constants';
+import { PRODUCT_TYPE } from '@/packages/constants';
 import { useEffect, useState } from 'react';
-import { GetImgSrcByProductType } from 'utils/image';
-import axios from 'utils/http/axios';
-import { Http } from 'utils/http/http';
-import { useSnackPresistStore } from 'lib';
+import { GetImgSrcByProductType } from '@/utils/image';
+import axios from '@/utils/http/axios';
+import { Http } from '@/utils/http/http';
+import { useSnackPresistStore } from '@/lib';
 import { useRouter } from 'next/router';
-import { CURRENCYS } from 'packages/constants/currency';
-import { ProductType } from 'utils/types';
+import { CURRENCYS } from '@/packages/constants/currency';
+import { ProductType } from '@/utils/types';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';

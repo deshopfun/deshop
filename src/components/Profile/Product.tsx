@@ -67,7 +67,7 @@
 
 // export default ProfileProduct;
 
-import { ProductType } from 'utils/types';
+import { ProductType } from '@/utils/types';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 

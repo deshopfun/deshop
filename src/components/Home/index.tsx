@@ -1,7 +1,7 @@
-import RecentViewCard from 'components/Card/RecentViewCard';
-import NowTrendingCard from 'components/Card/NowTrendingCard';
-import ExploreCard from 'components/Card/ExploreCard';
-import IntroCard from 'components/Card/IntroCard';
+import RecentViewCard from '@/components/Card/RecentViewCard';
+import NowTrendingCard from '@/components/Card/NowTrendingCard';
+import ExploreCard from '@/components/Card/ExploreCard';
+import IntroCard from '@/components/Card/IntroCard';
 import { Button } from '@/components/ui/button';
 import { ChevronRight } from 'lucide-react';
 

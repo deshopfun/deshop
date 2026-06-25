@@ -127,10 +127,10 @@
 // }
 
 import Link from 'next/link'
-import { CHAINIDS } from 'packages/constants'
-import { OmitMiddleString } from 'utils/strings'
-import { TransactionType } from 'utils/types'
-import { FindChainNamesByChainids, GetBlockchainAddressUrlByChainIds, GetBlockchainTxUrlByChainIds } from 'utils/web3'
+import { CHAINIDS } from '@/packages/constants'
+import { OmitMiddleString } from '@/utils/strings'
+import { TransactionType } from '@/utils/types'
+import { FindChainNamesByChainids, GetBlockchainAddressUrlByChainIds, GetBlockchainTxUrlByChainIds } from '@/utils/web3'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { ExternalLink, Link2, ArrowRight, Coins, Clock, BarChart2, CheckCircle2, Database } from 'lucide-react'

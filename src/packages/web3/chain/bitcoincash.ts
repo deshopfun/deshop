@@ -1,5 +1,5 @@
 import { Wallet } from 'mainnet-js';
-import { CHAINIDS, COINS, INNERCHAINNAMES } from 'packages/constants/blockchain';
+import { CHAINIDS, COINS, INNERCHAINNAMES } from '@/packages/constants/blockchain';
 import { ChainAccountType, QRCodeText } from '../types';
 
 export class BITCOINCASH {

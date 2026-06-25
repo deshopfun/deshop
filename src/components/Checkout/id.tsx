@@ -899,17 +899,17 @@
 
 // export default CheckoutDetails;
 
-import { CartType, useCartPresistStore, useSnackPresistStore, useUserPresistStore } from 'lib';
+import { CartType, useCartPresistStore, useSnackPresistStore, useUserPresistStore } from '@/lib';
 import { useRouter } from 'next/router';
-import axios from 'utils/http/axios';
-import { Http } from 'utils/http/http';
+import axios from '@/utils/http/axios';
+import { Http } from '@/utils/http/http';
 import { useEffect, useState } from 'react';
 
-import { COUNTRYPROVINCES } from 'packages/constants/countryState';
-import { SHIPPING_TYPE } from 'packages/constants';
-import { CURRENCYS } from 'packages/constants/currency';
-import { IsValidEmail } from 'utils/verify';
-import { AddressType } from 'utils/types';
+import { COUNTRYPROVINCES } from '@/packages/constants/countryState';
+import { SHIPPING_TYPE } from '@/packages/constants';
+import { CURRENCYS } from '@/packages/constants/currency';
+import { IsValidEmail } from '@/utils/verify';
+import { AddressType } from '@/utils/types';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';

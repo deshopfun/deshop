@@ -1,5 +1,5 @@
 import Document, { Html, Head, Main, NextScript } from 'next/document';
-import { APP_NAME, STATIC_ASSETS } from 'packages/constants';
+import { APP_NAME, STATIC_ASSETS } from '@/packages/constants';
 
 export default function MyDocument(props: any) {
   return (

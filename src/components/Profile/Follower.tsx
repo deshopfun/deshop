@@ -1,6 +1,6 @@
-import { useSnackPresistStore, useUserPresistStore } from 'lib';
+import { useSnackPresistStore, useUserPresistStore } from '@/lib';
 import { useState } from 'react';
-import { FollowerType } from 'utils/types';
+import { FollowerType } from '@/utils/types';
 import { Card, CardContent } from '@/components/ui/card'
 
 type Props = {

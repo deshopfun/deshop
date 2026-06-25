@@ -1455,38 +1455,43 @@
 
 // export default ProductDetails;
 
-import { useCartPresistStore, useSnackPresistStore, useUserPresistStore } from 'lib';
-import { useRouter } from 'next/router';
-import axios from 'utils/http/axios';
-import { Http } from 'utils/http/http';
-import { useEffect, useState } from 'react';
-import { Navigation, Pagination } from 'swiper/modules';
-import { Swiper, SwiperSlide } from 'swiper/react';
-import 'swiper/css';
-import 'swiper/css/navigation';
-import 'swiper/css/pagination';
-import ProductRatingsDialog from 'components/Dialog/ProductRatingsDialog';
-import RefundPolicyDialog from 'components/Dialog/RefundPolicyDialog';
-import { COLLECT_TYPE, PRODUCT_TAB_DATAS, PRODUCT_TYPE } from 'packages/constants';
-import Product from './Product';
-import ProductVariant from './Variant';
-import ProductRating from './Rating';
-import NowTrendingCard from 'components/Card/NowTrendingCard';
-import { CURRENCYS } from 'packages/constants/currency';
-import { marked } from 'marked';
-import DOMPurify from 'dompurify';
-import { ProductType, ProductVariantType } from 'utils/types';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
-import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+import { useCartPresistStore, useSnackPresistStore, useUserPresistStore } from '@/lib'
+import { useRouter } from 'next/router'
+import axios from '@/utils/http/axios'
+import { Http } from '@/utils/http/http'
+import { useEffect, useState } from 'react'
+import { Navigation, Pagination } from 'swiper/modules'
+import { Swiper, SwiperSlide } from 'swiper/react'
+// @ts-ignore
+import 'swiper/css'
+// @ts-ignore
+import 'swiper/css/navigation'
+// @ts-ignore
+import 'swiper/css/pagination'
+// @ts-ignore
+import 'swiper/css/scrollbar'
+import ProductRatingsDialog from '@/components/Dialog/ProductRatingsDialog'
+import RefundPolicyDialog from '@/components/Dialog/RefundPolicyDialog'
+import { COLLECT_TYPE, PRODUCT_TAB_DATAS, PRODUCT_TYPE } from '@/packages/constants'
+import Product from './Product'
+import ProductVariant from './Variant'
+import ProductRating from './Rating'
+import NowTrendingCard from '@/components/Card/NowTrendingCard'
+import { CURRENCYS } from '@/packages/constants/currency'
+import { marked } from 'marked'
+import DOMPurify from 'dompurify'
+import { ProductType, ProductVariantType } from '@/utils/types'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent } from '@/components/ui/card'
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
+import { Badge } from '@/components/ui/badge'
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
 import {
   DropdownMenu,
   DropdownMenuTrigger,
   DropdownMenuContent,
   DropdownMenuItem,
-} from '@/components/ui/dropdown-menu';
+} from '@/components/ui/dropdown-menu'
 import {
   Heart,
   MoreHorizontal,
@@ -1505,13 +1510,13 @@ import {
   Receipt,
   AlertCircle,
   PackageX,
-} from 'lucide-react';
-import { cn } from '@/lib/utils';
+} from 'lucide-react'
+import { cn } from '@/lib/utils'
 
 // 评分进度条组件
 const RatingBar = ({ star, ratings }: { star: number; ratings: any[] }) => {
-  const count = ratings.filter((r) => r.number === star).length;
-  const percent = ratings.length > 0 ? (count / ratings.length) * 100 : 0;
+  const count = ratings.filter((r) => r.number === star).length
+  const percent = ratings.length > 0 ? (count / ratings.length) * 100 : 0
   return (
     <div className="flex items-center gap-2">
       <span className="text-xs text-muted-foreground w-3">{star}</span>
@@ -1520,8 +1525,8 @@ const RatingBar = ({ star, ratings }: { star: number; ratings: any[] }) => {
       </div>
       <span className="text-xs text-muted-foreground w-6">{count}</span>
     </div>
-  );
-};
+  )
+}
 
 // 价格行组件
 const PriceRow = ({ icon: Icon, label, value }: { icon: any; label: string; value: string }) => (
@@ -1532,117 +1537,119 @@ const PriceRow = ({ icon: Icon, label, value }: { icon: any; label: string; valu
     </div>
     <span className="text-sm font-semibold">{value}</span>
   </div>
-);
+)
 
 const ProductDetails = () => {
-  const router = useRouter();
-  const { id } = router.query;
+  const router = useRouter()
+  const { id } = router.query
 
-  const [product, setProduct] = useState<ProductType>();
-  const [openRatingsDialog, setOpenRatingsDialog] = useState(false);
-  const [openRefundPolicy, setOpenRefundPolicy] = useState(false);
-  const [tabValue, setTabValue] = useState('0');
-  const [optionOneValue, setOptionOneValue] = useState('');
-  const [optionTwoValue, setOptionTwoValue] = useState('');
-  const [optionThreeValue, setOptionThreeValue] = useState('');
-  const [currentProductVariant, setCurrentProductVariant] = useState<ProductVariantType>();
-  const [isSelectOption, setIsSelectOption] = useState(false);
-  const [quantity, setQuantity] = useState(1);
+  const [product, setProduct] = useState<ProductType>()
+  const [openRatingsDialog, setOpenRatingsDialog] = useState(false)
+  const [openRefundPolicy, setOpenRefundPolicy] = useState(false)
+  const [tabValue, setTabValue] = useState('0')
+  const [optionOneValue, setOptionOneValue] = useState('')
+  const [optionTwoValue, setOptionTwoValue] = useState('')
+  const [optionThreeValue, setOptionThreeValue] = useState('')
+  const [currentProductVariant, setCurrentProductVariant] = useState<ProductVariantType>()
+  const [isSelectOption, setIsSelectOption] = useState(false)
+  const [quantity, setQuantity] = useState(1)
 
-  const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore((state) => state);
-  const { getUuid, getIsLogin } = useUserPresistStore((state) => state);
-  const { getCart, setCart } = useCartPresistStore((state) => state);
+  const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore((state) => state)
+  const { getUuid, getIsLogin } = useUserPresistStore((state) => state)
+  const { getCart, setCart } = useCartPresistStore((state) => state)
 
   const showError = (msg: string) => {
-    setSnackSeverity('error');
-    setSnackMessage(msg);
-    setSnackOpen(true);
-  };
+    setSnackSeverity('error')
+    setSnackMessage(msg)
+    setSnackOpen(true)
+  }
   const showSuccess = (msg: string) => {
-    setSnackSeverity('success');
-    setSnackMessage(msg);
-    setSnackOpen(true);
-  };
+    setSnackSeverity('success')
+    setSnackMessage(msg)
+    setSnackOpen(true)
+  }
 
-  const currencyCode = CURRENCYS.find((c) => c.name === product?.currency)?.code ?? '';
+  const currencyCode = CURRENCYS.find((c) => c.name === product?.currency)?.code ?? ''
 
   const init = async (id: any) => {
     try {
-      if (!id) return showError('Incorrect product id');
-      const endpoint = getIsLogin() ? Http.product_by_login_id : Http.product_by_id;
-      const response: any = await axios.get(endpoint, { params: { product_id: id } });
+      if (!id) return showError('Incorrect product id')
+      const endpoint = getIsLogin() ? Http.product_by_login_id : Http.product_by_id
+      const response: any = await axios.get(endpoint, {
+        params: { product_id: id },
+      })
       if (response.result) {
         setProduct({
           ...response.data,
           render_body_html: DOMPurify.sanitize(await marked(response.data.body_html)),
-        });
+        })
       } else {
-        showError(response.message);
+        showError(response.message)
       }
     } catch (e) {
-      showError('Network error. Please try again later.');
+      showError('Network error. Please try again later.')
     }
-  };
+  }
 
   const initOptionValue = async (one: string, two: string, three: string) => {
-    if (!product) return;
-    let option = '';
+    if (!product) return
+    let option = ''
     switch (product.options.length) {
       case 3:
-        if (!one || !two || !three) return;
-        option = `${one},${two},${three}`;
-        break;
+        if (!one || !two || !three) return
+        option = `${one},${two},${three}`
+        break
       case 2:
-        if (!one || !two) return;
-        option = `${one},${two}`;
-        break;
+        if (!one || !two) return
+        option = `${one},${two}`
+        break
       case 1:
-        if (!one) return;
-        option = one;
-        break;
+        if (!one) return
+        option = one
+        break
       default:
-        return;
+        return
     }
-    setIsSelectOption(true);
+    setIsSelectOption(true)
     try {
       const response: any = await axios.get(Http.product_variant_by_option, {
         params: { product_id: product.product_id, option },
-      });
+      })
       if (response.result) {
         setCurrentProductVariant({
           ...response.data,
           inventory_policy: response.data.inventory_policy === 1,
           taxable: response.data.taxable === 1,
-        });
+        })
       } else {
-        setCurrentProductVariant(undefined);
-        setQuantity(1);
+        setCurrentProductVariant(undefined)
+        setQuantity(1)
       }
     } catch {
-      showError('Network error. Please try again later.');
+      showError('Network error. Please try again later.')
     }
-  };
+  }
 
   const addToCart = () => {
-    if (!product) return;
-    let option = '';
+    if (!product) return
+    let option = ''
     switch (product.options.length) {
       case 3:
-        if (!optionOneValue || !optionTwoValue || !optionThreeValue) return;
-        option = `${optionOneValue},${optionTwoValue},${optionThreeValue}`;
-        break;
+        if (!optionOneValue || !optionTwoValue || !optionThreeValue) return
+        option = `${optionOneValue},${optionTwoValue},${optionThreeValue}`
+        break
       case 2:
-        if (!optionOneValue || !optionTwoValue) return;
-        option = `${optionOneValue},${optionTwoValue}`;
-        break;
+        if (!optionOneValue || !optionTwoValue) return
+        option = `${optionOneValue},${optionTwoValue}`
+        break
       case 1:
-        if (!optionOneValue) return;
-        option = optionOneValue;
-        break;
+        if (!optionOneValue) return
+        option = optionOneValue
+        break
       default:
-        return;
+        return
     }
-    const cart = getCart();
+    const cart = getCart()
     const newVariant: any = {
       productId: product.product_id,
       title: product.title,
@@ -1656,10 +1663,12 @@ const ProductDetails = () => {
       weight: String(currentProductVariant?.weight ?? ''),
       weightUnit: String(currentProductVariant?.weight_unit ?? ''),
       quantity,
-    };
-    const cartItem = cart.find((i) => i.uuid === product.user_uuid);
+    }
+    const cartItem = cart.find((i) => i.uuid === product.user_uuid)
     if (cartItem) {
-      const exists = cartItem.variant.find((v) => v.productId === product.product_id && v.option === option);
+      const exists = cartItem.variant.find(
+        (v) => v.productId === product.product_id && v.option === option
+      )
       setCart(
         cart.map((i) =>
           i.uuid === product.user_uuid
@@ -1669,13 +1678,13 @@ const ProductDetails = () => {
                   ? i.variant.map((v) =>
                       v.productId === product.product_id && v.option === option
                         ? { ...v, quantity: v.quantity + quantity }
-                        : v,
+                        : v
                     )
                   : [...i.variant, newVariant],
               }
-            : i,
-        ),
-      );
+            : i
+        )
+      )
     } else {
       setCart([
         ...cart,
@@ -1686,58 +1695,58 @@ const ProductDetails = () => {
           currency: product.currency,
           variant: [newVariant],
         },
-      ]);
+      ])
     }
-  };
+  }
 
   const onClickAddToCart = () => {
-    if (!product || quantity <= 0) return showError('At least one quantity is required.');
-    if (getUuid() === product.user_uuid) return showError('Cannot buy your own products.');
-    addToCart();
-    showSuccess('Added to cart successfully');
-  };
+    if (!product || quantity <= 0) return showError('At least one quantity is required.')
+    if (getUuid() === product.user_uuid) return showError('Cannot buy your own products.')
+    addToCart()
+    showSuccess('Added to cart successfully')
+  }
 
   const onClickBuyNow = () => {
-    if (!product || quantity <= 0) return showError('At least one quantity is required.');
-    if (getUuid() === product.user_uuid) return showError('Cannot buy your own products.');
-    addToCart();
-    window.location.href = `/checkout/${product.user_uuid}`;
-  };
+    if (!product || quantity <= 0) return showError('At least one quantity is required.')
+    if (getUuid() === product.user_uuid) return showError('Cannot buy your own products.')
+    addToCart()
+    window.location.href = `/checkout/${product.user_uuid}`
+  }
 
   const onClickFavorite = async () => {
-    if (!product?.product_id) return showError('Incorrect product id');
+    if (!product?.product_id) return showError('Incorrect product id')
     try {
       const response: any = await axios.put(Http.collect, {
         collect_type: COLLECT_TYPE.PRODUCT,
         bind_id: product.product_id,
-      });
+      })
       if (response.result) {
-        await init(id);
+        await init(id)
       } else {
-        showError(response.message);
+        showError(response.message)
       }
     } catch {
-      showError('Network error. Please try again later.');
+      showError('Network error. Please try again later.')
     }
-  };
+  }
 
   const avgRating = product?.ratings?.length
     ? (product.ratings.reduce((s, r) => s + r.number, 0) / product.ratings.length).toFixed(1)
-    : '0';
+    : '0'
 
   useEffect(() => {
-    if (id) init(id);
-  }, [id]);
+    if (id) init(id)
+  }, [id])
   useEffect(() => {
-    initOptionValue(optionOneValue, optionTwoValue, optionThreeValue);
-  }, [optionOneValue, optionTwoValue, optionThreeValue]);
+    initOptionValue(optionOneValue, optionTwoValue, optionThreeValue)
+  }, [optionOneValue, optionTwoValue, optionThreeValue])
 
   if (!product)
     return (
       <div className="flex items-center justify-center min-h-96">
         <div className="animate-pulse text-muted-foreground">Loading...</div>
       </div>
-    );
+    )
 
   if (product.product_status !== 1 && getUuid() !== product.user_uuid)
     return (
@@ -1746,16 +1755,18 @@ const ProductDetails = () => {
           <AlertCircle className="h-8 w-8 text-red-500" />
         </div>
         <h2 className="text-xl font-bold">Product Not Found</h2>
-        <p className="text-muted-foreground text-sm">This product does not exist or has been removed.</p>
+        <p className="text-muted-foreground text-sm">
+          This product does not exist or has been removed.
+        </p>
         <Button
           onClick={() => {
-            window.location.href = '/';
+            window.location.href = '/'
           }}
         >
           Back to Home
         </Button>
       </div>
-    );
+    )
 
   return (
     <div className="container mx-auto py-6 px-4 flex flex-col gap-8">
@@ -1785,26 +1796,29 @@ const ProductDetails = () => {
           <Card className="overflow-hidden border-0 shadow-sm">
             {isSelectOption && currentProductVariant?.image ? (
               <div className="flex justify-center items-center p-8 bg-gray-50 min-h-72">
-                <img src={currentProductVariant.image} alt="variant" className="max-h-64 object-contain rounded-xl" />
+                <img
+                  src={currentProductVariant.image}
+                  alt="variant"
+                  className="max-h-64 object-contain rounded-xl"
+                />
               </div>
             ) : (
-              <Swiper
-                pagination={{ clickable: true }}
-                navigation
-                modules={[Pagination, Navigation]}
-                className="min-h-72"
-              >
+              <Swiper navigation={true} modules={[Navigation]} className="min-h-72">
                 {product.images.map((item, i) => (
                   <SwiperSlide key={i}>
                     <div className="flex justify-center items-center p-8 bg-gray-50 min-h-72">
-                      <img src={item.src} alt="product" className="max-h-64 object-contain rounded-xl" />
+                      <img
+                        src={item.src}
+                        alt="product"
+                        className="max-h-64 object-contain rounded-xl"
+                      />
                     </div>
                   </SwiperSlide>
                 ))}
               </Swiper>
             )}
             {/* 缩略图 */}
-            <div className="flex gap-2 p-3 border-t overflow-x-auto">
+            <div className="flex gap-2 p-3 border-t">
               {product.images.map((item, i) => (
                 <img
                   key={i}
@@ -1849,7 +1863,9 @@ const ProductDetails = () => {
                             key={s}
                             className={cn(
                               'h-3.5 w-3.5',
-                              s <= item.number ? 'text-amber-400 fill-amber-400' : 'text-gray-200 fill-gray-200',
+                              s <= item.number
+                                ? 'text-amber-400 fill-amber-400'
+                                : 'text-gray-200 fill-gray-200'
                             )}
                           />
                         ))}
@@ -1857,16 +1873,26 @@ const ProductDetails = () => {
                       <p className="text-xs text-muted-foreground">
                         {item.username} · {new Date(item.create_time).toLocaleDateString()}
                       </p>
-                      <p className="text-xs text-muted-foreground">{item.product_option.split(',').join(' / ')}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {item.product_option.split(',').join(' / ')}
+                      </p>
                       {item.image && (
-                        <img src={item.image} alt="review" className="h-12 w-12 object-cover rounded-lg" />
+                        <img
+                          src={item.image}
+                          alt="review"
+                          className="h-12 w-12 object-cover rounded-lg"
+                        />
                       )}
                       <p className="text-sm">{item.body}</p>
                     </div>
                   ))}
                 </div>
 
-                <Button variant="outline" className="w-full" onClick={() => setOpenRatingsDialog(true)}>
+                <Button
+                  variant="outline"
+                  className="w-full"
+                  onClick={() => setOpenRatingsDialog(true)}
+                >
                   Read more reviews
                 </Button>
               </CardContent>
@@ -1876,7 +1902,9 @@ const ProductDetails = () => {
               <CardContent className="py-12 flex flex-col items-center gap-2 text-center">
                 <Star className="h-8 w-8 text-gray-200" />
                 <p className="font-medium text-sm">No ratings yet</p>
-                <p className="text-xs text-muted-foreground">Reviews will appear here after purchases.</p>
+                <p className="text-xs text-muted-foreground">
+                  Reviews will appear here after purchases.
+                </p>
               </CardContent>
             </Card>
           )}
@@ -1889,7 +1917,7 @@ const ProductDetails = () => {
             <button
               className="flex items-center gap-2 hover:opacity-80 transition-opacity"
               onClick={() => {
-                window.location.href = `/profile/${product.username}`;
+                window.location.href = `/profile/${product.username}`
               }}
             >
               <Avatar className="h-8 w-8">
@@ -1907,7 +1935,7 @@ const ProductDetails = () => {
               <DropdownMenuContent align="end">
                 <DropdownMenuItem
                   onClick={() => {
-                    window.location.href = `mailto:${product.user_email}`;
+                    window.location.href = `mailto:${product.user_email}`
                   }}
                 >
                   <Mail className="mr-2 h-4 w-4" /> Contact {product.username}
@@ -1915,7 +1943,7 @@ const ProductDetails = () => {
                 <DropdownMenuItem
                   className="text-red-500 focus:text-red-500"
                   onClick={() => {
-                    window.location.href = `/report/products/${product.product_id}`;
+                    window.location.href = `/report/products/${product.product_id}`
                   }}
                 >
                   <Flag className="mr-2 h-4 w-4" /> Report product
@@ -1929,7 +1957,10 @@ const ProductDetails = () => {
             <div className="flex flex-col gap-1">
               <h1 className="text-2xl font-bold">{product.title}</h1>
               {product.ratings && product.ratings.length > 0 && (
-                <button className="flex items-center gap-1" onClick={() => setOpenRatingsDialog(true)}>
+                <button
+                  className="flex items-center gap-1"
+                  onClick={() => setOpenRatingsDialog(true)}
+                >
                   {[1, 2, 3, 4, 5].map((s) => (
                     <Star
                       key={s}
@@ -1937,11 +1968,13 @@ const ProductDetails = () => {
                         'h-3.5 w-3.5',
                         s <= Math.round(Number(avgRating))
                           ? 'text-amber-400 fill-amber-400'
-                          : 'text-gray-200 fill-gray-200',
+                          : 'text-gray-200 fill-gray-200'
                       )}
                     />
                   ))}
-                  <span className="text-xs text-muted-foreground ml-1">{product.ratings.length} ratings</span>
+                  <span className="text-xs text-muted-foreground ml-1">
+                    {product.ratings.length} ratings
+                  </span>
                 </button>
               )}
             </div>
@@ -1952,7 +1985,7 @@ const ProductDetails = () => {
                   'h-10 w-10 rounded-full flex items-center justify-center border transition-all duration-200 shrink-0',
                   product.collect_status === 1
                     ? 'bg-sky-500 border-sky-500 text-white'
-                    : 'border-gray-200 text-gray-400 hover:border-sky-300 hover:text-sky-500',
+                    : 'border-gray-200 text-gray-400 hover:border-sky-300 hover:text-sky-500'
                 )}
               >
                 <Heart className="h-5 w-5" />
@@ -2008,25 +2041,25 @@ const ProductDetails = () => {
                   const isSelected =
                     (index === 0 && val === optionOneValue) ||
                     (index === 1 && val === optionTwoValue) ||
-                    (index === 2 && val === optionThreeValue);
+                    (index === 2 && val === optionThreeValue)
                   return (
                     <button
                       key={vi}
                       onClick={() => {
-                        if (index === 0) setOptionOneValue(val);
-                        else if (index === 1) setOptionTwoValue(val);
-                        else setOptionThreeValue(val);
+                        if (index === 0) setOptionOneValue(val)
+                        else if (index === 1) setOptionTwoValue(val)
+                        else setOptionThreeValue(val)
                       }}
                       className={cn(
                         'px-4 py-1.5 rounded-full text-sm border transition-all duration-150',
                         isSelected
                           ? 'bg-sky-500 text-white border-sky-500'
-                          : 'border-gray-200 text-gray-600 hover:border-sky-300',
+                          : 'border-gray-200 text-gray-600 hover:border-sky-300'
                       )}
                     >
                       {val}
                     </button>
-                  );
+                  )
                 })}
               </div>
             </div>
@@ -2052,7 +2085,11 @@ const ProductDetails = () => {
                     <button
                       className="h-9 w-9 flex items-center justify-center hover:bg-gray-50 disabled:opacity-40 transition-colors"
                       disabled={quantity >= currentProductVariant.inventory_quantity}
-                      onClick={() => setQuantity((q) => Math.min(currentProductVariant.inventory_quantity, q + 1))}
+                      onClick={() =>
+                        setQuantity((q) =>
+                          Math.min(currentProductVariant.inventory_quantity, q + 1)
+                        )
+                      }
                     >
                       <Plus className="h-4 w-4" />
                     </button>
@@ -2103,7 +2140,7 @@ const ProductDetails = () => {
               variant="outline"
               className="gap-2"
               onClick={() => {
-                window.location.href = `/profile/${product.username}`;
+                window.location.href = `/profile/${product.username}`
               }}
             >
               <Link2 className="h-4 w-4" /> More from {product.username}
@@ -2121,7 +2158,7 @@ const ProductDetails = () => {
           <button
             className="flex items-center gap-1 hover:text-sky-500 transition-colors"
             onClick={() => {
-              window.location.href = `/explore?type=${Object.entries(PRODUCT_TYPE).find(([, v]) => v === product.product_type)?.[0]}`;
+              window.location.href = `/explore?type=${Object.entries(PRODUCT_TYPE).find(([, v]) => v === product.product_type)?.[0]}`
             }}
           >
             <h2 className="text-lg font-bold">Recommended</h2>
@@ -2158,7 +2195,11 @@ const ProductDetails = () => {
               />
             </TabsContent>
             <TabsContent value="1">
-              <ProductVariant product_id={product.product_id} options={product.options} currency={product.currency} />
+              <ProductVariant
+                product_id={product.product_id}
+                options={product.options}
+                currency={product.currency}
+              />
             </TabsContent>
             <TabsContent value="2">
               <ProductRating />
@@ -2175,7 +2216,7 @@ const ProductDetails = () => {
       />
       <RefundPolicyDialog openDialog={openRefundPolicy} setOpenDialog={setOpenRefundPolicy} />
     </div>
-  );
-};
+  )
+}
 
-export default ProductDetails;
+export default ProductDetails

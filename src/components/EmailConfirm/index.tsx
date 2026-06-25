@@ -89,14 +89,14 @@
 
 // export default EmailConfirm;
 
-import { useSnackPresistStore } from 'lib';
+import { useSnackPresistStore } from '@/lib';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
-import axios from 'utils/http/axios';
-import { Http } from 'utils/http/http';
+import axios from '@/utils/http/axios';
+import { Http } from '@/utils/http/http';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { SiteLogo } from 'components/Logo/SiteLogo';
+import { SiteLogo } from '@/components/Logo/SiteLogo';
 import { MailCheck, ShieldCheck, ArrowRight, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 

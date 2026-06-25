@@ -140,11 +140,11 @@ import { useAppKitNetwork, useAppKitAccount, useAppKit } from '@reown/appkit/rea
 import { AppKitNetwork } from '@reown/appkit/networks';
 import { useSendTransaction } from 'wagmi';
 import { ethers } from 'ethers';
-import { IsHexAddress } from 'utils/strings';
-import { ERC20Abi } from 'packages/web3/abi/erc20';
-import { useSnackPresistStore } from 'lib';
-import { GetWalletConnectNetworkByChainids } from 'utils/web3';
-import { WalletConnectType } from 'utils/types';
+import { IsHexAddress } from '@/utils/strings';
+import { ERC20Abi } from '@/packages/web3/abi/erc20';
+import { useSnackPresistStore } from '@/lib';
+import { GetWalletConnectNetworkByChainids } from '@/utils/web3';
+import { WalletConnectType } from '@/utils/types';
 import { Button } from '@/components/ui/button';
 import { Wallet, Send, Loader2, AlertTriangle } from 'lucide-react';
 import { cn } from '@/lib/utils';

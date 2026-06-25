@@ -1,4 +1,4 @@
-import { PRODUCT_TYPE } from 'packages/constants';
+import { PRODUCT_TYPE } from '@/packages/constants';
 
 export function GetImgSrcByProductType(type: string): string {
   const baseUrl = window.location.origin;

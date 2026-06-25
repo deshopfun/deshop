@@ -19,10 +19,10 @@
 
 // export default ProductRating;
 
-import { useSnackPresistStore, useUserPresistStore } from 'lib';
+import { useSnackPresistStore, useUserPresistStore } from '@/lib';
 import { useState } from 'react';
-import axios from 'utils/http/axios';
-import { Http } from 'utils/http/http';
+import axios from '@/utils/http/axios';
+import { Http } from '@/utils/http/http';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';

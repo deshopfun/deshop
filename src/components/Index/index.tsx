@@ -1,96 +1,12 @@
-// import { useRouter } from 'next/router';
-// import { routes } from './Routes';
-// import MetaTags from 'components/Common/MetaTags';
-// import { useEffect, useState } from 'react';
-// import HomeSidebar from 'components/Sidebar';
-// import HomeHeader from 'components/Home/HomeHeader';
-// import { useSnackPresistStore } from 'lib';
-// import HomeFooter from 'components/Home/HomeFooter';
-// import { RouteType } from 'utils/types';
-
-// const Home = () => {
-//   const router = useRouter();
-
-//   const { snackOpen, snackMessage, snackSeverity, setSnackOpen } = useSnackPresistStore((state) => state);
-//   const [currentRoute, setCurrentRoute] = useState<RouteType>();
-
-//   useEffect(() => {
-//     const route = routes.find((item) => item.path === router.pathname);
-
-//     if (!route) return;
-
-//     if (route?.needLogin) {
-//       window.location.href = '/login';
-//     }
-
-//     setCurrentRoute(route);
-//     // eslint-disable-next-line react-hooks/exhaustive-deps
-//   }, [router.pathname]);
-
-//   useEffect(() => {
-//     setSnackOpen(false);
-//   }, []);
-
-//   return (
-//     <div className="h-full">
-//       <MetaTags title={currentRoute?.title} />
-
-//       {currentRoute?.enableSidebar ? (
-//         <div className="flex h-full">
-//           <HomeSidebar />
-
-//           <div className="w-full">
-//             {/* {getShowProgress() ? <LinearProgress /> : null} */}
-
-//             {currentRoute?.enableHomeHeader && <HomeHeader />}
-
-//             <div className="mt-10">{currentRoute?.component || null}</div>
-
-//             {currentRoute?.enableHomeFooter && (
-//               <div className="mt-10">
-//                 <HomeFooter />
-//               </div>
-//             )}
-//           </div>
-//         </div>
-//       ) : (
-//         <div>
-//           {currentRoute?.component || null}
-
-//           {currentRoute?.enableHomeFooter && (
-//             <div className="mt-10">
-//               <HomeFooter />
-//             </div>
-//           )}
-//         </div>
-//       )}
-
-//       {/* <Snackbar anchorOrigin={{ vertical: 'top', horizontal: 'right' }} open={snackOpen} autoHideDuration={2000}>
-//         <Alert
-//           onClose={() => {
-//             setSnackOpen(false);
-//           }}
-//           severity={snackSeverity}
-//           variant="filled"
-//           sx={{ width: '100%' }}
-//         >
-//           {snackMessage}
-//         </Alert>
-//       </Snackbar> */}
-//     </div>
-//   );
-// };
-
-// export default Home;
 import { useRouter } from 'next/router';
 import { routes } from './Routes';
-import MetaTags from 'components/Common/MetaTags';
+import MetaTags from '@/components/Common/MetaTags';
 import { useEffect, useState } from 'react';
-import HomeSidebar from 'components/Sidebar';
-import HomeHeader from 'components/Home/HomeHeader';
-import HomeFooter from 'components/Home/HomeFooter';
-import { useSnackPresistStore } from 'lib';
-import { RouteType } from 'utils/types';
+import HomeSidebar from '@/components/Sidebar';
+import HomeHeader from '@/components/Home/HomeHeader';
+import HomeFooter from '@/components/Home/HomeFooter';
+import { useSnackPresistStore } from '@/lib';
+import { RouteType } from '@/utils/types';
 import { cn } from '@/lib/utils';
 import { CheckCircle2, XCircle, AlertCircle, Info, X } from 'lucide-react';
 

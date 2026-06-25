@@ -1,6 +1,6 @@
-import { BLOCKCHAINNAMES, CHAINIDS, COINS, INNERCHAINNAMES } from 'packages/constants/blockchain';
+import { BLOCKCHAINNAMES, CHAINIDS, COINS, INNERCHAINNAMES } from '@/packages/constants/blockchain';
 import { ChainAccountType, QRCodeText } from '../types';
-import { FindTokenByChainIdsAndContractAddress } from 'utils/web3';
+import { FindTokenByChainIdsAndContractAddress } from '@/utils/web3';
 import { keyPairFromSecretKey, mnemonicToPrivateKey } from '@ton/crypto';
 import { Address, WalletContractV4 } from '@ton/ton';
 

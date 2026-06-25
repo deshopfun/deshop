@@ -1,11 +1,11 @@
-import { useSnackPresistStore, useUserPresistStore } from 'lib';
+import { useSnackPresistStore, useUserPresistStore } from '@/lib';
 import { useEffect, useState } from 'react';
-import axios from 'utils/http/axios';
-import { Http } from 'utils/http/http';
+import axios from '@/utils/http/axios';
+import { Http } from '@/utils/http/http';
 import { Button } from '@/components/ui/button';
 import { Bell } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
-import { SiteLogo } from 'components/Logo/SiteLogo';
+import { SiteLogo } from '@/components/Logo/SiteLogo';
 
 const SidebarHeader = () => {
   const [notificationNumber, setNotificationNumber] = useState<number>(0);
