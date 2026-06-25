@@ -1,50 +1,39 @@
-import axios from 'axios';
-import { useUserPresistStore } from '@/lib';
-const { setShowProgress, getAuth, resetUser } = useUserPresistStore.getState();
+import axios, { AxiosError, InternalAxiosRequestConfig, AxiosResponse } from 'axios'
+import { useUserPresistStore } from '@/lib'
+const { getAuth, resetUser } = useUserPresistStore.getState()
 
 axios.interceptors.request.use(
-  (config) => {
-    // setShowProgress(true);
+  (config: InternalAxiosRequestConfig) => {
+    config.headers.set(
+      'Content-Type',
+      config.headers.get('Content-Type') ?? 'application/json; charset=utf-8'
+    )
+    config.headers.set('Accept', config.headers.get('Accept') ?? 'application/json')
 
-    if (!config.headers.get('Content-Type')) {
-      config.headers.set('Content-Type', 'application/json; charset=utf-8');
-    }
+    const auth = getAuth()
+    if (auth) config.headers.set('Authorization', auth)
 
-    if (!config.headers.get('Accept')) {
-      config.headers.set('Accept', 'application/json');
-    }
+    config.timeout = 100_000
 
-    const auth = getAuth();
-    if (auth != '') {
-      config.headers.set('Authorization', auth);
-    }
-    config.timeout = 100000;
-    return config;
+    return config
   },
-  (error) => {
-    // setShowProgress(false);
-    return Promise.reject(error);
-  },
-);
+  (error: AxiosError) => Promise.reject(error)
+)
 
 axios.interceptors.response.use(
-  (response) => {
-    // setShowProgress(false);
-
-    if (response && response.status === 200) {
-      return Promise.resolve(response.data);
-    }
-    return Promise.reject(response);
+  (response: AxiosResponse) => {
+    if (response.status === 200) return Promise.resolve(response.data)
+    return Promise.reject(response)
   },
-  (error) => {
-    // setShowProgress(false);
-
-    if (error.response && error.response.status === 401) {
-      resetUser();
+  (error: AxiosError) => {
+    if (error.response?.status === 401) {
+      resetUser()
+      window.location.href = '/login'
+      return
     } else {
-      return Promise.reject(error);
+      return Promise.reject(error)
     }
-  },
-);
+  }
+)
 
-export default axios;
+export default axios
