@@ -492,7 +492,7 @@ const Cart = () => {
                 <Separator />
 
                 <p className="text-sm text-muted-foreground text-center">
-                  Tax, shipping, and discounts will be calculated at checkout.
+                  Shipping, tax, tip and discounts will be calculated at checkout.
                 </p>
               </CardContent>
             </Card>

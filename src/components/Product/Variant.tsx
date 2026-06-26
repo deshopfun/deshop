@@ -809,6 +809,7 @@ const ProductVariant = (props: Props) => {
   const [barcode, setBarcode] = useState('')
   const [compareAtPrice, setCompareAtPrice] = useState('')
   const [inventoryPolicy, setInventoryPolicy] = useState(false)
+  const [isVirtual, setIsVirtual] = useState(true)
   const [inventoryQuantity, setInventoryQuantity] = useState('')
   const [price, setPrice] = useState('')
   const [position, setPosition] = useState('')
@@ -868,6 +869,7 @@ const ProductVariant = (props: Props) => {
     setBarcode('')
     setCompareAtPrice('')
     setInventoryPolicy(false)
+    setIsVirtual(true)
     setInventoryQuantity('')
     setPrice('')
     setPosition('')
@@ -903,6 +905,7 @@ const ProductVariant = (props: Props) => {
         setBarcode(d.barcode)
         setCompareAtPrice(d.compare_at_price)
         setInventoryPolicy(d.inventory_policy === 1)
+        setIsVirtual(d.is_virtual === 1)
         setInventoryQuantity(d.inventory_quantity)
         setPrice(d.price)
         setPosition(d.position)
@@ -950,8 +953,7 @@ const ProductVariant = (props: Props) => {
     if (!title) return showError('Incorrect title input')
     if (!position || parseInt(position) <= 0) return showError('Incorrect position input')
     if (!price || Number(price) <= 0) return showError('Incorrect price input')
-    if (compareAtPrice && Number(compareAtPrice) < 0)
-      return showError('Incorrect compare at price')
+    if (compareAtPrice && Number(compareAtPrice) < 0) return showError('Incorrect compare at price')
     if (compareAtPrice && Number(price) < Number(compareAtPrice))
       return showError('Price cannot be less than compare at price')
     if (tip && Number(tip) < 0) return showError('Incorrect tip input')
@@ -979,6 +981,7 @@ const ProductVariant = (props: Props) => {
         inventory_quantity: parseInt(inventoryQuantity),
         sku,
         inventory_policy: inventoryPolicy ? 1 : 2,
+        is_virtual: isVirtual ? 1 : 2,
         taxable: taxable ? 1 : 2,
         tax: taxable ? tax : undefined,
         option,
@@ -1064,7 +1067,9 @@ const ProductVariant = (props: Props) => {
           {/* 图片上传 */}
           <div className="flex flex-col gap-2">
             <div className="flex items-center justify-between">
-              <Label>Variant Image <span className="text-red-500">*</span></Label>
+              <Label>
+                Variant Image <span className="text-red-500">*</span>
+              </Label>
               {image && (
                 <Button
                   variant="ghost"
@@ -1213,6 +1218,12 @@ const ProductVariant = (props: Props) => {
             Settings
           </h4>
           <div className="flex flex-col">
+            <SwitchRow
+              label="Virtual"
+              desc="Whether it is a virtual product"
+              checked={isVirtual}
+              onCheckedChange={setIsVirtual}
+            />
             <SwitchRow
               label="Taxable"
               desc="Charge tax when this variant is sold"

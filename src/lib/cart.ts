@@ -1,45 +1,46 @@
-import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { create } from 'zustand'
+import { persist } from 'zustand/middleware'
 
 type VariantType = {
-  productId: number;
-  title: string;
-  image: string;
-  option: string;
-  price: string;
-  discounts: string;
-  taxable: boolean;
-  tax: string;
-  shippable: boolean;
-  shipping: string;
-  tip: string;
-  weight: string;
-  weightUnit: string;
-  quantity: number;
-};
+  productId: number
+  title: string
+  image: string
+  option: string
+  price: string
+  discounts: string
+  taxable: boolean
+  tax: string
+  shippable: boolean
+  shipping: string
+  tip: string
+  weight: string
+  weightUnit: string
+  quantity: number
+  isVirtual: boolean
+}
 
 export type CartType = {
-  uuid: string;
-  avatarUrl: string;
-  username: string;
-  currency: string;
-  variant: VariantType[];
-};
+  uuid: string
+  avatarUrl: string
+  username: string
+  currency: string
+  variant: VariantType[]
+}
 
 type CartPerisistState = {
-  cart: CartType[];
-};
+  cart: CartType[]
+}
 
 type CartPerisistAction = {
-  setCart: (carts: CartType[]) => void;
-  getCart: () => CartType[];
+  setCart: (carts: CartType[]) => void
+  getCart: () => CartType[]
 
-  resetCart: () => void;
-};
+  resetCart: () => void
+}
 
 const initialCartState: CartPerisistState = {
   cart: [],
-};
+}
 
 export const useCartPresistStore = create(
   persist<CartPerisistState & CartPerisistAction>(
@@ -50,11 +51,11 @@ export const useCartPresistStore = create(
       getCart: () => get().cart,
 
       resetCart: () => {
-        set(initialCartState);
+        set(initialCartState)
       },
     }),
     {
       name: 'deshop.cart.market',
-    },
-  ),
-);
+    }
+  )
+)

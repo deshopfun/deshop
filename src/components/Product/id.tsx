@@ -1620,6 +1620,7 @@ const ProductDetails = () => {
           ...response.data,
           inventory_policy: response.data.inventory_policy === 1,
           taxable: response.data.taxable === 1,
+          is_virtual: response.data.is_virtual === 1,
         })
       } else {
         setCurrentProductVariant(undefined)
@@ -1663,6 +1664,7 @@ const ProductDetails = () => {
       weight: String(currentProductVariant?.weight ?? ''),
       weightUnit: String(currentProductVariant?.weight_unit ?? ''),
       quantity,
+      isVirtual: currentProductVariant?.is_virtual,
     }
     const cartItem = cart.find((i) => i.uuid === product.user_uuid)
     if (cartItem) {
