@@ -206,7 +206,7 @@ export function GetAllSupportAppKitNetwork(): [AppKitNetwork, ...AppKitNetwork[]
   return [
     bitcoin,
     mainnet,
-    // tron,
+    tron,
     solana,
     bsc,
     arbitrum,
