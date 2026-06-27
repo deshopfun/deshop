@@ -1,139 +1,141 @@
-// import { useEffect, useState } from 'react';
-// import { AppKit, createAppKit, useAppKitNetwork } from '@reown/appkit/react';
-// import { AppKitNetwork } from '@reown/appkit/networks';
-// import { CHAINIDS } from 'packages/constants/blockchain';
-// import { useAppKitAccount } from '@reown/appkit/react';
-// import { useSendTransaction } from 'wagmi';
-// import { Hex, parseGwei, type Address } from 'viem';
-// import { useAppKit } from '@reown/appkit/react';
-// import { ethers } from 'ethers';
-// import { IsHexAddress } from 'utils/strings';
-// import { ERC20Abi } from 'packages/web3/abi/erc20';
-// import { useSnackPresistStore } from 'lib';
-// import { GetWalletConnectNetworkByChainids } from 'utils/web3';
-// import { WalletConnectType } from 'utils/types';
+// import { useEffect, useState } from 'react'
+// import { AppKit, createAppKit, useAppKitNetwork } from '@reown/appkit/react'
+// import { AppKitNetwork } from '@reown/appkit/networks'
+// import { CHAINIDS } from '@/packages/constants/blockchain'
+// import { useAppKitAccount } from '@reown/appkit/react'
+// import { useSendTransaction } from 'wagmi'
+// import { Hex, parseGwei, type Address } from 'viem'
+// import { useAppKit } from '@reown/appkit/react'
+// import { ethers } from 'ethers'
+// import { IsHexAddress } from '@/utils/strings'
+// import { ERC20Abi } from '@/packages/web3/abi/erc20'
+// import { useSnackPresistStore } from '@/lib'
+// import { GetWalletConnectNetworkByChainids } from '@/utils/web3'
+// import { WalletConnectType } from '@/utils/types'
+// import { Button } from '@/components/ui/button'
 
 // const WalletConnectButton = (props: WalletConnectType) => {
-//   const [connectNetwork, setConnectNetwork] = useState<AppKitNetwork>();
-//   const { chainId, switchNetwork } = useAppKitNetwork();
+//   const [connectNetwork, setConnectNetwork] = useState<AppKitNetwork>()
+//   const { chainId, switchNetwork } = useAppKitNetwork()
 
-//   const { setSnackOpen, setSnackSeverity, setSnackMessage } = useSnackPresistStore((state) => state);
+//   const { setSnackOpen, setSnackSeverity, setSnackMessage } = useSnackPresistStore((state) => state)
 
-//   const { open, close } = useAppKit();
-//   const { address, isConnected } = useAppKitAccount();
+//   const { open, close } = useAppKit()
+//   const { address, isConnected } = useAppKitAccount()
 
-//   const { data: hash, sendTransaction } = useSendTransaction();
+//   const { data: hash, sendTransaction } = useSendTransaction()
 
 //   const handleSendTx = async () => {
 //     try {
-//       if (!connectNetwork) return;
+//       if (!connectNetwork) return
 
 //       if (connectNetwork.id != chainId) {
-//         setSnackSeverity('error');
+//         setSnackSeverity('error')
 //         setSnackMessage(
-//           'The current network is incorrect, please switch to the correct network environment: ' + connectNetwork.name,
-//         );
-//         setSnackOpen(true);
-//         await open();
-//         return;
+//           'The current network is incorrect, please switch to the correct network environment: ' +
+//             connectNetwork.name
+//         )
+//         setSnackOpen(true)
+//         await open()
+//         return
 //       }
 
 //       if (!IsHexAddress(props.address)) {
-//         return;
+//         return
 //       }
 
 //       if (props.address === address) {
-//         setSnackSeverity('error');
-//         setSnackMessage('The sending address and receiving address are the same');
-//         setSnackOpen(true);
-//         return;
+//         setSnackSeverity('error')
+//         setSnackMessage('The sending address and receiving address are the same')
+//         setSnackOpen(true)
+//         return
 //       }
 
 //       if (props.contractAddress) {
-//         const value = ethers.parseUnits(String(props.value), props.decimals).toString();
-//         const iface = new ethers.Interface(ERC20Abi);
-//         const data = iface.encodeFunctionData('transfer', [props.address, value]);
+//         const value = ethers.parseUnits(String(props.value), props.decimals).toString()
+//         const iface = new ethers.Interface(ERC20Abi)
+//         const data = iface.encodeFunctionData('transfer', [props.address, value])
 
 //         sendTransaction({
 //           data: data as `0x${string}`,
 //           to: props.contractAddress as `0x${string}`,
 //           value: 0 as any,
-//         });
+//         })
 //       } else {
 //         sendTransaction({
 //           to: props.address,
 //           value: ethers.parseEther(String(props.value)),
-//         });
+//         })
 //       }
 //     } catch (e) {
-//       console.error(e);
+//       console.error(e)
 //     }
-//   };
+//   }
 
 //   const onClickWalletConnect = async () => {
 //     try {
 //       if (!connectNetwork) {
-//         return;
+//         return
 //       }
 
 //       if (connectNetwork.id != chainId) {
-//         switchNetwork(connectNetwork);
-//         return;
+//         switchNetwork(connectNetwork)
+//         return
 //       }
 
 //       if (isConnected) {
-//         await handleSendTx();
+//         await handleSendTx()
 //       } else {
-//         await open();
+//         await open()
 //       }
 //     } catch (e) {
-//       console.error(e);
+//       console.error(e)
 //     }
-//   };
+//   }
 
 //   useEffect(() => {
 //     if (hash) {
-//       setSnackSeverity('success');
-//       setSnackMessage('You sent a transaction successfully');
-//       setSnackOpen(true);
+//       setSnackSeverity('success')
+//       setSnackMessage('You sent a transaction successfully')
+//       setSnackOpen(true)
 //     }
-//   }, [hash, setSnackSeverity, setSnackMessage, setSnackOpen]);
+//   }, [hash, setSnackSeverity, setSnackMessage, setSnackOpen])
 
 //   useEffect(() => {
 //     if (!props.chainIds || !props.address) {
-//       return;
+//       return
 //     }
 
-//     const connectNetwork = GetWalletConnectNetworkByChainids(props.chainIds);
+//     const connectNetwork = GetWalletConnectNetworkByChainids(props.chainIds)
 
 //     if (!connectNetwork) {
-//       return;
+//       return
 //     }
 
-//     setConnectNetwork(connectNetwork);
-//   }, [props.chainIds, props.address]);
+//     setConnectNetwork(connectNetwork)
+//   }, [props.chainIds, props.address])
 
 //   return (
 //     <>
 //       {connectNetwork && (
 //         <Button
 //           color={props.color ? props.color : 'primary'}
-//           fullWidth={props.fullWidth}
-//           variant={props.buttonVariant ? props.buttonVariant : 'contained'}
-//           size={props.buttonSize ? props.buttonSize : 'medium'}
+//           // fullWidth={props.fullWidth}
+//           // variant={props.buttonVariant ? props.buttonVariant : 'contained'}
+//           // size={props.buttonSize ? props.buttonSize : 'medium'}
 //           // endIcon={<Send />}
 //           onClick={() => {
-//             onClickWalletConnect();
+//             onClickWalletConnect()
 //           }}
 //         >
 //           {isConnected ? 'Send Transaction' : 'Connect Wallet'}
 //         </Button>
 //       )}
 //     </>
-//   );
-// };
+//   )
+// }
 
-// export default WalletConnectButton;
+// export default WalletConnectButton
 
 import { useEffect, useState } from 'react';
 import { useAppKitNetwork, useAppKitAccount, useAppKit } from '@reown/appkit/react';
