@@ -1,19 +1,21 @@
-import { PRODUCT_TYPE } from '@/packages/constants';
+import { PRODUCT_TYPE } from '@/packages/constants'
 
 export function GetImgSrcByProductType(type: string): string {
-  const baseUrl = window.location.origin;
+  const baseUrl = window.location.origin
 
   switch (type) {
+    case PRODUCT_TYPE.OPENSOURCE:
+      return baseUrl + '/images/product/opensource.jpg'
     case PRODUCT_TYPE.GAMING:
-      return baseUrl + '/images/product/women.jpg';
+      return baseUrl + '/images/product/gaming.jpg'
     case PRODUCT_TYPE.CGAMING:
-      return baseUrl + '/images/product/men.jpg';
+      return baseUrl + '/images/product/cgaming.jpg'
     case PRODUCT_TYPE.EDUCATION:
-      return baseUrl + '/images/product/beauty.jpg';
+      return baseUrl + '/images/product/education.jpg'
     case PRODUCT_TYPE.SOCIAL:
-      return baseUrl + '/images/product/food.jpg';
+      return baseUrl + '/images/product/social.jpg'
     case PRODUCT_TYPE.RWA:
-      return baseUrl + '/images/product/baby.jpg';
+      return baseUrl + '/images/product/rwa.jpg'
     // case PRODUCT_TYPE.WOMEN:
     //   return baseUrl + '/images/product/women.jpg';
     // case PRODUCT_TYPE.MEN:
@@ -43,6 +45,6 @@ export function GetImgSrcByProductType(type: string): string {
     // case PRODUCT_TYPE.SPORTING:
     //   return baseUrl + '/images/product/sporting.jpg';
     default:
-      return '';
+      return baseUrl + '/images/product/opensource.jpg'
   }
 }

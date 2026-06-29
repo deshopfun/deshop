@@ -16,29 +16,30 @@
 // };
 
 export const PRODUCT_TYPE = {
+  OPENSOURCE: 'Open Source',
   GAMING: 'Gaming',
   CGAMING: 'Companion Gaming',
   EDUCATION: 'Education',
   SOCIAL: 'Social',
   RWA: 'RWA',
-};
+} as const
 
 export const COLLECT_TYPE = {
   PRODUCT: 1,
   LIVE: 2,
   CHAT: 3,
-};
+}
 
 export const REPORT_TYPE = {
   PRODUCT: 1,
   LIVE: 2,
   CHAT: 3,
-};
+}
 
 export const SHIPPING_TYPE = {
   DELIVERY: 1,
   PICKUP: 2,
-};
+}
 
 export const WEIGHT_UNIT_TYPE = {
   G: 'g',
@@ -56,13 +57,13 @@ export const WEIGHT_UNIT_TYPE = {
   DAN: 'dan',
   JIN: 'jin',
   LIANG: 'liang',
-};
+}
 
 export type TAB_DATA = {
-  id: number;
-  title: string;
-  tabId: string;
-};
+  id: number
+  title: string
+  tabId: string
+}
 
 export const PROFILE_TAB_DATAS: TAB_DATA[] = [
   {
@@ -80,7 +81,7 @@ export const PROFILE_TAB_DATAS: TAB_DATA[] = [
     title: 'Followers',
     tabId: 'followers',
   },
-];
+]
 
 export const PRODUCT_TAB_DATAS: TAB_DATA[] = [
   {
@@ -98,7 +99,7 @@ export const PRODUCT_TAB_DATAS: TAB_DATA[] = [
     title: 'Rating',
     tabId: 'rating',
   },
-];
+]
 
 export const MANAGE_TAB_DATAS: TAB_DATA[] = [
   {
@@ -131,7 +132,7 @@ export const MANAGE_TAB_DATAS: TAB_DATA[] = [
     title: 'Settings',
     tabId: 'settings',
   },
-];
+]
 
 export const FILE_TYPE = {
   Image: 'Image',
@@ -141,7 +142,7 @@ export const FILE_TYPE = {
   Compressed: 'Compressed',
   Dev: 'Dev',
   Other: 'Other',
-};
+}
 
 export const SORT_BY_TYPE = {
   MOST_RELEVABT: 'Most relevant',
@@ -149,7 +150,7 @@ export const SORT_BY_TYPE = {
   OLDEST: 'Oldest',
   RATING_LOW_HIGH: 'Rating: Low -> High',
   RATING_HIGH_LOW: 'Rating: High -> Low',
-};
+}
 
 export const RATING_TYPE = {
   5: '5',
@@ -158,4 +159,4 @@ export const RATING_TYPE = {
   2: '2',
   1: '1',
   0: 'RESET',
-};
+}
