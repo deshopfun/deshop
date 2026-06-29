@@ -474,20 +474,20 @@
 // };
 
 // export default Create;
-import { useSnackPresistStore, useUserPresistStore } from '@/lib';
-import { FILE_TYPE, PRODUCT_TYPE } from '@/packages/constants';
-import { useState } from 'react';
-import axios from '@/utils/http/axios';
-import { Http } from '@/utils/http/http';
-import { ProductImageType, ProductOptionType } from '@/utils/types';
-import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Badge } from '@/components/ui/badge';
-import { Label } from '@/components/ui/label';
-import { cn } from '@/lib/utils';
-import { ImagePlus, Trash2, Plus, PackagePlus } from 'lucide-react';
+import { useSnackPresistStore, useUserPresistStore } from '@/lib'
+import { FILE_TYPE, PRODUCT_TYPE } from '@/packages/constants'
+import { useState } from 'react'
+import axios from '@/utils/http/axios'
+import { Http } from '@/utils/http/http'
+import { ProductImageType, ProductOptionType } from '@/utils/types'
+import { Card, CardContent } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Textarea } from '@/components/ui/textarea'
+import { Badge } from '@/components/ui/badge'
+import { Label } from '@/components/ui/label'
+import { cn } from '@/lib/utils'
+import { ImagePlus, Trash2, Plus, PackagePlus } from 'lucide-react'
 
 // 选项行组件
 const OptionRow = ({
@@ -497,15 +497,17 @@ const OptionRow = ({
   onNameChange,
   onValueChange,
 }: {
-  index: number;
-  name: string;
-  value: string;
-  onNameChange: (v: string) => void;
-  onValueChange: (v: string) => void;
+  index: number
+  name: string
+  value: string
+  onNameChange: (v: string) => void
+  onValueChange: (v: string) => void
 }) => (
   <div className="grid grid-cols-2 gap-3">
     <div className="flex flex-col gap-1.5">
-      <Label className="text-xs text-muted-foreground">Option {index} Name {index === 1 && <span className="text-red-500">*</span>}</Label>
+      <Label className="text-xs text-muted-foreground">
+        Option {index} Name {index === 1 && <span className="text-red-500">*</span>}
+      </Label>
       <Input
         value={name}
         onChange={(e) => onNameChange(e.target.value)}
@@ -513,82 +515,93 @@ const OptionRow = ({
       />
     </div>
     <div className="flex flex-col gap-1.5">
-      <Label className="text-xs text-muted-foreground">Values (comma separated) {index === 1 && <span className="text-red-500">*</span>}</Label>
-      <Input value={value} onChange={(e) => onValueChange(e.target.value)} placeholder="e.g. Red,Blue,Green" />
+      <Label className="text-xs text-muted-foreground">
+        Values (comma separated) {index === 1 && <span className="text-red-500">*</span>}
+      </Label>
+      <Input
+        value={value}
+        onChange={(e) => onValueChange(e.target.value)}
+        placeholder="e.g. Red,Blue,Green"
+      />
     </div>
   </div>
-);
+)
 
 const Create = () => {
-  const [title, setTitle] = useState('');
-  const [vendor, setVendor] = useState('');
-  const [productType, setProductType] = useState<string>(PRODUCT_TYPE.GAMING);
-  const [tags, setTags] = useState('');
-  const [description, setDescription] = useState('');
-  const [optionOne, setOptionOne] = useState('');
-  const [optionOneValue, setOptionOneValue] = useState('');
-  const [optionTwo, setOptionTwo] = useState('');
-  const [optionTwoValue, setOptionTwoValue] = useState('');
-  const [optionThree, setOptionThree] = useState('');
-  const [optionThreeValue, setOptionThreeValue] = useState('');
-  const [imageList, setImageList] = useState<string[]>([]);
-  const [uploading, setUploading] = useState(false);
+  const [title, setTitle] = useState('')
+  const [vendor, setVendor] = useState('')
+  const [productType, setProductType] = useState<string>(PRODUCT_TYPE.OPENSOURCE)
+  const [tags, setTags] = useState('')
+  const [description, setDescription] = useState('')
+  const [optionOne, setOptionOne] = useState('')
+  const [optionOneValue, setOptionOneValue] = useState('')
+  const [optionTwo, setOptionTwo] = useState('')
+  const [optionTwoValue, setOptionTwoValue] = useState('')
+  const [optionThree, setOptionThree] = useState('')
+  const [optionThreeValue, setOptionThreeValue] = useState('')
+  const [imageList, setImageList] = useState<string[]>([])
+  const [uploading, setUploading] = useState(false)
 
-  const { setSnackSeverity, setSnackOpen, setSnackMessage } = useSnackPresistStore((state) => state);
-  const { getIsLogin } = useUserPresistStore((state) => state);
+  const { setSnackSeverity, setSnackOpen, setSnackMessage } = useSnackPresistStore((state) => state)
+  const { getIsLogin } = useUserPresistStore((state) => state)
 
   const showError = (msg: string) => {
-    setSnackSeverity('error');
-    setSnackMessage(msg);
-    setSnackOpen(true);
-  };
+    setSnackSeverity('error')
+    setSnackMessage(msg)
+    setSnackOpen(true)
+  }
 
   const uploadFile = async (files: FileList) => {
-    if (!files.length) return showError('Not found the file');
-    setUploading(true);
+    if (!files.length) return showError('Not found the file')
+    setUploading(true)
     try {
-      const formData = new FormData();
-      Array.from(files).forEach((file) => formData.append('files', file));
+      const formData = new FormData()
+      Array.from(files).forEach((file) => formData.append('files', file))
       const response: any = await axios.post(Http.upload_file, formData, {
         params: { file_type: FILE_TYPE.Image },
         headers: { 'Content-Type': 'multipart/form-data' },
-      });
+      })
       if (response.result && response.data.urls.length > 0) {
-        setImageList(response.data.urls);
+        setImageList(response.data.urls)
       } else {
-        showError('Upload Failed');
+        showError('Upload Failed')
       }
     } catch (e) {
-      showError('Network error. Please try again later.');
+      showError('Network error. Please try again later.')
     } finally {
-      setUploading(false);
+      setUploading(false)
     }
-  };
+  }
 
   const onClickCreateProduct = async () => {
-    if (!getIsLogin()) return showError('Need login');
-    if (!title) return showError('Incorrect title input');
-    if (!productType) return showError('Incorrect product type');
-    if (!tags) return showError('Incorrect tags input');
-    if (!description) return showError('Incorrect description input');
+    if (!getIsLogin()) return showError('Need login')
+    if (!title) return showError('Incorrect title input')
+    if (!productType) return showError('Incorrect product type')
+    if (!tags) return showError('Incorrect tags input')
+    if (!description) return showError('Incorrect description input')
 
-    const productOption: ProductOptionType[] = [];
+    const productOption: ProductOptionType[] = []
     for (const [name, value] of [
       [optionOne, optionOneValue],
       [optionTwo, optionTwoValue],
       [optionThree, optionThreeValue],
     ]) {
       if (name && value) {
-        const arr = value.split(',');
-        if (new Set(arr).size !== arr.length) return showError('Product option has duplicate values');
-        productOption.push({ name, value });
+        const arr = value.split(',')
+        if (new Set(arr).size !== arr.length)
+          return showError('Product option has duplicate values')
+        productOption.push({ name, value })
       }
     }
-    if (productOption.length === 0) return showError('At least one product option is needed');
-    if (imageList.length === 0) return showError('At least one image is needed');
+    if (productOption.length === 0) return showError('At least one product option is needed')
+    if (imageList.length === 0) return showError('At least one image is needed')
 
     try {
-      const productImages: ProductImageType[] = imageList.map((src) => ({ src, width: 100, height: 100 }));
+      const productImages: ProductImageType[] = imageList.map((src) => ({
+        src,
+        width: 100,
+        height: 100,
+      }))
       const response: any = await axios.post(Http.product, {
         title,
         body_html: description,
@@ -597,19 +610,19 @@ const Create = () => {
         vendor,
         images: productImages,
         options: productOption,
-      });
+      })
       if (response.result) {
-        setSnackSeverity('success');
-        setSnackMessage('Create successfully');
-        setSnackOpen(true);
-        window.location.href = `/products/${response.data.product_id}`;
+        setSnackSeverity('success')
+        setSnackMessage('Create successfully')
+        setSnackOpen(true)
+        window.location.href = `/products/${response.data.product_id}`
       } else {
-        showError(response.message);
+        showError(response.message)
       }
     } catch (e) {
-      showError('Network error. Please try again later.');
+      showError('Network error. Please try again later.')
     }
-  };
+  }
 
   return (
     <div className="container mx-auto py-8 px-4">
@@ -619,7 +632,9 @@ const Create = () => {
         </div>
         <div>
           <h1 className="text-xl font-bold">Create New Product</h1>
-          <p className="text-sm text-muted-foreground">You can modify it after the product is created</p>
+          <p className="text-sm text-muted-foreground">
+            You can modify it after the product is created
+          </p>
         </div>
       </div>
 
@@ -636,11 +651,19 @@ const Create = () => {
                   <Label>
                     Title <span className="text-red-500">*</span>
                   </Label>
-                  <Input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Title your product" />
+                  <Input
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    placeholder="Title your product"
+                  />
                 </div>
                 <div className="flex flex-col gap-1.5">
                   <Label>Vendor</Label>
-                  <Input value={vendor} onChange={(e) => setVendor(e.target.value)} placeholder="Product vendor name" />
+                  <Input
+                    value={vendor}
+                    onChange={(e) => setVendor(e.target.value)}
+                    placeholder="Product vendor name"
+                  />
                 </div>
               </div>
 
@@ -659,7 +682,7 @@ const Create = () => {
                           'px-3 py-1.5 rounded-full text-sm border transition-all duration-150',
                           productType === val
                             ? 'bg-sky-500 text-white border-sky-500'
-                            : 'border-gray-200 text-gray-600 hover:border-sky-300 hover:text-sky-500',
+                            : 'border-gray-200 text-gray-600 hover:border-sky-300 hover:text-sky-500'
                         )}
                       >
                         {val as string}
@@ -712,7 +735,9 @@ const Create = () => {
             <CardContent className="p-6 flex flex-col gap-4">
               <div>
                 <h2 className="font-semibold text-base">Product Options</h2>
-                <p className="text-xs text-muted-foreground mt-0.5">Add up to 3 options like Color, Size, Material</p>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  Add up to 3 options like Color, Size, Material
+                </p>
               </div>
               <OptionRow
                 index={1}
@@ -745,8 +770,12 @@ const Create = () => {
             <CardContent className="p-6 flex flex-col gap-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <h2 className="font-semibold text-base">Product Images <span className="text-red-500">*</span></h2>
-                  <p className="text-xs text-muted-foreground mt-0.5">Max 1MB · JPG / PNG / GIF · Min 100×100px</p>
+                  <h2 className="font-semibold text-base">
+                    Product Images <span className="text-red-500">*</span>
+                  </h2>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    Max 1MB · JPG / PNG / GIF · Min 100×100px
+                  </p>
                 </div>
                 {imageList.length > 0 && (
                   <Button
@@ -764,7 +793,10 @@ const Create = () => {
               {imageList.length > 0 ? (
                 <div className="grid grid-cols-3 gap-3">
                   {imageList.map((src, i) => (
-                    <div key={i} className="relative aspect-square rounded-xl overflow-hidden border">
+                    <div
+                      key={i}
+                      className="relative aspect-square rounded-xl overflow-hidden border"
+                    >
                       <img src={src} alt="product" className="w-full h-full object-cover" />
                     </div>
                   ))}
@@ -772,14 +804,21 @@ const Create = () => {
                   <label className="aspect-square rounded-xl border-2 border-dashed border-gray-200 flex flex-col items-center justify-center cursor-pointer hover:border-sky-300 hover:bg-sky-50 transition-colors">
                     <Plus className="h-6 w-6 text-gray-400" />
                     <span className="text-xs text-gray-400 mt-1">Add more</span>
-                    <input type="file" className="sr-only" multiple onChange={(e: any) => uploadFile(e.target.files)} />
+                    <input
+                      type="file"
+                      className="sr-only"
+                      multiple
+                      onChange={(e: any) => uploadFile(e.target.files)}
+                    />
                   </label>
                 </div>
               ) : (
                 <label
                   className={cn(
                     'flex flex-col items-center justify-center gap-3 py-16 rounded-xl border-2 border-dashed cursor-pointer transition-colors',
-                    uploading ? 'border-sky-300 bg-sky-50' : 'border-gray-200 hover:border-sky-300 hover:bg-sky-50',
+                    uploading
+                      ? 'border-sky-300 bg-sky-50'
+                      : 'border-gray-200 hover:border-sky-300 hover:bg-sky-50'
                   )}
                 >
                   <div className="h-12 w-12 rounded-full bg-gray-100 flex items-center justify-center">
@@ -791,7 +830,12 @@ const Create = () => {
                     </p>
                     <p className="text-xs text-muted-foreground mt-0.5">Support multiple files</p>
                   </div>
-                  <input type="file" className="sr-only" multiple onChange={(e: any) => uploadFile(e.target.files)} />
+                  <input
+                    type="file"
+                    className="sr-only"
+                    multiple
+                    onChange={(e: any) => uploadFile(e.target.files)}
+                  />
                 </label>
               )}
             </CardContent>
@@ -846,7 +890,9 @@ const Create = () => {
                   <div className="h-16 w-16 rounded-full bg-gray-100 flex items-center justify-center">
                     <ImagePlus className="h-8 w-8 text-gray-300" />
                   </div>
-                  <p className="text-sm text-muted-foreground">A preview of how your product will look</p>
+                  <p className="text-sm text-muted-foreground">
+                    A preview of how your product will look
+                  </p>
                 </CardContent>
               )}
             </Card>
@@ -854,7 +900,7 @@ const Create = () => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default Create;
+export default Create

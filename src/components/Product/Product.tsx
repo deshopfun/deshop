@@ -610,33 +610,33 @@
 
 // export default Product;
 
-import { useSnackPresistStore } from '@/lib';
-import { FILE_TYPE, PRODUCT_TYPE } from '@/packages/constants';
-import { useEffect, useState } from 'react';
-import axios from '@/utils/http/axios';
-import { Http } from '@/utils/http/http';
-import { ProductImageType, ProductOptionType } from '@/utils/types';
-import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
-import { Badge } from '@/components/ui/badge';
-import { cn } from '@/lib/utils';
-import { ImagePlus, Trash2, Plus, Save, Settings, Layers, Image } from 'lucide-react';
+import { useSnackPresistStore } from '@/lib'
+import { FILE_TYPE, PRODUCT_TYPE } from '@/packages/constants'
+import { useEffect, useState } from 'react'
+import axios from '@/utils/http/axios'
+import { Http } from '@/utils/http/http'
+import { ProductImageType, ProductOptionType } from '@/utils/types'
+import { Card, CardContent } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Textarea } from '@/components/ui/textarea'
+import { Label } from '@/components/ui/label'
+import { Badge } from '@/components/ui/badge'
+import { cn } from '@/lib/utils'
+import { ImagePlus, Trash2, Plus, Save, Settings, Layers, Image } from 'lucide-react'
 
 type Props = {
-  product_id: number;
-  title?: string;
-  vendor?: string;
-  productType?: string;
-  tags?: string;
-  description?: string;
-  options?: ProductOptionType[];
-  images?: ProductImageType[];
-  productStatus?: number;
-  init: (id: any) => Promise<void>;
-};
+  product_id: number
+  title?: string
+  vendor?: string
+  productType?: string
+  tags?: string
+  description?: string
+  options?: ProductOptionType[]
+  images?: ProductImageType[]
+  productStatus?: number
+  init: (id: any) => Promise<void>
+}
 
 // 选项行组件
 const OptionRow = ({
@@ -646,11 +646,11 @@ const OptionRow = ({
   onNameChange,
   onValueChange,
 }: {
-  index: number;
-  name: string;
-  value: string;
-  onNameChange: (v: string) => void;
-  onValueChange: (v: string) => void;
+  index: number
+  name: string
+  value: string
+  onNameChange: (v: string) => void
+  onValueChange: (v: string) => void
 }) => (
   <div className="grid grid-cols-2 gap-3">
     <div className="flex flex-col gap-1.5">
@@ -663,92 +663,96 @@ const OptionRow = ({
     </div>
     <div className="flex flex-col gap-1.5">
       <Label className="text-xs text-muted-foreground">Values (comma separated)</Label>
-      <Input value={value} onChange={(e) => onValueChange(e.target.value)} placeholder="e.g. Red,Blue,Green" />
+      <Input
+        value={value}
+        onChange={(e) => onValueChange(e.target.value)}
+        placeholder="e.g. Red,Blue,Green"
+      />
     </div>
   </div>
-);
+)
 
 // 状态 Badge
 const statusConfig: Record<number, { label: string; className: string }> = {
   1: { label: 'Active', className: 'bg-green-100 text-green-700 border-green-200' },
   2: { label: 'Archived', className: 'bg-blue-100 text-blue-700 border-blue-200' },
   3: { label: 'Draft', className: 'bg-amber-100 text-amber-700 border-amber-200' },
-};
+}
 
 const Product = (props: Props) => {
-  const [title, setTitle] = useState('');
-  const [vendor, setVendor] = useState('');
-  const [productType, setProductType] = useState(PRODUCT_TYPE.GAMING);
-  const [tags, setTags] = useState('');
-  const [description, setDescription] = useState('');
-  const [optionOne, setOptionOne] = useState('');
-  const [optionOneValue, setOptionOneValue] = useState('');
-  const [optionTwo, setOptionTwo] = useState('');
-  const [optionTwoValue, setOptionTwoValue] = useState('');
-  const [optionThree, setOptionThree] = useState('');
-  const [optionThreeValue, setOptionThreeValue] = useState('');
-  const [imageList, setImageList] = useState<string[]>([]);
-  const [uploading, setUploading] = useState(false);
+  const [title, setTitle] = useState('')
+  const [vendor, setVendor] = useState('')
+  const [productType, setProductType] = useState(PRODUCT_TYPE.OPENSOURCE)
+  const [tags, setTags] = useState('')
+  const [description, setDescription] = useState('')
+  const [optionOne, setOptionOne] = useState('')
+  const [optionOneValue, setOptionOneValue] = useState('')
+  const [optionTwo, setOptionTwo] = useState('')
+  const [optionTwoValue, setOptionTwoValue] = useState('')
+  const [optionThree, setOptionThree] = useState('')
+  const [optionThreeValue, setOptionThreeValue] = useState('')
+  const [imageList, setImageList] = useState<string[]>([])
+  const [uploading, setUploading] = useState(false)
 
-  const { setSnackSeverity, setSnackOpen, setSnackMessage } = useSnackPresistStore((state) => state);
+  const { setSnackSeverity, setSnackOpen, setSnackMessage } = useSnackPresistStore((state) => state)
 
   const showError = (msg: string) => {
-    setSnackSeverity('error');
-    setSnackMessage(msg);
-    setSnackOpen(true);
-  };
+    setSnackSeverity('error')
+    setSnackMessage(msg)
+    setSnackOpen(true)
+  }
   const showSuccess = (msg: string) => {
-    setSnackSeverity('success');
-    setSnackMessage(msg);
-    setSnackOpen(true);
-  };
+    setSnackSeverity('success')
+    setSnackMessage(msg)
+    setSnackOpen(true)
+  }
 
   useEffect(() => {
-    setTitle(props.title || '');
-    setVendor(props.vendor || '');
-    setProductType(props.productType || '');
-    setTags(props.tags || '');
-    setDescription(props.description || '');
+    setTitle(props.title || '')
+    setVendor(props.vendor || '')
+    setProductType(props.productType || '')
+    setTags(props.tags || '')
+    setDescription(props.description || '')
     if (props.options) {
-      setOptionOne(props.options[0]?.name || '');
-      setOptionOneValue(props.options[0]?.value || '');
-      setOptionTwo(props.options[1]?.name || '');
-      setOptionTwoValue(props.options[1]?.value || '');
-      setOptionThree(props.options[2]?.name || '');
-      setOptionThreeValue(props.options[2]?.value || '');
+      setOptionOne(props.options[0]?.name || '')
+      setOptionOneValue(props.options[0]?.value || '')
+      setOptionTwo(props.options[1]?.name || '')
+      setOptionTwoValue(props.options[1]?.value || '')
+      setOptionThree(props.options[2]?.name || '')
+      setOptionThreeValue(props.options[2]?.value || '')
     }
     if (props.images) {
-      setImageList(props.images.filter((i) => i.src).map((i) => i.src));
+      setImageList(props.images.filter((i) => i.src).map((i) => i.src))
     }
-  }, [props]);
+  }, [props])
 
   const uploadFile = async (files: FileList) => {
-    if (!files.length) return showError('No file selected');
-    setUploading(true);
+    if (!files.length) return showError('No file selected')
+    setUploading(true)
     try {
-      const formData = new FormData();
-      Array.from(files).forEach((f) => formData.append('files', f));
+      const formData = new FormData()
+      Array.from(files).forEach((f) => formData.append('files', f))
       const response: any = await axios.post(Http.upload_file, formData, {
         params: { file_type: FILE_TYPE.Image },
         headers: { 'Content-Type': 'multipart/form-data' },
-      });
+      })
       if (response.result && response.data.urls.length > 0) {
-        setImageList(response.data.urls);
+        setImageList(response.data.urls)
       } else {
-        showError('Upload failed');
+        showError('Upload failed')
       }
     } catch {
-      showError('Network error. Please try again later.');
+      showError('Network error. Please try again later.')
     } finally {
-      setUploading(false);
+      setUploading(false)
     }
-  };
+  }
 
   const onClickUpdateProductBase = async () => {
-    if (!title) return showError('Incorrect title input');
-    if (!productType) return showError('Incorrect product type');
-    if (!tags) return showError('Incorrect tags input');
-    if (!description) return showError('Incorrect description input');
+    if (!title) return showError('Incorrect title input')
+    if (!productType) return showError('Incorrect product type')
+    if (!tags) return showError('Incorrect tags input')
+    if (!description) return showError('Incorrect description input')
     try {
       const response: any = await axios.put(Http.product_base, {
         product_id: props.product_id,
@@ -757,78 +761,83 @@ const Product = (props: Props) => {
         product_type: productType,
         tags,
         vendor,
-      });
+      })
       if (response.result) {
-        await props.init(props.product_id);
-        showSuccess('Updated successfully');
-      } else showError('Update failed');
+        await props.init(props.product_id)
+        showSuccess('Updated successfully')
+      } else showError('Update failed')
     } catch {
-      showError('Network error. Please try again later.');
+      showError('Network error. Please try again later.')
     }
-  };
+  }
 
   const onClickUpdateProductOption = async () => {
-    const productOption: ProductOptionType[] = [];
+    const productOption: ProductOptionType[] = []
     for (const [name, value] of [
       [optionOne, optionOneValue],
       [optionTwo, optionTwoValue],
       [optionThree, optionThreeValue],
     ]) {
       if (name && value) {
-        const arr = value.split(',');
-        if (new Set(arr).size !== arr.length) return showError('Product option has duplicate values');
-        productOption.push({ name, value });
+        const arr = value.split(',')
+        if (new Set(arr).size !== arr.length)
+          return showError('Product option has duplicate values')
+        productOption.push({ name, value })
       }
     }
-    if (productOption.length === 0) return showError('At least one product option is needed');
+    if (productOption.length === 0) return showError('At least one product option is needed')
     try {
       const response: any = await axios.put(Http.product_option, {
         product_id: props.product_id,
         options: productOption,
-      });
+      })
       if (response.result) {
-        await props.init(props.product_id);
-        showSuccess('Updated successfully');
-      } else showError('Update failed');
+        await props.init(props.product_id)
+        showSuccess('Updated successfully')
+      } else showError('Update failed')
     } catch {
-      showError('Network error. Please try again later.');
+      showError('Network error. Please try again later.')
     }
-  };
+  }
 
   const onClickUpdateProductImage = async () => {
-    if (imageList.length === 0) return showError('At least one image is needed');
+    if (imageList.length === 0) return showError('At least one image is needed')
     try {
-      const productImages: ProductImageType[] = imageList.map((src) => ({ src, width: 100, height: 100 }));
+      const productImages: ProductImageType[] = imageList.map((src) => ({
+        src,
+        width: 100,
+        height: 100,
+      }))
       const response: any = await axios.put(Http.product_image, {
         product_id: props.product_id,
         images: productImages,
-      });
+      })
       if (response.result) {
-        await props.init(props.product_id);
-        showSuccess('Updated successfully');
-      } else showError('Update failed');
+        await props.init(props.product_id)
+        showSuccess('Updated successfully')
+      } else showError('Update failed')
     } catch {
-      showError('Network error. Please try again later.');
+      showError('Network error. Please try again later.')
     }
-  };
+  }
 
   const onClickUpdateProductStatus = async (status: number) => {
-    if (status === props.productStatus) return showError('Product is already in this status');
+    if (status === props.productStatus) return showError('Product is already in this status')
     try {
       const response: any = await axios.put(Http.product_base, {
         product_id: props.product_id,
         product_status: status,
-      });
+      })
       if (response.result) {
-        await props.init(props.product_id);
-        showSuccess('Status updated');
-      } else showError('Update failed');
+        await props.init(props.product_id)
+        showSuccess('Status updated')
+      } else showError('Update failed')
     } catch {
-      showError('Network error. Please try again later.');
+      showError('Network error. Please try again later.')
     }
-  };
+  }
 
-  const currentStatus = statusConfig[props.productStatus ?? 3];
+  const currentStatus = statusConfig[props.productStatus ?? 3]
 
   return (
     <div className="flex flex-col gap-4 py-4">
@@ -843,7 +852,10 @@ const Product = (props: Props) => {
               </div>
               <h3 className="font-semibold">Base Info</h3>
             </div>
-            <Button className="h-9 bg-sky-500 hover:bg-sky-600 text-white gap-1.5" onClick={onClickUpdateProductBase}>
+            <Button
+              className="h-9 bg-sky-500 hover:bg-sky-600 text-white gap-1.5"
+              onClick={onClickUpdateProductBase}
+            >
               <Save className="h-4 w-4" /> Save
             </Button>
           </div>
@@ -852,7 +864,12 @@ const Product = (props: Props) => {
           <div className="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
             <div className="flex items-center gap-2">
               <span className="text-sm text-muted-foreground">Status</span>
-              <span className={cn('text-xs font-semibold px-2.5 py-1 rounded-full border', currentStatus.className)}>
+              <span
+                className={cn(
+                  'text-xs font-semibold px-2.5 py-1 rounded-full border',
+                  currentStatus.className
+                )}
+              >
                 {currentStatus.label}
               </span>
             </div>
@@ -893,11 +910,19 @@ const Product = (props: Props) => {
               <Label>
                 Title <span className="text-red-500">*</span>
               </Label>
-              <Input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Product title" />
+              <Input
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                placeholder="Product title"
+              />
             </div>
             <div className="flex flex-col gap-1.5">
               <Label>Vendor</Label>
-              <Input value={vendor} onChange={(e) => setVendor(e.target.value)} placeholder="Vendor name" />
+              <Input
+                value={vendor}
+                onChange={(e) => setVendor(e.target.value)}
+                placeholder="Vendor name"
+              />
             </div>
           </div>
 
@@ -915,7 +940,7 @@ const Product = (props: Props) => {
                     'px-3 py-1.5 rounded-full text-sm border transition-all duration-150',
                     productType === val
                       ? 'bg-sky-500 text-white border-sky-500'
-                      : 'border-gray-200 text-gray-600 hover:border-sky-300 hover:text-sky-500',
+                      : 'border-gray-200 text-gray-600 hover:border-sky-300 hover:text-sky-500'
                   )}
                 >
                   {val as string}
@@ -929,7 +954,11 @@ const Product = (props: Props) => {
             <Label>
               Tags <span className="text-red-500">*</span>
             </Label>
-            <Input value={tags} onChange={(e) => setTags(e.target.value)} placeholder="e.g. apple,nike,ai" />
+            <Input
+              value={tags}
+              onChange={(e) => setTags(e.target.value)}
+              placeholder="e.g. apple,nike,ai"
+            />
             {tags && (
               <div className="flex flex-wrap gap-1 mt-1">
                 {tags
@@ -972,7 +1001,10 @@ const Product = (props: Props) => {
                 <p className="text-xs text-muted-foreground">Color, Size, Material etc.</p>
               </div>
             </div>
-            <Button className="h-9 bg-sky-500 hover:bg-sky-600 text-white gap-1.5" onClick={onClickUpdateProductOption}>
+            <Button
+              className="h-9 bg-sky-500 hover:bg-sky-600 text-white gap-1.5"
+              onClick={onClickUpdateProductOption}
+            >
               <Save className="h-4 w-4" /> Save
             </Button>
           </div>
@@ -1013,7 +1045,9 @@ const Product = (props: Props) => {
               </div>
               <div>
                 <h3 className="font-semibold">Product Images</h3>
-                <p className="text-xs text-muted-foreground">Max 1MB · JPG / PNG / GIF · Min 100×100px</p>
+                <p className="text-xs text-muted-foreground">
+                  Max 1MB · JPG / PNG / GIF · Min 100×100px
+                </p>
               </div>
             </div>
             <div className="flex items-center gap-2">
@@ -1046,14 +1080,21 @@ const Product = (props: Props) => {
               <label className="aspect-square rounded-xl border-2 border-dashed border-gray-200 flex flex-col items-center justify-center cursor-pointer hover:border-sky-300 hover:bg-sky-50 transition-colors">
                 <Plus className="h-6 w-6 text-gray-400" />
                 <span className="text-xs text-gray-400 mt-1">Add more</span>
-                <input type="file" className="sr-only" multiple onChange={(e: any) => uploadFile(e.target.files)} />
+                <input
+                  type="file"
+                  className="sr-only"
+                  multiple
+                  onChange={(e: any) => uploadFile(e.target.files)}
+                />
               </label>
             </div>
           ) : (
             <label
               className={cn(
                 'flex flex-col items-center justify-center gap-3 py-12 rounded-xl border-2 border-dashed cursor-pointer transition-colors',
-                uploading ? 'border-sky-300 bg-sky-50' : 'border-gray-200 hover:border-sky-300 hover:bg-sky-50',
+                uploading
+                  ? 'border-sky-300 bg-sky-50'
+                  : 'border-gray-200 hover:border-sky-300 hover:bg-sky-50'
               )}
             >
               <div className="h-12 w-12 rounded-full bg-gray-100 flex items-center justify-center">
@@ -1065,13 +1106,18 @@ const Product = (props: Props) => {
                 </p>
                 <p className="text-xs text-muted-foreground mt-0.5">Support multiple files</p>
               </div>
-              <input type="file" className="sr-only" multiple onChange={(e: any) => uploadFile(e.target.files)} />
+              <input
+                type="file"
+                className="sr-only"
+                multiple
+                onChange={(e: any) => uploadFile(e.target.files)}
+              />
             </label>
           )}
         </CardContent>
       </Card>
     </div>
-  );
-};
+  )
+}
 
-export default Product;
+export default Product

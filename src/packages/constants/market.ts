@@ -22,7 +22,7 @@ export const PRODUCT_TYPE = {
   EDUCATION: 'Education',
   SOCIAL: 'Social',
   RWA: 'RWA',
-} as const
+}
 
 export const COLLECT_TYPE = {
   PRODUCT: 1,
