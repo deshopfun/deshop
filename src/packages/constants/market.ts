@@ -24,6 +24,7 @@ export const PRODUCT_TYPE = {
   EDUCATION: 'Education',
   SOCIAL: 'Social',
   RWA: 'RWA',
+  PERSONAL: 'Personal',
 }
 
 export const COLLECT_TYPE = {

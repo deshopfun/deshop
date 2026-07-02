@@ -20,6 +20,8 @@ export function GetImgSrcByProductType(type: string): string {
       return baseUrl + '/images/product/social.jpg'
     case PRODUCT_TYPE.RWA:
       return baseUrl + '/images/product/rwa.jpg'
+    case PRODUCT_TYPE.PERSONAL:
+      return baseUrl + '/images/product/personal.jpg'
     // case PRODUCT_TYPE.WOMEN:
     //   return baseUrl + '/images/product/women.jpg';
     // case PRODUCT_TYPE.MEN:
