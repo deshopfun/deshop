@@ -21,7 +21,7 @@ const NowTrendingCard = (props: Props) => {
       const response: any = await axios.get(Http.product_list, {
         params: {
           product_type: props.productType ? props.productType : undefined,
-          limit: 6,
+          limit: 10,
         },
       });
 
