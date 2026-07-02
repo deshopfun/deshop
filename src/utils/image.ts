@@ -6,6 +6,10 @@ export function GetImgSrcByProductType(type: string): string {
   switch (type) {
     case PRODUCT_TYPE.OPENSOURCE:
       return baseUrl + '/images/product/opensource.jpg'
+    case PRODUCT_TYPE.AI:
+      return baseUrl + '/images/product/ai.jpg'
+    case PRODUCT_TYPE.INFRASTRUCTURE:
+      return baseUrl + '/images/product/infrastructure.jpg'
     case PRODUCT_TYPE.GAMING:
       return baseUrl + '/images/product/gaming.jpg'
     case PRODUCT_TYPE.CGAMING:

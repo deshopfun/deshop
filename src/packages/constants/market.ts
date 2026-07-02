@@ -17,6 +17,8 @@
 
 export const PRODUCT_TYPE = {
   OPENSOURCE: 'Open Source',
+  AI: 'Ai',
+  INFRASTRUCTURE: 'Infrastructure',
   GAMING: 'Gaming',
   CGAMING: 'Companion Gaming',
   EDUCATION: 'Education',
