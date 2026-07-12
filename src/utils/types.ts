@@ -40,6 +40,8 @@ export type ProductType = {
   product_type: string
   tags: string
   vendor: string
+  website: string
+  video: string
   currency: string
   product_status: number
   collect_status: number

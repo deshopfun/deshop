@@ -56,6 +56,8 @@ import {
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import Decimal from 'decimal.js'
+import Link from 'next/link'
+import VideoPlayer from '../VIdeo/VideoPlayer'
 
 const RatingBar = ({ star, ratings }: { star: number; ratings: any[] }) => {
   const count = ratings.filter((r) => r.number === star).length
@@ -338,6 +340,8 @@ const ProductDetails = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         <div className="flex flex-col gap-6">
+          <VideoPlayer videoSrc={product.video} title={product.title} />
+
           <Card className="overflow-hidden border-0 shadow-sm">
             {isSelectOption && currentProductVariant?.image ? (
               <div className="flex justify-center items-center p-8 bg-gray-50 min-h-72">
@@ -493,7 +497,11 @@ const ProductDetails = () => {
 
           <div className="flex items-start justify-between gap-3">
             <div className="flex flex-col gap-1">
-              <h1 className="text-2xl font-bold">{product.title}</h1>
+              <h1 className="text-2xl font-bold">
+                <Link color={'textPrimary'} href={product.website} target="_blank">
+                  {product.title}
+                </Link>
+              </h1>
               {product.ratings && product.ratings.length > 0 && (
                 <button
                   className="flex items-center gap-1"
@@ -715,6 +723,8 @@ const ProductDetails = () => {
                 title={product.title}
                 slug={product.slug}
                 vendor={product.vendor}
+                website={product.website}
+                video={product.video}
                 productType={product.product_type}
                 tags={product.tags}
                 description={product.body_html}

@@ -12,6 +12,7 @@ import { Label } from '@/components/ui/label'
 import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
 import { ImagePlus, Trash2, Plus, Save, Settings, Layers, Image } from 'lucide-react'
+import { isValidHttpUrl } from '@/utils/verify'
 
 type Props = {
   product_id: number
@@ -21,6 +22,8 @@ type Props = {
   productType?: string
   tags?: string
   description?: string
+  website?: string
+  video?: string
   options?: ProductOptionType[]
   images?: ProductImageType[]
   productStatus?: number
@@ -73,6 +76,8 @@ const Product = (props: Props) => {
   const [productType, setProductType] = useState(PRODUCT_TYPE.OPENSOURCE)
   const [tags, setTags] = useState('')
   const [description, setDescription] = useState('')
+  const [website, setWebsite] = useState('')
+  const [video, setVideo] = useState('')
   const [optionOne, setOptionOne] = useState('')
   const [optionOneValue, setOptionOneValue] = useState('')
   const [optionTwo, setOptionTwo] = useState('')
@@ -102,6 +107,8 @@ const Product = (props: Props) => {
     setProductType(props.productType || '')
     setTags(props.tags || '')
     setDescription(props.description || '')
+    setWebsite(props.website || '')
+    setVideo(props.video || '')
     if (props.options) {
       setOptionOne(props.options[0]?.name || '')
       setOptionOneValue(props.options[0]?.value || '')
@@ -143,6 +150,8 @@ const Product = (props: Props) => {
     if (!productType) return showError('Incorrect product type')
     if (!tags) return showError('Incorrect tags input')
     if (!description) return showError('Incorrect description input')
+    if (website && !isValidHttpUrl(website)) return showError('Incorrect website input')
+    if (video && !isValidHttpUrl(video)) return showError('Incorrect video input')
     try {
       const response: any = await axios.put(Http.product_base, {
         product_id: props.product_id,
@@ -152,6 +161,8 @@ const Product = (props: Props) => {
         product_type: productType,
         tags,
         vendor,
+        website,
+        video,
       })
       if (response.result) {
         window.location.href = `/products/${slug}`
@@ -377,6 +388,22 @@ const Product = (props: Props) => {
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Write a detailed description..."
               className="min-h-32 resize-y"
+            />
+          </div>
+          <div className="flex flex-col gap-1.5">
+            <Label>Website</Label>
+            <Input
+              value={website}
+              onChange={(e) => setWebsite(e.target.value)}
+              placeholder={`${window.location.origin}`}
+            />
+          </div>
+          <div className="flex flex-col gap-1.5">
+            <Label>Video</Label>
+            <Input
+              value={video}
+              onChange={(e) => setVideo(e.target.value)}
+              placeholder={'Video presentation of your product'}
             />
           </div>
         </CardContent>
