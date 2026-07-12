@@ -150,7 +150,7 @@ const Explore = () => {
                   key={index}
                   className="overflow-hidden cursor-pointer hover:shadow-xl transition-all hover:-translate-y-1"
                   onClick={() => {
-                    window.location.href = `/products/${item.product_id}`
+                    window.location.href = `/products/${item.slug || item.product_id}`
                   }}
                 >
                   <div className="aspect-[4/3] relative bg-muted">

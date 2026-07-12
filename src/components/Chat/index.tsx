@@ -1,17 +1,6 @@
-// const Chat = () => {
-//   return (
-//     <Container>
-//       <Typography variant="h6">Chat</Typography>
-//     </Container>
-//   );
-// };
-
-// export default Chat;
-
-import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { MessageCircle, Users, Search } from 'lucide-react';
+import { Card, CardContent } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { MessageCircle, Users } from 'lucide-react'
 
 const Chat = () => {
   return (
@@ -52,12 +41,12 @@ const Chat = () => {
         </CardContent>
       </Card>
 
-      {/* Future enhancement hint */}
       <p className="text-center text-xs text-muted-foreground mt-6">
-        Chat functionality is coming soon. This page will support real-time messaging, product sharing, and more.
+        Chat functionality is coming soon. This page will support real-time messaging, product
+        sharing, and more.
       </p>
     </div>
-  );
-};
+  )
+}
 
-export default Chat;
+export default Chat

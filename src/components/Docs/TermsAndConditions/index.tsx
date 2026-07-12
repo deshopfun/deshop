@@ -28,19 +28,21 @@ const DocsTermsAndConditions = () => {
     }
   }
 
-  useEffect(() => { init() }, [])
+  useEffect(() => {
+    init()
+  }, [])
 
   return (
     <div className="container mx-auto py-8 px-4 max-w-3xl">
-
-      {/* 页面标题 */}
       <div className="flex items-center gap-3 mb-6">
         <div className="h-10 w-10 rounded-xl bg-purple-50 flex items-center justify-center">
           <ScrollText className="h-5 w-5 text-purple-500" />
         </div>
         <div>
           <h1 className="text-xl font-bold">Terms and Conditions</h1>
-          <p className="text-sm text-muted-foreground">Please read these terms carefully before using Deshop</p>
+          <p className="text-sm text-muted-foreground">
+            Please read these terms carefully before using Deshop
+          </p>
         </div>
       </div>
 
@@ -72,12 +74,13 @@ const DocsTermsAndConditions = () => {
                 <ScrollText className="h-7 w-7 text-gray-300" />
               </div>
               <p className="font-medium text-sm">No content available</p>
-              <p className="text-xs text-muted-foreground">The terms document could not be loaded.</p>
+              <p className="text-xs text-muted-foreground">
+                The terms document could not be loaded.
+              </p>
             </div>
           )}
         </CardContent>
       </Card>
-
     </div>
   )
 }

@@ -1,13 +1,3 @@
-// const Support = () => {
-//   return (
-//     <Container>
-//       <Typography variant="h6">Support</Typography>
-//     </Container>
-//   );
-// };
-
-// export default Support;
-
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -25,7 +15,6 @@ const Support = () => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-        {/* Quick Help Cards */}
         <Card>
           <CardHeader>
             <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/50 rounded-xl flex items-center justify-center mb-4">
@@ -71,7 +60,6 @@ const Support = () => {
         </Card>
       </div>
 
-      {/* Contact Form */}
       <Card>
         <CardHeader>
           <CardTitle>Have a question?</CardTitle>

@@ -1,51 +1,51 @@
-import { useRouter } from 'next/router';
-import { routes } from './Routes';
-import MetaTags from '@/components/Common/MetaTags';
-import { useEffect, useState } from 'react';
-import HomeSidebar from '@/components/Sidebar';
-import HomeHeader from '@/components/Home/HomeHeader';
-import HomeFooter from '@/components/Home/HomeFooter';
-import { useSnackPresistStore } from '@/lib';
-import { RouteType } from '@/utils/types';
-import { cn } from '@/lib/utils';
-import { CheckCircle2, XCircle, AlertCircle, Info, X } from 'lucide-react';
+import { useRouter } from 'next/router'
+import { routes } from './Routes'
+import MetaTags from '@/components/Common/MetaTags'
+import { useEffect, useState } from 'react'
+import HomeSidebar from '@/components/Sidebar'
+import HomeHeader from '@/components/Home/HomeHeader'
+import HomeFooter from '@/components/Home/HomeFooter'
+import { useSnackPresistStore } from '@/lib'
+import { RouteType } from '@/utils/types'
+import { cn } from '@/lib/utils'
+import { CheckCircle2, XCircle, AlertCircle, Info, X } from 'lucide-react'
 
-// Snackbar 图标映射
 const snackIcons = {
   success: { icon: CheckCircle2, className: 'text-green-500' },
   error: { icon: XCircle, className: 'text-red-500' },
   warning: { icon: AlertCircle, className: 'text-yellow-500' },
   info: { icon: Info, className: 'text-blue-500' },
-};
+}
 
 const Home = () => {
-  const router = useRouter();
-  const { snackOpen, snackMessage, snackSeverity, setSnackOpen } = useSnackPresistStore((state) => state);
-  const [currentRoute, setCurrentRoute] = useState<RouteType>();
+  const router = useRouter()
+  const { snackOpen, snackMessage, snackSeverity, setSnackOpen } = useSnackPresistStore(
+    (state) => state
+  )
+  const [currentRoute, setCurrentRoute] = useState<RouteType>()
 
   useEffect(() => {
-    const route = routes.find((item) => item.path === router.pathname);
-    if (!route) return;
+    const route = routes.find((item) => item.path === router.pathname)
+    if (!route) return
     if (route?.needLogin) {
-      window.location.href = '/login';
-      return;
+      window.location.href = '/login'
+      return
     }
-    setCurrentRoute(route);
-  }, [router.pathname]);
+    setCurrentRoute(route)
+  }, [router.pathname])
 
   useEffect(() => {
-    setSnackOpen(false);
-  }, []);
+    setSnackOpen(false)
+  }, [])
 
-  // snack 自动关闭
   useEffect(() => {
-    if (!snackOpen) return;
-    const timer = setTimeout(() => setSnackOpen(false), 3000);
-    return () => clearTimeout(timer);
-  }, [snackOpen]);
+    if (!snackOpen) return
+    const timer = setTimeout(() => setSnackOpen(false), 3000)
+    return () => clearTimeout(timer)
+  }, [snackOpen])
 
-  const SnackIcon = snackSeverity ? snackIcons[snackSeverity]?.icon : Info;
-  const snackIconClass = snackSeverity ? snackIcons[snackSeverity]?.className : '';
+  const SnackIcon = snackSeverity ? snackIcons[snackSeverity]?.icon : Info
+  const snackIconClass = snackSeverity ? snackIcons[snackSeverity]?.className : ''
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -53,10 +53,8 @@ const Home = () => {
 
       {currentRoute?.enableSidebar ? (
         <div className="flex min-h-screen">
-          {/* 侧边栏 */}
           <HomeSidebar />
 
-          {/* 主内容区，左边留出 sidebar 宽度 */}
           <div className="flex flex-col flex-1 ml-60 min-h-screen">
             {currentRoute?.enableHomeHeader && <HomeHeader />}
 
@@ -73,11 +71,10 @@ const Home = () => {
         </div>
       )}
 
-      {/* Snackbar 通知 */}
       <div
         className={cn(
           'fixed top-6 right-6 z-50 flex items-center gap-3 px-4 py-3 rounded-xl shadow-lg bg-white border transition-all duration-300 z-999',
-          snackOpen ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-2 pointer-events-none',
+          snackOpen ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-2 pointer-events-none'
         )}
       >
         {SnackIcon && <SnackIcon className={cn('h-5 w-5 shrink-0', snackIconClass)} />}
@@ -90,7 +87,7 @@ const Home = () => {
         </button>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default Home;
+export default Home

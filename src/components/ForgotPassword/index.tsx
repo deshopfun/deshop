@@ -1,75 +1,3 @@
-// import { SiteLogo } from 'components/Logo/SiteLogo';
-// import { useUserPresistStore } from 'lib';
-// import { useEffect, useState } from 'react';
-// import { IsValidEmail } from 'utils/verify';
-
-// const ForgotPassword = () => {
-//   const [email, setEmail] = useState<string>('');
-
-//   const { getIsLogin } = useUserPresistStore((state) => state);
-
-//   const onResetPassword = async () => {};
-
-//   useEffect(() => {
-//     if (getIsLogin()) {
-//       window.location.href = '/';
-//     }
-//     // eslint-disable-next-line react-hooks/exhaustive-deps
-//   }, []);
-
-//   return (
-//     <Box>
-//       <Container>
-//         <Stack alignItems={'center'} mt={8}>
-//           <SiteLogo />
-//           <Typography variant="h5" fontWeight={'bold'} mt={4}>
-//             Welcome to Deshop
-//           </Typography>
-
-//           <Card sx={{ minWidth: 450, mt: 4, padding: 2 }}>
-//             <CardContent>
-//               <Typography variant="h5">Forgot Password</Typography>
-//               <Box mt={3}>
-//                 <Typography>Email</Typography>
-//                 <Box mt={1}>
-//                   <TextField
-//                     fullWidth
-//                     hiddenLabel
-//                     size="small"
-//                     value={email}
-//                     onChange={(e) => {
-//                       setEmail(e.target.value);
-//                     }}
-//                   />
-//                 </Box>
-//               </Box>
-
-//               <Box mt={3}>
-//                 <Button fullWidth variant={'contained'} size={'large'} onClick={onResetPassword}>
-//                   Send reset email
-//                 </Button>
-//               </Box>
-//               <Box mt={2}>
-//                 <Button
-//                   fullWidth
-//                   size={'large'}
-//                   onClick={() => {
-//                     window.location.href = '/login';
-//                   }}
-//                 >
-//                   Return to Login
-//                 </Button>
-//               </Box>
-//             </CardContent>
-//           </Card>
-//         </Stack>
-//       </Container>
-//     </Box>
-//   );
-// };
-
-// export default ForgotPassword;
-
 import { SiteLogo } from '@/components/Logo/SiteLogo'
 import { useUserPresistStore } from '@/lib'
 import { useEffect, useState } from 'react'
@@ -108,7 +36,6 @@ const ForgotPassword = () => {
     <div className="min-h-screen bg-gradient-to-br from-sky-50 via-white to-blue-50 flex items-center justify-center px-4">
       <div className="w-full max-w-md flex flex-col items-center gap-8">
 
-        {/* Logo + 欢迎语 */}
         <div className="flex flex-col items-center gap-3 text-center">
           <SiteLogo />
           <div>
@@ -130,7 +57,6 @@ const ForgotPassword = () => {
                   </p>
                 </div>
 
-                {/* Email 输入 */}
                 <div className="flex flex-col gap-1.5">
                   <Label htmlFor="email">Email address</Label>
                   <div className="relative">
@@ -148,7 +74,6 @@ const ForgotPassword = () => {
                   </div>
                 </div>
 
-                {/* 发送按钮 */}
                 <Button
                   className="h-11 bg-sky-500 hover:bg-sky-600 text-white font-semibold gap-2"
                   onClick={onResetPassword}
@@ -160,14 +85,12 @@ const ForgotPassword = () => {
                   }
                 </Button>
 
-                {/* 分隔线 */}
                 <div className="flex items-center gap-3">
                   <div className="flex-1 h-px bg-gray-100" />
                   <span className="text-xs text-muted-foreground">remember your password?</span>
                   <div className="flex-1 h-px bg-gray-100" />
                 </div>
 
-                {/* 返回登录 */}
                 <Button
                   variant="outline"
                   className="h-11 gap-2"
@@ -177,7 +100,6 @@ const ForgotPassword = () => {
                 </Button>
               </>
             ) : (
-              // 发送成功状态
               <>
                 <div className="flex flex-col items-center gap-4 py-4 text-center">
                   <div className="h-16 w-16 rounded-full bg-green-50 flex items-center justify-center">
@@ -214,7 +136,6 @@ const ForgotPassword = () => {
           </CardContent>
         </Card>
 
-        {/* 底部条款 */}
         <p className="text-xs text-muted-foreground text-center">
           By continuing, you agree to our{' '}
           <a href="/docs/terms-and-conditions" className="text-sky-500 hover:underline">Terms of Service</a>

@@ -32,8 +32,8 @@ import {
   Loader2,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import Decimal from 'decimal.js'
 
-// 表单字段
 const FormField = ({
   label,
   required,
@@ -52,7 +52,6 @@ const FormField = ({
   </div>
 )
 
-// 价格行
 const PriceRow = ({
   label,
   value,
@@ -87,7 +86,6 @@ const CheckoutDetails = () => {
   const [payLoading, setPayLoading] = useState(false)
   const [saveLoading, setSaveLoading] = useState(false)
 
-  // 地址表单
   const [firstName, setFirstName] = useState('')
   const [lastName, setLastName] = useState('')
   const [company, setCompany] = useState('')
@@ -101,7 +99,6 @@ const CheckoutDetails = () => {
   const [zip, setZip] = useState('')
   const [isCheckTerms, setIsCheckTerms] = useState(false)
 
-  // 价格
   const [subTotal, setSubTotal] = useState('0')
   const [tax, setTax] = useState('0')
   const [tip, setTip] = useState('0')
@@ -155,21 +152,29 @@ const CheckoutDetails = () => {
     getSellerAddress(id as string)
     getAddress()
 
-    let price = 0,
-      taxCost = 0,
-      tipCost = 0,
-      disc = 0
+    let price = new Decimal(0)
+    let taxCost = new Decimal(0)
+    let tipCost = new Decimal(0)
+    let disc = new Decimal(0)
+
     currentCart.variant.forEach((item) => {
-      price += Number((parseFloat(item.price || '0') * item.quantity).toFixed(2))
-      if (item.taxable) taxCost += Number((parseFloat(item.tax || '0') * item.quantity).toFixed(2))
-      tipCost += Number((parseFloat(item.tip || '0') * item.quantity).toFixed(2))
-      disc += Number((parseFloat(item.discounts || '0') * item.quantity).toFixed(2))
+      const quantity = new Decimal(item.quantity || 0)
+
+      price = price.plus(new Decimal(item.price || '0').times(quantity))
+
+      if (item.taxable) {
+        taxCost = taxCost.plus(new Decimal(item.tax || '0').times(quantity))
+      }
+
+      tipCost = tipCost.plus(new Decimal(item.tip || '0').times(quantity))
+      disc = disc.plus(new Decimal(item.discounts || '0').times(quantity))
     })
-    setSubTotal(price.toFixed(2))
-    setTax(taxCost.toFixed(2))
-    setTip(tipCost.toFixed(2))
-    setDiscount(disc.toFixed(2))
-    setTotal((price + taxCost + tipCost - disc).toFixed(2))
+
+    setSubTotal(price.toString())
+    setTax(taxCost.toString())
+    setTip(tipCost.toString())
+    setDiscount(disc.toString())
+    setTotal(price.plus(taxCost).plus(tipCost).minus(disc).toString())
   }, [id])
 
   const clearAddressForm = () => {
@@ -248,6 +253,7 @@ const CheckoutDetails = () => {
 
     const items = cartList.variant.map((item) => ({
       product_id: item.productId,
+      slug: item.slug,
       option: item.option,
       quantity: item.quantity,
     }))
@@ -309,7 +315,6 @@ const CheckoutDetails = () => {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
-        {/* 左侧：配送信息 */}
         {cartList.variant.every((item) => item.isVirtual) ? (
           <div className="lg:col-span-2 flex flex-col gap-5">
             <Card className="border-0 shadow-sm">
@@ -323,7 +328,6 @@ const CheckoutDetails = () => {
           </div>
         ) : (
           <div className="lg:col-span-3 flex flex-col gap-5">
-            {/* 配送方式切换 */}
             <Card className="border-0 shadow-sm">
               <CardContent className="p-6 flex flex-col gap-4">
                 <h2 className="font-semibold">Shipping Method</h2>
@@ -350,13 +354,11 @@ const CheckoutDetails = () => {
               </CardContent>
             </Card>
 
-            {/* 地址选择 */}
             {ship ? (
               <Card className="border-0 shadow-sm">
                 <CardContent className="p-6 flex flex-col gap-4">
                   <h2 className="font-semibold">Delivery Address</h2>
 
-                  {/* 已有地址 */}
                   {addresses?.length > 0 && (
                     <div className="flex flex-col gap-2">
                       {addresses.map((addr) => (
@@ -401,7 +403,6 @@ const CheckoutDetails = () => {
                     </div>
                   )}
 
-                  {/* 添加新地址 */}
                   <button
                     onClick={() => {
                       setShowNewAddressForm(true)
@@ -418,7 +419,6 @@ const CheckoutDetails = () => {
                     Add new delivery address
                   </button>
 
-                  {/* 新地址表单 */}
                   {showNewAddressForm && (
                     <div className="flex flex-col gap-4 pt-4 border-t border-dashed">
                       <div className="grid grid-cols-2 gap-3">
@@ -562,7 +562,6 @@ const CheckoutDetails = () => {
                 </CardContent>
               </Card>
             ) : (
-              // 取货地址
               <Card className="border-0 shadow-sm">
                 <CardContent className="p-6 flex flex-col gap-3">
                   <h2 className="font-semibold">Pickup Location</h2>
@@ -607,14 +606,12 @@ const CheckoutDetails = () => {
           </div>
         )}
 
-        {/* 右侧：订单汇总 */}
         <div className="lg:col-span-2">
           <div className="sticky top-24 flex flex-col gap-4">
             <Card className="border-0 shadow-sm">
               <CardContent className="p-6 flex flex-col gap-5">
                 <h2 className="font-semibold">Order Summary</h2>
 
-                {/* 商品列表 */}
                 <div className="flex flex-col gap-4">
                   {cartList.variant.map((item, i) => (
                     <div key={i} className="flex gap-3">
@@ -638,13 +635,12 @@ const CheckoutDetails = () => {
                         </p>
                       </div>
                       <p className="text-sm font-semibold shrink-0">
-                        {fmt((parseFloat(item.price) * item.quantity).toFixed(2))}
+                        {new Decimal(item.price).times(item.quantity).toString()}
                       </p>
                     </div>
                   ))}
                 </div>
 
-                {/* 价格明细 */}
                 <div className="flex flex-col gap-2 border-t pt-4">
                   <PriceRow label="Subtotal" value={fmt(subTotal)} />
                   <PriceRow label="Tax" value={fmt(tax)} />
@@ -657,7 +653,6 @@ const CheckoutDetails = () => {
                   </div>
                 </div>
 
-                {/* 支付按钮 */}
                 <Button
                   className="h-12 bg-sky-500 hover:bg-sky-600 text-white font-semibold gap-2"
                   onClick={onClickPayNow}
@@ -672,7 +667,6 @@ const CheckoutDetails = () => {
                   )}
                 </Button>
 
-                {/* 安全标识 */}
                 <div className="flex flex-col items-center gap-1 text-center">
                   <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
                     <Lock className="h-3.5 w-3.5" />

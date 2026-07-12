@@ -3,7 +3,7 @@ import { Clock } from 'lucide-react'
 
 const items = [
   {
-    image: '/images/test.png',
+    image: '/images/default_image.png',
     title: 'Lizard',
     description: 'Lizards are a widespread group of squamate reptiles, with over 6,000 species, ranging across all continents except Antarctica',
     href: '#',
@@ -14,13 +14,11 @@ const RecentViewCard = () => {
   return (
     <div className="flex flex-col gap-4">
 
-      {/* 标题 */}
       <div className="flex items-center gap-2">
         <Clock className="h-4 w-4 text-muted-foreground" />
         <h3 className="text-sm font-semibold text-muted-foreground">Recently Viewed</h3>
       </div>
 
-      {/* 卡片网格 */}
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
         {items.map((item, i) => (
           <Card

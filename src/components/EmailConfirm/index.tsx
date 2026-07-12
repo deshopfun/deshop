@@ -1,94 +1,3 @@
-// import { useSnackPresistStore } from 'lib';
-// import { useRouter } from 'next/router';
-// import { useEffect, useState } from 'react';
-// import axios from 'utils/http/axios';
-// import { Http } from 'utils/http/http';
-
-// const EmailConfirm = () => {
-//   const router = useRouter();
-
-//   const [code, setCode] = useState<string>('');
-//   const [showLogin, setShowLogin] = useState<boolean>(false);
-
-//   const { setSnackOpen, setSnackMessage, setSnackSeverity } = useSnackPresistStore((state) => state);
-
-//   const onClickVerify = async () => {
-//     try {
-//       if (!code || code === '') {
-//         setSnackSeverity('error');
-//         setSnackMessage('Incorrect code input');
-//         setSnackOpen(true);
-//         return;
-//       }
-
-//       const response: any = await axios.get(Http.verify_invitation, {
-//         params: {
-//           code: code,
-//         },
-//       });
-
-//       if (response.result) {
-//         setShowLogin(true);
-//         setSnackSeverity('success');
-//         setSnackMessage('Registration successful, please proceed to log in');
-//         setSnackOpen(true);
-//       } else {
-//         setSnackSeverity('error');
-//         setSnackMessage('Verification failed, please try again');
-//         setSnackOpen(true);
-//       }
-//     } catch (e) {
-//       setSnackSeverity('error');
-//       setSnackMessage('The network error occurred. Please try again later');
-//       setSnackOpen(true);
-//       console.error(e);
-//     }
-//   };
-
-//   useEffect(() => {
-//     const enterCode = router.query.code;
-//     if (enterCode) {
-//       setCode(String(enterCode));
-//     }
-//     // eslint-disable-next-line react-hooks/exhaustive-deps
-//   }, [router.query]);
-
-//   return (
-//     <Box display={'flex'} justifyContent={'center'} mt={2}>
-//       <Box width={420}>
-//         <Card>
-//           <CardContent>
-//             <Typography variant="h6">Verify email</Typography>
-//             <Typography mt={2}>Click the button below to complete your registration.</Typography>
-//             <Box mt={3}>
-//               <Button size={'large'} variant={'contained'} color={'success'} onClick={onClickVerify} fullWidth>
-//                 Verify
-//               </Button>
-//             </Box>
-
-//             {showLogin && (
-//               <Box mt={2}>
-//                 <Button
-//                   variant={'contained'}
-//                   size={'large'}
-//                   fullWidth
-//                   onClick={() => {
-//                     window.location.href = '/login';
-//                   }}
-//                 >
-//                   Go to log in
-//                 </Button>
-//               </Box>
-//             )}
-//           </CardContent>
-//         </Card>
-//       </Box>
-//     </Box>
-//   );
-// };
-
-// export default EmailConfirm;
-
 import { useSnackPresistStore } from '@/lib';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
@@ -142,11 +51,9 @@ const EmailConfirm = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-sky-50 via-white to-blue-50 flex items-center justify-center px-4">
       <div className="w-full max-w-md flex flex-col items-center gap-8">
-        {/* Logo */}
         <SiteLogo />
 
         <Card className="w-full shadow-lg border-0 rounded-2xl overflow-hidden">
-          {/* 顶部状态区 */}
           <div
             className={cn(
               'px-8 py-8 flex flex-col items-center gap-3 text-center text-white transition-all duration-500',
@@ -175,13 +82,11 @@ const EmailConfirm = () => {
           <CardContent className="p-8 flex flex-col gap-4">
             {!showLogin ? (
               <>
-                {/* 说明 */}
                 <div className="bg-sky-50 rounded-xl px-4 py-3 text-sm text-sky-700">
                   We received your registration request. Click <span className="font-semibold">Verify</span> to activate
                   your account.
                 </div>
 
-                {/* 验证按钮 */}
                 <Button
                   className="h-11 bg-sky-500 hover:bg-sky-600 text-white font-semibold gap-2"
                   onClick={onClickVerify}
@@ -198,12 +103,10 @@ const EmailConfirm = () => {
               </>
             ) : (
               <>
-                {/* 成功说明 */}
                 <div className="bg-green-50 rounded-xl px-4 py-3 text-sm text-green-700">
                   Your account is ready. You can now log in and start using Deshop.
                 </div>
 
-                {/* 跳转登录 */}
                 <Button
                   className="h-11 bg-sky-500 hover:bg-sky-600 text-white font-semibold gap-2"
                   onClick={() => {
@@ -216,7 +119,6 @@ const EmailConfirm = () => {
               </>
             )}
 
-            {/* 返回首页 */}
             <Button
               variant="ghost"
               className="h-10 text-muted-foreground hover:text-gray-800"
@@ -229,7 +131,6 @@ const EmailConfirm = () => {
           </CardContent>
         </Card>
 
-        {/* 底部条款 */}
         <p className="text-xs text-muted-foreground text-center">
           By verifying, you agree to our{' '}
           <a href="/docs/terms-and-conditions" className="text-sky-500 hover:underline">

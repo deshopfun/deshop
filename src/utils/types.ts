@@ -34,6 +34,7 @@ export type ProductType = {
   username: string
   user_avatar_url: string
   title: string
+  slug: string
   body_html: string
   render_body_html: string
   product_type: string
@@ -125,6 +126,7 @@ export type OrderType = {
 
 export type OrderItemType = {
   product_id: number
+  slug: string
   option: string
   quantity: number
   price: string
@@ -213,6 +215,7 @@ export type AddressType = {
 
 export type CollectType = {
   bind_id: number
+  slug: string
   collect_type: number
   title: string
   description: string

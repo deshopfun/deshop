@@ -1,91 +1,26 @@
-// import { RatingType } from 'utils/types';
-
-// type DialogType = {
-//   ratings: RatingType[];
-//   openDialog: boolean;
-//   handleCloseDialog: () => Promise<void>;
-// };
-
-// export default function OrderRatingDialog(props: DialogType) {
-//   return (
-//     <Dialog
-//       open={props.openDialog}
-//       onClose={() => {
-//         props.handleCloseDialog();
-//       }}
-//       fullWidth
-//     >
-//       <DialogTitle>Ratings</DialogTitle>
-//       <DialogContent>
-//         {props.ratings &&
-//           props.ratings.length > 0 &&
-//           props.ratings.map((item, index) => (
-//             <Box key={index}>
-//               <Typography>{item.body}</Typography>
-//               {item.image && (
-//                 <Box mt={1}>
-//                   <img src={item.image} alt={'image'} loading="lazy" width={50} height={50} />
-//                 </Box>
-//               )}
-//               <Stack direction={'row'} alignItems={'center'} mt={1} gap={1}>
-//                 <Typography>Rating:</Typography>
-//                 <Rating size="small" value={item.number || 0} readOnly />
-//                 <Typography>|</Typography>
-//                 <Typography>{item.product_option}</Typography>
-//               </Stack>
-//               <Typography fontWeight={'bold'} mt={1} textAlign={'right'}>
-//                 {new Date(item.create_time).toLocaleString()}
-//               </Typography>
-//               <Box py={2}>
-//                 <Divider />
-//               </Box>
-//             </Box>
-//           ))}
-//       </DialogContent>
-//       <DialogActions>
-//         <Button
-//           variant={'contained'}
-//           onClick={() => {
-//             props.handleCloseDialog();
-//           }}
-//         >
-//           Close
-//         </Button>
-//       </DialogActions>
-//     </Dialog>
-//   );
-// }
-
-import { RatingType } from '@/utils/types';
+import { RatingType } from '@/utils/types'
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogFooter,
-} from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-
-import { Star, Calendar } from 'lucide-react';
+} from '@/components/ui/dialog'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
+import { Star, Calendar } from 'lucide-react'
 
 type DialogType = {
-  ratings: RatingType[];
-  openDialog: boolean;
-  handleCloseDialog: () => Promise<void>;
-};
+  ratings: RatingType[]
+  openDialog: boolean
+  handleCloseDialog: () => Promise<void>
+}
 
-export default function OrderRatingDialog({
-  ratings,
-  openDialog,
-  handleCloseDialog,
-}: DialogType) {
+export default function OrderRatingDialog({ ratings, openDialog, handleCloseDialog }: DialogType) {
   const handleClose = async () => {
-    await handleCloseDialog();
-  };
+    await handleCloseDialog()
+  }
 
   return (
     <Dialog open={openDialog} onOpenChange={handleClose}>
@@ -97,7 +32,7 @@ export default function OrderRatingDialog({
           </DialogTitle>
         </DialogHeader>
 
-        <div className="flex-1 overflow-auto py-4 space-y-6 pr-2">
+        <div className="flex-1 overflow-auto space-y-6 p-2">
           {ratings && ratings.length > 0 ? (
             ratings.map((item, index) => (
               <Card key={index}>
@@ -135,9 +70,7 @@ export default function OrderRatingDialog({
                     </div>
                   )}
 
-                  <p className="text-sm leading-relaxed text-foreground">
-                    {item.body}
-                  </p>
+                  <p className="text-sm leading-relaxed text-foreground">{item.body}</p>
 
                   {item.image && (
                     <img
@@ -166,5 +99,5 @@ export default function OrderRatingDialog({
         </DialogFooter>
       </DialogContent>
     </Dialog>
-  );
+  )
 }

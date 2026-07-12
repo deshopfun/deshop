@@ -3,6 +3,7 @@ import { persist } from 'zustand/middleware'
 
 type VariantType = {
   productId: number
+  slug: string
   title: string
   image: string
   option: string

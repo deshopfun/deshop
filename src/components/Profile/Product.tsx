@@ -1,80 +1,11 @@
-// import { ProductType } from 'utils/types';
-
-// type Props = {
-//   uuid?: string;
-//   product?: ProductType[];
-// };
-
-// const ProfileProduct = (props: Props) => {
-//   return (
-//     <Box>
-//       <Typography variant="h6">All products</Typography>
-
-//       <Box mt={2}>
-//         {props.product && props.product.length > 0 ? (
-//           <Grid container spacing={2}>
-//             {props.product.map((item, index) => (
-//               <Grid size={{ xs: 12, md: 6 }} key={index}>
-//                 <div
-//                   onClick={() => {
-//                     window.location.href = `/products/${item.product_id}`;
-//                   }}
-//                 >
-//                   <Card>
-//                     <CardActionArea>
-//                       <CardMedia
-//                         component="img"
-//                         width={item.images[0].width}
-//                         height={item.images[0].height}
-//                         image={item.images[0].src}
-//                         alt="image"
-//                       />
-//                       <CardContent>
-//                         <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} gap={1}>
-//                           <Stack direction={'row'} alignItems={'center'} gap={1}>
-//                             <Typography variant="h6">{item.title}</Typography>
-//                             <Chip label={item.product_type} color="primary" size="small" />
-//                           </Stack>
-//                           <Typography>{item.product_type}</Typography>
-//                         </Stack>
-//                         <Stack direction={'row'} alignItems={'center'} gap={1} mt={1}>
-//                           {item.tags &&
-//                             item.tags.split(',').map((item, index) => <Chip size="small" label={item} key={index} />)}
-//                         </Stack>
-//                         <Stack direction={'row'} alignItems={'center'} mt={1} gap={1} justifyContent={'right'}>
-//                           {item.product_status === 1 && <Chip label={'Active'} color={'success'} size="small" />}
-//                         </Stack>
-//                       </CardContent>
-//                     </CardActionArea>
-//                   </Card>
-//                 </div>
-//               </Grid>
-//             ))}
-//           </Grid>
-//         ) : (
-//           <Box mt={2}>
-//             <Card>
-//               <CardContent>
-//                 <Typography>Not found</Typography>
-//               </CardContent>
-//             </Card>
-//           </Box>
-//         )}
-//       </Box>
-//     </Box>
-//   );
-// };
-
-// export default ProfileProduct;
-
-import { ProductType } from '@/utils/types';
-import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { ProductType } from '@/utils/types'
+import { Card, CardContent } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
 
 type Props = {
-  uuid?: string;
-  product?: ProductType[];
-};
+  uuid?: string
+  product?: ProductType[]
+}
 
 const ProfileProduct = ({ product }: Props) => {
   return (
@@ -88,10 +19,9 @@ const ProfileProduct = ({ product }: Props) => {
               key={index}
               className="overflow-hidden cursor-pointer hover:shadow-xl transition-all duration-200 hover:-translate-y-0.5"
               onClick={() => {
-                window.location.href = `/products/${item.product_id}`;
+                window.location.href = `/products/${item.slug || item.product_id}`
               }}
             >
-              {/* 图片部分 */}
               {item.images?.[0]?.src && (
                 <div className="aspect-video relative overflow-hidden bg-muted">
                   <img
@@ -104,7 +34,6 @@ const ProfileProduct = ({ product }: Props) => {
               )}
 
               <CardContent className="p-5 space-y-4">
-                {/* 标题和类型 */}
                 <div className="flex items-start justify-between gap-3">
                   <h3 className="font-semibold text-lg leading-tight line-clamp-2">{item.title}</h3>
                   <Badge variant="default" className="shrink-0 mt-0.5">
@@ -112,7 +41,6 @@ const ProfileProduct = ({ product }: Props) => {
                   </Badge>
                 </div>
 
-                {/* Tags */}
                 {item.tags && item.tags.trim() && (
                   <div className="flex flex-wrap gap-1.5">
                     {item.tags.split(',').map((tag, idx) => (
@@ -123,7 +51,6 @@ const ProfileProduct = ({ product }: Props) => {
                   </div>
                 )}
 
-                {/* 状态 - 使用自定义样式 */}
                 {item.product_status === 1 && (
                   <div className="flex justify-end pt-1">
                     <Badge
@@ -146,7 +73,7 @@ const ProfileProduct = ({ product }: Props) => {
         </Card>
       )}
     </div>
-  );
-};
+  )
+}
 
-export default ProfileProduct;
+export default ProfileProduct

@@ -18,7 +18,7 @@ export class Http {
   static crypto_price = this.httpPath + '/client/crypto-price'
   static user_profile_by_username = this.httpPath + '/client/user-profile-by-username'
   static product_list = this.httpPath + '/client/product-list'
-  static product_by_id = this.httpPath + '/client/product-by-id'
+  static product_by_id = this.httpPath + '/client/product-by-unique'
   static product_variant_by_option = this.httpPath + '/client/product-variant-by-option'
   static product_rating_by_id = this.httpPath + '/client/product-rating-by-id'
   static order_by_id = this.httpPath + '/client/order-by-id'
@@ -40,7 +40,7 @@ export class Http {
 
   // product
   static product = this.httpPath + '/client/product/product'
-  static product_by_login_id = this.httpPath + '/client/product/product-by-id'
+  static product_by_login_id = this.httpPath + '/client/product/product-by-unique'
   static product_base = this.httpPath + '/client/product/product-base'
   static product_option = this.httpPath + '/client/product/product-option'
   static product_image = this.httpPath + '/client/product/product-image'

@@ -1,20 +1,20 @@
-import { useSnackPresistStore } from '@/lib';
-import { CURRENCYS } from '@/packages/constants/currency';
-import { useEffect, useState } from 'react';
-import axios from '@/utils/http/axios';
-import { Http } from '@/utils/http/http';
-import { ProductType } from '@/utils/types';
-import { Card, CardContent } from '@/components/ui/card';
-import { PackageOpen } from 'lucide-react';
+import { useSnackPresistStore } from '@/lib'
+import { CURRENCYS } from '@/packages/constants/currency'
+import { useEffect, useState } from 'react'
+import axios from '@/utils/http/axios'
+import { Http } from '@/utils/http/http'
+import { ProductType } from '@/utils/types'
+import { Card, CardContent } from '@/components/ui/card'
+import { PackageOpen } from 'lucide-react'
 
 type Props = {
-  productType?: string;
-};
+  productType?: string
+}
 
 const NowTrendingCard = (props: Props) => {
-  const [products, setProducts] = useState<ProductType[]>();
+  const [products, setProducts] = useState<ProductType[]>()
 
-  const { setSnackSeverity, setSnackOpen, setSnackMessage } = useSnackPresistStore((state) => state);
+  const { setSnackSeverity, setSnackOpen, setSnackMessage } = useSnackPresistStore((state) => state)
 
   const init = async () => {
     try {
@@ -23,25 +23,24 @@ const NowTrendingCard = (props: Props) => {
           product_type: props.productType ? props.productType : undefined,
           limit: 10,
         },
-      });
+      })
 
       if (response.result) {
-        setProducts(response.data);
+        setProducts(response.data)
       } else {
-        setProducts([]);
+        setProducts([])
       }
     } catch (e) {
-      setSnackSeverity('error');
-      setSnackMessage('The network error occurred. Please try again later');
-      setSnackOpen(true);
-      console.error(e);
+      setSnackSeverity('error')
+      setSnackMessage('The network error occurred. Please try again later')
+      setSnackOpen(true)
+      console.error(e)
     }
-  };
+  }
 
   useEffect(() => {
-    init();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    init()
+  }, [])
 
   return (
     <div>
@@ -52,11 +51,15 @@ const NowTrendingCard = (props: Props) => {
               key={index}
               className="cursor-pointer hover:shadow-md hover:-translate-y-1 transition-all duration-200 overflow-hidden"
               onClick={() => {
-                window.location.href = `/products/${item.product_id}`;
+                window.location.href = `/products/${item.slug || item.product_id}`
               }}
             >
               <div className="relative">
-                <img src={item.images?.[0]?.src} alt={item.title} className="w-full h-48 object-cover" />
+                <img
+                  src={item.images?.[0]?.src}
+                  alt={item.title}
+                  className="w-full h-48 object-cover"
+                />
               </div>
 
               <CardContent className="p-3 flex flex-col gap-1">
@@ -70,7 +73,9 @@ const NowTrendingCard = (props: Props) => {
                         {CURRENCYS.find((c) => c.name === item.currency)?.code}
                         {item.variants[0].price}
                       </p>
-                      <p className="text-xs text-muted-foreground">{item.variants[0].inventory_quantity} in stock</p>
+                      <p className="text-xs text-muted-foreground">
+                        {item.variants[0].inventory_quantity} in stock
+                      </p>
                     </div>
                   </>
                 )}
@@ -85,7 +90,7 @@ const NowTrendingCard = (props: Props) => {
         </div>
       )}
     </div>
-  );
-};
+  )
+}
 
-export default NowTrendingCard;
+export default NowTrendingCard

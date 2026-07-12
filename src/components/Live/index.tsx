@@ -55,7 +55,6 @@ const Live = () => {
         </CardContent>
       </Card>
 
-      {/* Future hint */}
       <p className="text-center text-xs text-muted-foreground mt-6">
         Live streaming feature is coming soon. Creators will be able to broadcast products, tutorials, and events in
         real-time.

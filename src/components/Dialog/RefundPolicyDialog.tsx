@@ -1,47 +1,11 @@
-// type DialogType = {
-//   openDialog: boolean;
-//   setOpenDialog: (value: boolean) => void;
-// };
-
-// export default function RefundPolicyDialog(props: DialogType) {
-//   const handleClose = () => {
-//     props.setOpenDialog(false);
-//   };
-
-//   return (
-//     <Dialog open={props.openDialog} onClose={handleClose} fullWidth>
-//       <DialogTitle>Refund Policy</DialogTitle>
-//       <IconButton
-//         sx={(theme) => ({
-//           position: 'absolute',
-//           right: 8,
-//           top: 8,
-//           color: theme.palette.grey[500],
-//         })}
-//         onClick={handleClose}
-//       >
-//         <Close />
-//       </IconButton>
-//       <DialogContent dividers>
-//         <Typography variant="h6" textAlign={'center'}>
-//           Product Returns
-//         </Typography>
-//         <Box mt={2}>
-//           <Typography>Terms and Guidelines:</Typography>
-//         </Box>
-//       </DialogContent>
-//     </Dialog>
-//   );
-// }
-
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { ShieldCheck, PackageX, Clock, AlertCircle, MessageCircle } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { Button } from '@/components/ui/button'
+import { ShieldCheck, PackageX, Clock, AlertCircle, MessageCircle } from 'lucide-react'
 
 type DialogType = {
-  openDialog: boolean;
-  setOpenDialog: (value: boolean) => void;
-};
+  openDialog: boolean
+  setOpenDialog: (value: boolean) => void
+}
 
 const policies = [
   {
@@ -72,13 +36,12 @@ const policies = [
     color: 'text-amber-500',
     bg: 'bg-amber-50',
   },
-];
+]
 
 export default function RefundPolicyDialog({ openDialog, setOpenDialog }: DialogType) {
   return (
     <Dialog open={openDialog} onOpenChange={setOpenDialog}>
       <DialogContent className="max-w-lg p-0 gap-0 overflow-hidden rounded-2xl">
-        {/* 顶部渐变区 */}
         <div className="bg-gradient-to-br from-blue-600 to-sky-400 px-6 py-6 flex flex-col items-center gap-2 text-white text-center">
           <div className="h-14 w-14 rounded-full bg-white/20 flex items-center justify-center">
             <ShieldCheck className="h-7 w-7 text-white" />
@@ -91,11 +54,12 @@ export default function RefundPolicyDialog({ openDialog, setOpenDialog }: Dialog
           </p>
         </div>
 
-        {/* 政策条款列表 */}
         <div className="px-6 py-5 flex flex-col gap-3">
           {policies.map((item, i) => (
             <div key={i} className="flex items-start gap-3 p-3 rounded-xl bg-gray-50">
-              <div className={`h-9 w-9 rounded-lg ${item.bg} flex items-center justify-center shrink-0`}>
+              <div
+                className={`h-9 w-9 rounded-lg ${item.bg} flex items-center justify-center shrink-0`}
+              >
                 <item.icon className={`h-5 w-5 ${item.color}`} />
               </div>
               <div>
@@ -106,7 +70,6 @@ export default function RefundPolicyDialog({ openDialog, setOpenDialog }: Dialog
           ))}
         </div>
 
-        {/* 联系卖家 */}
         <div className="px-6 pb-4">
           <div className="flex items-center gap-2 px-4 py-3 bg-sky-50 rounded-xl text-sky-700 text-xs">
             <MessageCircle className="h-4 w-4 shrink-0" />
@@ -114,7 +77,6 @@ export default function RefundPolicyDialog({ openDialog, setOpenDialog }: Dialog
           </div>
         </div>
 
-        {/* 关闭按钮 */}
         <div className="px-6 pb-6">
           <Button
             className="w-full h-11 bg-sky-500 hover:bg-sky-600 text-white font-semibold"
@@ -125,5 +87,5 @@ export default function RefundPolicyDialog({ openDialog, setOpenDialog }: Dialog
         </div>
       </DialogContent>
     </Dialog>
-  );
+  )
 }

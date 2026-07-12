@@ -1,168 +1,3 @@
-// import BindAddressDialog from 'components/Dialog/BindAddressDialog';
-// import { useSnackPresistStore } from 'lib';
-// import Image from 'next/image';
-// import { BLOCKCHAINNAMES, CHAINIDS, COINS } from 'packages/constants';
-// import { useEffect, useState } from 'react';
-// import { OmitMiddleString } from 'utils/strings';
-// import axios from 'utils/http/axios';
-// import { Http } from 'utils/http/http';
-// import { WalletType } from 'utils/types';
-
-// const ManageWallet = () => {
-//   const [username, setUsername] = useState<string>('');
-//   const [wallets, setWallets] = useState<WalletType[]>([]);
-//   const [selectChain, setSelectChain] = useState<CHAINIDS>(CHAINIDS.BITCOIN);
-//   const [selectAddress, setSelectAddress] = useState<string>();
-//   const [openEditAddressDialog, setOpenEditAddressDialog] = useState<boolean>(false);
-
-//   const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore((state) => state);
-
-//   const init = async () => {
-//     try {
-//       const response: any = await axios.get(Http.wallet);
-
-//       if (response.result) {
-//         setWallets(response.data);
-//       } else {
-//         setWallets([]);
-//       }
-//     } catch (e) {
-//       setSnackSeverity('error');
-//       setSnackMessage('The network error occurred. Please try again later.');
-//       setSnackOpen(true);
-//       console.error(e);
-//     }
-//   };
-
-//   useEffect(() => {
-//     init();
-//     // eslint-disable-next-line react-hooks/exhaustive-deps
-//   }, []);
-
-//   const onChangeCoin = async (chain: CHAINIDS, coin: COINS) => {
-//     try {
-//       let disableCoinArray = wallets
-//         .find((item) => item.chain_id === chain)
-//         ?.disable_coin.split(',')
-//         .filter((item) => item !== '');
-//       let newDisableCoin = '';
-//       if (disableCoinArray?.includes(coin)) {
-//         newDisableCoin = disableCoinArray.filter((item) => item !== coin).join(',');
-//       } else {
-//         disableCoinArray?.push(coin);
-//         newDisableCoin = String(disableCoinArray?.join(','));
-//       }
-
-//       const response: any = await axios.put(Http.wallet, {
-//         handle: 2,
-//         chain_id: chain,
-//         disable_coin: newDisableCoin,
-//       });
-
-//       if (response.result) {
-//         await init();
-
-//         setSnackSeverity('success');
-//         setSnackMessage('Update successfully');
-//         setSnackOpen(true);
-//       } else {
-//         setSnackSeverity('error');
-//         setSnackMessage(response.message);
-//         setSnackOpen(true);
-//       }
-//     } catch (e) {
-//       setSnackSeverity('error');
-//       setSnackMessage('The network error occurred. Please try again later.');
-//       setSnackOpen(true);
-//       console.error(e);
-//     }
-//   };
-
-//   const handleCloseDialog = async () => {
-//     await init();
-//     setOpenEditAddressDialog(false);
-//   };
-
-//   return (
-//     <Box>
-//       <Typography variant="h6">Setup wallet</Typography>
-
-//       <Box mt={2}>
-//         {BLOCKCHAINNAMES &&
-//           BLOCKCHAINNAMES.map((item, index) => (
-//             <Box key={index} pb={2}>
-//               <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
-//                 <Stack direction={'row'} alignItems={'center'} gap={2}>
-//                   <Typography variant="h6">{item.name}</Typography>
-//                   {wallets && wallets.find((walletItem) => walletItem.chain_id === item.chainId)?.address && (
-//                     <Chip
-//                       label={OmitMiddleString(
-//                         String(wallets.find((walletItem) => walletItem.chain_id === item.chainId)?.address),
-//                       )}
-//                       color="primary"
-//                     />
-//                   )}
-//                 </Stack>
-//                 <Button
-//                   variant={'contained'}
-//                   color={'success'}
-//                   onClick={() => {
-//                     setSelectChain(item.chainId);
-//                     setSelectAddress(
-//                       wallets ? wallets.find((walletItem) => walletItem.chain_id === item.chainId)?.address : '',
-//                     );
-//                     setOpenEditAddressDialog(true);
-//                   }}
-//                 >
-//                   Bind Address
-//                 </Button>
-//               </Stack>
-//               {item.coins &&
-//                 item.coins.map((coinItem, coinIndex) => (
-//                   <Stack
-//                     direction={'row'}
-//                     alignItems={'center'}
-//                     justifyContent={'space-between'}
-//                     key={coinIndex}
-//                     py={2}
-//                   >
-//                     <Stack direction={'row'} alignItems={'center'} gap={1}>
-//                       <Image src={coinItem.icon} alt={'image'} width={50} height={50} />
-//                       <Typography>{coinItem.name}</Typography>
-//                     </Stack>
-//                     <Switch
-//                       checked={
-//                         wallets &&
-//                         wallets
-//                           .find((walletItem) => walletItem.chain_id === item.chainId)
-//                           ?.disable_coin.split(',')
-//                           .includes(coinItem.name)
-//                           ? false
-//                           : true
-//                       }
-//                       onChange={() => {
-//                         onChangeCoin(item.chainId, coinItem.name);
-//                       }}
-//                     />
-//                   </Stack>
-//                 ))}
-//               <Divider />
-//             </Box>
-//           ))}
-
-//         <BindAddressDialog
-//           chain={selectChain}
-//           address={selectAddress}
-//           openDialog={openEditAddressDialog}
-//           handleCloseDialog={handleCloseDialog}
-//         />
-//       </Box>
-//     </Box>
-//   );
-// };
-
-// export default ManageWallet;
-
 import BindAddressDialog from '@/components/Dialog/BindAddressDialog'
 import { useSnackPresistStore } from '@/lib'
 import Image from 'next/image'
@@ -231,7 +66,6 @@ const ManageWallet = () => {
   return (
     <div className="flex flex-col gap-4">
 
-      {/* 标题 */}
       <div className="flex items-center gap-2">
         <div className="h-8 w-8 rounded-lg bg-sky-50 flex items-center justify-center">
           <Wallet className="h-4 w-4 text-sky-500" />
@@ -242,7 +76,6 @@ const ManageWallet = () => {
         </div>
       </div>
 
-      {/* 区块链列表 */}
       {BLOCKCHAINNAMES.map((item, index) => {
         const wallet = getWallet(item.chainId)
         const hasAddress = !!wallet?.address
@@ -251,7 +84,6 @@ const ManageWallet = () => {
           <Card key={index} className="border-0 shadow-sm overflow-hidden">
             <CardContent className="p-0">
 
-              {/* 链头部 */}
               <div className={cn(
                 "px-5 py-4 flex items-center justify-between border-b",
                 hasAddress ? "bg-green-50" : "bg-gray-50"
@@ -297,7 +129,6 @@ const ManageWallet = () => {
                 </Button>
               </div>
 
-              {/* 代币列表 */}
               <div className="divide-y">
                 {item.coins.map((coinItem, ci) => {
                   const enabled = isCoinEnabled(item.chainId, coinItem.name)

@@ -1,45 +1,3 @@
-// import { useSnackPresistStore } from 'lib';
-// import { marked } from 'marked';
-// import DOMPurify from 'dompurify';
-// import { useEffect, useState } from 'react';
-// import { Http } from 'utils/http/http';
-
-// const DocsFees = () => {
-//   const [content, setContent] = useState<string>('');
-
-//   const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore((state) => state);
-
-//   const init = async () => {
-//     try {
-//       const response = await fetch(Http.fees_md);
-//       const fileContents = await response.text();
-//       const htmlContents = await marked(fileContents);
-//       const cleanContents = DOMPurify.sanitize(htmlContents);
-//       setContent(cleanContents);
-//     } catch (e) {
-//       setSnackSeverity('error');
-//       setSnackMessage('The network error occurred. Please try again later.');
-//       setSnackOpen(true);
-//       console.error(e);
-//     }
-//   };
-
-//   useEffect(() => {
-//     init();
-//   }, []);
-//   return (
-//     <Container>
-//       <Card>
-//         <CardContent>
-//           <Box dangerouslySetInnerHTML={{ __html: content }}></Box>
-//         </CardContent>
-//       </Card>
-//     </Container>
-//   );
-// };
-
-// export default DocsFees;
-
 import { useSnackPresistStore } from '@/lib'
 import { marked } from 'marked'
 import DOMPurify from 'dompurify'
@@ -70,12 +28,12 @@ const DocsFees = () => {
     }
   }
 
-  useEffect(() => { init() }, [])
+  useEffect(() => {
+    init()
+  }, [])
 
   return (
     <div className="container mx-auto py-8 px-4 max-w-3xl">
-
-      {/* 页面标题 */}
       <div className="flex items-center gap-3 mb-6">
         <div className="h-10 w-10 rounded-xl bg-sky-50 flex items-center justify-center">
           <FileText className="h-5 w-5 text-sky-500" />
@@ -114,12 +72,13 @@ const DocsFees = () => {
                 <FileText className="h-7 w-7 text-gray-300" />
               </div>
               <p className="font-medium text-sm">No content available</p>
-              <p className="text-xs text-muted-foreground">The fees document could not be loaded.</p>
+              <p className="text-xs text-muted-foreground">
+                The fees document could not be loaded.
+              </p>
             </div>
           )}
         </CardContent>
       </Card>
-
     </div>
   )
 }
