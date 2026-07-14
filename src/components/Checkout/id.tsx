@@ -643,8 +643,8 @@ const CheckoutDetails = () => {
 
                 <div className="flex flex-col gap-2 border-t pt-4">
                   <PriceRow label="Subtotal" value={fmt(subTotal)} />
-                  <PriceRow label="Tax" value={fmt(tax)} />
-                  <PriceRow label="Tip" value={fmt(tip)} />
+                  {Number(tax) > 0 && <PriceRow label="Tax" value={fmt(tax)} />}
+                  {Number(tip) > 0 && <PriceRow label="Tip" value={fmt(tip)} />}
                   {Number(discount) > 0 && (
                     <PriceRow label="Discount" value={fmt(discount)} negative />
                   )}

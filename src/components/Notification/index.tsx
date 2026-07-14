@@ -1,5 +1,5 @@
 import { useSnackPresistStore, useUserPresistStore } from '@/lib'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import axios from '@/utils/http/axios'
 import { Http } from '@/utils/http/http'
 import { NOTIFICATIONS } from '@/packages/constants/notification'
@@ -11,6 +11,7 @@ import { cn } from '@/lib/utils'
 
 const Notification = () => {
   const [notifications, setNotifications] = useState<NotificationType[]>([])
+  const [activeFilter, setActiveFilter] = useState<number | 'all'>('all')
 
   const { setSnackOpen, setSnackMessage, setSnackSeverity } = useSnackPresistStore((state) => state)
   const { getIsLogin } = useUserPresistStore((state) => state)
@@ -31,7 +32,12 @@ const Notification = () => {
     try {
       const response: any = await axios.get(Http.user_notification)
       if (response.result) {
-        setNotifications(response.data)
+        setNotifications(
+          response.data.map((item: NotificationType) => ({
+            ...item,
+            url: window.location.origin + item.url,
+          }))
+        )
       } else {
         showError(response.message)
       }
@@ -63,6 +69,16 @@ const Notification = () => {
 
   const unreadCount = notifications?.filter((n) => n.is_read === 2).length
 
+  const filteredNotifications = useMemo(() => {
+    if (!notifications) return []
+    if (activeFilter === 'all') return notifications
+    return notifications.filter((row) => row.notification_type === activeFilter)
+  }, [notifications, activeFilter])
+
+  const filteredUnreadCount = useMemo(() => {
+    return filteredNotifications.filter((row) => row.is_read === 2).length
+  }, [filteredNotifications])
+
   return (
     <div className="container mx-auto py-8 px-4 flex flex-col gap-6">
       <div className="flex items-center justify-between">
@@ -87,15 +103,45 @@ const Notification = () => {
         )}
       </div>
 
-      {notifications?.length > 0 ? (
+      {notifications?.length > 0 && (
+        <div className="flex items-center gap-2 overflow-x-auto pb-1 -mx-1 px-1">
+          <button
+            onClick={() => setActiveFilter('all')}
+            className={cn(
+              'shrink-0 text-xs font-medium px-3 py-1.5 rounded-full border transition-colors',
+              activeFilter === 'all'
+                ? 'bg-sky-500 text-white border-sky-500'
+                : 'bg-white text-gray-500 border-gray-200 hover:border-sky-300 hover:text-sky-600'
+            )}
+          >
+            All
+          </button>
+          {NOTIFICATIONS.map((type) => (
+            <button
+              key={type.id}
+              onClick={() => setActiveFilter(type.id)}
+              className={cn(
+                'shrink-0 text-xs font-medium px-3 py-1.5 rounded-full border transition-colors',
+                activeFilter === type.id
+                  ? 'bg-sky-500 text-white border-sky-500'
+                  : 'bg-white text-gray-500 border-gray-200 hover:border-sky-300 hover:text-sky-600'
+              )}
+            >
+              {type.title}
+            </button>
+          ))}
+        </div>
+      )}
+
+      {filteredNotifications.length > 0 ? (
         <div className="flex flex-col gap-3">
-          {notifications.map((row, i) => {
+          {filteredNotifications.map((row, i) => {
             const isUnread = row.is_read === 2
             const notifType = NOTIFICATIONS.find((n) => n.id === row.notification_type)
 
             return (
               <div
-                key={i}
+                key={row.notification_id ?? i}
                 className={cn(
                   'flex items-start gap-4 p-4 rounded-2xl border transition-all duration-200',
                   isUnread ? 'bg-sky-50/60 border-sky-100' : 'bg-white border-gray-100 opacity-70'
@@ -173,7 +219,11 @@ const Notification = () => {
             <BellOff className="h-8 w-8 text-gray-300" />
           </div>
           <div>
-            <p className="font-semibold text-gray-700">No notifications yet</p>
+            <p className="font-semibold text-gray-700">
+              {activeFilter === 'all'
+                ? 'No notifications yet'
+                : 'No notifications in this category'}
+            </p>
             <p className="text-sm text-muted-foreground mt-1">
               You'll be notified here when something happens.
             </p>

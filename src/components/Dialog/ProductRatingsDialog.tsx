@@ -133,7 +133,7 @@ export default function ProductRatingsDialog({
             </div>
           </div>
 
-          <div className="px-6 py-4 border-b flex flex-col sm:flex-row gap-2 shrink-0">
+          <div className="px-6 py-4 border-b shrink-0">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
@@ -143,31 +143,33 @@ export default function ProductRatingsDialog({
                 className="pl-9 h-9"
               />
             </div>
-            <Select value={selectSortBy} onValueChange={setSelectSortBy}>
-              <SelectTrigger className="h-9 w-full sm:w-36">
-                <SelectValue placeholder="Sort by" />
-              </SelectTrigger>
-              <SelectContent>
-                {Object.entries(SORT_BY_TYPE).map(([k, v]) => (
-                  <SelectItem key={k} value={v}>
-                    {v}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <Select value={selectRating} onValueChange={setSelectRating}>
-              <SelectTrigger className="h-9 w-full sm:w-36">
-                <SelectValue placeholder="All stars" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="">All stars</SelectItem>
-                {Object.entries(RATING_TYPE).map(([k, v]) => (
-                  <SelectItem key={k} value={v}>
-                    {v} Stars
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <div className="flex flex-col sm:flex-row gap-2 pt-2">
+              <Select value={selectSortBy} onValueChange={setSelectSortBy}>
+                <SelectTrigger className="h-9 w-full sm:w-36">
+                  <SelectValue placeholder="Sort by" />
+                </SelectTrigger>
+                <SelectContent>
+                  {Object.entries(SORT_BY_TYPE).map(([k, v]) => (
+                    <SelectItem key={k} value={v}>
+                      {v}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Select value={selectRating} onValueChange={setSelectRating}>
+                <SelectTrigger className="h-9 w-full sm:w-36">
+                  <SelectValue placeholder="All stars" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="">All stars</SelectItem>
+                  {Object.entries(RATING_TYPE).map(([k, v]) => (
+                    <SelectItem key={k} value={v}>
+                      {v} Stars
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
 
           <div className="px-6 py-4">

@@ -185,6 +185,64 @@ const Cart = () => {
 
                         <div className="flex items-center justify-between mt-4">
                           <div className="flex items-center gap-3">
+                            {/* <div className="flex items-center border rounded-xl overflow-hidden">
+                              <button
+                                className="h-9 w-9 flex items-center justify-center hover:bg-gray-50 disabled:opacity-40 transition-colors"
+                                disabled={vitem.quantity <= 1}
+                                onClick={() => onClickSub(item.uuid, vitem.productId, vitem.option)}
+                              >
+                                <Minus className="h-4 w-4" />
+                              </button>
+
+                              <input
+                                type="text"
+                                inputMode="numeric"
+                                value={vitem.quantity}
+                                className="w-12 text-center text-sm font-semibold bg-transparent outline-none border-x [appearance:textfield]"
+                                onChange={(e) => {
+                                  const raw = e.target.value.replace(/\D/g, '')
+                                  if (raw === '') {
+                                    setQuantity('' as unknown as number)
+                                    return
+                                  }
+                                  const num = Number(raw)
+                                  setQuantity(
+                                    Math.min(currentProductVariant.inventory_quantity, num)
+                                  )
+                                }}
+                                onBlur={() => {
+                                  setQuantity((q) => {
+                                    const num = Number(q)
+                                    if (!num || num < 1) return 1
+                                    return Math.min(currentProductVariant.inventory_quantity, num)
+                                  })
+                                }}
+                              />
+
+                              <button
+                                className="h-9 w-9 flex items-center justify-center hover:bg-gray-50 disabled:opacity-40 transition-colors"
+                                disabled={quantity >= currentProductVariant.inventory_quantity}
+                                onClick={() =>
+                                  setQuantity((q) =>
+                                    Math.min(currentProductVariant.inventory_quantity, q + 1)
+                                  )
+                                }
+                              >
+                                <Plus className="h-4 w-4" />
+                              </button>
+                            </div>
+                            <button
+                              className="text-xs text-sky-500 hover:underline"
+                              onClick={() => setQuantity(1)}
+                            >
+                              Min
+                            </button>
+                            <button
+                              className="text-xs text-sky-500 hover:underline"
+                              onClick={() => setQuantity(currentProductVariant.inventory_quantity)}
+                            >
+                              Max ({currentProductVariant.inventory_quantity})
+                            </button> */}
                             <Button
                               variant="outline"
                               size="icon"

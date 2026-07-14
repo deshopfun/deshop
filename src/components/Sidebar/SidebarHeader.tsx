@@ -1,54 +1,54 @@
-import { useSnackPresistStore, useUserPresistStore } from '@/lib';
-import { useEffect, useState } from 'react';
-import axios from '@/utils/http/axios';
-import { Http } from '@/utils/http/http';
-import { Button } from '@/components/ui/button';
-import { Bell } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
-import { SiteLogo } from '@/components/Logo/SiteLogo';
+import { useSnackPresistStore, useUserPresistStore } from '@/lib'
+import { useEffect, useState } from 'react'
+import axios from '@/utils/http/axios'
+import { Http } from '@/utils/http/http'
+import { Button } from '@/components/ui/button'
+import { Bell } from 'lucide-react'
+import { Badge } from '@/components/ui/badge'
+import { SiteLogo } from '@/components/Logo/SiteLogo'
 
 const SidebarHeader = () => {
-  const [notificationNumber, setNotificationNumber] = useState<number>(0);
+  const [notificationNumber, setNotificationNumber] = useState<number>(0)
 
-  const { setSnackOpen, setSnackMessage, setSnackSeverity } = useSnackPresistStore((state) => state);
-  const { getIsLogin } = useUserPresistStore((state) => state);
+  const { setSnackOpen, setSnackMessage, setSnackSeverity } = useSnackPresistStore((state) => state)
+  const { getIsLogin } = useUserPresistStore((state) => state)
 
   const init = async () => {
     try {
       if (!getIsLogin || !getIsLogin()) {
-        return;
+        return
       }
 
-      const response: any = await axios.get(Http.user_notification);
+      const response: any = await axios.get(Http.user_notification)
 
       if (response.result) {
         if (response.data) {
           const count = response.data.reduce((total: number, item: any) => {
             if (item.is_read && item.is_read === 2) {
-              return total + 1;
+              return total + 1
             }
-            return total;
-          }, 0);
-          setNotificationNumber(count);
+            return total
+          }, 0)
+          setNotificationNumber(count)
         } else {
-          setNotificationNumber(0);
+          setNotificationNumber(0)
         }
       } else {
-        setSnackSeverity('error');
-        setSnackMessage(response.message);
-        setSnackOpen(true);
+        setSnackSeverity('error')
+        setSnackMessage(response.message)
+        setSnackOpen(true)
       }
     } catch (e) {
-      setSnackSeverity('error');
-      setSnackMessage('The network error occurred. Please try again later.');
-      setSnackOpen(true);
-      console.error(e);
+      setSnackSeverity('error')
+      setSnackMessage('The network error occurred. Please try again later.')
+      setSnackOpen(true)
+      console.error(e)
     }
-  };
+  }
 
   useEffect(() => {
-    init();
-  }, []);
+    init()
+  }, [])
 
   return (
     <div className="p-4 overflow-hidden">
@@ -57,11 +57,12 @@ const SidebarHeader = () => {
         {getIsLogin() && (
           <div className="relative inline-flex">
             <Button
+              className="h-11 w-11 shadow-sm"
               variant="ghost"
               size="icon"
               color="red"
               onClick={() => {
-                window.location.href = '/notification';
+                window.location.href = '/notification'
               }}
             >
               <Bell className="h-5 w-5" />
@@ -79,7 +80,7 @@ const SidebarHeader = () => {
         )}
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default SidebarHeader;
+export default SidebarHeader

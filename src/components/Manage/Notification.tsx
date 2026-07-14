@@ -127,7 +127,7 @@ const ManageNotification = () => {
                         enabled ? 'text-gray-900' : 'text-gray-400'
                       )}
                     >
-                      {item.title}
+                      {item.title}: {item.description}
                     </p>
                     <p
                       className={cn(

@@ -16,7 +16,30 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { Badge } from '@/components/ui/badge'
-import { ShoppingCart, Heart, Plus, User, Settings, LayoutDashboard, LogOut } from 'lucide-react'
+import {
+  ShoppingCart,
+  Heart,
+  Plus,
+  User,
+  Settings,
+  LayoutDashboard,
+  LogOut,
+  Wallet,
+  Bell,
+  Package,
+  PackageCheck,
+} from 'lucide-react'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog'
 
 const HomeHeader = () => {
   const [avatarUrl, setAvatarUrl] = useState<string>()
@@ -160,7 +183,7 @@ const HomeHeader = () => {
 
                 <DropdownMenuGroup>
                   <DropdownMenuLabel className="text-xs text-muted-foreground">
-                    Account
+                    Manage
                   </DropdownMenuLabel>
                   <DropdownMenuItem
                     onClick={() => {
@@ -170,33 +193,87 @@ const HomeHeader = () => {
                     <User className="mr-2 h-4 w-4" />
                     Profile
                   </DropdownMenuItem>
-                  <DropdownMenuItem
+                  {/* <DropdownMenuItem
                     onClick={() => {
                       window.location.href = `/manage/${username}`
                     }}
                   >
                     <LayoutDashboard className="mr-2 h-4 w-4" />
                     Manage
-                  </DropdownMenuItem>
-                  {/* <DropdownMenuItem
+                  </DropdownMenuItem> */}
+                  <DropdownMenuItem
                     onClick={() => {
-                      window.location.href = '/settings';
+                      window.location.href = `/manage/${username}?tab=products`
+                    }}
+                  >
+                    <Package className="mr-2 h-4 w-4" />
+                    Products
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={() => {
+                      window.location.href = `/manage/${username}?tab=orders`
+                    }}
+                  >
+                    <PackageCheck className="mr-2 h-4 w-4" />
+                    Orders
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={() => {
+                      window.location.href = `/manage/${username}?tab=wallets`
+                    }}
+                  >
+                    <Wallet className="mr-2 h-4 w-4" />
+                    Wallets
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={() => {
+                      window.location.href = `/manage/${username}?tab=notifications`
+                    }}
+                  >
+                    <Bell className="mr-2 h-4 w-4" />
+                    Notifications
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={() => {
+                      window.location.href = `/manage/${username}?tab=settings`
                     }}
                   >
                     <Settings className="mr-2 h-4 w-4" />
                     Settings
-                  </DropdownMenuItem> */}
+                  </DropdownMenuItem>
                 </DropdownMenuGroup>
 
                 <DropdownMenuSeparator />
 
-                <DropdownMenuItem
-                  className="text-red-500 focus:text-red-500 focus:bg-red-50"
-                  onClick={onClickLogout}
-                >
-                  <LogOut className="mr-2 h-4 w-4" />
-                  Log out
-                </DropdownMenuItem>
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <DropdownMenuItem
+                      className="text-red-500 focus:text-red-500 focus:bg-red-50"
+                      onSelect={(e) => e.preventDefault()}
+                    >
+                      <LogOut className="mr-2 h-4 w-4" />
+                      Log out
+                    </DropdownMenuItem>
+                  </AlertDialogTrigger>
+
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Log out of your account?</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        You'll need to sign in again to access your account.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogAction
+                        className="bg-red-500 hover:bg-red-600 focus:ring-red-500"
+                        onClick={onClickLogout}
+                      >
+                        Log out
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (

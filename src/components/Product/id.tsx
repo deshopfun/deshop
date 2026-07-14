@@ -340,7 +340,7 @@ const ProductDetails = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         <div className="flex flex-col gap-6">
-          <VideoPlayer videoSrc={product.video} title={product.title} />
+          {product.video && <VideoPlayer videoSrc={product.video} title={product.title} />}
 
           <Card className="overflow-hidden border-0 shadow-sm">
             {isSelectOption && currentProductVariant?.image ? (
@@ -352,7 +352,12 @@ const ProductDetails = () => {
                 />
               </div>
             ) : (
-              <Swiper navigation={true} modules={[Navigation]} className="min-h-72">
+              <Swiper
+                navigation={true}
+                pagination={true}
+                modules={[Navigation, Pagination]}
+                className="min-h-72"
+              >
                 {product.images.map((item, i) => (
                   <SwiperSlide key={i}>
                     <div className="flex justify-center items-center p-8 bg-gray-50 min-h-72">
@@ -366,7 +371,7 @@ const ProductDetails = () => {
                 ))}
               </Swiper>
             )}
-            <div className="flex gap-2 p-3 border-t">
+            {/* <div className="flex gap-2 p-3 border-t">
               {product.images.map((item, i) => (
                 <img
                   key={i}
@@ -375,7 +380,7 @@ const ProductDetails = () => {
                   className="h-14 w-14 object-cover rounded-lg border shrink-0 cursor-pointer hover:border-sky-400 transition-colors"
                 />
               ))}
-            </div>
+            </div> */}
           </Card>
 
           {product.ratings && product.ratings.length > 0 ? (
@@ -484,7 +489,7 @@ const ProductDetails = () => {
                   <Mail className="mr-2 h-4 w-4" /> Contact {product.username}
                 </DropdownMenuItem>
                 <DropdownMenuItem
-                  className="text-red-500 focus:text-red-500"
+                  className="text-red-500 focus:text-red-500 w-200"
                   onClick={() => {
                     window.location.href = `/report/products/${product.product_id}`
                   }}
@@ -623,7 +628,30 @@ const ProductDetails = () => {
                     >
                       <Minus className="h-4 w-4" />
                     </button>
-                    <span className="w-12 text-center text-sm font-semibold">{quantity}</span>
+
+                    <input
+                      type="text"
+                      inputMode="numeric"
+                      value={quantity}
+                      className="w-12 text-center text-sm font-semibold bg-transparent outline-none border-x [appearance:textfield]"
+                      onChange={(e) => {
+                        const raw = e.target.value.replace(/\D/g, '')
+                        if (raw === '') {
+                          setQuantity('' as unknown as number)
+                          return
+                        }
+                        const num = Number(raw)
+                        setQuantity(Math.min(currentProductVariant.inventory_quantity, num))
+                      }}
+                      onBlur={() => {
+                        setQuantity((q) => {
+                          const num = Number(q)
+                          if (!num || num < 1) return 1
+                          return Math.min(currentProductVariant.inventory_quantity, num)
+                        })
+                      }}
+                    />
+
                     <button
                       className="h-9 w-9 flex items-center justify-center hover:bg-gray-50 disabled:opacity-40 transition-colors"
                       disabled={quantity >= currentProductVariant.inventory_quantity}
@@ -636,6 +664,12 @@ const ProductDetails = () => {
                       <Plus className="h-4 w-4" />
                     </button>
                   </div>
+                  <button
+                    className="text-xs text-sky-500 hover:underline"
+                    onClick={() => setQuantity(1)}
+                  >
+                    Min
+                  </button>
                   <button
                     className="text-xs text-sky-500 hover:underline"
                     onClick={() => setQuantity(currentProductVariant.inventory_quantity)}

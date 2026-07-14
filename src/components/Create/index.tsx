@@ -395,7 +395,12 @@ const Create = () => {
               {title || slug || vendor || tags.length > 0 || description ? (
                 <>
                   {imageList.length > 0 ? (
-                    <Swiper navigation={true} modules={[Navigation]} className="min-h-72">
+                    <Swiper
+                      navigation={true}
+                      pagination={true}
+                      modules={[Navigation, Pagination]}
+                      className="min-h-72"
+                    >
                       {imageList.map((item, i) => (
                         <SwiperSlide key={i}>
                           <div className="flex justify-center items-center p-8 bg-gray-50 min-h-72">
