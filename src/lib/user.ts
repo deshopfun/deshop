@@ -1,39 +1,39 @@
-import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { create } from 'zustand'
+import { persist } from 'zustand/middleware'
 
-type UserPerisistState = {
-  auth: string;
-  uuid: string;
-  isLogin: boolean;
-  userTheme: 'auto' | 'light' | 'dark';
-  showProgress: boolean;
-};
+type UserPersistState = {
+  auth: string
+  uuid: string
+  isLogin: boolean
+  userTheme: 'auto' | 'light' | 'dark'
+  showProgress: boolean
+}
 
-type UserPerisistAction = {
-  setAuth: (auth: string) => void;
-  getAuth: () => string;
-  setUuid: (uuid: string) => void;
-  getUuid: () => string;
-  setIsLogin: (isLogin: boolean) => void;
-  getIsLogin: () => boolean;
-  setUserTheme: (theme: 'auto' | 'light' | 'dark') => void;
-  getUserTheme: () => string;
-  setShowProgress: (showProgress: boolean) => void;
-  getShowProgress: () => boolean;
+type UserPersistAction = {
+  setAuth: (auth: string) => void
+  getAuth: () => string
+  setUuid: (uuid: string) => void
+  getUuid: () => string
+  setIsLogin: (isLogin: boolean) => void
+  getIsLogin: () => boolean
+  setUserTheme: (theme: 'auto' | 'light' | 'dark') => void
+  getUserTheme: () => string
+  setShowProgress: (showProgress: boolean) => void
+  getShowProgress: () => boolean
 
-  resetUser: () => void;
-};
+  resetUser: () => void
+}
 
-const initialUserState: UserPerisistState = {
+const initialUserState: UserPersistState = {
   auth: '',
   uuid: '',
   isLogin: false,
   userTheme: 'auto',
   showProgress: false,
-};
+}
 
 export const useUserPresistStore = create(
-  persist<UserPerisistState & UserPerisistAction>(
+  persist<UserPersistState & UserPersistAction>(
     (set, get) => ({
       ...initialUserState,
 
@@ -49,11 +49,11 @@ export const useUserPresistStore = create(
       getShowProgress: () => get().showProgress,
 
       resetUser: () => {
-        set(initialUserState);
+        set(initialUserState)
       },
     }),
     {
       name: 'deshop.user.market',
-    },
-  ),
-);
+    }
+  )
+)

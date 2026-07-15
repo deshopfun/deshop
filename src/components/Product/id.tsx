@@ -100,7 +100,7 @@ const ProductDetails = () => {
 
   const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore((state) => state)
   const { getUuid, getIsLogin } = useUserPresistStore((state) => state)
-  const { getCart, setCart } = useCartPresistStore((state) => state)
+  const { getCart, setCart, addToCart: addCartLine } = useCartPresistStore((state) => state)
 
   const showError = (msg: string) => {
     setSnackSeverity('error')
@@ -177,86 +177,124 @@ const ProductDetails = () => {
   }
 
   const addToCart = () => {
-    if (!product) return
-    let option = ''
-    switch (product.options.length) {
-      case 3:
-        if (!optionOneValue || !optionTwoValue || !optionThreeValue) return
-        option = `${optionOneValue},${optionTwoValue},${optionThreeValue}`
-        break
-      case 2:
-        if (!optionOneValue || !optionTwoValue) return
-        option = `${optionOneValue},${optionTwoValue}`
-        break
-      case 1:
-        if (!optionOneValue) return
-        option = optionOneValue
-        break
-      default:
-        return
-    }
-    const cart = getCart()
-    const newVariant: any = {
+    if (!product || !currentProductVariant) return
+    const option = buildOption()
+    if (option === null) return
+
+    addCartLine(product.user_uuid, {
       productId: product.product_id,
-      slug: product.slug,
-      title: product.title,
-      image: String(currentProductVariant?.image ?? ''),
       option,
-      price: String(currentProductVariant?.price ?? ''),
-      discounts: String(currentProductVariant?.discounts ?? ''),
-      taxable: currentProductVariant?.taxable,
-      tax: String(currentProductVariant?.tax ?? ''),
-      tip: String(currentProductVariant?.tip ?? ''),
-      weight: String(currentProductVariant?.weight ?? ''),
-      weightUnit: String(currentProductVariant?.weight_unit ?? ''),
       quantity,
-      isVirtual: currentProductVariant?.is_virtual,
-    }
-    const cartItem = cart.find((i) => i.uuid === product.user_uuid)
-    if (cartItem) {
-      const exists = cartItem.variant.find(
-        (v) => v.productId === product.product_id && v.option === option
-      )
-      setCart(
-        cart.map((i) =>
-          i.uuid === product.user_uuid
-            ? {
-                ...i,
-                variant: exists
-                  ? i.variant.map((v) =>
-                      v.productId === product.product_id && v.option === option
-                        ? { ...v, quantity: v.quantity + quantity }
-                        : v
-                    )
-                  : [...i.variant, newVariant],
-              }
-            : i
-        )
-      )
-    } else {
-      setCart([
-        ...cart,
-        {
-          uuid: product.user_uuid,
-          avatarUrl: product.user_avatar_url,
-          username: product.username,
-          currency: product.currency,
-          variant: [newVariant],
-        },
-      ])
-    }
+      // 仅作为购物车页首屏占位用的快照,不参与任何库存/价格计算
+      snapshotTitle: product.title,
+      snapshotImage: String(currentProductVariant.image ?? ''),
+      snapshotSlug: product.slug,
+    })
   }
 
+  // const addToCart = () => {
+  //   if (!product) return
+  //   let option = ''
+  //   switch (product.options.length) {
+  //     case 3:
+  //       if (!optionOneValue || !optionTwoValue || !optionThreeValue) return
+  //       option = `${optionOneValue},${optionTwoValue},${optionThreeValue}`
+  //       break
+  //     case 2:
+  //       if (!optionOneValue || !optionTwoValue) return
+  //       option = `${optionOneValue},${optionTwoValue}`
+  //       break
+  //     case 1:
+  //       if (!optionOneValue) return
+  //       option = optionOneValue
+  //       break
+  //     default:
+  //       return
+  //   }
+  //   const cart = getCart()
+  //   const newVariant: any = {
+  //     productId: product.product_id,
+  //     slug: product.slug,
+  //     title: product.title,
+  //     image: String(currentProductVariant?.image ?? ''),
+  //     option,
+  //     price: String(currentProductVariant?.price ?? ''),
+  //     discounts: String(currentProductVariant?.discounts ?? ''),
+  //     taxable: currentProductVariant?.taxable,
+  //     tax: String(currentProductVariant?.tax ?? ''),
+  //     tip: String(currentProductVariant?.tip ?? ''),
+  //     weight: String(currentProductVariant?.weight ?? ''),
+  //     weightUnit: String(currentProductVariant?.weight_unit ?? ''),
+  //     quantity,
+  //     isVirtual: currentProductVariant?.is_virtual,
+  //   }
+  //   const cartItem = cart.find((i) => i.uuid === product.user_uuid)
+  //   if (cartItem) {
+  //     const exists = cartItem.variant.find(
+  //       (v) => v.productId === product.product_id && v.option === option
+  //     )
+  //     setCart(
+  //       cart.map((i) =>
+  //         i.uuid === product.user_uuid
+  //           ? {
+  //               ...i,
+  //               variant: exists
+  //                 ? i.variant.map((v) =>
+  //                     v.productId === product.product_id && v.option === option
+  //                       ? { ...v, quantity: v.quantity + quantity }
+  //                       : v
+  //                   )
+  //                 : [...i.variant, newVariant],
+  //             }
+  //           : i
+  //       )
+  //     )
+  //   } else {
+  //     setCart([
+  //       ...cart,
+  //       {
+  //         uuid: product.user_uuid,
+  //         avatarUrl: product.user_avatar_url,
+  //         username: product.username,
+  //         currency: product.currency,
+  //         variant: [newVariant],
+  //       },
+  //     ])
+  //   }
+  // }
+
+  // const onClickAddToCart = () => {
+  //   if (!product || quantity <= 0) return showError('At least one quantity is required.')
+  //   if (getUuid() === product.user_uuid) return showError('Cannot buy your own products.')
+  //   addToCart()
+  //   showSuccess('Added to cart successfully')
+  // }
+
   const onClickAddToCart = () => {
-    if (!product || quantity <= 0) return showError('At least one quantity is required.')
+    if (!product || !currentProductVariant) return showError('Please select a variant.')
+    if (quantity <= 0) return showError('At least one quantity is required.')
+    if (quantity > currentProductVariant.inventory_quantity)
+      return showError('Not enough stock for the selected quantity.')
     if (getUuid() === product.user_uuid) return showError('Cannot buy your own products.')
+
     addToCart()
     showSuccess('Added to cart successfully')
   }
 
+  // const onClickBuyNow = () => {
+  //   if (!product || quantity <= 0) return showError('At least one quantity is required.')
+  //   if (getUuid() === product.user_uuid) return showError('Cannot buy your own products.')
+  //   addToCart()
+  //   window.location.href = `/checkout/${product.user_uuid}`
+  // }
+
   const onClickBuyNow = () => {
-    if (!product || quantity <= 0) return showError('At least one quantity is required.')
+    if (!product || !currentProductVariant) return showError('Please select a variant.')
+    if (quantity <= 0) return showError('At least one quantity is required.')
+    if (quantity > currentProductVariant.inventory_quantity)
+      return showError('Not enough stock for the selected quantity.')
     if (getUuid() === product.user_uuid) return showError('Cannot buy your own products.')
+
     addToCart()
     window.location.href = `/checkout/${product.user_uuid}`
   }
@@ -318,6 +356,23 @@ const ProductDetails = () => {
         </Button>
       </div>
     )
+
+  const buildOption = () => {
+    if (!product) return null
+    switch (product.options.length) {
+      case 3:
+        if (!optionOneValue || !optionTwoValue || !optionThreeValue) return null
+        return `${optionOneValue},${optionTwoValue},${optionThreeValue}`
+      case 2:
+        if (!optionOneValue || !optionTwoValue) return null
+        return `${optionOneValue},${optionTwoValue}`
+      case 1:
+        if (!optionOneValue) return null
+        return optionOneValue
+      default:
+        return null
+    }
+  }
 
   return (
     <div className="container mx-auto py-6 px-4 flex flex-col gap-8">

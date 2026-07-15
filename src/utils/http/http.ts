@@ -1,13 +1,13 @@
 import { IS_DEVELOPMENT } from '@/packages/constants'
 
 export class Http {
-  static httpClient = IS_DEVELOPMENT ? 'http://127.0.0.1:9999' : 'https://deshop.fun'
+  static httpClient = IS_DEVELOPMENT ? 'http://127.0.0.1:9999' : 'https://deshop.space'
 
   static privacy_policy_md = this.httpClient + '/docs/privacy_policy.md'
   static terms_and_conditions_md = this.httpClient + '/docs/terms_and_conditions.md'
   static fees_md = this.httpClient + '/docs/fees.md'
 
-  static httpPath = IS_DEVELOPMENT ? 'http://127.0.0.1:8899/api' : 'https://api.deshop.fun/api'
+  static httpPath = IS_DEVELOPMENT ? 'http://127.0.0.1:8899/api' : 'https://api.deshop.space/api'
 
   static test = this.httpPath + '/client/test'
 
@@ -20,6 +20,7 @@ export class Http {
   static product_list = this.httpPath + '/client/product-list'
   static product_by_id = this.httpPath + '/client/product-by-unique'
   static product_variant_by_option = this.httpPath + '/client/product-variant-by-option'
+  static product_variant_by_option_list = this.httpPath + '/client/product-variant-by-option-list'
   static product_rating_by_id = this.httpPath + '/client/product-rating-by-id'
   static order_by_id = this.httpPath + '/client/order-by-id'
   static transaction_paste_tx_id = this.httpPath + '/client/transaction-paste-tx-id'

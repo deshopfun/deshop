@@ -7,7 +7,7 @@ const HomeFooter = () => {
   return (
     <div className="flex flex-row items-center p-4">
       <div className="flex-1">
-        <p>© deshop.fun 2026</p>
+        <p>© deshop.space 2026</p>
       </div>
       <div className="flex flex-row items-center justify-center gap-4">
         <Link color={'textPrimary'} href="/docs/privacy-policy">

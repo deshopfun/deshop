@@ -1,40 +1,40 @@
-import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { create } from 'zustand'
+import { persist } from 'zustand/middleware'
 
-type SnackPerisistState = {
-  snackOpen: boolean;
-  snackMessage: string;
-  snackSeverity: 'success' | 'info' | 'warning' | 'error';
-};
+type SnackPersistState = {
+  snackOpen: boolean
+  snackMessage: string
+  snackSeverity: 'success' | 'info' | 'warning' | 'error'
+}
 
-type SnackPerisistAction = {
-  setSnackOpen: (snackOpen: boolean) => void;
-  getSnackOpen: () => boolean;
-  setSnackMessage: (message: string) => void;
-  getSnackMessage: () => string;
-  setSnackSeverity: (severity: 'success' | 'info' | 'warning' | 'error') => void;
-  getSnackSeverity: () => 'success' | 'info' | 'warning' | 'error';
+type SnackPersistAction = {
+  setSnackOpen: (snackOpen: boolean) => void
+  getSnackOpen: () => boolean
+  setSnackMessage: (message: string) => void
+  getSnackMessage: () => string
+  setSnackSeverity: (severity: 'success' | 'info' | 'warning' | 'error') => void
+  getSnackSeverity: () => 'success' | 'info' | 'warning' | 'error'
 
-  resetSnack: () => void;
-};
+  resetSnack: () => void
+}
 
-const initialSnackState: SnackPerisistState = {
+const initialSnackState: SnackPersistState = {
   snackOpen: false,
   snackMessage: '',
   snackSeverity: 'success',
-};
+}
 
 export const useSnackPresistStore = create(
-  persist<SnackPerisistState & SnackPerisistAction>(
+  persist<SnackPersistState & SnackPersistAction>(
     (set, get) => ({
       ...initialSnackState,
 
       setSnackOpen: (value) => {
-        set(() => ({ snackOpen: value }));
+        set(() => ({ snackOpen: value }))
         if (value) {
           setTimeout(() => {
-            set(() => ({ snackOpen: !value }));
-          }, 3000);
+            set(() => ({ snackOpen: !value }))
+          }, 3000)
         }
       },
       getSnackOpen: () => get().snackOpen,
@@ -44,11 +44,11 @@ export const useSnackPresistStore = create(
       getSnackSeverity: () => get().snackSeverity,
 
       resetSnack: () => {
-        set(initialSnackState);
+        set(initialSnackState)
       },
     }),
     {
       name: 'deshop.snack.market',
-    },
-  ),
-);
+    }
+  )
+)

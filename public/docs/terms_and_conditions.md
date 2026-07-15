@@ -357,7 +357,7 @@ In these Terms:
 - Losses: As defined in Clause 24.1, includes direct and indirect damages, costs, and legal fees.
 - Manifest Error: Obvious mistakes in data or actions that are clear and indisputable.
 - Network Event: Events on a blockchain (e.g., 51% attacks or chain reorganizations) that compromise - Digital Asset records or control.
-- Privacy Notice: The document outlining how we collect, use, and protect your personal data, located at https://deshop.fun/docs/privacy-policy.
+- Privacy Notice: The document outlining how we collect, use, and protect your personal data, located at https://deshop.space/docs/privacy-policy.
 - Deshop Entity:
 - Deshop IP: All intellectual property owned or licensed by Deshop Entities related to the Deshop Platform and Services.
 - Deshop Platform: The digital interface and system through which users access Deshop Services.
@@ -372,4 +372,4 @@ In these Terms:
 - User-Generated Digital Asset: A Digital Asset created by a user via Deshop Services.
 - User Materials: All content (e.g., Digital Assets, posts, images) that you upload or create via the Deshop Platform.
 - Wallet: The digital wallet you connect to the Deshop Platform.
-- Website: The official Deshop website at www.deshop.fun.
+- Website: The official Deshop website at www.deshop.space.
