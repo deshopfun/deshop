@@ -59,6 +59,7 @@ import Decimal from 'decimal.js'
 import Link from 'next/link'
 import VideoPlayer from '../VIdeo/VideoPlayer'
 import { GetAbosolutePathByRelative } from '@/utils/image'
+import Recommended from './Recommended'
 
 const RatingBar = ({ star, ratings }: { star: number; ratings: any[] }) => {
   const count = ratings.filter((r) => r.number === star).length
@@ -792,7 +793,8 @@ const ProductDetails = () => {
             <h2 className="text-lg font-bold">Recommended</h2>
             <ChevronRight className="h-5 w-5" />
           </button>
-          <NowTrendingCard productType={product.product_type} />
+          {/* <NowTrendingCard productType={product.product_type} /> */}
+          <Recommended productType={product.product_type} excludeId={product.product_id} />
         </div>
       )}
 
