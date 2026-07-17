@@ -16,6 +16,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Card, CardContent } from '@/components/ui/card'
 import { User, Edit } from 'lucide-react'
 import { UserType } from '@/utils/types'
+import { GetAbosolutePathByRelative } from '@/utils/image'
 
 const ProfileDetails = () => {
   const router = useRouter()
@@ -89,7 +90,10 @@ const ProfileDetails = () => {
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
                 <div className="flex items-center gap-6">
                   <Avatar className="w-28 h-28 border-4 border-background shadow-lg">
-                    <AvatarImage src={user?.profile?.avatar_url} alt={user?.profile?.username} />
+                    <AvatarImage
+                      src={GetAbosolutePathByRelative(user?.profile?.avatar_url, 'avatar')}
+                      alt={user?.profile?.username}
+                    />
                     <AvatarFallback>
                       <User className="w-14 h-14 text-muted-foreground" />
                     </AvatarFallback>

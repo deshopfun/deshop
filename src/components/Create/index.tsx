@@ -22,6 +22,7 @@ import 'swiper/css/navigation'
 import 'swiper/css/pagination'
 // @ts-ignore
 import 'swiper/css/scrollbar'
+import { GetAbosolutePathByRelative } from '@/utils/image'
 
 const OptionRow = ({
   index,
@@ -336,7 +337,11 @@ const Create = () => {
                       key={i}
                       className="relative aspect-square rounded-xl overflow-hidden border"
                     >
-                      <img src={src} alt="product" className="w-full h-full object-cover" />
+                      <img
+                        src={GetAbosolutePathByRelative(src)}
+                        alt="product"
+                        className="w-full h-full object-cover"
+                      />
                     </div>
                   ))}
                   <label className="aspect-square rounded-xl border-2 border-dashed border-gray-200 flex flex-col items-center justify-center cursor-pointer hover:border-sky-300 hover:bg-sky-50 transition-colors">
@@ -405,7 +410,7 @@ const Create = () => {
                         <SwiperSlide key={i}>
                           <div className="flex justify-center items-center p-8 bg-gray-50 min-h-72">
                             <img
-                              src={item}
+                              src={GetAbosolutePathByRelative(item)}
                               alt="product"
                               className="max-h-64 object-contain rounded-xl"
                             />
@@ -415,7 +420,7 @@ const Create = () => {
                     </Swiper>
                   ) : (
                     <img
-                      src={imageList[0] ?? './images/default_image.png'}
+                      src={GetAbosolutePathByRelative(imageList[0])}
                       alt="preview"
                       className="w-full h-56 object-cover"
                     />

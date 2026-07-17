@@ -15,6 +15,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Settings, User, Mail, Gift, FileText, Clock, Coins, Save, Loader2 } from 'lucide-react'
+import { GetAbosolutePathByRelative } from '@/utils/image'
 
 const InfoRow = ({ icon: Icon, label, value }: { icon: any; label: string; value?: string }) => (
   <div className="flex items-center justify-between py-3 border-b border-dashed border-gray-100 last:border-0">
@@ -99,7 +100,10 @@ const ManageSetting = () => {
         <CardContent className="p-6 flex flex-col gap-2">
           <div className="flex items-center gap-4 pb-4 border-b mb-2">
             <Avatar className="h-16 w-16 border-2 border-gray-100">
-              <AvatarImage src={user?.avatar_url || '/images/default_avatar.png'} alt="avatar" />
+              <AvatarImage
+                src={GetAbosolutePathByRelative(user?.avatar_url, 'avatar')}
+                alt="avatar"
+              />
               <AvatarFallback className="text-lg bg-sky-100 text-sky-600 font-bold">
                 {user?.username?.[0]?.toUpperCase()}
               </AvatarFallback>

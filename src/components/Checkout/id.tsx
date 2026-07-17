@@ -699,6 +699,7 @@ import Decimal from 'decimal.js'
 import { AlertCircle, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
+import { GetAbosolutePathByRelative } from '@/utils/image'
 
 type SkuInfo = {
   product_id: number
@@ -756,7 +757,7 @@ const CheckoutDetails = () => {
     if (!group || group.variant.length === 0) return []
 
     const items = group.variant.map((v) => ({ product_id: v.productId, option: v.option }))
-    const res: any = await axios.post(Http.product_variant_by_option_list, { items } )
+    const res: any = await axios.post(Http.product_variant_by_option_list, { items })
     if (!res.result) throw new Error(res.message || 'Failed to load cart data')
 
     const map: Record<string, SkuInfo> = {}
@@ -893,7 +894,10 @@ const CheckoutDetails = () => {
             {lines.map((line) => (
               <div key={`${line.productId}-${line.option}`} className="flex gap-3">
                 <img
-                  src={line.sku?.image ?? line.snapshotImage}
+                  src={
+                    GetAbosolutePathByRelative(line.sku?.image) ??
+                    GetAbosolutePathByRelative(line.snapshotImage)
+                  }
                   className="h-16 w-16 object-cover rounded-xl border"
                 />
                 <div className="flex-1 min-w-0">

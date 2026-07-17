@@ -6,6 +6,7 @@ import { Http } from '@/utils/http/http'
 import { ProductType } from '@/utils/types'
 import { Card, CardContent } from '@/components/ui/card'
 import { PackageOpen } from 'lucide-react'
+import { GetAbosolutePathByRelative } from '@/utils/image'
 
 type Props = {
   productType?: string
@@ -56,7 +57,7 @@ const NowTrendingCard = (props: Props) => {
             >
               <div className="relative">
                 <img
-                  src={item.images?.[0]?.src}
+                  src={GetAbosolutePathByRelative(item.images?.[0]?.src)}
                   alt={item.title}
                   className="w-full h-48 object-cover"
                 />

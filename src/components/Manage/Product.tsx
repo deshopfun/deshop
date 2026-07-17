@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Package, Plus, ExternalLink } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { GetAbosolutePathByRelative } from '@/utils/image'
 
 const statusConfig: Record<number, { label: string; className: string }> = {
   1: { label: 'Active', className: 'bg-green-100 text-green-700 border-green-200' },
@@ -73,7 +74,7 @@ const ManageProduct = () => {
               >
                 <div className="relative overflow-hidden">
                   <img
-                    src={item.images?.[0]?.src}
+                    src={GetAbosolutePathByRelative(item.images?.[0]?.src)}
                     alt={item.title}
                     className="w-full h-44 object-cover group-hover:scale-105 transition-transform duration-300"
                   />

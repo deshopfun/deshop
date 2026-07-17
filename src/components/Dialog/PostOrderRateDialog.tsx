@@ -19,6 +19,7 @@ import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 
 import { Star, Upload, X, Image as ImageIcon } from 'lucide-react'
+import { GetAbosolutePathByRelative } from '@/utils/image'
 
 type DialogType = {
   orderId: number
@@ -128,7 +129,7 @@ export default function PostOrderRateDialog({
               <CardContent className="p-6 space-y-5">
                 <div className="flex gap-4">
                   <img
-                    src={item.image}
+                    src={GetAbosolutePathByRelative(item.image)}
                     alt={item.title}
                     className="w-16 h-16 object-cover rounded-lg border"
                   />
@@ -170,7 +171,11 @@ export default function PostOrderRateDialog({
                   <div className="border border-dashed border-border rounded-lg p-4">
                     {item.rating_image ? (
                       <div className="relative inline-block">
-                        <img src={item.rating_image} alt="Review" className="max-h-40 rounded-lg" />
+                        <img
+                          src={GetAbosolutePathByRelative(item.rating_image)}
+                          alt="Review"
+                          className="max-h-40 rounded-lg"
+                        />
                         <Button
                           variant="destructive"
                           size="icon"

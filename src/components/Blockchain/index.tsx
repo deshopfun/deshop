@@ -105,7 +105,7 @@ const Blockchain = () => {
                         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                           <div className="flex items-center gap-4">
                             <Avatar className="w-12 h-12">
-                              <AvatarImage src={item.customer_avatar_url} />
+                              <AvatarImage src={(item.customer_avatar_url, 'avatar')} />
                               <AvatarFallback>👤</AvatarFallback>
                             </Avatar>
 

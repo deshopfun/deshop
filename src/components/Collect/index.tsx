@@ -10,6 +10,7 @@ import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 
 import { Trash2, Heart, ShoppingCart } from 'lucide-react'
+import { GetAbosolutePathByRelative } from '@/utils/image'
 
 const Collect = () => {
   const [collect, setCollect] = useState<CollectType[]>([])
@@ -106,7 +107,7 @@ const Collect = () => {
                 <CardHeader className="p-0">
                   <div className="relative">
                     <img
-                      src={item.image_srcs?.[0] || '/images/default_avatar.png'}
+                      src={GetAbosolutePathByRelative(item.image_srcs?.[0], 'avatar')}
                       alt={item.title}
                       className="w-full aspect-square object-cover"
                       loading="lazy"

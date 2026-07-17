@@ -27,6 +27,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Avatar } from '@/components/ui/avatar'
 
 import { CheckCircle, ArrowLeft, Copy, QrCode, Clock, Wallet, ExternalLink } from 'lucide-react'
+import { GetAbosolutePathByRelative } from '@/utils/image'
 
 const steps = [
   'Choose Payment Method',
@@ -243,7 +244,7 @@ const PaymentDetails = () => {
                   <div className="flex items-center gap-3">
                     <Avatar>
                       <Image
-                        src={order.user_avatar_url || '/images/default_avatar.png'}
+                        src={GetAbosolutePathByRelative(order.user_avatar_url, 'avatar')}
                         alt=""
                         width={48}
                         height={48}

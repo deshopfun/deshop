@@ -58,6 +58,7 @@ import { cn } from '@/lib/utils'
 import Decimal from 'decimal.js'
 import Link from 'next/link'
 import VideoPlayer from '../VIdeo/VideoPlayer'
+import { GetAbosolutePathByRelative } from '@/utils/image'
 
 const RatingBar = ({ star, ratings }: { star: number; ratings: any[] }) => {
   const count = ratings.filter((r) => r.number === star).length
@@ -401,7 +402,7 @@ const ProductDetails = () => {
             {isSelectOption && currentProductVariant?.image ? (
               <div className="flex justify-center items-center p-8 bg-gray-50 min-h-72">
                 <img
-                  src={currentProductVariant.image}
+                  src={GetAbosolutePathByRelative(currentProductVariant.image)}
                   alt="variant"
                   className="max-h-64 object-contain rounded-xl"
                 />
@@ -417,7 +418,7 @@ const ProductDetails = () => {
                   <SwiperSlide key={i}>
                     <div className="flex justify-center items-center p-8 bg-gray-50 min-h-72">
                       <img
-                        src={item.src}
+                        src={GetAbosolutePathByRelative(item.src)}
                         alt="product"
                         className="max-h-64 object-contain rounded-xl"
                       />
@@ -483,7 +484,7 @@ const ProductDetails = () => {
                       </p>
                       {item.image && (
                         <img
-                          src={item.image}
+                          src={GetAbosolutePathByRelative(item.image)}
                           alt="review"
                           className="h-12 w-12 object-cover rounded-lg"
                         />
@@ -524,7 +525,7 @@ const ProductDetails = () => {
               }}
             >
               <Avatar className="h-8 w-8">
-                <AvatarImage src={product.user_avatar_url || '/images/default_avatar.png'} />
+                <AvatarImage src={GetAbosolutePathByRelative(product.user_avatar_url, 'avatar')} />
                 <AvatarFallback>{product.username?.[0]?.toUpperCase()}</AvatarFallback>
               </Avatar>
               <span className="text-sm font-semibold">{product.username}</span>

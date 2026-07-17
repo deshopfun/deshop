@@ -28,6 +28,7 @@ import {
   CheckCircle2,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { GetAbosolutePathByRelative } from '@/utils/image'
 
 const steps = ['Waiting for payment', 'Waiting for order confirm', 'Order complete']
 
@@ -173,7 +174,9 @@ const ManageOrder = () => {
                       }}
                     >
                       <Avatar className="h-8 w-8">
-                        <AvatarImage src={item.user_avatar_url || '/images/default_avatar.png'} />
+                        <AvatarImage
+                          src={GetAbosolutePathByRelative(item.user_avatar_url, 'avatar')}
+                        />
                         <AvatarFallback>{item.username?.[0]?.toUpperCase()}</AvatarFallback>
                       </Avatar>
                       <span className="text-sm font-medium">{item.username}</span>
@@ -198,7 +201,7 @@ const ManageOrder = () => {
                       <div key={pi} className="flex items-center justify-between gap-3">
                         <div className="flex items-center gap-3">
                           <img
-                            src={productItem.image}
+                            src={GetAbosolutePathByRelative(productItem.image)}
                             alt="product"
                             className="h-16 w-16 object-cover rounded-xl border shrink-0"
                             loading="lazy"

@@ -16,6 +16,7 @@ import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 
 import { AlertTriangle, Send } from 'lucide-react'
+import { GetAbosolutePathByRelative } from '@/utils/image'
 
 const ReportProductDetails = () => {
   const router = useRouter()
@@ -120,7 +121,7 @@ const ReportProductDetails = () => {
             onClick={() => router.push(`/products/${product.product_id}`)}
           >
             <img
-              src={product.images?.[0]?.src || '/images/default_avatar.png'}
+              src={GetAbosolutePathByRelative(product.images?.[0]?.src)}
               alt={product.title}
               className="w-24 h-24 object-cover rounded-lg border"
             />

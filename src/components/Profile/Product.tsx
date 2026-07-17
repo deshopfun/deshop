@@ -1,6 +1,8 @@
 import { ProductType } from '@/utils/types'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
+import { Http } from '@/utils/http/http'
+import { GetAbosolutePathByRelative } from '@/utils/image'
 
 type Props = {
   uuid?: string
@@ -25,7 +27,7 @@ const ProfileProduct = ({ product }: Props) => {
               {item.images?.[0]?.src && (
                 <div className="aspect-video relative overflow-hidden bg-muted">
                   <img
-                    src={item.images[0].src}
+                    src={GetAbosolutePathByRelative(item.images[0].src)}
                     alt={item.title}
                     className="w-full h-full object-cover transition-transform hover:scale-105 duration-300"
                     loading="lazy"

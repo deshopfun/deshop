@@ -12,6 +12,7 @@ import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
 import { ImagePlus, Trash2, Save, Package, SlidersHorizontal } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { GetAbosolutePathByRelative } from '@/utils/image'
 
 type Props = {
   product_id: number
@@ -349,7 +350,11 @@ const ProductVariant = (props: Props) => {
             </div>
             {image ? (
               <div className="relative w-32 h-32 rounded-xl overflow-hidden border">
-                <img src={image} alt="variant" className="w-full h-full object-cover" />
+                <img
+                  src={GetAbosolutePathByRelative(image)}
+                  alt="variant"
+                  className="w-full h-full object-cover"
+                />
               </div>
             ) : (
               <label

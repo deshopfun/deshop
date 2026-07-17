@@ -19,6 +19,7 @@ import {
 } from '@/components/ui/dialog'
 
 import { Camera, User } from 'lucide-react'
+import { GetAbosolutePathByRelative } from '@/utils/image'
 
 type DialogType = {
   avatarUrl?: string
@@ -116,7 +117,7 @@ export default function EditProfileDialog(props: DialogType) {
           <div className="relative">
             <label htmlFor="avatar-upload" className="cursor-pointer group">
               <Avatar className="w-24 h-24 border-4 border-background shadow-md">
-                <AvatarImage src={avatarUrl} alt="Avatar" />
+                <AvatarImage src={GetAbosolutePathByRelative(avatarUrl, 'avatar')} alt="Avatar" />
                 <AvatarFallback>
                   <User className="w-12 h-12 text-muted-foreground" />
                 </AvatarFallback>

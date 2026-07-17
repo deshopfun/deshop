@@ -40,6 +40,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
+import { GetAbosolutePathByRelative } from '@/utils/image'
 
 const HomeHeader = () => {
   const [avatarUrl, setAvatarUrl] = useState<string>()
@@ -158,7 +159,7 @@ const HomeHeader = () => {
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="h-11 flex items-center gap-2 px-3">
                   <Avatar className="h-9 w-9">
-                    <AvatarImage src={avatarUrl || '/images/default_avatar.png'} />
+                    <AvatarImage src={GetAbosolutePathByRelative(avatarUrl, 'avatar')} />
                     <AvatarFallback>{username?.[0]?.toUpperCase()}</AvatarFallback>
                   </Avatar>
                   <span className="text-sm font-medium hidden md:block">
@@ -170,7 +171,7 @@ const HomeHeader = () => {
               <DropdownMenuContent className="w-52" align="end">
                 <div className="flex items-center gap-2 p-2 mb-1">
                   <Avatar className="h-8 w-8">
-                    <AvatarImage src={avatarUrl || '/images/default_avatar.png'} />
+                    <AvatarImage src={GetAbosolutePathByRelative(avatarUrl, 'avatar')} />
                     <AvatarFallback>{username?.[0]?.toUpperCase()}</AvatarFallback>
                   </Avatar>
                   <div className="flex flex-col">

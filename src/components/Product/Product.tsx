@@ -13,6 +13,7 @@ import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
 import { ImagePlus, Trash2, Plus, Save, Settings, Layers, Image } from 'lucide-react'
 import { isValidHttpUrl } from '@/utils/verify'
+import { GetAbosolutePathByRelative } from '@/utils/image'
 
 type Props = {
   product_id: number
@@ -491,7 +492,11 @@ const Product = (props: Props) => {
             <div className="grid grid-cols-3 gap-3">
               {imageList.map((src, i) => (
                 <div key={i} className="relative aspect-square rounded-xl overflow-hidden border">
-                  <img src={src} alt="product" className="w-full h-full object-cover" />
+                  <img
+                    src={GetAbosolutePathByRelative(src)}
+                    alt="product"
+                    className="w-full h-full object-cover"
+                  />
                 </div>
               ))}
               <label className="aspect-square rounded-xl border-2 border-dashed border-gray-200 flex flex-col items-center justify-center cursor-pointer hover:border-sky-300 hover:bg-sky-50 transition-colors">

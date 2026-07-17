@@ -358,6 +358,7 @@ import { cn } from '@/lib/utils'
 
 import { Plus, Minus, Trash2, ShoppingCart, User, AlertCircle, Loader2 } from 'lucide-react'
 import Decimal from 'decimal.js'
+import { GetAbosolutePathByRelative } from '@/utils/image'
 
 // 服务器返回的"事实数据"
 type SkuInfo = {
@@ -531,7 +532,7 @@ const Cart = () => {
                     onClick={() => (window.location.href = `/profile/${group.username}`)}
                   >
                     <Avatar className="w-9 h-9">
-                      <AvatarImage src={group.avatarUrl} />
+                      <AvatarImage src={(GetAbosolutePathByRelative(group.avatarUrl), 'avatar')} />
                       <AvatarFallback>
                         <User className="w-5 h-5" />
                       </AvatarFallback>
@@ -544,7 +545,10 @@ const Cart = () => {
                   {group.lines.map((line) => (
                     <div key={`${line.productId}-${line.option}`} className="flex gap-5">
                       <img
-                        src={line.sku?.image ?? line.snapshotImage}
+                        src={
+                          GetAbosolutePathByRelative(line.sku?.image) ??
+                          GetAbosolutePathByRelative(line.snapshotImage)
+                        }
                         alt={line.sku?.title ?? line.snapshotTitle}
                         className={cn(
                           'w-24 h-24 object-cover rounded-lg border',

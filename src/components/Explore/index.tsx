@@ -1,6 +1,6 @@
 import { PRODUCT_TYPE } from '@/packages/constants'
 import { useEffect, useState } from 'react'
-import { GetImgSrcByProductType } from '@/utils/image'
+import { GetAbosolutePathByRelative, GetImgSrcByProductType } from '@/utils/image'
 import axios from '@/utils/http/axios'
 import { Http } from '@/utils/http/http'
 import { useSnackPresistStore } from '@/lib'
@@ -155,7 +155,7 @@ const Explore = () => {
                 >
                   <div className="aspect-[4/3] relative bg-muted">
                     <img
-                      src={item.images?.[0]?.src || '/images/default_avatar.png'}
+                      src={GetAbosolutePathByRelative(item.images?.[0]?.src, 'avatar')}
                       alt={item.title}
                       className="w-full h-full object-cover transition-transform hover:scale-105"
                       loading="lazy"

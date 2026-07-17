@@ -19,6 +19,7 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Star, Search, MessageSquare } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import Decimal from 'decimal.js'
+import { GetAbosolutePathByRelative } from '@/utils/image'
 
 type DialogType = {
   product_id: number
@@ -213,7 +214,7 @@ export default function ProductRatingsDialog({
 
                     {item.image && (
                       <img
-                        src={item.image}
+                        src={GetAbosolutePathByRelative(item.image)}
                         alt="review"
                         className="mt-3 h-20 w-20 object-cover rounded-xl border"
                         loading="lazy"

@@ -7,6 +7,7 @@ export class Http {
   static terms_and_conditions_md = this.httpClient + '/docs/terms_and_conditions.md'
   static fees_md = this.httpClient + '/docs/fees.md'
 
+  static basehttpPath = IS_DEVELOPMENT ? 'http://127.0.0.1:8899' : 'https://api.deshop.space'
   static httpPath = IS_DEVELOPMENT ? 'http://127.0.0.1:8899/api' : 'https://api.deshop.space/api'
 
   static test = this.httpPath + '/client/test'

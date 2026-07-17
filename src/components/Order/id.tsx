@@ -33,6 +33,7 @@ import {
   CreditCard,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { GetAbosolutePathByRelative } from '@/utils/image'
 
 const InfoRow = ({ label, children }: { label: string; children: React.ReactNode }) => (
   <div className="flex items-center justify-between gap-4 py-2 border-b border-dashed border-gray-100 last:border-0">
@@ -196,7 +197,7 @@ const OrderDetails = () => {
               className="flex items-center gap-3 hover:opacity-80 transition-opacity"
             >
               <img
-                src={item.image}
+                src={GetAbosolutePathByRelative(item.image)}
                 alt="product"
                 className="h-16 w-16 object-cover rounded-xl border shrink-0"
               />
