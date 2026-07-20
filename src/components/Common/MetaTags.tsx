@@ -12,7 +12,7 @@ const MetaTags: FC<Props> = (props) => {
   const { title } = props;
 
   const meta = {
-    title: title ? `${title} • ${APP_NAME}` : APP_NAME,
+    title: title ? `${title} | ${APP_NAME}` : APP_NAME,
     description: APP_DESCRIPTION,
     type: 'website',
   };

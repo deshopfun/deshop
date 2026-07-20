@@ -6,6 +6,7 @@ type UserPersistState = {
   uuid: string
   isLogin: boolean
   userTheme: 'auto' | 'light' | 'dark'
+  userLanguage: string
   showProgress: boolean
 }
 
@@ -18,6 +19,8 @@ type UserPersistAction = {
   getIsLogin: () => boolean
   setUserTheme: (theme: 'auto' | 'light' | 'dark') => void
   getUserTheme: () => string
+  setUserLanguage: (userLanguage: string) => void
+  getUserLanguage: () => string
   setShowProgress: (showProgress: boolean) => void
   getShowProgress: () => boolean
 
@@ -29,6 +32,7 @@ const initialUserState: UserPersistState = {
   uuid: '',
   isLogin: false,
   userTheme: 'auto',
+  userLanguage: 'en',
   showProgress: false,
 }
 
@@ -45,6 +49,8 @@ export const useUserPresistStore = create(
       getIsLogin: () => get().isLogin,
       setUserTheme: (value) => set(() => ({ userTheme: value })),
       getUserTheme: () => get().userTheme,
+      setUserLanguage: (value) => set(() => ({ userLanguage: value })),
+      getUserLanguage: () => get().userLanguage,
       setShowProgress: (value) => set(() => ({ showProgress: value })),
       getShowProgress: () => get().showProgress,
 

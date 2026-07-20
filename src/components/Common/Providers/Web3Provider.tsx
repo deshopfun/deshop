@@ -1,8 +1,6 @@
 import { FC, ReactNode } from 'react'
 import dynamic from 'next/dynamic'
 
-// import WagmiContextProvider from '';
-
 const WagmiContextProvider = dynamic(() => import('./WagmiContextProvider'), { ssr: false })
 
 type Props = {

@@ -560,9 +560,13 @@ const ProductDetails = () => {
           <div className="flex items-start justify-between gap-3">
             <div className="flex flex-col gap-1">
               <h1 className="text-2xl font-bold">
-                <Link color={'textPrimary'} href={product.website} target="_blank">
-                  {product.title}
-                </Link>
+                {product.website ? (
+                  <Link color={'textPrimary'} href={product.website} target="_blank">
+                    {product.title}
+                  </Link>
+                ) : (
+                  product.title
+                )}
               </h1>
               {product.ratings && product.ratings.length > 0 && (
                 <button

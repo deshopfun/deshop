@@ -41,6 +41,8 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
 import { GetAbosolutePathByRelative } from '@/utils/image'
+import LanguageSwitcher from '../Language/LanguageSwitcher'
+import LanguageSubmenu from '../Language/LanguageSubmenu'
 
 const HomeHeader = () => {
   const [avatarUrl, setAvatarUrl] = useState<string>()
@@ -59,7 +61,9 @@ const HomeHeader = () => {
   }
 
   const { setSnackOpen, setSnackMessage, setSnackSeverity } = useSnackPresistStore((state) => state)
-  const { getIsLogin, resetUser } = useUserPresistStore((state) => state)
+  const { getIsLogin, resetUser, getUserLanguage, setUserLanguage } = useUserPresistStore(
+    (state) => state
+  )
   const { getCart } = useCartPresistStore((state) => state)
 
   const onClickLogout = async () => {
@@ -210,14 +214,14 @@ const HomeHeader = () => {
                     <Package className="mr-2 h-4 w-4" />
                     Products
                   </DropdownMenuItem>
-                  <DropdownMenuItem
+                  {/* <DropdownMenuItem
                     onClick={() => {
                       window.location.href = `/manage/${username}?tab=orders`
                     }}
                   >
                     <PackageCheck className="mr-2 h-4 w-4" />
                     Orders
-                  </DropdownMenuItem>
+                  </DropdownMenuItem> */}
                   <DropdownMenuItem
                     onClick={() => {
                       window.location.href = `/manage/${username}?tab=wallets`
@@ -226,14 +230,14 @@ const HomeHeader = () => {
                     <Wallet className="mr-2 h-4 w-4" />
                     Wallets
                   </DropdownMenuItem>
-                  <DropdownMenuItem
+                  {/* <DropdownMenuItem
                     onClick={() => {
                       window.location.href = `/manage/${username}?tab=notifications`
                     }}
                   >
                     <Bell className="mr-2 h-4 w-4" />
                     Notifications
-                  </DropdownMenuItem>
+                  </DropdownMenuItem> */}
                   <DropdownMenuItem
                     onClick={() => {
                       window.location.href = `/manage/${username}?tab=settings`
@@ -242,6 +246,48 @@ const HomeHeader = () => {
                     <Settings className="mr-2 h-4 w-4" />
                     Settings
                   </DropdownMenuItem>
+                </DropdownMenuGroup>
+
+                <DropdownMenuSeparator />
+
+                <DropdownMenuGroup>
+                  <DropdownMenuItem
+                    onClick={() => {
+                      window.location.href = `/support`
+                    }}
+                  >
+                    Support
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={() => {
+                      window.location.href = `#`
+                    }}
+                  >
+                    Status
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={() => {
+                      window.location.href = `#`
+                    }}
+                  >
+                    Documentation
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={() => {
+                      window.location.href = `#`
+                    }}
+                  >
+                    Help Center
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={() => {
+                      window.location.href = `#`
+                    }}
+                  >
+                    Terms of Use
+                  </DropdownMenuItem>
+
+                  <LanguageSubmenu />
                 </DropdownMenuGroup>
 
                 <DropdownMenuSeparator />

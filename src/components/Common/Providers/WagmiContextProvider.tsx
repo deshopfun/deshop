@@ -14,31 +14,35 @@ const metadata = {
   name: 'Deshop',
   description: 'Decentralized Digital Exchange Platform',
   url: Http.httpClient,
-  icons: [`${Http.httpClient} + /favicon.ico`],
+  icons: [`${Http.httpClient}/favicon.ico`],
 }
 
 export const projectId = WALLETCONNECT_PROJECT_ID
-if (!projectId) {
-  throw new Error('Project ID is not defined')
-}
+if (!projectId) throw new Error('Project ID is not defined')
 
 export const networks = GetAllSupportAppKitNetwork()
-if (!networks) {
-  throw new Error('Networks ID is not defined')
+if (!networks) throw new Error('Networks ID is not defined')
+
+declare global {
+  // eslint-disable-next-line no-var
+  var __APPKIT_INITIALIZED__: boolean | undefined
 }
 
-createAppKit({
-  adapters: [wagmiAdapter],
-  projectId,
-  networks,
-  defaultNetwork: mainnet,
-  metadata: metadata,
-  features: {
-    analytics: false,
-    socials: [],
-    email: false,
-  },
-})
+if (!globalThis.__APPKIT_INITIALIZED__) {
+  createAppKit({
+    adapters: [wagmiAdapter],
+    projectId,
+    networks,
+    defaultNetwork: mainnet,
+    metadata,
+    features: {
+      analytics: false,
+      socials: [],
+      email: false,
+    },
+  })
+  globalThis.__APPKIT_INITIALIZED__ = true
+}
 
 function WagmiContextProvider({
   children,
