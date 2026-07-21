@@ -11,6 +11,13 @@ export type RouteType = {
   needLogin: boolean
 }
 
+export type SearchType = {
+  profiles: ProfileType[]
+  products: ProductType[]
+  total_product: number
+  total_profile: number
+}
+
 export type UserType = {
   profile: ProfileType
   products: ProductType[]

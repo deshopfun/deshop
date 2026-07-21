@@ -12,6 +12,7 @@ export class Http {
 
   static test = this.httpPath + '/client/test'
 
+  static search = this.httpPath + '/client/search'
   static register = this.httpPath + '/client/register'
   static verify_invitation = this.httpPath + '/client/verify-invitation'
   static login = this.httpPath + '/client/login'

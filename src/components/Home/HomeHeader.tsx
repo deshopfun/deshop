@@ -1,4 +1,4 @@
-import Search from '@/components/Search'
+import HomeSearch from '@/components/Home/HomeSearch'
 import { useCartPresistStore, useSnackPresistStore, useUserPresistStore } from '@/lib'
 import { useEffect, useState } from 'react'
 import axios from '@/utils/http/axios'
@@ -106,7 +106,7 @@ const HomeHeader = () => {
         <div></div>
 
         <div className="flex justify-center">
-          <Search />
+          <HomeSearch />
         </div>
 
         <div className="flex items-center justify-end gap-2">
