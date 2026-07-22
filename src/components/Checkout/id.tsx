@@ -40,7 +40,7 @@ type MergedLine = CartLineType & {
 
 const CheckoutDetails = () => {
   const router = useRouter()
-  const { id } = router.query
+  const id = typeof router.query.id === 'string' ? router.query.id : ''
 
   const [lines, setLines] = useState<MergedLine[]>([])
   const [loading, setLoading] = useState(true)
@@ -80,7 +80,7 @@ const CheckoutDetails = () => {
   }
 
   useEffect(() => {
-    if (!id) return
+    if (!router.isReady) return
     setLoading(true)
     setError(false)
     fetchAndMerge()

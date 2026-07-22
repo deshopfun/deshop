@@ -90,7 +90,8 @@ const SectionTitle = ({ icon: Icon, title }: { icon: any; title: string }) => (
 
 const OrderDetails = () => {
   const router = useRouter()
-  const { id } = router.query
+  const id = typeof router.query.id === 'string' ? router.query.id : ''
+
   const [order, setOrder] = useState<OrderType>()
 
   const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore((state) => state)
@@ -111,7 +112,8 @@ const OrderDetails = () => {
   }
 
   useEffect(() => {
-    if (id) init(id)
+    if (!router.isReady) return
+    init(id)
   }, [id])
 
   if (!order)

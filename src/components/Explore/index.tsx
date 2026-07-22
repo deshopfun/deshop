@@ -17,7 +17,7 @@ import { ChevronDown, ChevronUp, ShoppingBag } from 'lucide-react'
 
 const Explore = () => {
   const router = useRouter()
-  const { type } = router.query
+  const type = typeof router.query.type === 'string' ? router.query.type : ''
 
   const [showMore, setShowMore] = useState<boolean>(false)
   const [products, setProducts] = useState<ProductType[]>([])
@@ -46,6 +46,7 @@ const Explore = () => {
   }
 
   useEffect(() => {
+    if (!router.isReady) return
     if (isClick) {
       setIsClick(false)
       return

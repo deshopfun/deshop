@@ -11,7 +11,8 @@ import { cn } from '@/lib/utils';
 
 const EmailConfirm = () => {
   const router = useRouter();
-  const [code, setCode] = useState('');
+  const code = typeof router.query.code === 'string' ? router.query.code : ''
+
   const [showLogin, setShowLogin] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -22,10 +23,6 @@ const EmailConfirm = () => {
     setSnackMessage(msg);
     setSnackOpen(true);
   };
-
-  useEffect(() => {
-    if (router.query.code) setCode(String(router.query.code));
-  }, [router.query]);
 
   const onClickVerify = async () => {
     if (!code) return showError('Incorrect code input');

@@ -38,7 +38,7 @@ const steps = [
 
 const PaymentDetails = () => {
   const router = useRouter()
-  const { id } = router.query
+  const id = typeof router.query.id === 'string' ? router.query.id : ''
 
   const [page, setPage] = useState<number>(1)
   const [order, setOrder] = useState<any>()
@@ -91,7 +91,8 @@ const PaymentDetails = () => {
   }
 
   useEffect(() => {
-    if (id) init(id)
+    if (!router.isReady) return
+    init(id)
   }, [id])
 
   useEffect(() => {

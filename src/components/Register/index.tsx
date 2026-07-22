@@ -1,67 +1,73 @@
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/router';
-import { IsValidEmail } from '@/utils/verify';
-import { useSnackPresistStore, useUserPresistStore } from '@/lib';
-import axios from '@/utils/http/axios';
-import { Http } from '@/utils/http/http';
-import RegisterDialog from '@/components/Dialog/RegisterDialog';
-import { SiteLogo } from '@/components/Logo/SiteLogo';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Card, CardContent } from '@/components/ui/card';
-import { Mail, ArrowRight, Loader2, ShieldCheck, Zap, Globe } from 'lucide-react';
+import { useEffect, useState } from 'react'
+import { useRouter } from 'next/router'
+import { IsValidEmail } from '@/utils/verify'
+import { useSnackPresistStore, useUserPresistStore } from '@/lib'
+import axios from '@/utils/http/axios'
+import { Http } from '@/utils/http/http'
+import RegisterDialog from '@/components/Dialog/RegisterDialog'
+import { SiteLogo } from '@/components/Logo/SiteLogo'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Card, CardContent } from '@/components/ui/card'
+import { Mail, ArrowRight, Loader2, ShieldCheck, Zap, Globe } from 'lucide-react'
 
 const features = [
   { icon: Globe, title: 'Decentralized', desc: 'No third-party constraints, fully open platform' },
   { icon: Zap, title: 'Free Trading', desc: 'List and sell products with zero platform fees' },
-  { icon: ShieldCheck, title: 'Crypto Payments', desc: 'Receive payments directly in cryptocurrency' },
-];
+  {
+    icon: ShieldCheck,
+    title: 'Crypto Payments',
+    desc: 'Receive payments directly in cryptocurrency',
+  },
+]
 
 const Register = () => {
-  const router = useRouter();
-  const [email, setEmail] = useState('');
-  const [open, setOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const router = useRouter()
 
-  const { setSnackOpen, setSnackMessage, setSnackSeverity } = useSnackPresistStore((state) => state);
-  const { getIsLogin } = useUserPresistStore((state) => state);
+  const [email, setEmail] = useState('')
+  const [open, setOpen] = useState(false)
+  const [loading, setLoading] = useState(false)
+
+  const { setSnackOpen, setSnackMessage, setSnackSeverity } = useSnackPresistStore((state) => state)
+  const { getIsLogin } = useUserPresistStore((state) => state)
 
   const showError = (msg: string) => {
-    setSnackSeverity('error');
-    setSnackMessage(msg);
-    setSnackOpen(true);
-  };
+    setSnackSeverity('error')
+    setSnackMessage(msg)
+    setSnackOpen(true)
+  }
 
   useEffect(() => {
-    if (router.query.email) setEmail(String(router.query.email));
-  }, [router.query]);
+    if (!router.isReady) return
+    if (router.query.email) setEmail(String(router.query.email))
+  }, [router.query])
 
   useEffect(() => {
-    if (getIsLogin()) window.location.href = '/';
-  }, []);
+    if (getIsLogin()) window.location.href = '/'
+  }, [])
 
   const onRegister = async () => {
-    if (!email || !IsValidEmail(email)) return showError('Please enter a valid email');
-    setLoading(true);
+    if (!email || !IsValidEmail(email)) return showError('Please enter a valid email')
+    setLoading(true)
     try {
-      const response: any = await axios.post(Http.register, { email });
+      const response: any = await axios.post(Http.register, { email })
       if (response.result) {
-        setOpen(true);
+        setOpen(true)
       } else {
-        showError(response.message);
+        showError(response.message)
       }
     } catch (e) {
-      showError('Network error. Please try again later.');
-      console.error(e);
+      showError('Network error. Please try again later.')
+      console.error(e)
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') onRegister();
-  };
+    if (e.key === 'Enter') onRegister()
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-sky-50 via-white to-blue-50 flex items-center justify-center px-4 py-12">
@@ -78,8 +84,8 @@ const Register = () => {
                 </span>
               </h1>
               <p className="text-muted-foreground mt-3 text-sm leading-relaxed">
-                Deshop is a decentralized digital exchange platform where anyone can list products, anyone can purchase
-                products, with no third-party constraints.
+                Deshop is a decentralized digital exchange platform where anyone can list products,
+                anyone can purchase products, with no third-party constraints.
               </p>
             </div>
           </div>
@@ -104,7 +110,9 @@ const Register = () => {
             <CardContent className="p-8 flex flex-col gap-6">
               <div>
                 <h2 className="text-xl font-bold">Create account</h2>
-                <p className="text-sm text-muted-foreground mt-0.5">Start selling in minutes, completely free</p>
+                <p className="text-sm text-muted-foreground mt-0.5">
+                  Start selling in minutes, completely free
+                </p>
               </div>
 
               <div className="flex flex-col gap-1.5">
@@ -149,7 +157,7 @@ const Register = () => {
                 variant="outline"
                 className="h-11 font-medium"
                 onClick={() => {
-                  window.location.href = '/login';
+                  window.location.href = '/login'
                 }}
               >
                 Log in
@@ -172,7 +180,7 @@ const Register = () => {
 
       <RegisterDialog openDialog={open} setOpenDialog={setOpen} email={email} />
     </div>
-  );
-};
+  )
+}
 
-export default Register;
+export default Register

@@ -20,7 +20,7 @@ import { GetAbosolutePathByRelative } from '@/utils/image'
 
 const ReportProductDetails = () => {
   const router = useRouter()
-  const { id } = router.query
+  const id = typeof router.query.id === 'string' ? router.query.id : ''
 
   const [product, setProduct] = useState<ProductType>()
   const [selectReport, setSelectReport] = useState<number>(0)
@@ -58,7 +58,8 @@ const ReportProductDetails = () => {
   }
 
   useEffect(() => {
-    if (id) init(id)
+    if (!router.isReady) return
+    init(id)
   }, [id])
 
   const sendReport = async () => {

@@ -20,7 +20,8 @@ import { GetAbosolutePathByRelative } from '@/utils/image'
 
 const ProfileDetails = () => {
   const router = useRouter()
-  const { id, tab } = router.query
+  const id = typeof router.query.id === 'string' ? router.query.id : ''
+  const tab = typeof router.query.tab === 'string' ? router.query.tab : ''
 
   const [user, setUser] = useState<UserType>()
   const [activeTab, setActiveTab] = useState('products')
@@ -76,7 +77,8 @@ const ProfileDetails = () => {
   }
 
   useEffect(() => {
-    if (id) init(id)
+    if (!router.isReady) return
+    init(id)
   }, [id])
 
   const isOwnProfile = getUuid() === user?.profile?.uuid

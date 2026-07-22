@@ -85,7 +85,7 @@ const PriceRow = ({ icon: Icon, label, value }: { icon: any; label: string; valu
 
 const ProductDetails = () => {
   const router = useRouter()
-  const { id } = router.query
+  const id = typeof router.query.id === 'string' ? router.query.id : ''
 
   const [product, setProduct] = useState<ProductType>()
   const [openRatingsDialog, setOpenRatingsDialog] = useState(false)
@@ -238,8 +238,10 @@ const ProductDetails = () => {
     : '0'
 
   useEffect(() => {
-    if (id) init(id)
-  }, [id])
+    if (!router.isReady) return
+    init(id)
+  }, [id, router.isReady])
+
   useEffect(() => {
     initOptionValue(optionOneValue, optionTwoValue, optionThreeValue)
   }, [optionOneValue, optionTwoValue, optionThreeValue])

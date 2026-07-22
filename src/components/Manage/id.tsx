@@ -16,7 +16,8 @@ import { Button } from '@/components/ui/button'
 
 const ManageDetails = () => {
   const router = useRouter()
-  const { id, tab } = router.query
+  const id = typeof router.query.id === 'string' ? router.query.id : ''
+  const tab = typeof router.query.tab === 'string' ? router.query.tab : ''
 
   const [user, setUser] = useState<UserType>()
   const [tabValue, setTabValue] = useState('0')
@@ -24,7 +25,11 @@ const ManageDetails = () => {
   const { getUuid } = useUserPresistStore((state) => state)
   const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore((state) => state)
 
-  const showError = (msg: string) => { setSnackSeverity('error'); setSnackMessage(msg); setSnackOpen(true) }
+  const showError = (msg: string) => {
+    setSnackSeverity('error')
+    setSnackMessage(msg)
+    setSnackOpen(true)
+  }
 
   const handleTabChange = (value: string) => {
     const tabId = MANAGE_TAB_DATAS.find((item) => item.id === Number(value))?.tabId
@@ -48,10 +53,15 @@ const ManageDetails = () => {
       } else {
         showError(response.message)
       }
-    } catch { showError('Network error. Please try again later.') }
+    } catch {
+      showError('Network error. Please try again later.')
+    }
   }
 
-  useEffect(() => { if (id) init() }, [id])
+  useEffect(() => {
+    if (!router.isReady) return
+    init()
+  }, [id])
 
   const tabComponents: Record<string, React.ReactNode> = {
     '0': <ManageProduct />,
@@ -63,20 +73,20 @@ const ManageDetails = () => {
 
   return (
     <div className="container mx-auto py-8 px-4 flex flex-col gap-6">
-
       <div className="flex items-center gap-3">
         <div className="h-10 w-10 rounded-xl bg-sky-50 flex items-center justify-center">
           <LayoutDashboard className="h-5 w-5 text-sky-500" />
         </div>
         <div>
           <h1 className="text-xl font-bold">User Management</h1>
-          <p className="text-sm text-muted-foreground">Manage your products, orders, wallet and settings</p>
+          <p className="text-sm text-muted-foreground">
+            Manage your products, orders, wallet and settings
+          </p>
         </div>
       </div>
 
       {id === user?.profile.username ? (
         <Tabs value={tabValue} onValueChange={handleTabChange}>
-
           <TabsList className="w-full justify-start overflow-x-auto h-auto p-1 bg-gray-100 rounded-xl gap-1 flex-wrap">
             {MANAGE_TAB_DATAS.map((item) => (
               <TabsTrigger
@@ -94,7 +104,6 @@ const ManageDetails = () => {
               {component}
             </TabsContent>
           ))}
-
         </Tabs>
       ) : (
         <div className="flex flex-col items-center justify-center py-24 gap-4 text-center">
@@ -110,13 +119,14 @@ const ManageDetails = () => {
           <Button
             variant="outline"
             className="mt-2"
-            onClick={() => { window.location.href = '/' }}
+            onClick={() => {
+              window.location.href = '/'
+            }}
           >
             Back to Home
           </Button>
         </div>
       )}
-
     </div>
   )
 }

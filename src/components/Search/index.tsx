@@ -19,10 +19,10 @@ function formatCompactNumber(value: number): string {
 
 const Search = () => {
   const router = useRouter()
-  const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore((state) => state)
-
   const q = typeof router.query.q === 'string' ? router.query.q : ''
   const initialTab: Tab = router.query.type === 'profiles' ? 'profiles' : 'products'
+
+  const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore((state) => state)
 
   const [inputValue, setInputValue] = useState(q)
   const [tab, setTab] = useState<Tab>(initialTab)
