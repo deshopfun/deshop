@@ -1,10 +1,6 @@
-// lib/cart.ts
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 
-// 一行购物车记录 = 用户的购买意图
-// 注意: snapshot* 字段仅用于购物车页面在请求返回前的骨架占位显示,
-// 绝不能用它做库存判断或价格计算 —— 那些永远以服务器返回的数据为准
 export type CartLineType = {
   productId: number
   option: string
@@ -15,7 +11,7 @@ export type CartLineType = {
 }
 
 export type CartType = {
-  uuid: string // 卖家 uuid,用于分组展示
+  uuid: string
   variant: CartLineType[]
 }
 

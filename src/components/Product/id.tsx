@@ -19,7 +19,6 @@ import { COLLECT_TYPE, PRODUCT_TAB_DATAS, PRODUCT_TYPE } from '@/packages/consta
 import Product from './Product'
 import ProductVariant from './Variant'
 import ProductRating from './Rating'
-import NowTrendingCard from '@/components/Card/NowTrendingCard'
 import { CURRENCYS } from '@/packages/constants/currency'
 import { marked } from 'marked'
 import DOMPurify from 'dompurify'
@@ -27,7 +26,6 @@ import { ProductType, ProductVariantType } from '@/utils/types'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
-import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
 import {
   DropdownMenu,
@@ -187,90 +185,11 @@ const ProductDetails = () => {
       productId: product.product_id,
       option,
       quantity,
-      // 仅作为购物车页首屏占位用的快照,不参与任何库存/价格计算
       snapshotTitle: product.title,
       snapshotImage: String(currentProductVariant.image ?? ''),
       snapshotSlug: product.slug,
     })
   }
-
-  // const addToCart = () => {
-  //   if (!product) return
-  //   let option = ''
-  //   switch (product.options.length) {
-  //     case 3:
-  //       if (!optionOneValue || !optionTwoValue || !optionThreeValue) return
-  //       option = `${optionOneValue},${optionTwoValue},${optionThreeValue}`
-  //       break
-  //     case 2:
-  //       if (!optionOneValue || !optionTwoValue) return
-  //       option = `${optionOneValue},${optionTwoValue}`
-  //       break
-  //     case 1:
-  //       if (!optionOneValue) return
-  //       option = optionOneValue
-  //       break
-  //     default:
-  //       return
-  //   }
-  //   const cart = getCart()
-  //   const newVariant: any = {
-  //     productId: product.product_id,
-  //     slug: product.slug,
-  //     title: product.title,
-  //     image: String(currentProductVariant?.image ?? ''),
-  //     option,
-  //     price: String(currentProductVariant?.price ?? ''),
-  //     discounts: String(currentProductVariant?.discounts ?? ''),
-  //     taxable: currentProductVariant?.taxable,
-  //     tax: String(currentProductVariant?.tax ?? ''),
-  //     tip: String(currentProductVariant?.tip ?? ''),
-  //     weight: String(currentProductVariant?.weight ?? ''),
-  //     weightUnit: String(currentProductVariant?.weight_unit ?? ''),
-  //     quantity,
-  //     isVirtual: currentProductVariant?.is_virtual,
-  //   }
-  //   const cartItem = cart.find((i) => i.uuid === product.user_uuid)
-  //   if (cartItem) {
-  //     const exists = cartItem.variant.find(
-  //       (v) => v.productId === product.product_id && v.option === option
-  //     )
-  //     setCart(
-  //       cart.map((i) =>
-  //         i.uuid === product.user_uuid
-  //           ? {
-  //               ...i,
-  //               variant: exists
-  //                 ? i.variant.map((v) =>
-  //                     v.productId === product.product_id && v.option === option
-  //                       ? { ...v, quantity: v.quantity + quantity }
-  //                       : v
-  //                   )
-  //                 : [...i.variant, newVariant],
-  //             }
-  //           : i
-  //       )
-  //     )
-  //   } else {
-  //     setCart([
-  //       ...cart,
-  //       {
-  //         uuid: product.user_uuid,
-  //         avatarUrl: product.user_avatar_url,
-  //         username: product.username,
-  //         currency: product.currency,
-  //         variant: [newVariant],
-  //       },
-  //     ])
-  //   }
-  // }
-
-  // const onClickAddToCart = () => {
-  //   if (!product || quantity <= 0) return showError('At least one quantity is required.')
-  //   if (getUuid() === product.user_uuid) return showError('Cannot buy your own products.')
-  //   addToCart()
-  //   showSuccess('Added to cart successfully')
-  // }
 
   const onClickAddToCart = () => {
     if (!product || !currentProductVariant) return showError('Please select a variant.')
@@ -282,13 +201,6 @@ const ProductDetails = () => {
     addToCart()
     showSuccess('Added to cart successfully')
   }
-
-  // const onClickBuyNow = () => {
-  //   if (!product || quantity <= 0) return showError('At least one quantity is required.')
-  //   if (getUuid() === product.user_uuid) return showError('Cannot buy your own products.')
-  //   addToCart()
-  //   window.location.href = `/checkout/${product.user_uuid}`
-  // }
 
   const onClickBuyNow = () => {
     if (!product || !currentProductVariant) return showError('Please select a variant.')
@@ -797,7 +709,6 @@ const ProductDetails = () => {
             <h2 className="text-lg font-bold">Recommended</h2>
             <ChevronRight className="h-5 w-5" />
           </button>
-          {/* <NowTrendingCard productType={product.product_type} /> */}
           <Recommended productType={product.product_type} excludeId={product.product_id} />
         </div>
       )}

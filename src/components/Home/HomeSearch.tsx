@@ -109,7 +109,6 @@ const HomeSearch = () => {
   }
 
   const hasAnyResult = (data.products?.length ?? 0) > 0 || (data.profiles?.length ?? 0) > 0
-  const showPanel = open
 
   return (
     <div className="relative w-full max-w-md" ref={containerRef}>
@@ -131,7 +130,7 @@ const HomeSearch = () => {
               setQuery('')
               inputRef.current?.focus()
             }}
-            aria-label="清空"
+            aria-label="clear"
             className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
           >
             <X className="h-4 w-4" />
@@ -139,7 +138,7 @@ const HomeSearch = () => {
         )}
       </div>
 
-      {showPanel && (
+      {open && (
         <div className="absolute top-full mt-2 w-full rounded-xl border border-gray-200 bg-white text-gray-900 shadow-xl overflow-hidden z-30">
           <div className="flex items-center gap-2 px-4 pt-3">
             {(['products', 'profiles'] as Tab[]).map((t) => (
@@ -195,8 +194,7 @@ const HomeSearch = () => {
                   }}
                   className="w-full flex items-center gap-3 px-2 py-2.5 rounded-lg hover:bg-gray-50 text-left"
                 >
-                  {m.images[0].src ? (
-                    // eslint-disable-next-line @next/next/no-img-element
+                  {m.images && m.images[0].src ? (
                     <img
                       src={GetAbosolutePathByRelative(m.images[0].src)}
                       alt=""
@@ -227,7 +225,6 @@ const HomeSearch = () => {
                   className="w-full flex items-center gap-3 px-2 py-2.5 rounded-lg hover:bg-gray-50 text-left"
                 >
                   {p.avatar_url ? (
-                    // eslint-disable-next-line @next/next/no-img-element
                     <img
                       src={GetAbosolutePathByRelative(p.avatar_url, 'avatar')}
                       alt=""

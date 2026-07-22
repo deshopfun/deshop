@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/router'
 import axios from 'axios'
-import { ChevronRight, MessageCircle, Search as SearchIcon } from 'lucide-react'
+import { ChevronRight, Search as SearchIcon } from 'lucide-react'
 import { Http } from '@/utils/http/http'
 import { useSnackPresistStore } from '@/lib'
 import { ProductType, ProfileType, SearchType } from '@/utils/types'
@@ -101,7 +101,6 @@ const Search = () => {
   useEffect(() => {
     if (!router.isReady) return
     init(q, tab, 0)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [q, tab, router.isReady])
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -205,8 +204,7 @@ const Search = () => {
                 onClick={() => router.push(`/products/${m.slug ? m.slug : m.product_id}`)}
                 className="w-full flex items-center gap-4 py-5 border-b border-gray-100 text-left hover:bg-gray-50 transition-colors px-2 -mx-2 rounded"
               >
-                {m.images[0].src ? (
-                  // eslint-disable-next-line @next/next/no-img-element
+                {m.images && m.images[0].src ? (
                   <img
                     src={GetAbosolutePathByRelative(m.images[0].src)}
                     alt=""
@@ -242,7 +240,6 @@ const Search = () => {
                 className="w-full flex items-center gap-4 py-5 border-b border-gray-100 text-left hover:bg-gray-50 transition-colors px-2 -mx-2 rounded"
               >
                 {p.avatar_url ? (
-                  // eslint-disable-next-line @next/next/no-img-element
                   <img
                     src={GetAbosolutePathByRelative(p.avatar_url, 'avatar')}
                     alt=""

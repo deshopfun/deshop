@@ -13,12 +13,6 @@ export const IsValidJSON = (json: string): boolean => {
   }
 }
 
-// export const isValidHttpUrl = (url: string): boolean => {
-//   const urlRegex =
-//     /((https?:\/\/)|(\/)|(..\/))(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/gm
-//   return urlRegex.test(url)
-// }
-
 export const isValidHttpUrl = (str: string): boolean => {
   try {
     const url = new URL(str)
