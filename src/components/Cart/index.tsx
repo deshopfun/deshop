@@ -125,7 +125,7 @@ const Cart = () => {
 
   const handleQuantityChange = (uuid: string, line: MergedLine, raw: string) => {
     const digits = raw.replace(/\D/g, '')
-    if (digits === '') return 
+    if (digits === '') return
     const num = Number(digits)
     const max = line.sku?.inventory_quantity ?? num
     updateQuantity(uuid, line.productId, line.option, Math.min(max, num))
@@ -183,7 +183,7 @@ const Cart = () => {
                     onClick={() => (window.location.href = `/profile/${group.username}`)}
                   >
                     <Avatar className="w-9 h-9">
-                      <AvatarImage src={(GetAbosolutePathByRelative(group.avatarUrl), 'avatar')} />
+                      <AvatarImage src={GetAbosolutePathByRelative(group.avatarUrl, 'avatar')} />
                       <AvatarFallback>
                         <User className="w-5 h-5" />
                       </AvatarFallback>
