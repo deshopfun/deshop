@@ -61,7 +61,7 @@ const ManageDetails = () => {
   useEffect(() => {
     if (!router.isReady) return
     init()
-  }, [id])
+  }, [router.isReady])
 
   const tabComponents: Record<string, React.ReactNode> = {
     '0': <ManageProduct />,

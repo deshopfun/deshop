@@ -2,7 +2,7 @@ import { useSnackPresistStore } from '@/lib'
 import { useRouter } from 'next/router'
 import axios from '@/utils/http/axios'
 import { Http } from '@/utils/http/http'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 
 import { REPORTS, REPORT_TYPE } from '@/packages/constants'
 import { ProductType } from '@/utils/types'
@@ -17,6 +17,7 @@ import { Separator } from '@/components/ui/separator'
 
 import { AlertTriangle, Send } from 'lucide-react'
 import { GetAbosolutePathByRelative } from '@/utils/image'
+import { useAbortableEffect } from '@/hooks/useAbortableEffect'
 
 const ReportProductDetails = () => {
   const router = useRouter()
@@ -28,7 +29,7 @@ const ReportProductDetails = () => {
 
   const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore((state) => state)
 
-  const init = async (productId: any) => {
+  const init = async (productId: any, signal?: AbortSignal) => {
     try {
       if (!productId) {
         setSnackSeverity('error')
@@ -40,6 +41,7 @@ const ReportProductDetails = () => {
       const isNumericId = typeof productId === 'number' || /^\d+$/.test(String(id))
       const response: any = await axios.get(Http.product_by_id, {
         params: isNumericId ? { product_id: productId } : { slug: productId },
+        signal,
       })
 
       if (response.result) {
@@ -50,6 +52,8 @@ const ReportProductDetails = () => {
         setSnackOpen(true)
       }
     } catch (e) {
+      if (axios.isCancel(e) || (e as any)?.code === 'ERR_CANCELED') return
+
       setSnackSeverity('error')
       setSnackMessage('Network error occurred. Please try again later.')
       setSnackOpen(true)
@@ -57,10 +61,13 @@ const ReportProductDetails = () => {
     }
   }
 
-  useEffect(() => {
-    if (!router.isReady) return
-    init(id)
-  }, [id])
+  useAbortableEffect(
+    (signal) => {
+      if (!router.isReady || !id) return
+      init(id, signal)
+    },
+    [router.isReady, id]
+  )
 
   const sendReport = async () => {
     try {

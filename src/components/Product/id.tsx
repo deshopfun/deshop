@@ -58,6 +58,7 @@ import Link from 'next/link'
 import VideoPlayer from '../VIdeo/VideoPlayer'
 import { GetAbosolutePathByRelative } from '@/utils/image'
 import Recommended from './Recommended'
+import { useAbortableEffect } from '@/hooks/useAbortableEffect'
 
 const RatingBar = ({ star, ratings }: { star: number; ratings: any[] }) => {
   const count = ratings.filter((r) => r.number === star).length
@@ -115,13 +116,14 @@ const ProductDetails = () => {
 
   const currencyCode = CURRENCYS.find((c) => c.name === product?.currency)?.code ?? ''
 
-  const init = async (id: any) => {
+  const init = async (id: any, signal?: AbortSignal) => {
     try {
       if (!id) return showError('Incorrect product id')
       const endpoint = getIsLogin() ? Http.product_by_login_id : Http.product_by_id
       const isNumericId = typeof id === 'number' || /^\d+$/.test(String(id))
       const response: any = await axios.get(endpoint, {
         params: isNumericId ? { product_id: id } : { slug: id },
+        signal,
       })
       if (response.result) {
         setProduct({
@@ -132,6 +134,8 @@ const ProductDetails = () => {
         showError(response.message)
       }
     } catch (e) {
+      if (axios.isCancel(e) || (e as any)?.code === 'ERR_CANCELED') return
+
       showError('Network error. Please try again later.')
     }
   }
@@ -237,10 +241,13 @@ const ProductDetails = () => {
         .toString()
     : '0'
 
-  useEffect(() => {
-    if (!router.isReady) return
-    init(id)
-  }, [id, router.isReady])
+  useAbortableEffect(
+    (signal) => {
+      if (!router.isReady || !id) return
+      init(id, signal)
+    },
+    [router.isReady, id]
+  )
 
   useEffect(() => {
     initOptionValue(optionOneValue, optionTwoValue, optionThreeValue)

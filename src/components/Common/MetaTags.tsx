@@ -1,21 +1,21 @@
-import { FC } from 'react';
-import Head from 'next/head';
-import { APP_DESCRIPTION, APP_NAME } from '@/packages/constants';
-import { useRouter } from 'next/router';
+import { FC } from 'react'
+import Head from 'next/head'
+import { APP_DESCRIPTION, APP_NAME } from '@/packages/constants'
+import { useRouter } from 'next/router'
 
 type Props = {
-  title?: string;
-};
+  title?: string
+}
 
 const MetaTags: FC<Props> = (props) => {
-  const router = useRouter();
-  const { title } = props;
+  const router = useRouter()
+  const { title } = props
 
   const meta = {
     title: title ? `${title} | ${APP_NAME}` : APP_NAME,
     description: APP_DESCRIPTION,
     type: 'website',
-  };
+  }
 
   return (
     <Head>
@@ -35,7 +35,7 @@ const MetaTags: FC<Props> = (props) => {
       <meta property="og:image:width" content="400" />
       <meta property="og:image:height" content="400" />
     </Head>
-  );
-};
+  )
+}
 
-export default MetaTags;
+export default MetaTags

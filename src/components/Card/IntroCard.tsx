@@ -8,20 +8,23 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { SiteLogo } from '@/components/Logo/SiteLogo'
 import { ArrowRight, ShoppingBag, BarChart3, RefreshCw, Package, Layers } from 'lucide-react'
+import { useAbortableEffect } from '@/hooks/useAbortableEffect'
 
 const IntroCard = () => {
   const [stats, setStats] = useState<StatType>()
 
   const { setSnackSeverity, setSnackOpen, setSnackMessage } = useSnackPresistStore((state) => state)
 
-  const init = async () => {
+  const init = async (signal?: AbortSignal) => {
     try {
-      const response: any = await axios.get(Http.home_stat)
+      const response: any = await axios.get(Http.home_stat, { signal })
 
       if (response.result) {
         setStats(response.data)
       }
     } catch (e) {
+      if (axios.isCancel(e) || (e as any)?.code === 'ERR_CANCELED') return
+
       setSnackSeverity('error')
       setSnackMessage('The network error occurred. Please try again later')
       setSnackOpen(true)
@@ -29,8 +32,8 @@ const IntroCard = () => {
     }
   }
 
-  useEffect(() => {
-    init()
+  useAbortableEffect((signal) => {
+    init(signal)
   }, [])
 
   const statItems = [

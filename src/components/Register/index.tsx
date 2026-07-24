@@ -41,7 +41,7 @@ const Register = () => {
   useEffect(() => {
     if (!router.isReady) return
     if (router.query.email) setEmail(String(router.query.email))
-  }, [router.query])
+  }, [router.isReady, router.query])
 
   useEffect(() => {
     if (getIsLogin()) window.location.href = '/'

@@ -80,14 +80,14 @@ const CheckoutDetails = () => {
   }
 
   useEffect(() => {
-    if (!router.isReady) return
+    if (!router.isReady || !id) return
     setLoading(true)
     setError(false)
     fetchAndMerge()
       .then(setLines)
       .catch(() => setError(true))
       .finally(() => setLoading(false))
-  }, [id])
+  }, [router.isReady, id])
 
   const currency = lines.find((l) => l.sku)?.sku?.currency ?? ''
   const currencyCode = CURRENCYS.find((c) => c.name === currency)?.code ?? ''

@@ -2,7 +2,7 @@ import { useSnackPresistStore, useUserPresistStore } from '@/lib'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { CHAINIDS } from '@/packages/constants'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import axios from '@/utils/http/axios'
 import { Http } from '@/utils/http/http'
 import { OmitMiddleString } from '@/utils/strings'
@@ -34,6 +34,7 @@ import {
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { GetAbosolutePathByRelative } from '@/utils/image'
+import { useAbortableEffect } from '@/hooks/useAbortableEffect'
 
 const InfoRow = ({ label, children }: { label: string; children: React.ReactNode }) => (
   <div className="flex items-center justify-between gap-4 py-2 border-b border-dashed border-gray-100 last:border-0">
@@ -97,24 +98,31 @@ const OrderDetails = () => {
   const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore((state) => state)
   const { getUuid } = useUserPresistStore((state) => state)
 
-  const init = async (orderId: any) => {
+  const init = async (orderId: any, signal?: AbortSignal) => {
     if (!orderId) return
+
     try {
       const response: any = await axios.get(Http.order_by_id, {
         params: { order_id: Number(orderId) },
+        signal,
       })
       setOrder(response.result ? response.data : undefined)
-    } catch {
+    } catch (e) {
+      if (axios.isCancel(e) || (e as any)?.code === 'ERR_CANCELED') return
+
       setSnackSeverity('error')
       setSnackMessage('Network error. Please try again later.')
       setSnackOpen(true)
     }
   }
 
-  useEffect(() => {
-    if (!router.isReady) return
-    init(id)
-  }, [id])
+  useAbortableEffect(
+    (signal) => {
+      if (!router.isReady || !id) return
+      init(id, signal)
+    },
+    [router.isReady, id]
+  )
 
   if (!order)
     return (

@@ -13,6 +13,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import { ExternalLink, ChevronRight, Wallet } from 'lucide-react'
+import { useAbortableEffect } from '@/hooks/useAbortableEffect'
 
 const Blockchain = () => {
   const [blockchainOrder, setBlockchainOrder] = useState<BlockchainOrderType>()
@@ -20,12 +21,13 @@ const Blockchain = () => {
 
   const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore((state) => state)
 
-  const init = async (block: BLOCKCHAIN) => {
+  const init = async (block: BLOCKCHAIN, signal?: AbortSignal) => {
     try {
       if (!block) return
 
       const response: any = await axios.get(Http.blockchainOrder, {
         params: { chain_id: Number(block.chainId) },
+        signal,
       })
 
       if (response.result) {
@@ -34,6 +36,8 @@ const Blockchain = () => {
         setBlockchainOrder(undefined)
       }
     } catch (e) {
+      if (axios.isCancel(e) || (e as any)?.code === 'ERR_CANCELED') return
+
       setSnackSeverity('error')
       setSnackMessage('The network error occurred. Please try again later.')
       setSnackOpen(true)
@@ -41,8 +45,8 @@ const Blockchain = () => {
     }
   }
 
-  useEffect(() => {
-    init(BLOCKCHAINNAMES[0])
+  useAbortableEffect((signal) => {
+    init(BLOCKCHAINNAMES[0], signal)
   }, [])
 
   const handleSelectBlockchain = async (item: BLOCKCHAIN) => {
@@ -97,9 +101,6 @@ const Blockchain = () => {
                 <div className="space-y-4">
                   {blockchainOrder.orders.map((item, index) => {
                     const tx = item.transactions[0]
-                    const currencySymbol =
-                      CURRENCYS.find((c) => c.name === item.currency)?.code || '$'
-
                     return (
                       <Card key={index} className="p-4">
                         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -115,7 +116,7 @@ const Blockchain = () => {
                                 <span>{tx.blockchain.token}</span>
                                 <span>•</span>
                                 <span>
-                                  {currencySymbol}
+                                  {CURRENCYS.find((c) => c.name === item.currency)?.code}
                                   {item.total_price}
                                 </span>
                               </div>

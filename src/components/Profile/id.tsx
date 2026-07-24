@@ -4,6 +4,7 @@ import { PROFILE_TAB_DATAS } from '@/packages/constants'
 import { useEffect, useState } from 'react'
 import axios from '@/utils/http/axios'
 import { Http } from '@/utils/http/http'
+import { useAbortableEffect } from '@/hooks/useAbortableEffect'
 
 import ProfileProduct from './Product'
 import EditProfileDialog from '@/components/Dialog/EditProfileDialog'
@@ -45,17 +46,18 @@ const ProfileDetails = () => {
     setActiveTab(value)
   }
 
-  const init = async (username: any) => {
-    try {
-      if (!username) {
-        setSnackSeverity('error')
-        setSnackMessage('Incorrect username input')
-        setSnackOpen(true)
-        return
-      }
+  const init = async (username: string, signal?: AbortSignal) => {
+    if (!username) {
+      setSnackSeverity('error')
+      setSnackMessage('Incorrect username input')
+      setSnackOpen(true)
+      return
+    }
 
+    try {
       const response: any = await axios.get(Http.user_profile_by_username, {
         params: { username },
+        signal,
       })
 
       if (response.result) {
@@ -69,6 +71,8 @@ const ProfileDetails = () => {
         setSnackOpen(true)
       }
     } catch (e) {
+      if (axios.isCancel(e) || (e as any)?.code === 'ERR_CANCELED') return
+
       setSnackSeverity('error')
       setSnackMessage('The network error occurred. Please try again later.')
       setSnackOpen(true)
@@ -76,10 +80,13 @@ const ProfileDetails = () => {
     }
   }
 
-  useEffect(() => {
-    if (!router.isReady) return
-    init(id)
-  }, [id])
+  useAbortableEffect(
+    (signal) => {
+      if (!router.isReady || !id) return
+      init(id, signal)
+    },
+    [router.isReady, id]
+  )
 
   const isOwnProfile = getUuid() === user?.profile?.uuid
 
