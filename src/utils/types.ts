@@ -21,6 +21,8 @@ export type SearchType = {
 export type UserType = {
   profile: ProfileType
   products: ProductType[]
+  followers: ProfileType[]
+  followings: ProfileType[]
 }
 
 export type ProfileType = {
@@ -263,8 +265,6 @@ export type NotificationType = {
   is_read: number
   create_time: number
 }
-
-export type FollowerType = {}
 
 export type ReplyType = {}
 

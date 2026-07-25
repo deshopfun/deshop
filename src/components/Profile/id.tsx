@@ -18,6 +18,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { User, Edit } from 'lucide-react'
 import { UserType } from '@/utils/types'
 import { GetAbosolutePathByRelative } from '@/utils/image'
+import WhoToFollow from './WhoToFollow'
 
 const ProfileDetails = () => {
   const router = useRouter()
@@ -64,6 +65,8 @@ const ProfileDetails = () => {
         setUser({
           profile: response.data.profile,
           products: response.data.products,
+          followers: response.data.followers,
+          followings: response.data.followings,
         })
       } else {
         setSnackSeverity('error')
@@ -135,11 +138,11 @@ const ProfileDetails = () => {
 
               <div className="mt-10 grid grid-cols-3 gap-6 text-center border-t pt-8">
                 <div>
-                  <p className="text-3xl font-semibold">0</p>
+                  <p className="text-3xl font-semibold">{user?.followers?.length || 0}</p>
                   <p className="text-sm text-muted-foreground mt-1">Followers</p>
                 </div>
                 <div>
-                  <p className="text-3xl font-semibold">0</p>
+                  <p className="text-3xl font-semibold">{user?.followings?.length || 0}</p>
                   <p className="text-sm text-muted-foreground mt-1">Following</p>
                 </div>
                 <div>
@@ -160,7 +163,7 @@ const ProfileDetails = () => {
             </TabsList>
 
             <TabsContent value="products" className="mt-0">
-              <ProfileProduct product={user?.products} uuid={user?.profile?.uuid} />
+              <ProfileProduct uuid={user?.profile?.uuid} product={user?.products} />
             </TabsContent>
 
             <TabsContent value="replies" className="mt-0">
@@ -168,18 +171,20 @@ const ProfileDetails = () => {
             </TabsContent>
 
             <TabsContent value="followers" className="mt-0">
-              <ProfileFollower uuid={user?.profile?.uuid} />
+              <ProfileFollower uuid={user?.profile?.uuid} followers={user?.followers} />
             </TabsContent>
           </Tabs>
         </div>
 
-        <div className="lg:col-span-4">
-          {getIsLogin() && (
+        {getIsLogin() && (
+          <div className="lg:col-span-4">
             <Card>
-              <CardContent className="p-6">{/* Who to follow */}</CardContent>
+              <CardContent className="p-6">
+                <WhoToFollow />
+              </CardContent>
             </Card>
-          )}
-        </div>
+          </div>
+        )}
       </div>
 
       <EditProfileDialog

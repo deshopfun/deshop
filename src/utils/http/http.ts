@@ -68,4 +68,8 @@ export class Http {
 
   // collect
   static collect = this.httpPath + '/client/collect/collect'
+
+  // follow
+  static follow = this.httpPath + '/client/follow/follow'
+  static recommend_to_follow = this.httpPath + '/client/follow/recommend-to-follow'
 }
