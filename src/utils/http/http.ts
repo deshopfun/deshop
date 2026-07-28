@@ -72,4 +72,13 @@ export class Http {
   // follow
   static follow = this.httpPath + '/client/follow/follow'
   static recommend_to_follow = this.httpPath + '/client/follow/recommend-to-follow'
+
+  // chat
+  static chat = this.httpPath + '/client/chat/chat'
+  static chat_conversation = this.httpPath + '/client/chat/chat-conversation'
+  static chat_conversation_message = this.httpPath + '/client/chat/chat-conversation-message'
+  static chat_conversation_message_read =
+    this.httpPath + '/client/chat/chat-conversation-message-read'
+  static chat_conversation_unread_count =
+    this.httpPath + '/client/chat/chat-conversation-unread-count'
 }

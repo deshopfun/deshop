@@ -273,3 +273,23 @@ export type TabPanelType = {
   index: number
   value: number
 }
+
+export type Conversation = {
+  id: string
+  peer_uuid: string
+  peer_username: string
+  peer_avatar_url: string
+  peer_online: boolean
+  last_message: string
+  last_message_at: string
+  unread_count: number
+}
+
+export type ConversationMessage = {
+  id: string
+  conversation_id: string
+  sender_uuid: string
+  content: string
+  created_at: string
+  status: 'sending' | 'sent' | 'read' | 'unread' | 'delete' | 'failed'
+}
