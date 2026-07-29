@@ -15,12 +15,9 @@ const SidebarHeader = () => {
 
   const init = async () => {
     try {
-      if (!getIsLogin || !getIsLogin()) {
-        return
-      }
+      if (!getIsLogin?.()) return
 
       const response: any = await axios.get(Http.user_notification)
-
       if (response.result) {
         if (response.data) {
           const count = response.data.reduce((total: number, item: any) => {
@@ -39,9 +36,6 @@ const SidebarHeader = () => {
         setSnackOpen(true)
       }
     } catch (e) {
-      setSnackSeverity('error')
-      setSnackMessage('The network error occurred. Please try again later.')
-      setSnackOpen(true)
       console.error(e)
     }
   }

@@ -6,9 +6,9 @@ export type ServerEnvelope =
   | {
       type: 'ack'
       payload: {
-        client_msg_id: string
-        message_id: string
-        conversation_id: string
+        client_message_id: string
+        message_id: number
+        conversation_id: number
         created_at: string
       }
     }
@@ -16,26 +16,26 @@ export type ServerEnvelope =
       type: 'message'
       payload: {
         id: string
-        conversation_id: string
+        conversation_id: number
         sender_uuid: string
         content: string
         created_at: string
       }
     }
-  | { type: 'typing'; payload: { conversation_id: string; sender_uuid: string } }
+  | { type: 'typing'; payload: { conversation_id: number; sender_uuid: string } }
   | {
       type: 'read'
-      payload: { conversation_id: string; reader_uuid: string; last_read_message_id: string }
+      payload: { conversation_id: number; reader_uuid: string; last_read_message_id: string }
     }
-  | { type: 'presence'; payload: { user_uuid: string; online: boolean } }
+  | { type: 'presence'; payload: { user_uuid: string; online: number } }
 
 export type ClientEnvelope =
   | {
       type: 'message'
-      payload: { conversation_id: string; client_msg_id: string; content: string }
+      payload: { conversation_id: number; client_message_id: string; content: string }
     }
-  | { type: 'typing'; payload: { conversation_id: string } }
-  | { type: 'read'; payload: { conversation_id: string; last_read_message_id: string } }
+  | { type: 'typing'; payload: { conversation_id: number } }
+  | { type: 'read'; payload: { conversation_id: number; last_read_message_id: string } }
   | { type: 'ping' }
 
 type UseChatSocketOptions = {
@@ -82,7 +82,7 @@ export function useChatSocket(options: UseChatSocketOptions) {
     if (!enabledRef.current) return
 
     const token = getAuthToken()
-    const url = `${WS_BASE_URL}/chat/ws${token ? `?token=${encodeURIComponent(token)}` : ''}`
+    const url = `${WS_BASE_URL}/api/client/chat/ws${token ? `?token=${encodeURIComponent(token)}` : ''}`
     const ws = new WebSocket(url)
     wsRef.current = ws
 

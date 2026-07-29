@@ -109,7 +109,7 @@ const Create = () => {
   }
 
   const onClickCreateProduct = async () => {
-    if (!getIsLogin()) return showError('Need login')
+    if (!getIsLogin?.()) return showError('Need login')
     if (!title) return showError('Incorrect title input')
     if (!slug) return showError('Incorrect slug input')
     if (!productType) return showError('Incorrect product type')

@@ -73,9 +73,7 @@ const HomeHeader = () => {
 
   const init = async () => {
     try {
-      if (!getIsLogin || !getIsLogin()) {
-        return
-      }
+      if (!getIsLogin?.()) return
 
       const response: any = await axios.get(Http.user_setting)
 
@@ -89,9 +87,6 @@ const HomeHeader = () => {
         setSnackOpen(true)
       }
     } catch (e) {
-      setSnackSeverity('error')
-      setSnackMessage('The network error occurred. Please try again later.')
-      setSnackOpen(true)
       console.error(e)
     }
   }

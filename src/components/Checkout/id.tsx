@@ -119,7 +119,7 @@ const CheckoutDetails = () => {
   const isVirtualOrder = lines.every((l) => l.sku?.is_virtual)
 
   const onClickPayNow = async () => {
-    if (!getIsLogin()) return showError('Please login first')
+    if (!getIsLogin?.()) return showError('Please login first')
     if (lines.length === 0) return showError('Cart is empty')
 
     setPayLoading(true)

@@ -163,3 +163,8 @@ export const RATING_TYPE = {
   1: '1',
   0: 'RESET',
 }
+
+// 'sending' | 'sent' | 'read' | 'unread' | 'delete' | 'failed'
+export const CHAT_MESSAGE_STATUS = {
+
+}
