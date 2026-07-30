@@ -33,7 +33,7 @@ export type ProfileType = {
   email: string
   invitation_code: string
   currency: string
-  created_time: number
+  create_time: number
 }
 
 export type ProductType = {
@@ -52,8 +52,8 @@ export type ProductType = {
   website: string
   video: string
   currency: string
-  product_status: number
-  collect_status: number
+  product_status: string
+  collect_status: string
   images: ProductImageType[]
   options: ProductOptionType[]
   variants: ProductVariantType[]
@@ -76,18 +76,18 @@ export type ProductVariantType = {
   barcode: string
   compare_at_price: string
   image: string
-  inventory_policy: boolean
+  inventory_policy: string
   inventory_quantity: number
   position: number
   price: string
   option: string
   discounts: string
-  taxable: boolean
+  taxable: string
   tax: string
   tip: string
-  // shippable: boolean;
+  // shippable: string;
   // shipping: string;
-  is_virtual: boolean
+  is_virtual: string
   sku: string
   weight: string
   weight_unit: string
@@ -97,6 +97,28 @@ export type ProductItemType = {
   product_id: number
   option: string
   quantity: number
+}
+
+export type CartSkuInfo = {
+  product_id: number
+  option: string
+  user_uuid: string
+  username: string
+  user_avatar_url: string
+  currency: string
+  slug: string
+  title: string
+  image: string
+  price: string
+  discounts: string
+  taxable: string
+  tax: string
+  tip: string
+  weight: string
+  weight_unit: string
+  is_virtual: string
+  inventory_quantity: number
+  product_status: string
 }
 
 export type OrderType = {
@@ -117,13 +139,13 @@ export type OrderType = {
   total_tip: string
   // total_shipping: string;
   currency: string
-  confirmed: number
+  confirmed: string
   confirmed_number: string
-  payment_confirmed: number
+  payment_confirmed: string
   payment_confirmed_number: string
-  // shipping_confirmed: number;
+  // shipping_confirmed: string;
   // shipping_confirmed_number: string;
-  financial_status: number
+  financial_status: string
   process_time: number
   create_time: number
   update_time: number
@@ -132,7 +154,7 @@ export type OrderType = {
   wallets: WalletType[]
   transactions: TransactionType[]
   // shipping: AddressType;
-  detect_transaction: number
+  detect_transaction: string
 }
 
 export type OrderItemType = {
@@ -153,14 +175,14 @@ export type WalletType = {
 }
 
 export type TransactionType = {
-  select: number
+  select: string
   transaction_id: number
   amount: string
   currency: number
   gateway: string
   message: string
-  source_name: number
-  transaction_status: number
+  source_name: string
+  transaction_status: string
   blockchain: BlockchainType
 }
 
@@ -220,14 +242,14 @@ export type AddressType = {
   address_one: string
   address_two: string
   zip: string
-  // shipping_type: number;
-  is_default: number
+  // shipping_type: string
+  is_default: string
 }
 
 export type CollectType = {
   bind_id: number
   slug: string
-  collect_type: number
+  collect_type: string
   title: string
   description: string
   image_srcs: string[]
@@ -261,8 +283,8 @@ export type NotificationType = {
   description: string
   content: string
   url: string
-  notification_type: number
-  is_read: number
+  notification_type: string
+  is_read: string
   create_time: number
 }
 
@@ -274,12 +296,18 @@ export type TabPanelType = {
   value: number
 }
 
+export type Chat = {
+  chat_id: number
+  title: string
+  description: string
+}
+
 export type Conversation = {
   conversation_id: number
   peer_uuid: string
   peer_username: string
   peer_avatar_url: string
-  peer_online: number
+  peer_online: string
   last_message: string
   last_message_time: number
   unread_count: number
@@ -292,6 +320,6 @@ export type ConversationMessage = {
   sender_uuid: string
   content: string
   create_time: number
-  message_status: number
+  message_status: string
   // message_status: 'sending' | 'sent' | 'read' | 'unread' | 'delete' | 'failed'
 }

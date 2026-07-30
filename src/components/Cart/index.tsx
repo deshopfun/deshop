@@ -15,31 +15,10 @@ import { cn } from '@/lib/utils'
 import { Plus, Minus, Trash2, ShoppingCart, User, AlertCircle, Loader2 } from 'lucide-react'
 import Decimal from 'decimal.js'
 import { GetAbosolutePathByRelative } from '@/utils/image'
-
-type SkuInfo = {
-  product_id: number
-  option: string
-  user_uuid: string
-  username: string
-  user_avatar_url: string
-  currency: string
-  slug: string
-  title: string
-  image: string
-  price: string
-  discounts: string
-  taxable: number
-  tax: string
-  tip: string
-  weight: string
-  weight_unit: string
-  is_virtual: number
-  inventory_quantity: number
-  product_status: number
-}
+import { CartSkuInfo } from '@/utils/types'
 
 type MergedLine = CartLineType & {
-  sku?: SkuInfo
+  sku?: CartSkuInfo
   isUnavailable: boolean
   exceedsStock: boolean
 }
@@ -56,7 +35,7 @@ const Cart = () => {
   const { getCart, updateQuantity, removeFromCart, resetCart } = useCartPresistStore((s) => s)
   const cart = getCart()
 
-  const [skuMap, setSkuMap] = useState<Record<string, SkuInfo>>({})
+  const [skuMap, setSkuMap] = useState<Record<string, CartSkuInfo>>({})
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)
 
@@ -74,8 +53,8 @@ const Cart = () => {
     try {
       const res: any = await axios.post(Http.product_variant_by_option_list, { items })
       if (res.result) {
-        const map: Record<string, SkuInfo> = {}
-        res.data.forEach((sku: SkuInfo) => {
+        const map: Record<string, CartSkuInfo> = {}
+        res.data.forEach((sku: CartSkuInfo) => {
           map[`${sku.product_id}|${sku.option}`] = sku
         })
         setSkuMap(map)
@@ -97,7 +76,7 @@ const Cart = () => {
     return cart.map((c) => {
       const lines: MergedLine[] = c.variant.map((v) => {
         const sku = skuMap[`${v.productId}|${v.option}`]
-        const isUnavailable = !sku || sku.product_status !== 1
+        const isUnavailable = !sku || sku.product_status !== 'active'
         const exceedsStock = !!sku && v.quantity > sku.inventory_quantity
         return { ...v, sku, isUnavailable, exceedsStock }
       })

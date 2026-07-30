@@ -86,7 +86,7 @@ export default function BlockchainDialog({
                         {FindChainNamesByChainids(item.blockchain.chain_id)}
                       </span>
                     </div>
-                    {item.select === 1 && (
+                    {item.select === 'true' && (
                       <div className="flex items-center gap-1 text-xs font-semibold text-green-600 bg-green-100 px-2 py-1 rounded-full">
                         <CheckCircle2 className="h-3.5 w-3.5" />
                         Selected

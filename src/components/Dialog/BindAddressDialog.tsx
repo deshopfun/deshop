@@ -59,7 +59,7 @@ export default function BindAddressDialog({
     setLoading(true)
     try {
       const response: any = await axios.put(Http.wallet, {
-        handle: 1,
+        handle: 'true',
         chain_id: chain,
         address,
       })

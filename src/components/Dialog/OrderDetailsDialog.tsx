@@ -96,15 +96,15 @@ export default function OrderDetailsDialog({ order, openDialog, handleCloseDialo
             <div className="space-y-4">
               <div className="flex justify-between items-center">
                 <span className="text-muted-foreground">Payment Status</span>
-                <Badge variant={order.payment_confirmed === 1 ? 'default' : 'secondary'}>
-                  {order.payment_confirmed === 1 ? 'Paid' : 'Pending'}
+                <Badge variant={order.payment_confirmed === 'true' ? 'default' : 'secondary'}>
+                  {order.payment_confirmed === 'true' ? 'Paid' : 'Pending'}
                 </Badge>
               </div>
 
               <div className="flex justify-between items-center">
                 <span className="text-muted-foreground">Order Status</span>
-                <Badge variant={order.confirmed === 1 ? 'default' : 'secondary'}>
-                  {order.confirmed === 1 ? 'Completed' : 'Processing'}
+                <Badge variant={order.confirmed === 'true' ? 'default' : 'secondary'}>
+                  {order.confirmed === 'true' ? 'Completed' : 'Processing'}
                 </Badge>
               </div>
             </div>

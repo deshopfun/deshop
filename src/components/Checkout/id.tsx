@@ -9,31 +9,10 @@ import { AlertCircle, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { GetAbosolutePathByRelative } from '@/utils/image'
-
-type SkuInfo = {
-  product_id: number
-  option: string
-  user_uuid: string
-  username: string
-  avatar_url: string
-  currency: string
-  slug: string
-  title: string
-  image: string
-  price: string
-  discounts: string
-  taxable: number
-  tax: string
-  tip: string
-  weight: string
-  weight_unit: string
-  is_virtual: number
-  inventory_quantity: number
-  product_status: number
-}
+import { CartSkuInfo } from '@/utils/types'
 
 type MergedLine = CartLineType & {
-  sku?: SkuInfo
+  sku?: CartSkuInfo
   isUnavailable: boolean
   exceedsStock: boolean
 }
@@ -66,14 +45,14 @@ const CheckoutDetails = () => {
     const res: any = await axios.post(Http.product_variant_by_option_list, { items })
     if (!res.result) throw new Error(res.message || 'Failed to load cart data')
 
-    const map: Record<string, SkuInfo> = {}
-    res.data.forEach((sku: SkuInfo) => {
+    const map: Record<string, CartSkuInfo> = {}
+    res.data.forEach((sku: CartSkuInfo) => {
       map[`${sku.product_id}|${sku.option}`] = sku
     })
 
     return group.variant.map((v) => {
       const sku = map[`${v.productId}|${v.option}`]
-      const isUnavailable = !sku || sku.product_status !== 1
+      const isUnavailable = !sku || sku.product_status !== 'active'
       const exceedsStock = !!sku && v.quantity > sku.inventory_quantity
       return { ...v, sku, isUnavailable, exceedsStock }
     })

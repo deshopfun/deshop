@@ -27,7 +27,7 @@ type Props = {
   video?: string
   options?: ProductOptionType[]
   images?: ProductImageType[]
-  productStatus?: number
+  productStatus?: string
   init: (id: any) => Promise<void>
 }
 
@@ -64,10 +64,10 @@ const OptionRow = ({
   </div>
 )
 
-const statusConfig: Record<number, { label: string; className: string }> = {
-  1: { label: 'Active', className: 'bg-green-100 text-green-700 border-green-200' },
-  2: { label: 'Archived', className: 'bg-blue-100 text-blue-700 border-blue-200' },
-  3: { label: 'Draft', className: 'bg-amber-100 text-amber-700 border-amber-200' },
+const statusConfig: Record<string, { label: string; className: string }> = {
+  active: { label: 'Active', className: 'bg-green-100 text-green-700 border-green-200' },
+  archived: { label: 'Archived', className: 'bg-blue-100 text-blue-700 border-blue-200' },
+  draft: { label: 'Draft', className: 'bg-amber-100 text-amber-700 border-amber-200' },
 }
 
 const Product = (props: Props) => {
@@ -224,7 +224,7 @@ const Product = (props: Props) => {
     }
   }
 
-  const onClickUpdateProductStatus = async (status: number) => {
+  const onClickUpdateProductStatus = async (status: string) => {
     if (status === props.productStatus) return showError('Product is already in this status')
     try {
       const response: any = await axios.put(Http.product_base, {
@@ -240,7 +240,7 @@ const Product = (props: Props) => {
     }
   }
 
-  const currentStatus = statusConfig[props.productStatus ?? 3]
+  const currentStatus = statusConfig[props.productStatus ?? 'draft']
 
   return (
     <div className="flex flex-col gap-4 py-4">
@@ -274,29 +274,29 @@ const Product = (props: Props) => {
               </span>
             </div>
             <div className="flex gap-2">
-              {props.productStatus !== 1 && (
+              {props.productStatus !== 'active' && (
                 <Button
                   size="sm"
                   className="h-8 bg-green-500 hover:bg-green-600 text-white text-xs"
-                  onClick={() => onClickUpdateProductStatus(1)}
+                  onClick={() => onClickUpdateProductStatus('active')}
                 >
                   Active
                 </Button>
               )}
-              {props.productStatus !== 2 && (
+              {props.productStatus !== 'archived' && (
                 <Button
                   size="sm"
                   className="h-8 bg-blue-500 hover:bg-blue-600 text-white text-xs"
-                  onClick={() => onClickUpdateProductStatus(2)}
+                  onClick={() => onClickUpdateProductStatus('archived')}
                 >
                   Archived
                 </Button>
               )}
-              {props.productStatus !== 3 && (
+              {props.productStatus !== 'draft' && (
                 <Button
                   size="sm"
                   className="h-8 bg-amber-500 hover:bg-amber-600 text-white text-xs"
-                  onClick={() => onClickUpdateProductStatus(3)}
+                  onClick={() => onClickUpdateProductStatus('draft')}
                 >
                   Draft
                 </Button>

@@ -32,7 +32,7 @@ const ManageAddress = () => {
   const init = async (kind: string) => {
     try {
       const response: any = await axios.get(Http.address, {
-        params: { kind: kind === 'received' ? 1 : 2 },
+        params: { kind },
       })
       setAddresses(response.result ? response.data : [])
     } catch {
@@ -50,7 +50,7 @@ const ManageAddress = () => {
     setOpenDialog(false)
   }
 
-  const onClickSetDefault = async (id: number, set: number) => {
+  const onClickSetDefault = async (id: number, set: string) => {
     try {
       const response: any = await axios.put(Http.address, { address_id: id, is_default: set })
       if (response.result) {
@@ -124,7 +124,7 @@ const ManageAddress = () => {
               key={index}
               className={cn(
                 'border-0 shadow-sm overflow-hidden transition-all',
-                item.is_default === 1 && 'ring-2 ring-sky-400'
+                item.is_default === 'true' && 'ring-2 ring-sky-400'
               )}
             >
               <CardContent className="p-5 flex flex-col gap-3">
@@ -134,7 +134,7 @@ const ManageAddress = () => {
                       {item.first_name} {item.last_name}
                     </p>
                     <span className="text-xs text-muted-foreground">{item.phone}</span>
-                    {item.is_default === 1 && (
+                    {item.is_default === 'true' && (
                       <span className="flex items-center gap-1 text-xs font-semibold text-sky-600 bg-sky-50 px-2 py-0.5 rounded-full border border-sky-200">
                         <Star className="h-3 w-3" /> Default
                       </span>
@@ -167,19 +167,22 @@ const ManageAddress = () => {
                 <div className="flex items-center justify-between pt-2 border-t border-dashed border-gray-100">
                   <Button
                     size="sm"
-                    variant={item.is_default === 1 ? 'outline' : 'ghost'}
+                    variant={item.is_default === 'true' ? 'outline' : 'ghost'}
                     className={cn(
                       'h-8 gap-1.5 text-xs',
-                      item.is_default === 1
+                      item.is_default === 'true'
                         ? 'text-sky-600 border-sky-200 hover:bg-sky-50'
                         : 'text-gray-500 hover:text-sky-600'
                     )}
                     onClick={() =>
-                      onClickSetDefault(item.address_id, item.is_default === 1 ? 2 : 1)
+                      onClickSetDefault(
+                        item.address_id,
+                        item.is_default === 'true' ? 'false' : 'true'
+                      )
                     }
                   >
                     <CheckCircle2 className="h-3.5 w-3.5" />
-                    {item.is_default === 1 ? 'Remove default' : 'Set as default'}
+                    {item.is_default === 'true' ? 'Remove default' : 'Set as default'}
                   </Button>
 
                   <div className="flex items-center gap-2">
@@ -250,7 +253,7 @@ const ManageAddress = () => {
         city={currentAddress?.city}
         province={currentAddress?.province}
         zip={currentAddress?.zip}
-        kind={alignment === 'received' ? 1 : 2}
+        kind={alignment}
       />
     </div>
   )

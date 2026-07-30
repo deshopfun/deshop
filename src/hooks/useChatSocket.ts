@@ -9,7 +9,7 @@ export type ServerEnvelope =
         client_message_id: string
         message_id: number
         conversation_id: number
-        created_at: string
+        create_time: number
       }
     }
   | {
@@ -19,7 +19,7 @@ export type ServerEnvelope =
         conversation_id: number
         sender_uuid: string
         content: string
-        created_at: string
+        create_time: number
       }
     }
   | { type: 'typing'; payload: { conversation_id: number; sender_uuid: string } }
@@ -27,7 +27,7 @@ export type ServerEnvelope =
       type: 'read'
       payload: { conversation_id: number; reader_uuid: string; last_read_message_id: string }
     }
-  | { type: 'presence'; payload: { user_uuid: string; online: number } }
+  | { type: 'presence'; payload: { user_uuid: string; online: string } }
 
 export type ClientEnvelope =
   | {

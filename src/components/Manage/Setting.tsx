@@ -122,8 +122,8 @@ const ManageSetting = () => {
             icon={Clock}
             label="Member Since"
             value={
-              user?.created_time
-                ? new Date(Number(user.created_time)).toLocaleDateString('en-US', {
+              user?.create_time
+                ? new Date(Number(user.create_time)).toLocaleDateString('en-US', {
                     year: 'numeric',
                     month: 'long',
                     day: 'numeric',

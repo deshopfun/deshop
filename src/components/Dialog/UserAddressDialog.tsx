@@ -39,7 +39,7 @@ type DialogType = {
   city?: string
   province?: string
   zip?: string
-  kind: number
+  kind: string
 }
 
 const FormField = ({
@@ -115,7 +115,7 @@ export default function UserAddressDialog(props: DialogType) {
     if (!city) return showError('Incorrect city input')
     if (!province) return showError('Please select a state/province')
     if (!zip) return showError('Incorrect ZIP input')
-    if (props.kind !== 1 && props.kind !== 2) return
+    if (props.kind !== 'received' && props.kind !== 'delivery') return
 
     const countryCode = COUNTRYPROVINCES.find((c) => c.name === country)?.code
     if (!countryCode) return showError('Incorrect country code')

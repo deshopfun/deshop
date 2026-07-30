@@ -11,7 +11,7 @@ import { cn } from '@/lib/utils'
 
 const Notification = () => {
   const [notifications, setNotifications] = useState<NotificationType[]>([])
-  const [activeFilter, setActiveFilter] = useState<number | 'all'>('all')
+  const [activeFilter, setActiveFilter] = useState<string | 'all'>('all')
 
   const { setSnackOpen, setSnackMessage, setSnackSeverity } = useSnackPresistStore((state) => state)
   const { getIsLogin } = useUserPresistStore((state) => state)
@@ -46,11 +46,11 @@ const Notification = () => {
     }
   }
 
-  const onClickSeen = async (kind: number, id?: number) => {
+  const onClickSeen = async (kind: string, id?: number) => {
     try {
       const response: any = await axios.put(Http.user_notification, {
         kind,
-        notification_id: kind === 2 ? id : undefined,
+        notification_id: kind === 'single' ? id : undefined,
       })
       if (response.result) {
         await init()
@@ -67,7 +67,7 @@ const Notification = () => {
     init()
   }, [])
 
-  const unreadCount = notifications?.filter((n) => n.is_read === 2).length
+  const unreadCount = notifications?.filter((n) => n.is_read === 'true').length
 
   const filteredNotifications = useMemo(() => {
     if (!notifications) return []
@@ -76,7 +76,7 @@ const Notification = () => {
   }, [notifications, activeFilter])
 
   const filteredUnreadCount = useMemo(() => {
-    return filteredNotifications.filter((row) => row.is_read === 2).length
+    return filteredNotifications.filter((row) => row.is_read === 'true').length
   }, [filteredNotifications])
 
   return (
@@ -96,7 +96,7 @@ const Notification = () => {
         {notifications?.length > 0 && unreadCount > 0 && (
           <Button
             className="h-9 bg-sky-500 hover:bg-sky-600 text-white gap-1.5"
-            onClick={() => onClickSeen(1)}
+            onClick={() => onClickSeen('all')}
           >
             <CheckCheck className="h-4 w-4" /> Mark all as seen
           </Button>
@@ -119,10 +119,10 @@ const Notification = () => {
           {NOTIFICATIONS.map((type) => (
             <button
               key={type.id}
-              onClick={() => setActiveFilter(type.id)}
+              onClick={() => setActiveFilter(type.uniqueId)}
               className={cn(
                 'shrink-0 text-xs font-medium px-3 py-1.5 rounded-full border transition-colors',
-                activeFilter === type.id
+                activeFilter === type.uniqueId
                   ? 'bg-sky-500 text-white border-sky-500'
                   : 'bg-white text-gray-500 border-gray-200 hover:border-sky-300 hover:text-sky-600'
               )}
@@ -136,8 +136,8 @@ const Notification = () => {
       {filteredNotifications.length > 0 ? (
         <div className="flex flex-col gap-3">
           {filteredNotifications.map((row, i) => {
-            const isUnread = row.is_read === 2
-            const notifType = NOTIFICATIONS.find((n) => n.id === row.notification_type)
+            const isUnread = row.is_read === 'false'
+            const notifType = NOTIFICATIONS.find((n) => n.uniqueId === row.notification_type)
 
             return (
               <div
@@ -202,7 +202,7 @@ const Notification = () => {
                         size="sm"
                         variant="ghost"
                         className="h-8 gap-1.5 text-xs text-sky-600 hover:text-sky-700 hover:bg-sky-50"
-                        onClick={() => onClickSeen(2, row.notification_id)}
+                        onClick={() => onClickSeen('single', row.notification_id)}
                       >
                         <Eye className="h-3.5 w-3.5" /> Mark as seen
                       </Button>

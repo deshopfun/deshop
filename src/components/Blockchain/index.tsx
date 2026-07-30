@@ -144,17 +144,18 @@ const Blockchain = () => {
                           <div className="flex items-center gap-4">
                             <Badge
                               variant={
-                                tx.transaction_status === 1
+                                tx.transaction_status === 'success'
                                   ? 'default'
-                                  : tx.transaction_status === 2 || tx.transaction_status === 4
+                                  : tx.transaction_status === 'failure' ||
+                                      tx.transaction_status === 'error'
                                     ? 'destructive'
                                     : 'secondary'
                               }
                             >
-                              {tx.transaction_status === 1 && 'Success'}
-                              {tx.transaction_status === 2 && 'Failure'}
-                              {tx.transaction_status === 3 && 'Pending'}
-                              {tx.transaction_status === 4 && 'Error'}
+                              {tx.transaction_status === 'success' && 'Success'}
+                              {tx.transaction_status === 'failure' && 'Failure'}
+                              {tx.transaction_status === 'pending' && 'Pending'}
+                              {tx.transaction_status === 'error' && 'Error'}
                             </Badge>
 
                             <Button

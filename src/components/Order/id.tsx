@@ -73,11 +73,11 @@ const StatusBadge = ({
   </span>
 )
 
-const txStatusMap: Record<number, { label: string; icon: any; className: string }> = {
-  1: { label: 'Success', icon: CheckCircle2, className: 'text-green-500' },
-  2: { label: 'Failure', icon: XCircle, className: 'text-red-500' },
-  3: { label: 'Pending', icon: Loader, className: 'text-blue-500' },
-  4: { label: 'Error', icon: AlertCircle, className: 'text-red-400' },
+const txStatusMap: Record<string, { label: string; icon: any; className: string }> = {
+  success: { label: 'Success', icon: CheckCircle2, className: 'text-green-500' },
+  failure: { label: 'Failure', icon: XCircle, className: 'text-red-500' },
+  pending: { label: 'Pending', icon: Loader, className: 'text-blue-500' },
+  error: { label: 'Error', icon: AlertCircle, className: 'text-red-400' },
 }
 
 const SectionTitle = ({ icon: Icon, title }: { icon: any; title: string }) => (
@@ -152,10 +152,10 @@ const OrderDetails = () => {
         <CardContent className="p-6 flex flex-col gap-3">
           <SectionTitle icon={Receipt} title="Order Status" />
           <InfoRow label="Payment">
-            <StatusBadge ok={order.payment_confirmed === 1} failText="Waiting for confirm" />
+            <StatusBadge ok={order.payment_confirmed === 'true'} failText="Waiting for confirm" />
           </InfoRow>
           <InfoRow label="Order">
-            <StatusBadge ok={order.confirmed === 1} failText="Waiting for confirm" />
+            <StatusBadge ok={order.confirmed === 'true'} failText="Waiting for confirm" />
           </InfoRow>
         </CardContent>
       </Card>
@@ -225,7 +225,7 @@ const OrderDetails = () => {
         </CardContent>
       </Card>
 
-      {order.payment_confirmed === 1 && tx && (
+      {order.payment_confirmed === 'true' && tx && (
         <Card className="border-0 shadow-sm">
           <CardContent className="p-6 flex flex-col gap-2">
             <SectionTitle icon={CreditCard} title="Transaction" />
@@ -314,7 +314,7 @@ const OrderDetails = () => {
         </Card>
       )}
 
-      {order.payment_confirmed !== 1 && getUuid() !== order.user_uuid ? (
+      {order.payment_confirmed !== 'true' && getUuid() !== order.user_uuid ? (
         <Button
           className="h-12 bg-sky-500 hover:bg-sky-600 text-white font-semibold gap-2"
           onClick={() => {
@@ -323,7 +323,7 @@ const OrderDetails = () => {
         >
           <CreditCard className="h-5 w-5" /> Go to Pay
         </Button>
-      ) : order.confirmed !== 1 ? (
+      ) : order.confirmed !== 'true' ? (
         <Button variant="outline" className="h-12 font-medium" disabled>
           <Clock className="h-4 w-4 mr-2 text-muted-foreground" />
           Waiting for Order Confirm

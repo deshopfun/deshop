@@ -292,7 +292,7 @@ const Chat = () => {
             ? {
                 ...c,
                 last_message: payload.content,
-                last_message_at: payload.created_at,
+                last_message_at: payload.create_time,
                 unread_count:
                   selectedId === c.conversation_id ? c.unread_count : c.unread_count + 1,
               }
@@ -338,9 +338,8 @@ const Chat = () => {
       client_message_id: clientMessageId,
       sender_uuid: getUuid(),
       content: draft.trim(),
-      create_time: new Date().getMilliseconds(),
-      // status: 'sending',
-      message_status: 1,
+      create_time: new Date().getTime(),
+      message_status: 'sending',
     }
 
     setMessagesByConversation((prev) => ({
@@ -594,7 +593,9 @@ const Chat = () => {
           </div>
 
           {/* 右侧：当前会话 */}
-          <div className={`flex-col min-h-0 h-full ${mobileView === 'thread' ? 'flex' : 'hidden'} md:flex`}>
+          <div
+            className={`flex-col min-h-0 h-full ${mobileView === 'thread' ? 'flex' : 'hidden'} md:flex`}
+          >
             {!selected ? (
               <div className="flex-1 flex items-center justify-center text-center p-12">
                 <div className="max-w-xs">
@@ -680,7 +681,7 @@ const Chat = () => {
                         const isMe = m.sender_uuid === getUuid()
                         const prevSameSender =
                           idx > 0 && messages[idx - 1].sender_uuid === m.sender_uuid
-                        const isFailed = isMe && m.message_status === 6
+                        const isFailed = isMe && m.message_status === 'failed'
 
                         return (
                           <div
@@ -716,16 +717,16 @@ const Chat = () => {
                                 ) : (
                                   <>
                                     <span>
-                                      {/* {formatTime(m.created_at)} */}
+                                      {/* {formatTime(m.create_time)} */}
                                       {new Date(m.create_time).toLocaleDateString()}
                                     </span>
                                     {isMe &&
-                                      (m.message_status === 1 ? (
+                                      (m.message_status === 'sending' ? (
                                         <Check className="w-3 h-3" />
                                       ) : (
                                         <CheckCheck
                                           className={`w-3 h-3 ${
-                                            m.message_status === 3 ? 'text-primary' : ''
+                                            m.message_status === 'read' ? 'text-primary' : ''
                                           }`}
                                         />
                                       ))}

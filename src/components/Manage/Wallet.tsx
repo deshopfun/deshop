@@ -51,7 +51,7 @@ const ManageWallet = () => {
         : [...disableArray, coin].join(',')
 
       const response: any = await axios.put(Http.wallet, {
-        handle: 2, chain_id: chain, disable_coin: newDisableCoin,
+        handle: "false", chain_id: chain, disable_coin: newDisableCoin,
       })
       if (response.result) { await init(); showSuccess('Updated successfully') }
       else showError(response.message)

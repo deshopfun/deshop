@@ -46,13 +46,15 @@ const steps = [
 // PENDING：用户还没付款 / 没有 tx hash
 // CONFIRMING：链上已经检测到交易，但确认数还不够｜交易进行中，等待双边确认交易配对
 // COMPLETED：确认数够了，订单完成｜双方确认交易成功，进行产品交付确认环节
-const PENDING_TX_STATUS = 3
-const CONFIRMING_TX_STATUS = 5 // TODO: 换成真实的"链上确认中"状态码
-const COMPLETED_TX_STATUSES = new Set([1, 2, 4])
+const PENDING_TX_STATUS = 'pending'
+const CONFIRMING_TX_STATUS = 'pending blockchain' // TODO: 换成真实的"链上确认中"状态码
+const COMPLETED_TX_STATUSES = new Set(['success', 'failure', 'error'])
+
+// success failure pending error
 
 const POLL_INTERVAL_MS = 10000
 
-function statusToStep(status: number | undefined): number {
+function statusToStep(status: string | undefined): number {
   if (status === undefined) return 0
   if (COMPLETED_TX_STATUSES.has(status)) return 3
   if (status === CONFIRMING_TX_STATUS) return 2

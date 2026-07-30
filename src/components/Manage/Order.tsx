@@ -94,7 +94,7 @@ const ManageOrder = () => {
   const init = async (kind: string) => {
     try {
       const response: any = await axios.get(Http.order, {
-        params: { kind: kind === 'buy' ? 1 : 2 },
+        params: { kind },
       })
       setOrders(response.result ? response.data : [])
     } catch {
@@ -112,7 +112,7 @@ const ManageOrder = () => {
   }, [])
 
   const getActiveStep = (item: OrderType) =>
-    item.payment_confirmed === 1 ? (item.confirmed === 1 ? 2 : 1) : 0
+    item.payment_confirmed === 'true' ? (item.confirmed === 'true' ? 2 : 1) : 0
 
   const openDialog = (order: OrderType, fn: (v: boolean) => void) => {
     setCurrentOrder(order)
@@ -185,8 +185,8 @@ const ManageOrder = () => {
                     <span className="text-sm font-bold text-red-500">
                       {OrderStatusText(
                         alignment,
-                        item.payment_confirmed === 1,
-                        item.confirmed === 1
+                        item.payment_confirmed === 'true',
+                        item.confirmed === 'true'
                       )}
                     </span>
                   </div>
@@ -268,7 +268,7 @@ const ManageOrder = () => {
                       >
                         <Link2 className="h-3.5 w-3.5" /> Check blockchain
                       </Button>
-                      {alignment === 'buy' && item.payment_confirmed === 2 && (
+                      {alignment === 'buy' && item.payment_confirmed === 'false' && (
                         <Button
                           size="sm"
                           className="h-8 text-xs bg-red-500 hover:bg-red-600 text-white gap-1.5 justify-start"
@@ -279,7 +279,7 @@ const ManageOrder = () => {
                           <CreditCard className="h-3.5 w-3.5" /> Go to pay
                         </Button>
                       )}
-                      {alignment === 'sell' && item.payment_confirmed === 2 && (
+                      {alignment === 'sell' && item.payment_confirmed === 'false' && (
                         <Button
                           size="sm"
                           className="h-8 text-xs bg-green-500 hover:bg-green-600 text-white gap-1.5 justify-start"
@@ -314,7 +314,7 @@ const ManageOrder = () => {
                             <ShoppingCart className="h-3.5 w-3.5" /> Buy again
                           </Button>
 
-                          {item.payment_confirmed === 1 && item.confirmed !== 1 && (
+                          {item.payment_confirmed === 'true' && item.confirmed !== 'true' && (
                             <Button
                               size="sm"
                               className="h-8 text-xs bg-sky-500 hover:bg-sky-600 text-white gap-1.5 justify-start"
@@ -324,7 +324,7 @@ const ManageOrder = () => {
                             </Button>
                           )}
 
-                          {item.confirmed === 1 && (
+                          {item.confirmed === 'true' && (
                             <>
                               {item.ratings?.length > 0 ? (
                                 <Button

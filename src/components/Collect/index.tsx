@@ -31,11 +31,11 @@ const Collect = () => {
 
         response.data?.forEach((item: CollectType) => {
           switch (item.collect_type) {
-            case 1:
+            case 'product':
               products.push(item)
               break
-            // case 2: lives.push(item); break;
-            // case 3: chats.push(item); break;
+            // case "live": lives.push(item); break;
+            // case "chat": chats.push(item); break;
           }
         })
 
@@ -60,7 +60,7 @@ const Collect = () => {
     init()
   }, [])
 
-  const onClickDelete = async (collectType: number, bindId: number) => {
+  const onClickDelete = async (collectType: string, bindId: number) => {
     try {
       const response: any = await axios.put(Http.collect, {
         collect_type: collectType,

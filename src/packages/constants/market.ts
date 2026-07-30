@@ -28,20 +28,20 @@ export const PRODUCT_TYPE = {
 }
 
 export const COLLECT_TYPE = {
-  PRODUCT: 1,
-  LIVE: 2,
-  CHAT: 3,
+  PRODUCT: 'product',
+  LIVE: 'live',
+  CHAT: 'chat',
 }
 
 export const REPORT_TYPE = {
-  PRODUCT: 1,
-  LIVE: 2,
-  CHAT: 3,
+  PRODUCT: 'product',
+  LIVE: 'live',
+  CHAT: 'chat',
 }
 
 export const SHIPPING_TYPE = {
-  DELIVERY: 1,
-  PICKUP: 2,
+  DELIVERY: 'delivery',
+  PICKUP: 'pickup',
 }
 
 export const WEIGHT_UNIT_TYPE = {
@@ -166,5 +166,10 @@ export const RATING_TYPE = {
 
 // 'sending' | 'sent' | 'read' | 'unread' | 'delete' | 'failed'
 export const CHAT_MESSAGE_STATUS = {
-
+  SENDING: 'sending',
+  SENT: 'sent',
+  READ: 'read',
+  UNREAD: 'unread',
+  DELETE: 'delete',
+  FAILED: 'failed',
 }

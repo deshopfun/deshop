@@ -10,10 +10,10 @@ import { Package, Plus, ExternalLink } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { GetAbosolutePathByRelative } from '@/utils/image'
 
-const statusConfig: Record<number, { label: string; className: string }> = {
-  1: { label: 'Active', className: 'bg-green-100 text-green-700 border-green-200' },
-  2: { label: 'Archived', className: 'bg-blue-100 text-blue-700 border-blue-200' },
-  3: { label: 'Draft', className: 'bg-amber-100 text-amber-700 border-amber-200' },
+const statusConfig: Record<string, { label: string; className: string }> = {
+  active: { label: 'Active', className: 'bg-green-100 text-green-700 border-green-200' },
+  archived: { label: 'Archived', className: 'bg-blue-100 text-blue-700 border-blue-200' },
+  draft: { label: 'Draft', className: 'bg-amber-100 text-amber-700 border-amber-200' },
 }
 
 const ManageProduct = () => {
@@ -63,7 +63,7 @@ const ManageProduct = () => {
       {products?.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {products.map((item, index) => {
-            const status = statusConfig[item.product_status ?? 3]
+            const status = statusConfig[item.product_status ?? 'draft']
             return (
               <Card
                 key={index}

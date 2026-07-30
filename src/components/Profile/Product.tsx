@@ -53,7 +53,7 @@ const ProfileProduct = ({ product }: Props) => {
                   </div>
                 )}
 
-                {item.product_status === 1 && (
+                {item.product_status === 'active' && (
                   <div className="flex justify-end pt-1">
                     <Badge
                       variant="default"

@@ -260,7 +260,7 @@ const ProductDetails = () => {
       </div>
     )
 
-  if (product.product_status !== 1 && getUuid() !== product.user_uuid)
+  if (product.product_status !== 'active' && getUuid() !== product.user_uuid)
     return (
       <div className="container mx-auto py-12 flex flex-col items-center gap-3 text-center">
         <div className="h-16 w-16 rounded-full bg-red-50 flex items-center justify-center">
@@ -299,7 +299,7 @@ const ProductDetails = () => {
 
   return (
     <div className="container mx-auto py-6 px-4 flex flex-col gap-8">
-      {product.product_status === 2 && (
+      {product.product_status === 'archived' && (
         <div className="flex items-center gap-2 px-4 py-3 bg-blue-50 text-blue-700 rounded-xl text-sm">
           <AlertCircle className="h-4 w-4 shrink-0" />
           <span>
@@ -307,7 +307,7 @@ const ProductDetails = () => {
           </span>
         </div>
       )}
-      {product.product_status === 3 && (
+      {product.product_status === 'draft' && (
         <div className="flex items-center gap-2 px-4 py-3 bg-amber-50 text-amber-700 rounded-xl text-sm">
           <AlertCircle className="h-4 w-4 shrink-0" />
           <span>
@@ -516,7 +516,7 @@ const ProductDetails = () => {
                 onClick={onClickFavorite}
                 className={cn(
                   'h-10 w-10 rounded-full flex items-center justify-center border transition-all duration-200 shrink-0',
-                  product.collect_status === 1
+                  product.collect_status === 'active'
                     ? 'bg-sky-500 border-sky-500 text-white'
                     : 'border-gray-200 text-gray-400 hover:border-sky-300 hover:text-sky-500'
                 )}
@@ -596,7 +596,7 @@ const ProductDetails = () => {
             </div>
           ))}
 
-          {product.product_status === 1 &&
+          {product.product_status === 'active' &&
             isSelectOption &&
             (currentProductVariant && currentProductVariant.inventory_quantity > 0 ? (
               <div className="flex flex-col gap-3">
@@ -707,7 +707,7 @@ const ProductDetails = () => {
         </div>
       </div>
 
-      {product.product_status === 1 && (
+      {product.product_status === 'active' && (
         <div className="flex flex-col gap-4">
           <button
             className="flex items-center gap-1 hover:text-sky-500 transition-colors"

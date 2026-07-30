@@ -11,7 +11,7 @@ import { Truck, User, Mail, Building2, Phone, MapPin } from 'lucide-react'
 
 type DialogType = {
   alignment: 'buy' | 'sell'
-  shippingConfirmed: number
+  shippingConfirmed: string
   shipping: AddressType
   openDialog: boolean
   handleCloseDialog: () => Promise<void>
@@ -43,7 +43,7 @@ export default function ShippingDialog({
   openDialog,
   handleCloseDialog,
 }: DialogType) {
-  const isConfirmed = shippingConfirmed === 1
+  const isConfirmed = shippingConfirmed === 'true'
 
   const fullAddress = [
     shipping?.address_one,

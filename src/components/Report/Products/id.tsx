@@ -24,7 +24,7 @@ const ReportProductDetails = () => {
   const id = typeof router.query.id === 'string' ? router.query.id : ''
 
   const [product, setProduct] = useState<ProductType>()
-  const [selectReport, setSelectReport] = useState<number>(0)
+  const [selectReport, setSelectReport] = useState<string>('')
   const [details, setDetails] = useState<string>('')
 
   const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore((state) => state)
@@ -157,10 +157,7 @@ const ReportProductDetails = () => {
           <CardTitle>Select Report Reason</CardTitle>
         </CardHeader>
         <CardContent>
-          <RadioGroup
-            value={String(selectReport)}
-            onValueChange={(value) => setSelectReport(Number(value))}
-          >
+          <RadioGroup value={selectReport} onValueChange={(value) => setSelectReport(value)}>
             {REPORTS.map((report) => (
               <div
                 key={report.id}

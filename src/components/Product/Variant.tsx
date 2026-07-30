@@ -175,14 +175,14 @@ const ProductVariant = (props: Props) => {
         setImage(d.image)
         setBarcode(d.barcode)
         setCompareAtPrice(d.compare_at_price)
-        setInventoryPolicy(d.inventory_policy === 1)
-        setIsVirtual(d.is_virtual === 1)
+        setInventoryPolicy(d.inventory_policy === "true" ? true : false)
+        setIsVirtual(d.is_virtual === "true" ? true : false)
         setInventoryQuantity(d.inventory_quantity)
         setPrice(d.price)
         setPosition(d.position)
         setSku(d.sku)
         setTax(d.tax)
-        setTaxable(d.taxable === 1)
+        setTaxable(d.taxable === "true" ? true : false)
         setDiscounts(d.discounts)
         setTip(d.tip)
       } else {
@@ -251,9 +251,9 @@ const ProductVariant = (props: Props) => {
         barcode,
         inventory_quantity: parseInt(inventoryQuantity),
         sku,
-        inventory_policy: inventoryPolicy ? 1 : 2,
-        is_virtual: isVirtual ? 1 : 2,
-        taxable: taxable ? 1 : 2,
+        inventory_policy: inventoryPolicy ? "true" : "false",
+        is_virtual: isVirtual  ? "true" : "false",
+        taxable: taxable  ? "true" : "false",
         tax: taxable ? tax : undefined,
         option,
       })
