@@ -25,7 +25,7 @@ export type ServerEnvelope =
   | { type: 'typing'; payload: { conversation_id: number; sender_uuid: string } }
   | {
       type: 'read'
-      payload: { conversation_id: number; reader_uuid: string; last_read_message_id: string }
+      payload: { conversation_id: number; reader_uuid: string; last_read_message_id: number }
     }
   | { type: 'presence'; payload: { user_uuid: string; online: string } }
 
@@ -35,7 +35,7 @@ export type ClientEnvelope =
       payload: { conversation_id: number; client_message_id: string; content: string }
     }
   | { type: 'typing'; payload: { conversation_id: number } }
-  | { type: 'read'; payload: { conversation_id: number; last_read_message_id: string } }
+  | { type: 'read'; payload: { conversation_id: number; last_read_message_id: number } }
   | { type: 'ping' }
 
 type UseChatSocketOptions = {

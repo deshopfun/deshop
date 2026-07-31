@@ -1,5 +1,6 @@
 import { useSnackPresistStore } from '@/lib'
 import { CURRENCYS } from '@/packages/constants/currency'
+import { PRODUCT_TYPE } from '@/packages/constants'
 import { useEffect, useState } from 'react'
 import axios from '@/utils/http/axios'
 import { Http } from '@/utils/http/http'
@@ -13,21 +14,25 @@ type Props = {
 }
 
 const NowTrendingCard = (props: Props) => {
-  const [products, setProducts] = useState<ProductType[]>()
+  const [products, setProducts] = useState<ProductType[]>([])
+  const [currentProductType, setCurrentProductType] = useState<string>(props.productType || 'ALL')
 
   const { setSnackSeverity, setSnackOpen, setSnackMessage } = useSnackPresistStore((state) => state)
 
-  const init = async () => {
+  const init = async (productType: string) => {
     try {
-      const response: any = await axios.get(Http.product_list, {
-        params: {
-          product_type: props.productType ? props.productType : undefined,
-          limit: 10,
-        },
-      })
+      const params: any = {
+        limit: 20,
+      }
+
+      if (productType && productType !== 'ALL') {
+        params.product_type = productType
+      }
+
+      const response: any = await axios.get(Http.product_list, { params })
 
       if (response.result) {
-        setProducts(response.data)
+        setProducts(response.data || [])
       } else {
         setProducts([])
       }
@@ -40,11 +45,44 @@ const NowTrendingCard = (props: Props) => {
   }
 
   useEffect(() => {
-    init()
+    init(currentProductType)
   }, [])
+
+  const handleCategoryClick = (productType: string) => {
+    if (productType === currentProductType) return
+    setCurrentProductType(productType)
+    init(productType)
+  }
+
+  const categories = [['ALL', 'ALL'], ...Object.entries(PRODUCT_TYPE)]
 
   return (
     <div>
+      <div className="mb-6 overflow-x-auto scrollbar-hide">
+        <div className="flex items-center gap-2 pb-1 min-w-max">
+          {categories.map(([key, value]) => {
+            const isActive = currentProductType === value
+
+            return (
+              <button
+                key={key}
+                onClick={() => handleCategoryClick(value)}
+                className={`
+                  px-4 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-all
+                  ${
+                    isActive
+                      ? 'bg-blue-600 text-white shadow-sm'
+                      : 'bg-muted text-muted-foreground hover:bg-muted/80 hover:text-foreground'
+                  }
+                `}
+              >
+                {value === 'ALL' ? 'All' : value}
+              </button>
+            )
+          })}
+        </div>
+      </div>
+
       {products && products.length > 0 ? (
         <div className="container mx-auto grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
           {products.map((item, index) => (

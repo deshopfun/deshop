@@ -43,12 +43,13 @@ import axios from '@/utils/http/axios'
 import { Http } from '@/utils/http/http'
 import { useChatSocket } from '@/hooks/useChatSocket'
 
-function formatTime(iso: string): string {
-  return new Date(iso).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })
+function formatTime(input: number): string {
+  return new Date(input).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })
 }
 
-function formatRelativeTime(iso: string): string {
-  const diffMs = Date.now() - new Date(iso).getTime()
+function formatRelativeTime(input: number): string {
+  const iso = Number(input)
+  const diffMs = Date.now() - iso
   const mins = Math.floor(diffMs / 60000)
   if (mins < 1) return 'now'
   if (mins < 60) return `${mins}m`
@@ -157,15 +158,21 @@ const Chat = () => {
     if (messagesByConversation[id]) return
 
     try {
-      console.log(111, id)
       const response: any = await axios.get(Http.chat_conversation_message, {
         params: { conversation_id: id },
       })
 
       if (response.result) {
-        setMessagesByConversation((prev) => ({ ...prev, [id]: response.data }))
-        // 真实实现：这里顺手发一条已读回执给对方，比如
-        // sendWs({ type: 'read', payload: { conversation_id: id, last_read_message_id: ... } })
+        const fetchedMessages: ConversationMessage[] = response.data
+        setMessagesByConversation((prev) => ({ ...prev, [id]: fetchedMessages }))
+
+        const lastMessage = fetchedMessages[fetchedMessages.length - 1]
+        if (lastMessage) {
+          sendWs({
+            type: 'read',
+            payload: { conversation_id: id, last_read_message_id: lastMessage.message_id },
+          })
+        }
       } else {
         setSnackSeverity('error')
         setSnackMessage(response.message)
@@ -181,7 +188,6 @@ const Chat = () => {
     }
   }
 
-  // 从关注列表选人开聊：已经有会话就直接打开，没有就创建一条新的空会话
   const onSelectFollowingUser = async (u: ProfileType) => {
     const existing = conversations?.find((c) => c.peer_uuid === u.uuid)
 
@@ -207,6 +213,8 @@ const Chat = () => {
         if (created) {
           setMessagesByConversation((prev) => ({ ...prev, [created.conversation_id]: [] }))
           setSelectedId(created.conversation_id)
+
+          await onSelectConversation(created.conversation_id)
           setMobileView('thread')
         }
 
@@ -380,8 +388,6 @@ const Chat = () => {
     }
   }
 
-  // 未登录：不渲染聊天功能本身，只给一个引导登录的启动页。
-  // 放在所有 hook 调用之后（Rules of Hooks 要求 hook 顺序每次渲染都一致，不能提前 return）
   if (!getIsLogin()) {
     return (
       <div className="max-w-6xl mx-auto px-4 py-6">
@@ -495,7 +501,7 @@ const Chat = () => {
             </div>
 
             <div className="flex-1 min-h-0 overflow-y-auto">
-              {filteredConversations.length === 0 ? (
+              {filteredConversations?.length === 0 ? (
                 <div className="text-center py-10 px-4">
                   <p className="text-sm text-muted-foreground mb-3">No conversations yet</p>
                   <Button
@@ -509,7 +515,7 @@ const Chat = () => {
                   </Button>
                 </div>
               ) : (
-                filteredConversations.map((c) => (
+                filteredConversations?.map((c) => (
                   <div
                     key={c.conversation_id}
                     className={`group relative flex items-center gap-3 px-4 py-3 hover:bg-muted/50 transition-colors ${
@@ -539,8 +545,7 @@ const Chat = () => {
                         <div className="flex items-center justify-between gap-2">
                           <p className="text-sm font-medium truncate">{c.peer_username}</p>
                           <span className="text-xs text-muted-foreground shrink-0 group-hover:hidden">
-                            {/* {formatRelativeTime(c.last_message_time)} */}
-                            {new Date(c.last_message_time).toLocaleDateString()}
+                            {formatRelativeTime(c.last_message_time)}
                           </span>
                         </div>
                         <div className="flex items-center justify-between gap-2 mt-0.5">
@@ -716,10 +721,7 @@ const Chat = () => {
                                   </button>
                                 ) : (
                                   <>
-                                    <span>
-                                      {/* {formatTime(m.create_time)} */}
-                                      {new Date(m.create_time).toLocaleDateString()}
-                                    </span>
+                                    <span>{formatTime(m.create_time)}</span>
                                     {isMe &&
                                       (m.message_status === 'sending' ? (
                                         <Check className="w-3 h-3" />
