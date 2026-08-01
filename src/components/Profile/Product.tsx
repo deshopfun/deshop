@@ -1,22 +1,23 @@
 import { ProductType } from '@/utils/types'
 import { Card, CardContent } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { Http } from '@/utils/http/http'
 import { GetAbosolutePathByRelative } from '@/utils/image'
+import { CURRENCYS } from '@/packages/constants'
+import { PackageOpen } from 'lucide-react'
+import { Badge } from '../ui/badge'
 
 type Props = {
   uuid?: string
-  product?: ProductType[]
+  products?: ProductType[]
 }
 
-const ProfileProduct = ({ product }: Props) => {
+const ProfileProduct = ({ products }: Props) => {
   return (
     <div className="space-y-6">
       <h2 className="text-2xl font-semibold tracking-tight">All products</h2>
 
-      {product && product.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {product.map((item, index) => (
+      {products && products.length > 0 ? (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {products.map((item, index) => (
             <Card
               key={index}
               className="overflow-hidden cursor-pointer hover:shadow-xl transition-all duration-200 hover:-translate-y-0.5"
@@ -43,10 +44,12 @@ const ProfileProduct = ({ product }: Props) => {
                   </Badge>
                 </div>
 
+                <p className="text-sm text-muted-foreground">{item.vendor}</p>
+
                 {item.tags && item.tags.trim() && (
-                  <div className="flex flex-wrap gap-1.5">
+                  <div className="flex flex-wrap gap-1">
                     {item.tags.split(',').map((tag, idx) => (
-                      <Badge key={idx} variant="secondary" className="text-xs font-normal">
+                      <Badge key={idx} variant="outline" className="text-xs">
                         {tag.trim()}
                       </Badge>
                     ))}

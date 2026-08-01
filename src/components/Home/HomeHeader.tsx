@@ -276,7 +276,7 @@ const HomeHeader = () => {
                   </DropdownMenuItem>
                   <DropdownMenuItem
                     onClick={() => {
-                      window.location.href = `#`
+                      window.location.href = `/docs/terms-and-conditions`
                     }}
                   >
                     Terms of Use

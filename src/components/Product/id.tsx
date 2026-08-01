@@ -3,7 +3,7 @@ import { useRouter } from 'next/router'
 import axios from '@/utils/http/axios'
 import { Http } from '@/utils/http/http'
 import { useEffect, useState } from 'react'
-import { Navigation, Pagination } from 'swiper/modules'
+import { Navigation, Pagination, Thumbs } from 'swiper/modules'
 import { Swiper, SwiperSlide } from 'swiper/react'
 // @ts-ignore
 import 'swiper/css'
@@ -12,7 +12,7 @@ import 'swiper/css/navigation'
 // @ts-ignore
 import 'swiper/css/pagination'
 // @ts-ignore
-import 'swiper/css/scrollbar'
+import 'swiper/css/thumbs'
 import ProductRatingsDialog from '@/components/Dialog/ProductRatingsDialog'
 import RefundPolicyDialog from '@/components/Dialog/RefundPolicyDialog'
 import { COLLECT_TYPE, PRODUCT_TAB_DATAS, PRODUCT_TYPE } from '@/packages/constants'
@@ -25,6 +25,7 @@ import DOMPurify from 'dompurify'
 import { ProductType, ProductVariantType } from '@/utils/types'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
 import {
@@ -51,6 +52,8 @@ import {
   Receipt,
   AlertCircle,
   PackageX,
+  ExternalLink,
+  Share2,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import Decimal from 'decimal.js'
@@ -65,22 +68,25 @@ const RatingBar = ({ star, ratings }: { star: number; ratings: any[] }) => {
   const percent = ratings.length > 0 ? (count / ratings.length) * 100 : 0
   return (
     <div className="flex items-center gap-2">
-      <span className="text-xs text-muted-foreground w-3">{star}</span>
-      <div className="flex-1 h-2 bg-gray-100 rounded-full overflow-hidden">
-        <div className="h-full bg-amber-400 rounded-full" style={{ width: `${percent}%` }} />
+      <span className="text-xs text-muted-foreground w-3 tabular-nums">{star}</span>
+      <div className="flex-1 h-1.5 bg-gray-100 rounded-full overflow-hidden">
+        <div
+          className="h-full bg-amber-400 rounded-full transition-all duration-500"
+          style={{ width: `${percent}%` }}
+        />
       </div>
-      <span className="text-xs text-muted-foreground w-6">{count}</span>
+      <span className="text-xs text-muted-foreground w-5 text-right tabular-nums">{count}</span>
     </div>
   )
 }
 
 const PriceRow = ({ icon: Icon, label, value }: { icon: any; label: string; value: string }) => (
-  <div className="flex items-center justify-between py-1.5 border-b border-dashed border-gray-100 last:border-0">
+  <div className="flex items-center justify-between py-2">
     <div className="flex items-center gap-2 text-sm text-muted-foreground">
-      <Icon className="h-4 w-4" />
+      <Icon className="h-3.5 w-3.5" />
       {label}
     </div>
-    <span className="text-sm font-semibold">{value}</span>
+    <span className="text-sm font-medium text-gray-800">{value}</span>
   </div>
 )
 
@@ -98,10 +104,11 @@ const ProductDetails = () => {
   const [currentProductVariant, setCurrentProductVariant] = useState<ProductVariantType>()
   const [isSelectOption, setIsSelectOption] = useState(false)
   const [quantity, setQuantity] = useState(1)
+  const [thumbsSwiper, setThumbsSwiper] = useState<any>(null)
 
   const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore((state) => state)
   const { getUuid, getIsLogin } = useUserPresistStore((state) => state)
-  const { getCart, setCart, addToCart: addCartLine } = useCartPresistStore((state) => state)
+  const { addToCart: addCartLine } = useCartPresistStore((state) => state)
 
   const showError = (msg: string) => {
     setSnackSeverity('error')
@@ -135,7 +142,6 @@ const ProductDetails = () => {
       }
     } catch (e) {
       if (axios.isCancel(e) || (e as any)?.code === 'ERR_CANCELED') return
-
       showError('Network error. Please try again later.')
     }
   }
@@ -236,10 +242,10 @@ const ProductDetails = () => {
 
   const avgRating = product?.ratings?.length
     ? product.ratings
-        .reduce((s, r) => s.plus(new Decimal(r.number || 0)), new Decimal(0))
+        .reduce((s, r) => s.plus(new Decimal(r.number ?? 0)), new Decimal(0))
         .dividedBy(product.ratings.length)
-        .toString()
-    : '0'
+        .toFixed(1)
+    : '0.0'
 
   useAbortableEffect(
     (signal) => {
@@ -256,27 +262,21 @@ const ProductDetails = () => {
   if (!product)
     return (
       <div className="flex items-center justify-center min-h-96">
-        <div className="animate-pulse text-muted-foreground">Loading...</div>
+        <div className="animate-pulse text-muted-foreground text-sm">Loading product...</div>
       </div>
     )
 
   if (product.product_status !== 'active' && getUuid() !== product.user_uuid)
     return (
-      <div className="container mx-auto py-12 flex flex-col items-center gap-3 text-center">
-        <div className="h-16 w-16 rounded-full bg-red-50 flex items-center justify-center">
+      <div className="container mx-auto py-16 flex flex-col items-center gap-4 text-center">
+        <div className="h-16 w-16 rounded-2xl bg-red-50 flex items-center justify-center">
           <AlertCircle className="h-8 w-8 text-red-500" />
         </div>
         <h2 className="text-xl font-bold">Product Not Found</h2>
-        <p className="text-muted-foreground text-sm">
+        <p className="text-muted-foreground text-sm max-w-sm">
           This product does not exist or has been removed.
         </p>
-        <Button
-          onClick={() => {
-            window.location.href = '/'
-          }}
-        >
-          Back to Home
-        </Button>
+        <Button onClick={() => (window.location.href = '/')}>Back to Home</Button>
       </div>
     )
 
@@ -297,10 +297,16 @@ const ProductDetails = () => {
     }
   }
 
+  const totalPrice =
+    currentProductVariant && isSelectOption
+      ? new Decimal(currentProductVariant.price || 0).times(quantity)
+      : null
+
   return (
-    <div className="container mx-auto py-6 px-4 flex flex-col gap-8">
+    <div className="container mx-auto py-6 px-4 max-w-6xl flex flex-col gap-10">
+      {/* Status banners */}
       {product.product_status === 'archived' && (
-        <div className="flex items-center gap-2 px-4 py-3 bg-blue-50 text-blue-700 rounded-xl text-sm">
+        <div className="flex items-center gap-2.5 px-4 py-3 bg-blue-50 text-blue-700 rounded-xl text-sm">
           <AlertCircle className="h-4 w-4 shrink-0" />
           <span>
             <strong>Archived</strong> — This product is read-only and not editable.
@@ -308,7 +314,7 @@ const ProductDetails = () => {
         </div>
       )}
       {product.product_status === 'draft' && (
-        <div className="flex items-center gap-2 px-4 py-3 bg-amber-50 text-amber-700 rounded-xl text-sm">
+        <div className="flex items-center gap-2.5 px-4 py-3 bg-amber-50 text-amber-700 rounded-xl text-sm">
           <AlertCircle className="h-4 w-4 shrink-0" />
           <span>
             <strong>Draft</strong> — Edit this product and publish it to the market.
@@ -316,184 +322,260 @@ const ProductDetails = () => {
         </div>
       )}
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <div className="flex flex-col gap-6">
-          {product.video && <VideoPlayer videoSrc={product.video} title={product.title} />}
+      {/* Main grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10">
+        {/* ========== LEFT: Gallery ========== */}
+        <div className="lg:col-span-6 flex flex-col gap-4">
+          {product.video && (
+            <div className="rounded-2xl overflow-hidden border border-gray-100 shadow-sm">
+              <VideoPlayer videoSrc={product.video} title={product.title} />
+            </div>
+          )}
 
-          <Card className="overflow-hidden border-0 shadow-sm">
+          <div className="rounded-2xl overflow-hidden border border-gray-100 bg-gray-50 shadow-sm">
             {isSelectOption && currentProductVariant?.image ? (
-              <div className="flex justify-center items-center p-8 bg-gray-50 min-h-72">
+              <div className="flex justify-center items-center p-6 min-h-[320px] sm:min-h-[400px]">
                 <img
                   src={GetAbosolutePathByRelative(currentProductVariant.image)}
                   alt="variant"
-                  className="max-h-64 object-contain rounded-xl"
+                  className="max-h-[360px] object-contain rounded-xl"
                 />
               </div>
             ) : (
-              <Swiper
-                navigation={true}
-                pagination={true}
-                modules={[Navigation, Pagination]}
-                className="min-h-72"
-              >
-                {product.images.map((item, i) => (
-                  <SwiperSlide key={i}>
-                    <div className="flex justify-center items-center p-8 bg-gray-50 min-h-72">
-                      <img
-                        src={GetAbosolutePathByRelative(item.src)}
-                        alt="product"
-                        className="max-h-64 object-contain rounded-xl"
-                      />
-                    </div>
-                  </SwiperSlide>
-                ))}
-              </Swiper>
+              <>
+                <Swiper
+                  navigation
+                  pagination={{ clickable: true }}
+                  modules={[Navigation, Pagination, Thumbs]}
+                  thumbs={{ swiper: thumbsSwiper && !thumbsSwiper.destroyed ? thumbsSwiper : null }}
+                  className="min-h-[320px] sm:min-h-[400px]"
+                >
+                  {product.images?.map((item, i) => (
+                    <SwiperSlide key={i}>
+                      <div className="flex justify-center items-center p-6 min-h-[320px] sm:min-h-[400px]">
+                        <img
+                          src={GetAbosolutePathByRelative(item.src)}
+                          alt={`${product.title} ${i + 1}`}
+                          className="max-h-[360px] object-contain rounded-xl"
+                        />
+                      </div>
+                    </SwiperSlide>
+                  ))}
+                </Swiper>
+
+                {product.images && product.images.length > 1 && (
+                  <div className="px-3 pb-3">
+                    <Swiper
+                      onSwiper={setThumbsSwiper}
+                      spaceBetween={8}
+                      slidesPerView={5}
+                      watchSlidesProgress
+                      modules={[Thumbs]}
+                      className="thumbs-swiper"
+                    >
+                      {product.images.map((item, i) => (
+                        <SwiperSlide key={i} className="cursor-pointer">
+                          <div className="aspect-square rounded-lg overflow-hidden border-2 border-transparent hover:border-sky-400 transition-colors bg-white">
+                            <img
+                              src={GetAbosolutePathByRelative(item.src)}
+                              alt=""
+                              className="w-full h-full object-cover"
+                            />
+                          </div>
+                        </SwiperSlide>
+                      ))}
+                    </Swiper>
+                  </div>
+                )}
+              </>
             )}
-            {/* <div className="flex gap-2 p-3 border-t">
-              {product.images.map((item, i) => (
-                <img
-                  key={i}
-                  src={item.src}
-                  alt="thumb"
-                  className="h-14 w-14 object-cover rounded-lg border shrink-0 cursor-pointer hover:border-sky-400 transition-colors"
-                />
-              ))}
-            </div> */}
-          </Card>
+          </div>
 
-          {product.ratings && product.ratings.length > 0 ? (
-            <Card className="border-0 shadow-sm">
-              <CardContent className="p-6 flex flex-col gap-4">
-                <h3 className="font-semibold text-base">Ratings & Reviews</h3>
+          {/* Ratings preview (desktop left column) */}
+          {product.ratings && product.ratings.length > 0 && (
+            <Card className="border border-gray-100 shadow-sm rounded-2xl hidden lg:block">
+              <CardContent className="p-5 flex flex-col gap-4">
+                <div className="flex items-center justify-between">
+                  <h3 className="font-semibold text-sm">Ratings & Reviews</h3>
+                  <button
+                    onClick={() => setOpenRatingsDialog(true)}
+                    className="text-xs text-sky-600 hover:underline font-medium"
+                  >
+                    View all
+                  </button>
+                </div>
 
-                <div className="flex items-center gap-4">
-                  <div className="text-5xl font-extrabold text-gray-900">{avgRating}</div>
-                  <div className="flex flex-col gap-1 flex-1">
+                <div className="flex items-center gap-5">
+                  <div className="flex flex-col items-center shrink-0">
+                    <span className="text-4xl font-bold text-gray-900 leading-none">
+                      {avgRating}
+                    </span>
+                    <div className="flex mt-1.5">
+                      {[1, 2, 3, 4, 5].map((s) => (
+                        <Star
+                          key={s}
+                          className={cn(
+                            'h-3.5 w-3.5',
+                            s <= Math.round(Number(avgRating))
+                              ? 'text-amber-400 fill-amber-400'
+                              : 'text-gray-200 fill-gray-200'
+                          )}
+                        />
+                      ))}
+                    </div>
+                    <span className="text-[11px] text-muted-foreground mt-1">
+                      {product.ratings.length} reviews
+                    </span>
+                  </div>
+                  <div className="flex-1 flex flex-col gap-1">
                     {[5, 4, 3, 2, 1].map((s) => (
                       <RatingBar key={s} star={s} ratings={product.ratings} />
                     ))}
                   </div>
                 </div>
 
-                <button
-                  onClick={() => setOpenRatingsDialog(true)}
-                  className="text-sm text-sky-500 hover:underline text-left"
-                >
-                  View all {product.ratings.length} reviews
-                </button>
-
-                <div className="grid grid-cols-2 gap-4">
-                  {product.ratings.slice(0, 4).map((item, i) => (
-                    <div key={i} className="flex flex-col gap-1.5 p-3 bg-gray-50 rounded-xl">
-                      <div className="flex">
-                        {[1, 2, 3, 4, 5].map((s) => (
-                          <Star
-                            key={s}
-                            className={cn(
-                              'h-3.5 w-3.5',
-                              s <= item.number
-                                ? 'text-amber-400 fill-amber-400'
-                                : 'text-gray-200 fill-gray-200'
-                            )}
-                          />
-                        ))}
+                <div className="grid grid-cols-1 gap-2.5">
+                  {product.ratings.slice(0, 2).map((item, i) => (
+                    <div
+                      key={i}
+                      className="flex flex-col gap-1.5 p-3 rounded-xl bg-gray-50 border border-gray-100"
+                    >
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs font-semibold text-gray-800">{item.username}</span>
+                        <div className="flex">
+                          {[1, 2, 3, 4, 5].map((s) => (
+                            <Star
+                              key={s}
+                              className={cn(
+                                'h-3 w-3',
+                                s <= item.number
+                                  ? 'text-amber-400 fill-amber-400'
+                                  : 'text-gray-200 fill-gray-200'
+                              )}
+                            />
+                          ))}
+                        </div>
                       </div>
-                      <p className="text-xs text-muted-foreground">
-                        {item.username} · {new Date(item.create_time).toLocaleDateString()}
-                      </p>
-                      <p className="text-xs text-muted-foreground">
-                        {item.product_option.split(',').join(' / ')}
-                      </p>
-                      {item.image && (
-                        <img
-                          src={GetAbosolutePathByRelative(item.image)}
-                          alt="review"
-                          className="h-12 w-12 object-cover rounded-lg"
-                        />
+                      {item.body && (
+                        <p className="text-xs text-gray-600 line-clamp-2 leading-relaxed">
+                          {item.body}
+                        </p>
                       )}
-                      <p className="text-sm">{item.body}</p>
                     </div>
                   ))}
                 </div>
 
                 <Button
                   variant="outline"
-                  className="w-full"
+                  size="sm"
+                  className="w-full rounded-xl"
                   onClick={() => setOpenRatingsDialog(true)}
                 >
                   Read more reviews
                 </Button>
               </CardContent>
             </Card>
-          ) : (
-            <Card className="border-0 shadow-sm">
-              <CardContent className="py-12 flex flex-col items-center gap-2 text-center">
-                <Star className="h-8 w-8 text-gray-200" />
-                <p className="font-medium text-sm">No ratings yet</p>
-                <p className="text-xs text-muted-foreground">
-                  Reviews will appear here after purchases.
-                </p>
-              </CardContent>
-            </Card>
           )}
         </div>
 
-        <div className="flex flex-col gap-5">
+        {/* ========== RIGHT: Info & Purchase ========== */}
+        <div className="lg:col-span-6 flex flex-col gap-5">
+          {/* Seller + actions */}
           <div className="flex items-center justify-between">
             <button
-              className="flex items-center gap-2 hover:opacity-80 transition-opacity"
-              onClick={() => {
-                window.location.href = `/profile/${product.username}`
-              }}
+              className="flex items-center gap-2.5 group"
+              onClick={() => (window.location.href = `/profile/${product.username}`)}
             >
-              <Avatar className="h-8 w-8">
+              <Avatar className="h-9 w-9 border border-gray-100">
                 <AvatarImage src={GetAbosolutePathByRelative(product.user_avatar_url, 'avatar')} />
-                <AvatarFallback>{product.username?.[0]?.toUpperCase()}</AvatarFallback>
+                <AvatarFallback className="text-sm bg-sky-50 text-sky-600 font-semibold">
+                  {product.username?.[0]?.toUpperCase()}
+                </AvatarFallback>
               </Avatar>
-              <span className="text-sm font-semibold">{product.username}</span>
+              <div className="flex flex-col items-start">
+                <span className="text-sm font-semibold group-hover:text-sky-600 transition-colors">
+                  {product.username}
+                </span>
+                <span className="text-[11px] text-muted-foreground">Seller</span>
+              </div>
             </button>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <button className="h-8 w-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors">
-                  <MoreHorizontal className="h-4 w-4" />
+
+            <div className="flex items-center gap-1">
+              {getIsLogin() && (
+                <button
+                  onClick={onClickFavorite}
+                  className={cn(
+                    'h-9 w-9 rounded-full flex items-center justify-center border transition-all',
+                    product.collect_status === 'active'
+                      ? 'bg-sky-500 border-sky-500 text-white'
+                      : 'border-gray-200 text-gray-400 hover:border-sky-300 hover:text-sky-500'
+                  )}
+                >
+                  <Heart className="h-4 w-4" />
                 </button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem
-                  onClick={() => {
-                    window.location.href = `mailto:${product.user_email}`
-                  }}
-                >
-                  <Mail className="mr-2 h-4 w-4" /> Contact {product.username}
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  className="text-red-500 focus:text-red-500 w-200"
-                  onClick={() => {
-                    window.location.href = `/report/products/${product.product_id}`
-                  }}
-                >
-                  <Flag className="mr-2 h-4 w-4" /> Report product
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+              )}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button className="h-9 w-9 flex items-center justify-center rounded-full border border-gray-200 hover:bg-gray-50 transition-colors">
+                    <MoreHorizontal className="h-4 w-4" />
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-52">
+                  <DropdownMenuItem
+                    onClick={() => (window.location.href = `mailto:${product.user_email}`)}
+                  >
+                    <Mail className="mr-2 h-4 w-4" /> Contact seller
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    className="text-red-500 focus:text-red-500"
+                    onClick={() =>
+                      (window.location.href = `/report/products/${product.product_id}`)
+                    }
+                  >
+                    <Flag className="mr-2 h-4 w-4" /> Report product
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
           </div>
 
-          <div className="flex items-start justify-between gap-3">
-            <div className="flex flex-col gap-1">
-              <h1 className="text-2xl font-bold">
-                {product.website ? (
-                  <Link color={'textPrimary'} href={product.website} target="_blank">
-                    {product.title}
-                  </Link>
-                ) : (
-                  product.title
-                )}
-              </h1>
-              {product.ratings && product.ratings.length > 0 && (
-                <button
-                  className="flex items-center gap-1"
-                  onClick={() => setOpenRatingsDialog(true)}
+          {/* Title + meta */}
+          <div className="flex flex-col gap-2">
+            <div className="flex flex-wrap items-center gap-2">
+              {product.product_type && (
+                <Badge variant="secondary" className="text-xs font-medium">
+                  {product.product_type}
+                </Badge>
+              )}
+              {product.vendor && (
+                <Badge variant="outline" className="text-xs font-normal">
+                  {product.vendor}
+                </Badge>
+              )}
+            </div>
+
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 leading-tight tracking-tight">
+              {product.website ? (
+                <a
+                  href={product.website}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-sky-600 transition-colors inline-flex items-center gap-1.5"
                 >
+                  {product.title}
+                  <ExternalLink className="h-4 w-4 opacity-50" />
+                </a>
+              ) : (
+                product.title
+              )}
+            </h1>
+
+            {product.ratings && product.ratings.length > 0 && (
+              <button
+                className="flex items-center gap-1.5 w-fit"
+                onClick={() => setOpenRatingsDialog(true)}
+              >
+                <div className="flex">
                   {[1, 2, 3, 4, 5].map((s) => (
                     <Star
                       key={s}
@@ -505,68 +587,104 @@ const ProductDetails = () => {
                       )}
                     />
                   ))}
-                  <span className="text-xs text-muted-foreground ml-1">
-                    {product.ratings.length} ratings
-                  </span>
-                </button>
-              )}
-            </div>
-            {getIsLogin() && (
-              <button
-                onClick={onClickFavorite}
-                className={cn(
-                  'h-10 w-10 rounded-full flex items-center justify-center border transition-all duration-200 shrink-0',
-                  product.collect_status === 'active'
-                    ? 'bg-sky-500 border-sky-500 text-white'
-                    : 'border-gray-200 text-gray-400 hover:border-sky-300 hover:text-sky-500'
-                )}
-              >
-                <Heart className="h-5 w-5" />
+                </div>
+                <span className="text-sm font-medium text-gray-800">{avgRating}</span>
+                <span className="text-xs text-muted-foreground">
+                  ({product.ratings.length} reviews)
+                </span>
               </button>
+            )}
+
+            {product.tags && (
+              <div className="flex flex-wrap gap-1.5 mt-1">
+                {product.tags
+                  .split(',')
+                  .filter(Boolean)
+                  .map((tag, i) => (
+                    <span
+                      key={i}
+                      className="text-[11px] px-2 py-0.5 rounded-md bg-gray-100 text-gray-600"
+                    >
+                      #{tag.trim()}
+                    </span>
+                  ))}
+              </div>
             )}
           </div>
 
+          {/* Price card */}
           {currentProductVariant && isSelectOption && (
-            <Card className="border-0 bg-gray-50">
-              <CardContent className="p-4 flex flex-col gap-1">
-                <div className="text-3xl font-extrabold text-gray-900 mb-2">
-                  {currencyCode}
-                  {currentProductVariant.price}
+            <Card className="border border-gray-100 bg-gradient-to-br from-gray-50 to-white rounded-2xl shadow-sm">
+              <CardContent className="p-5">
+                <div className="flex items-baseline gap-1.5 mb-3">
+                  <span className="text-3xl font-bold text-gray-900 tracking-tight">
+                    {currencyCode}
+                    {currentProductVariant.price}
+                  </span>
+                  {quantity > 1 && totalPrice && (
+                    <span className="text-sm text-muted-foreground">
+                      · Total {currencyCode}
+                      {totalPrice.toString()}
+                    </span>
+                  )}
                 </div>
-                <PriceRow
-                  icon={Receipt}
-                  label="TAX"
-                  value={
-                    currentProductVariant.taxable
-                      ? `${currencyCode}${new Decimal(currentProductVariant.tax).times(quantity)}`
-                      : 'Tax free'
-                  }
-                />
-                <PriceRow
-                  icon={Coins}
-                  label="TIP"
-                  value={
-                    Number(currentProductVariant.tip) > 0
-                      ? `${currencyCode}${new Decimal(currentProductVariant.tip).times(quantity)}`
-                      : 'No tip'
-                  }
-                />
-                <PriceRow
-                  icon={Tag}
-                  label="DISCOUNTS"
-                  value={
-                    Number(currentProductVariant.discounts) > 0
-                      ? `${currencyCode}${new Decimal(currentProductVariant.discounts).times(quantity)}`
-                      : 'No discounts'
-                  }
-                />
+                <div className="divide-y divide-dashed divide-gray-100">
+                  <PriceRow
+                    icon={Receipt}
+                    label="Tax"
+                    value={
+                      currentProductVariant.taxable
+                        ? `${currencyCode}${new Decimal(currentProductVariant.tax || 0)
+                            .times(quantity)
+                            .toString()}`
+                        : 'Tax free'
+                    }
+                  />
+                  <PriceRow
+                    icon={Coins}
+                    label="Tip"
+                    value={
+                      Number(currentProductVariant.tip) > 0
+                        ? `${currencyCode}${new Decimal(currentProductVariant.tip || 0)
+                            .times(quantity)
+                            .toString()}`
+                        : 'No tip'
+                    }
+                  />
+                  <PriceRow
+                    icon={Tag}
+                    label="Discounts"
+                    value={
+                      Number(currentProductVariant.discounts) > 0
+                        ? `${currencyCode}${new Decimal(currentProductVariant.discounts || 0)
+                            .times(quantity)
+                            .toString()}`
+                        : 'No discounts'
+                    }
+                  />
+                </div>
+                {currentProductVariant.inventory_quantity > 0 && (
+                  <p className="text-xs text-emerald-600 mt-3 font-medium">
+                    {currentProductVariant.inventory_quantity} in stock
+                  </p>
+                )}
               </CardContent>
             </Card>
           )}
 
+          {/* Options */}
           {product.options?.map((item, index) => (
-            <div key={index} className="flex flex-col gap-2">
-              <h3 className="text-sm font-semibold">{item.name}</h3>
+            <div key={index} className="flex flex-col gap-2.5">
+              <div className="flex items-center justify-between">
+                <h3 className="text-sm font-semibold text-gray-900">{item.name}</h3>
+                <span className="text-xs text-muted-foreground">
+                  {index === 0
+                    ? optionOneValue
+                    : index === 1
+                      ? optionTwoValue
+                      : optionThreeValue || 'Select'}
+                </span>
+              </div>
               <div className="flex flex-wrap gap-2">
                 {item.value.split(',').map((val, vi) => {
                   const isSelected =
@@ -582,10 +700,10 @@ const ProductDetails = () => {
                         else setOptionThreeValue(val)
                       }}
                       className={cn(
-                        'px-4 py-1.5 rounded-full text-sm border transition-all duration-150',
+                        'px-4 py-2 rounded-xl text-sm font-medium border transition-all duration-150',
                         isSelected
-                          ? 'bg-sky-500 text-white border-sky-500'
-                          : 'border-gray-200 text-gray-600 hover:border-sky-300'
+                          ? 'bg-sky-500 text-white border-sky-500 shadow-sm shadow-sky-200'
+                          : 'border-gray-200 text-gray-700 hover:border-sky-300 hover:bg-sky-50'
                       )}
                     >
                       {val}
@@ -596,26 +714,26 @@ const ProductDetails = () => {
             </div>
           ))}
 
+          {/* Quantity + CTAs */}
           {product.product_status === 'active' &&
             isSelectOption &&
             (currentProductVariant && currentProductVariant.inventory_quantity > 0 ? (
-              <div className="flex flex-col gap-3">
-                <div className="flex items-center gap-3">
+              <div className="flex flex-col gap-3 pt-1">
+                <div className="flex items-center gap-3 flex-wrap">
                   <span className="text-sm font-semibold">Quantity</span>
-                  <div className="flex items-center border rounded-xl overflow-hidden">
+                  <div className="flex items-center border border-gray-200 rounded-xl overflow-hidden bg-white">
                     <button
-                      className="h-9 w-9 flex items-center justify-center hover:bg-gray-50 disabled:opacity-40 transition-colors"
+                      className="h-10 w-10 flex items-center justify-center hover:bg-gray-50 disabled:opacity-40 transition-colors"
                       disabled={quantity <= 1}
                       onClick={() => setQuantity((q) => Math.max(1, q - 1))}
                     >
                       <Minus className="h-4 w-4" />
                     </button>
-
                     <input
                       type="text"
                       inputMode="numeric"
                       value={quantity}
-                      className="w-12 text-center text-sm font-semibold bg-transparent outline-none border-x [appearance:textfield]"
+                      className="w-12 h-10 text-center text-sm font-semibold bg-transparent outline-none border-x border-gray-200"
                       onChange={(e) => {
                         const raw = e.target.value.replace(/\D/g, '')
                         if (raw === '') {
@@ -633,9 +751,8 @@ const ProductDetails = () => {
                         })
                       }}
                     />
-
                     <button
-                      className="h-9 w-9 flex items-center justify-center hover:bg-gray-50 disabled:opacity-40 transition-colors"
+                      className="h-10 w-10 flex items-center justify-center hover:bg-gray-50 disabled:opacity-40 transition-colors"
                       disabled={quantity >= currentProductVariant.inventory_quantity}
                       onClick={() =>
                         setQuantity((q) =>
@@ -647,84 +764,122 @@ const ProductDetails = () => {
                     </button>
                   </div>
                   <button
-                    className="text-xs text-sky-500 hover:underline"
+                    className="text-xs text-sky-600 hover:underline font-medium"
                     onClick={() => setQuantity(1)}
                   >
                     Min
                   </button>
                   <button
-                    className="text-xs text-sky-500 hover:underline"
+                    className="text-xs text-sky-600 hover:underline font-medium"
                     onClick={() => setQuantity(currentProductVariant.inventory_quantity)}
                   >
                     Max ({currentProductVariant.inventory_quantity})
                   </button>
                 </div>
 
-                <Button
-                  className="h-12 bg-sky-500 hover:bg-sky-600 text-white font-semibold gap-2"
-                  onClick={onClickAddToCart}
-                >
-                  <ShoppingCart className="h-5 w-5" /> Add to cart
-                </Button>
-                <Button
-                  className="h-12 bg-gray-900 hover:bg-gray-800 text-white font-semibold gap-2"
-                  onClick={onClickBuyNow}
-                >
-                  <Zap className="h-5 w-5" /> Buy now
-                </Button>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                  <Button
+                    className="h-12 bg-sky-500 hover:bg-sky-600 text-white font-semibold gap-2 rounded-xl shadow-sm shadow-sky-200"
+                    onClick={onClickAddToCart}
+                  >
+                    <ShoppingCart className="h-4 w-4" /> Add to cart
+                  </Button>
+                  <Button
+                    className="h-12 bg-gray-900 hover:bg-gray-800 text-white font-semibold gap-2 rounded-xl"
+                    onClick={onClickBuyNow}
+                  >
+                    <Zap className="h-4 w-4" /> Buy now
+                  </Button>
+                </div>
               </div>
             ) : (
-              <div className="flex items-center gap-3 px-4 py-3 bg-red-50 text-red-600 rounded-xl">
+              <div className="flex items-center gap-3 px-4 py-3.5 bg-red-50 text-red-600 rounded-xl">
                 <PackageX className="h-5 w-5 shrink-0" />
                 <p className="text-sm font-medium">Sorry, this product is sold out.</p>
               </div>
             ))}
 
+          {/* Description */}
           {product.render_body_html && (
-            <div className="flex flex-col gap-2">
-              <h3 className="font-semibold text-sm">Description</h3>
+            <div className="flex flex-col gap-2.5 pt-2">
+              <h3 className="font-semibold text-sm text-gray-900">Description</h3>
               <div
-                className="text-sm text-muted-foreground prose prose-sm max-w-none overflow-auto"
+                className="text-sm text-gray-600 leading-relaxed prose prose-sm max-w-none prose-p:my-2 prose-headings:text-gray-900"
                 dangerouslySetInnerHTML={{ __html: product.render_body_html }}
               />
             </div>
           )}
 
-          <div className="flex flex-col gap-2">
+          {/* Secondary actions */}
+          <div className="flex flex-col sm:flex-row gap-2 pt-1">
             <Button
               variant="outline"
-              className="gap-2"
-              onClick={() => {
-                window.location.href = `/profile/${product.username}`
-              }}
+              className="flex-1 gap-2 rounded-xl h-10"
+              onClick={() => (window.location.href = `/profile/${product.username}`)}
             >
               <Link2 className="h-4 w-4" /> More from {product.username}
             </Button>
-            <Button variant="outline" className="gap-2" onClick={() => setOpenRefundPolicy(true)}>
+            <Button
+              variant="outline"
+              className="flex-1 gap-2 rounded-xl h-10"
+              onClick={() => setOpenRefundPolicy(true)}
+            >
               <RefreshCcw className="h-4 w-4" /> Refund Policy
             </Button>
           </div>
+
+          {/* Mobile ratings */}
+          {product.ratings && product.ratings.length > 0 && (
+            <Card className="border border-gray-100 shadow-sm rounded-2xl lg:hidden">
+              <CardContent className="p-5 flex flex-col gap-3">
+                <div className="flex items-center justify-between">
+                  <h3 className="font-semibold text-sm">Ratings & Reviews</h3>
+                  <button
+                    onClick={() => setOpenRatingsDialog(true)}
+                    className="text-xs text-sky-600 hover:underline font-medium"
+                  >
+                    View all ({product.ratings.length})
+                  </button>
+                </div>
+                <div className="flex items-center gap-3">
+                  <span className="text-3xl font-bold">{avgRating}</span>
+                  <div className="flex">
+                    {[1, 2, 3, 4, 5].map((s) => (
+                      <Star
+                        key={s}
+                        className={cn(
+                          'h-4 w-4',
+                          s <= Math.round(Number(avgRating))
+                            ? 'text-amber-400 fill-amber-400'
+                            : 'text-gray-200 fill-gray-200'
+                        )}
+                      />
+                    ))}
+                  </div>
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="w-full rounded-xl"
+                  onClick={() => setOpenRatingsDialog(true)}
+                >
+                  Read reviews
+                </Button>
+              </CardContent>
+            </Card>
+          )}
         </div>
       </div>
 
+      {/* Recommended */}
       {product.product_status === 'active' && (
-        <div className="flex flex-col gap-4">
-          <button
-            className="flex items-center gap-1 hover:text-sky-500 transition-colors"
-            onClick={() => {
-              window.location.href = `/explore?type=${Object.entries(PRODUCT_TYPE).find(([, v]) => v === product.product_type)?.[0]}`
-            }}
-          >
-            <h2 className="text-lg font-bold">Recommended</h2>
-            <ChevronRight className="h-5 w-5" />
-          </button>
-          <Recommended productType={product.product_type} excludeId={product.product_id} />
-        </div>
+        <Recommended productType={product.product_type} excludeId={product.product_id} />
       )}
 
+      {/* Owner management */}
       {getUuid() === product.user_uuid && (
-        <div className="flex flex-col gap-4">
-          <h2 className="text-lg font-bold">Product Management</h2>
+        <div className="flex flex-col gap-4 pt-2 border-t">
+          <h2 className="text-lg font-bold pt-6">Product Management</h2>
           <Tabs value={tabValue} onValueChange={setTabValue}>
             <TabsList className="w-full justify-start">
               {PRODUCT_TAB_DATAS.map((item) => (

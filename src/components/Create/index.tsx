@@ -11,7 +11,16 @@ import { Textarea } from '@/components/ui/textarea'
 import { Badge } from '@/components/ui/badge'
 import { Label } from '@/components/ui/label'
 import { cn } from '@/lib/utils'
-import { ImagePlus, Trash2, Plus, PackagePlus } from 'lucide-react'
+import {
+  ImagePlus,
+  Trash2,
+  Plus,
+  PackagePlus,
+  FileText,
+  Upload,
+  ChevronDown,
+  ChevronUp,
+} from 'lucide-react'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import { Navigation, Pagination } from 'swiper/modules'
 // @ts-ignore
@@ -24,43 +33,6 @@ import 'swiper/css/pagination'
 import 'swiper/css/scrollbar'
 import { GetAbosolutePathByRelative } from '@/utils/image'
 
-const OptionRow = ({
-  index,
-  name,
-  value,
-  onNameChange,
-  onValueChange,
-}: {
-  index: number
-  name: string
-  value: string
-  onNameChange: (v: string) => void
-  onValueChange: (v: string) => void
-}) => (
-  <div className="grid grid-cols-2 gap-3">
-    <div className="flex flex-col gap-1.5">
-      <Label className="text-xs text-muted-foreground">
-        Option {index} Name {index === 1 && <span className="text-red-500">*</span>}
-      </Label>
-      <Input
-        value={name}
-        onChange={(e) => onNameChange(e.target.value)}
-        placeholder={`e.g. ${['Color', 'Size', 'Material'][index - 1]}`}
-      />
-    </div>
-    <div className="flex flex-col gap-1.5">
-      <Label className="text-xs text-muted-foreground">
-        Values (comma separated) {index === 1 && <span className="text-red-500">*</span>}
-      </Label>
-      <Input
-        value={value}
-        onChange={(e) => onValueChange(e.target.value)}
-        placeholder="e.g. Red,Blue,Green"
-      />
-    </div>
-  </div>
-)
-
 const Create = () => {
   const [title, setTitle] = useState('')
   const [slug, setSlug] = useState('')
@@ -68,14 +40,16 @@ const Create = () => {
   const [productType, setProductType] = useState<string>(PRODUCT_TYPE.OPENSOURCE)
   const [tags, setTags] = useState('')
   const [description, setDescription] = useState('')
-  const [optionOne, setOptionOne] = useState('')
-  const [optionOneValue, setOptionOneValue] = useState('')
-  const [optionTwo, setOptionTwo] = useState('')
-  const [optionTwoValue, setOptionTwoValue] = useState('')
-  const [optionThree, setOptionThree] = useState('')
-  const [optionThreeValue, setOptionThreeValue] = useState('')
+  const [options, setOptions] = useState<{ name: string; value: string }[]>([
+    { name: '', value: '' },
+  ])
   const [imageList, setImageList] = useState<string[]>([])
   const [uploading, setUploading] = useState(false)
+
+  // Import related
+  const [importText, setImportText] = useState('')
+  const [parsing, setParsing] = useState(false)
+  const [showImport, setShowImport] = useState(false)
 
   const { setSnackSeverity, setSnackOpen, setSnackMessage } = useSnackPresistStore((state) => state)
   const { getIsLogin } = useUserPresistStore((state) => state)
@@ -84,6 +58,155 @@ const Create = () => {
     setSnackSeverity('error')
     setSnackMessage(msg)
     setSnackOpen(true)
+  }
+
+  const showSuccess = (msg: string) => {
+    setSnackSeverity('success')
+    setSnackMessage(msg)
+    setSnackOpen(true)
+  }
+
+  // ========== Option helpers ==========
+  const addOption = () => {
+    if (options.length >= 3) return
+    setOptions([...options, { name: '', value: '' }])
+  }
+
+  const removeOption = (index: number) => {
+    if (options.length <= 1) return
+    setOptions(options.filter((_, i) => i !== index))
+  }
+
+  const updateOption = (index: number, field: 'name' | 'value', val: string) => {
+    const next = [...options]
+    next[index] = { ...next[index], [field]: val }
+    setOptions(next)
+  }
+
+  // ========== Parse & Fill ==========
+  const parseAndFill = (raw: string) => {
+    if (!raw.trim()) {
+      showError('Please paste text or upload a file first')
+      return
+    }
+
+    setParsing(true)
+    try {
+      let data: any = null
+
+      try {
+        data = JSON.parse(raw)
+      } catch {
+        data = parseKeyValueText(raw)
+      }
+
+      if (!data || (!data.title && !data.Title)) {
+        showError('Failed to parse. Please check the text format')
+        return
+      }
+
+      const get = (...keys: string[]) => {
+        for (const k of keys) {
+          if (data[k] !== undefined && data[k] !== null && data[k] !== '') {
+            return String(data[k]).trim()
+          }
+        }
+        return ''
+      }
+
+      const newTitle = get('title', 'Title')
+      const newSlug = get('slug', 'Slug')
+      const newVendor = get('vendor', 'Vendor')
+      const newType = get('product_type', 'productType', 'Type', 'type')
+      const newTags = get('tags', 'Tags')
+      const newDesc = get('description', 'Description', 'body_html', 'body')
+
+      if (newTitle) setTitle(newTitle)
+      if (newSlug) setSlug(newSlug)
+      if (newVendor) setVendor(newVendor)
+      if (newTags) setTags(newTags)
+      if (newDesc) setDescription(newDesc)
+
+      if (newType) {
+        const matched = Object.values(PRODUCT_TYPE).find(
+          (v) => String(v).toLowerCase() === newType.toLowerCase()
+        )
+        if (matched) setProductType(matched as string)
+      }
+
+      // Options
+      if (Array.isArray(data.options) && data.options.length > 0) {
+        const parsed = data.options.slice(0, 3).map((opt: any) => ({
+          name: opt.name || '',
+          value: opt.value || '',
+        }))
+        setOptions(parsed.length > 0 ? parsed : [{ name: '', value: '' }])
+      } else {
+        const list: { name: string; value: string }[] = []
+        const o1 = get('Option1', 'option1')
+        const v1 = get('Values1', 'values1')
+        const o2 = get('Option2', 'option2')
+        const v2 = get('Values2', 'values2')
+        const o3 = get('Option3', 'option3')
+        const v3 = get('Values3', 'values3')
+
+        if (o1 || v1) list.push({ name: o1, value: v1 })
+        if (o2 || v2) list.push({ name: o2, value: v2 })
+        if (o3 || v3) list.push({ name: o3, value: v3 })
+
+        setOptions(list.length > 0 ? list : [{ name: '', value: '' }])
+      }
+
+      showSuccess('Parsed successfully. Form has been filled. Please review and submit.')
+    } catch (e) {
+      console.error(e)
+      showError('An error occurred while parsing. Please check the text format')
+    } finally {
+      setParsing(false)
+    }
+  }
+
+  const parseKeyValueText = (text: string) => {
+    const result: Record<string, string> = {}
+    const lines = text.split(/\r?\n/)
+    let currentKey = ''
+    let currentValue: string[] = []
+
+    const flush = () => {
+      if (currentKey) {
+        result[currentKey] = currentValue.join('\n').trim()
+      }
+      currentKey = ''
+      currentValue = []
+    }
+
+    for (const line of lines) {
+      const match = line.match(/^([A-Za-z0-9_]+)\s*[:：]\s*(.*)$/)
+      if (match) {
+        flush()
+        currentKey = match[1]
+        currentValue = [match[2]]
+      } else if (currentKey) {
+        currentValue.push(line)
+      }
+    }
+    flush()
+    return result
+  }
+
+  const handleImportFile = (files: FileList | null) => {
+    if (!files || files.length === 0) return
+    const file = files[0]
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      const content = e.target?.result as string
+      if (content) {
+        setImportText(content)
+        parseAndFill(content)
+      }
+    }
+    reader.onerror = () => showError('Failed to read the file')
+    reader.readAsText(file)
   }
 
   const uploadFile = async (files: FileList) => {
@@ -117,16 +240,13 @@ const Create = () => {
     if (!description) return showError('Incorrect description input')
 
     const productOption: ProductOptionType[] = []
-    for (const [name, value] of [
-      [optionOne, optionOneValue],
-      [optionTwo, optionTwoValue],
-      [optionThree, optionThreeValue],
-    ]) {
-      if (name && value) {
-        const arr = value.split(',')
-        if (new Set(arr).size !== arr.length)
+    for (const opt of options) {
+      if (opt.name && opt.value) {
+        const arr = opt.value.split(',')
+        if (new Set(arr).size !== arr.length) {
           return showError('Product option has duplicate values')
-        productOption.push({ name, value })
+        }
+        productOption.push({ name: opt.name, value: opt.value })
       }
     }
     if (productOption.length === 0) return showError('At least one product option is needed')
@@ -177,6 +297,90 @@ const Create = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 flex flex-col gap-6">
+          {/* Collapsible Import Section */}
+          <Card className="border-sky-100 bg-sky-50/30">
+            <CardContent className="p-0">
+              <button
+                type="button"
+                onClick={() => setShowImport(!showImport)}
+                className="w-full flex items-center justify-between p-5 text-left hover:bg-sky-50/50 transition-colors rounded-xl"
+              >
+                <div className="flex items-center gap-2">
+                  <FileText className="h-5 w-5 text-sky-500" />
+                  <div>
+                    <h2 className="font-semibold text-base">Import from Text / File</h2>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      Paste text or upload a .txt / .md / .json file to auto-fill the form
+                    </p>
+                  </div>
+                </div>
+                {showImport ? (
+                  <ChevronUp className="h-5 w-5 text-muted-foreground shrink-0" />
+                ) : (
+                  <ChevronDown className="h-5 w-5 text-muted-foreground shrink-0" />
+                )}
+              </button>
+
+              {showImport && (
+                <div className="px-5 pb-5 flex flex-col gap-4 border-t border-sky-100/60 pt-4">
+                  <Textarea
+                    value={importText}
+                    onChange={(e) => setImportText(e.target.value)}
+                    placeholder={`Supported formats:
+
+1. Key-value text:
+Title: My Product
+Slug: my-product
+Type: OPENSOURCE
+Tags: ai,tool
+Description:
+Multi-line description...
+
+Option1: Color
+Values1: Red,Blue,Green
+
+2. JSON is also supported`}
+                    className="min-h-40 font-mono text-sm"
+                  />
+
+                  <div className="flex flex-wrap items-center gap-3">
+                    <Button
+                      onClick={() => parseAndFill(importText)}
+                      disabled={parsing || !importText.trim()}
+                      className="bg-sky-500 hover:bg-sky-600 text-white gap-2"
+                    >
+                      <FileText className="h-4 w-4" />
+                      {parsing ? 'Parsing...' : 'Parse & Fill Form'}
+                    </Button>
+
+                    <label className="inline-flex items-center gap-2 px-4 py-2 rounded-md border border-input bg-background hover:bg-accent cursor-pointer text-sm">
+                      <Upload className="h-4 w-4" />
+                      Upload File
+                      <input
+                        type="file"
+                        accept=".txt,.md,.json,text/plain,application/json"
+                        className="sr-only"
+                        onChange={(e) => handleImportFile(e.target.files)}
+                      />
+                    </label>
+
+                    {importText && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setImportText('')}
+                        className="text-muted-foreground"
+                      >
+                        Clear
+                      </Button>
+                    )}
+                  </div>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Product Details */}
           <Card>
             <CardContent className="p-6 flex flex-col gap-4">
               <h2 className="font-semibold text-base">Product Details</h2>
@@ -272,40 +476,79 @@ const Create = () => {
             </CardContent>
           </Card>
 
+          {/* Product Options - Dynamic */}
           <Card>
             <CardContent className="p-6 flex flex-col gap-4">
-              <div>
-                <h2 className="font-semibold text-base">Product Options</h2>
-                <p className="text-xs text-muted-foreground mt-0.5">
-                  Add up to 3 options like Color, Size, Material
-                </p>
+              <div className="flex items-center justify-between">
+                <div>
+                  <h2 className="font-semibold text-base">Product Options</h2>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    Add up to 3 options like Color, Size, Material
+                  </p>
+                </div>
+                {options.length < 3 && (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={addOption}
+                    className="gap-1"
+                  >
+                    <Plus className="h-4 w-4" />
+                    Add Option
+                  </Button>
+                )}
               </div>
-              <OptionRow
-                index={1}
-                name={optionOne}
-                value={optionOneValue}
-                onNameChange={setOptionOne}
-                onValueChange={setOptionOneValue}
-              />
-              <div className="border-t border-dashed" />
-              <OptionRow
-                index={2}
-                name={optionTwo}
-                value={optionTwoValue}
-                onNameChange={setOptionTwo}
-                onValueChange={setOptionTwoValue}
-              />
-              <div className="border-t border-dashed" />
-              <OptionRow
-                index={3}
-                name={optionThree}
-                value={optionThreeValue}
-                onNameChange={setOptionThree}
-                onValueChange={setOptionThreeValue}
-              />
+
+              <div className="flex flex-col gap-4">
+                {options.map((opt, index) => (
+                  <div key={index} className="relative">
+                    {index > 0 && <div className="border-t border-dashed mb-4" />}
+                    <div className="flex items-start gap-3">
+                      <div className="flex-1 grid grid-cols-2 gap-3">
+                        <div className="flex flex-col gap-1.5">
+                          <Label className="text-xs text-muted-foreground">
+                            Option {index + 1} Name{' '}
+                            {index === 0 && <span className="text-red-500">*</span>}
+                          </Label>
+                          <Input
+                            value={opt.name}
+                            onChange={(e) => updateOption(index, 'name', e.target.value)}
+                            placeholder={`e.g. ${['Color', 'Size', 'Material'][index] || 'Option'}`}
+                          />
+                        </div>
+                        <div className="flex flex-col gap-1.5">
+                          <Label className="text-xs text-muted-foreground">
+                            Values (comma separated){' '}
+                            {index === 0 && <span className="text-red-500">*</span>}
+                          </Label>
+                          <Input
+                            value={opt.value}
+                            onChange={(e) => updateOption(index, 'value', e.target.value)}
+                            placeholder="e.g. Red,Blue,Green"
+                          />
+                        </div>
+                      </div>
+
+                      {options.length > 1 && (
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon"
+                          className="mt-6 text-red-500 hover:text-red-600 hover:bg-red-50 shrink-0"
+                          onClick={() => removeOption(index)}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
             </CardContent>
           </Card>
 
+          {/* Product Images */}
           <Card>
             <CardContent className="p-6 flex flex-col gap-4">
               <div className="flex items-center justify-between">
@@ -393,6 +636,7 @@ const Create = () => {
           </Button>
         </div>
 
+        {/* Preview */}
         <div className="flex flex-col gap-4">
           <div className="sticky top-24">
             <h2 className="font-semibold text-base mb-3">Preview</h2>
@@ -419,11 +663,9 @@ const Create = () => {
                       ))}
                     </Swiper>
                   ) : (
-                    <img
-                      src={GetAbosolutePathByRelative(imageList[0])}
-                      alt="preview"
-                      className="w-full h-56 object-cover"
-                    />
+                    <div className="w-full h-56 bg-gray-50 flex items-center justify-center text-muted-foreground text-sm">
+                      No images yet
+                    </div>
                   )}
 
                   <CardContent className="p-4 flex flex-col gap-3">

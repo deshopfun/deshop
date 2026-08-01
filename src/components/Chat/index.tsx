@@ -63,7 +63,6 @@ const Chat = () => {
 
   const [conversations, setConversations] = useState<Conversation[]>([])
   const [followings, setFollowings] = useState<ProfileType[]>([])
-  // 用会话 id 当 key 的字典，不是数组——每个会话各自的消息列表分开存
   const [messagesByConversation, setMessagesByConversation] = useState<
     Record<string, ConversationMessage[]>
   >({})
@@ -81,7 +80,6 @@ const Chat = () => {
   const { getUuid, getIsLogin } = useUserPresistStore((state) => state)
   const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore((state) => state)
 
-  // 加载关注列表（"New Chat" 弹窗里选人用）
   const initFollowings = async (signal?: AbortSignal) => {
     if (!getIsLogin?.()) return
 
@@ -101,7 +99,6 @@ const Chat = () => {
     }
   }
 
-  // 加载会话列表——之前完全缺失的一步，没有这个 conversations 永远是空数组
   const initConversations = async (signal?: AbortSignal) => {
     if (!getIsLogin?.()) return
 
@@ -146,7 +143,6 @@ const Chat = () => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' })
   }, [messages.length])
 
-  // 点开某条会话：拉这条会话的历史消息（不是重新拉会话列表），并把未读数清零
   const onSelectConversation = async (id: number) => {
     setSelectedId(id)
     setMobileView('thread')
@@ -154,7 +150,6 @@ const Chat = () => {
       prev.map((c) => (c.conversation_id === id ? { ...c, unread_count: 0 } : c))
     )
 
-    // 已经拉过历史就不用重复拉，减少一次没必要的请求
     if (messagesByConversation[id]) return
 
     try {
@@ -202,12 +197,9 @@ const Chat = () => {
       const response: any = await axios.post(Http.chat_conversation, { peer_uuid: u.uuid })
 
       if (response.result) {
-        // 假设后端返回的是完整的最新会话列表；如果你的接口只返回新建的这一条，
-        // 把这里换成: const created: Conversation = response.data; setConversations(prev => [created, ...prev])
         const updatedConversations: Conversation[] = response.data
         setConversations(updatedConversations)
 
-        // 用真实返回的数据找到刚创建的这条会话，拿它后端分配的真实 id
         const created = updatedConversations.find((c) => c.peer_uuid === u.uuid)
 
         if (created) {
@@ -270,7 +262,6 @@ const Chat = () => {
   const { send: sendWs } = useChatSocket({
     enabled: getIsLogin(),
 
-    // 自己发的消息被服务端确认收到了：把本地临时 id 换成真实 message_id，状态改成已发送
     onAck: (payload) => {
       setMessagesByConversation((prev) => {
         const list = prev[payload.conversation_id] ?? []
@@ -285,7 +276,6 @@ const Chat = () => {
       })
     },
 
-    // 对方发来的新消息（或者自己在其他设备发的，同步过来）
     onMessage: (payload) => {
       setMessagesByConversation((prev) => ({
         ...prev,
@@ -318,7 +308,6 @@ const Chat = () => {
     },
   })
 
-  // 发送消息，clientMessageId 同时当乐观消息的本地 id，方便 ack 回来时对号入座
   const sendDraftMessage = (conversationId: number, content: string, clientMessageId: string) => {
     const sent = sendWs({
       type: 'message',
@@ -326,7 +315,6 @@ const Chat = () => {
     })
 
     if (!sent) {
-      // WebSocket 当前没连上（比如断线重连中），别让消息卡在 "sending" 却永远等不到 ack
       setMessagesByConversation((prev) => ({
         ...prev,
         [conversationId]: (prev[conversationId] ?? []).map((m) =>
@@ -370,7 +358,6 @@ const Chat = () => {
     setDraft('')
   }
 
-  // 发送失败的消息，点一下重试——沿用同一个 id 当 client_message_id，服务端可以靠它去重
   const onRetryMessage = (message: ConversationMessage) => {
     setMessagesByConversation((prev) => ({
       ...prev,

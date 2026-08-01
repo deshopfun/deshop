@@ -163,7 +163,7 @@ const ProfileDetails = () => {
             </TabsList>
 
             <TabsContent value="products" className="mt-0">
-              <ProfileProduct uuid={user?.profile?.uuid} product={user?.products} />
+              <ProfileProduct uuid={user?.profile?.uuid} products={user?.products} />
             </TabsContent>
 
             <TabsContent value="replies" className="mt-0">
@@ -178,11 +178,7 @@ const ProfileDetails = () => {
 
         {getIsLogin() && (
           <div className="lg:col-span-4">
-            <Card>
-              <CardContent className="p-6">
-                <WhoToFollow />
-              </CardContent>
-            </Card>
+            <WhoToFollow />
           </div>
         )}
       </div>

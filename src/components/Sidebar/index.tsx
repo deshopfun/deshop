@@ -17,9 +17,9 @@ import SidebarFooter from './SidebarFooter'
 const navItems = [
   { label: 'Home', href: '/', icon: House },
   // { label: 'Explore', href: '/explore', icon: Compass },
-  { label: 'Blockchain', href: '/blockchain', icon: Bitcoin },
-  { label: 'Livestreams', href: '/live', icon: Tv },
   { label: 'Chat', href: '/chat', icon: MessageCircle },
+  { label: 'Blockchain', href: '/blockchain', icon: Bitcoin },
+  // { label: 'Livestreams', href: '/live', icon: Tv },
   { label: 'Support', href: '/support', icon: Info },
   { label: 'More', href: '#', icon: CircleEllipsis },
 ]
