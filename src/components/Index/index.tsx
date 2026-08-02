@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react'
 import HomeSidebar from '@/components/Sidebar'
 import HomeHeader from '@/components/Home/HomeHeader'
 import HomeFooter from '@/components/Home/HomeFooter'
-import { useSnackPresistStore } from '@/lib'
+import { useSnackPresistStore, useUserPresistStore } from '@/lib'
 import { RouteType } from '@/utils/types'
 import { cn } from '@/lib/utils'
 import { CheckCircle2, XCircle, AlertCircle, Info, X } from 'lucide-react'
@@ -22,7 +22,12 @@ const Home = () => {
   const { snackOpen, snackMessage, snackSeverity, setSnackOpen } = useSnackPresistStore(
     (state) => state
   )
+  const { sidebarCollapsed, setSidebarCollapsed } = useUserPresistStore((state) => state)
   const [currentRoute, setCurrentRoute] = useState<RouteType>()
+
+  const handleSidebarCollapsedChange = (collapsed: boolean) => {
+    setSidebarCollapsed(collapsed)
+  }
 
   useEffect(() => {
     const route = routes.find((item) => item.path === router.pathname)
@@ -53,27 +58,32 @@ const Home = () => {
 
       {currentRoute?.enableSidebar ? (
         <div className="flex min-h-screen">
-          <HomeSidebar />
+          <HomeSidebar
+            collapsed={sidebarCollapsed}
+            onCollapsedChange={handleSidebarCollapsedChange}
+          />
 
-          <div className="flex flex-col flex-1 ml-60 min-h-screen">
+          <div
+            className={cn(
+              'flex flex-col flex-1 min-h-screen transition-all duration-200',
+              sidebarCollapsed ? 'ml-[72px]' : 'ml-60'
+            )}
+          >
             {currentRoute?.enableHomeHeader && <HomeHeader />}
-
             <main className="flex-1 p-6">{currentRoute?.component || null}</main>
-
             {currentRoute?.enableHomeFooter && <HomeFooter />}
           </div>
         </div>
       ) : (
         <div className="flex flex-col min-h-screen">
           <main className="flex-1">{currentRoute?.component || null}</main>
-
           {currentRoute?.enableHomeFooter && <HomeFooter />}
         </div>
       )}
 
       <div
         className={cn(
-          'fixed top-6 right-6 z-50 flex items-center gap-3 px-4 py-3 rounded-xl shadow-lg bg-white border transition-all duration-300 z-999',
+          'fixed top-6 right-6 z-[999] flex items-center gap-3 px-4 py-3 rounded-xl shadow-lg bg-white border transition-all duration-300',
           snackOpen ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-2 pointer-events-none'
         )}
       >

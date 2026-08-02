@@ -173,9 +173,9 @@ const ProductDetails = () => {
       if (response.result) {
         setCurrentProductVariant({
           ...response.data,
-          inventory_policy: response.data.inventory_policy === 1,
-          taxable: response.data.taxable === 1,
-          is_virtual: response.data.is_virtual === 1,
+          inventory_policy: response.data.inventory_policy,
+          taxable: response.data.taxable,
+          is_virtual: response.data.is_virtual,
         })
       } else {
         setCurrentProductVariant(undefined)

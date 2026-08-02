@@ -8,6 +8,7 @@ type UserPersistState = {
   userTheme: 'auto' | 'light' | 'dark'
   userLanguage: string
   showProgress: boolean
+  sidebarCollapsed: boolean
 }
 
 type UserPersistAction = {
@@ -23,6 +24,8 @@ type UserPersistAction = {
   getUserLanguage: () => string
   setShowProgress: (showProgress: boolean) => void
   getShowProgress: () => boolean
+  setSidebarCollapsed: (sidebarCollapsed: boolean) => void
+  getSidebarCollapsed: () => boolean
 
   resetUser: () => void
 }
@@ -34,6 +37,7 @@ const initialUserState: UserPersistState = {
   userTheme: 'auto',
   userLanguage: 'en',
   showProgress: false,
+  sidebarCollapsed: false,
 }
 
 export const useUserPresistStore = create(
@@ -53,6 +57,8 @@ export const useUserPresistStore = create(
       getUserLanguage: () => get().userLanguage,
       setShowProgress: (value) => set(() => ({ showProgress: value })),
       getShowProgress: () => get().showProgress,
+      setSidebarCollapsed: (value) => set(() => ({ sidebarCollapsed: value })),
+      getSidebarCollapsed: () => get().sidebarCollapsed,
 
       resetUser: () => {
         set(initialUserState)

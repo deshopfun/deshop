@@ -6,30 +6,25 @@ import { Button } from '@/components/ui/button'
 import { Bell } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { SiteLogo } from '@/components/Logo/SiteLogo'
+import { cn } from '@/lib/utils'
 
-const SidebarHeader = () => {
-  const [notificationNumber, setNotificationNumber] = useState<number>(0)
+type Props = {
+  collapsed?: boolean
+}
 
+const SidebarHeader = ({ collapsed = false }: Props) => {
+  const [notificationNumber, setNotificationNumber] = useState(0)
   const { setSnackOpen, setSnackMessage, setSnackSeverity } = useSnackPresistStore((state) => state)
   const { getIsLogin } = useUserPresistStore((state) => state)
 
   const init = async () => {
     try {
       if (!getIsLogin?.()) return
-
       const response: any = await axios.get(Http.user_notification)
       if (response.result) {
-        if (response.data) {
-          const count = response.data.reduce((total: number, item: any) => {
-            if (item.is_read && item.is_read === 2) {
-              return total + 1
-            }
-            return total
-          }, 0)
-          setNotificationNumber(count)
-        } else {
-          setNotificationNumber(0)
-        }
+        const list = response.data || []
+        const count = list.filter((item: any) => item.is_read === "false").length
+        setNotificationNumber(count)
       } else {
         setSnackSeverity('error')
         setSnackMessage(response.message)
@@ -45,28 +40,30 @@ const SidebarHeader = () => {
   }, [])
 
   return (
-    <div className="p-4 overflow-hidden">
-      <div className="flex flex-row items-center justify-between">
-        <SiteLogo />
+    <div className={cn('p-3 border-b border-gray-50', collapsed && 'px-2')}>
+      <div
+        className={cn(
+          'flex items-center',
+          collapsed ? 'flex-col gap-2' : 'flex-row justify-between'
+        )}
+      >
+        <SiteLogo collapsed={collapsed} />
+
         {getIsLogin() && (
           <div className="relative inline-flex">
             <Button
-              className="h-11 w-11 shadow-sm"
+              className="h-9 w-9 shadow-sm"
               variant="ghost"
               size="icon"
-              color="red"
+              title="Notifications"
               onClick={() => {
                 window.location.href = '/notification'
               }}
             >
-              <Bell className="h-5 w-5" />
+              <Bell className="h-4 w-4" />
             </Button>
             {notificationNumber > 0 && (
-              <Badge
-                className={
-                  'absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs bg-red-500 hover:bg-red-600'
-                }
-              >
+              <Badge className="absolute -top-1 -right-1 h-4 min-w-4 px-1 flex items-center justify-center text-[10px] bg-red-500 hover:bg-red-600">
                 {notificationNumber > 99 ? '99+' : notificationNumber}
               </Badge>
             )}
