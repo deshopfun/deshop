@@ -158,10 +158,10 @@ const Chat = () => {
       })
 
       if (response.result) {
-        const fetchedMessages: ConversationMessage[] = response.data
+        const fetchedMessages: ConversationMessage[] = response.data ?? []
         setMessagesByConversation((prev) => ({ ...prev, [id]: fetchedMessages }))
 
-        const lastMessage = fetchedMessages[fetchedMessages?.length - 1]
+        const lastMessage = fetchedMessages[fetchedMessages.length - 1]
         if (lastMessage) {
           sendWs({
             type: 'read',
@@ -442,7 +442,7 @@ const Chat = () => {
                     <div className="max-h-72 overflow-y-auto -mx-1 space-y-1">
                       {filteredFollowing?.length === 0 ? (
                         <p className="text-sm text-muted-foreground text-center py-6">
-                          {followings?.length === 0
+                          {followings.length === 0
                             ? "You're not following anyone yet"
                             : 'No matches'}
                         </p>
@@ -650,7 +650,7 @@ const Chat = () => {
 
                 {/* 消息列表 / 新会话初始化引导 */}
                 <div ref={scrollRef} className="flex-1 min-h-0 overflow-y-auto px-4 py-4">
-                  {messages?.length === 0 ? (
+                  {messages.length === 0 ? (
                     <div className="h-full flex items-center justify-center text-center">
                       <div className="max-w-xs">
                         <Avatar className="w-16 h-16 mx-auto mb-4">
