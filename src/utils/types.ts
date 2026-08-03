@@ -54,6 +54,8 @@ export type ProductType = {
   currency: string
   product_status: string
   collect_status: string
+  create_time: number
+  update_time: number
   images: ProductImageType[]
   options: ProductOptionType[]
   variants: ProductVariantType[]

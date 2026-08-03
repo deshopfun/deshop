@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+
+Disallow: /cart
+Disallow: /checkout
+Disallow: /login
+Disallow: /manage
+Disallow: /notification
+
+Sitemap: https://deshop.space/sitemap.xml
