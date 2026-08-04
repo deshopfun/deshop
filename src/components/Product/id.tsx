@@ -506,7 +506,7 @@ const ProductDetails = () => {
                   onClick={onClickFavorite}
                   className={cn(
                     'h-9 w-9 rounded-full flex items-center justify-center border transition-all',
-                    product.collect_status === 'active'
+                    product.collect_status === 'true'
                       ? 'bg-sky-500 border-sky-500 text-white'
                       : 'border-gray-200 text-gray-400 hover:border-sky-300 hover:text-sky-500'
                   )}

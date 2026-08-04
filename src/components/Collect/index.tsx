@@ -103,39 +103,39 @@ const Collect = () => {
         {collectProduct.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {collectProduct.map((item, index) => (
-              <Card key={index} className="group overflow-hidden hover:shadow-lg transition-shadow">
-                <CardHeader className="p-0">
-                  <div className="relative">
-                    <img
-                      src={GetAbosolutePathByRelative(item.image_srcs?.[0], 'avatar')}
-                      alt={item.title}
-                      className="w-full aspect-square object-cover"
-                      loading="lazy"
-                    />
-                    <Button
-                      variant="destructive"
-                      size="icon"
-                      className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity"
-                      onClick={() => onClickDelete(item.collect_type, item.bind_id)}
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
-                  </div>
-                </CardHeader>
+              <Card
+                key={index}
+                className="group overflow-hidden hover:shadow-lg transition-all duration-200 hover:-translate-y-0.5"
+              >
+                <div className="relative aspect-square bg-muted">
+                  <img
+                    src={GetAbosolutePathByRelative(item.image_srcs?.[0], 'avatar')}
+                    alt={item.title}
+                    className="w-full h-full object-cover"
+                    loading="lazy"
+                  />
+                  <Button
+                    variant="secondary"
+                    size="icon"
+                    className="absolute top-3 right-3 h-8 w-8 rounded-full opacity-0 group-hover:opacity-100 transition-opacity shadow-sm"
+                    onClick={() => onClickDelete(item.collect_type, item.bind_id)}
+                  >
+                    <Trash2 className="w-4 h-4 text-red-500" />
+                  </Button>
+                </div>
 
-                <CardContent className="p-5 space-y-3">
-                  <h3 className="font-semibold text-lg line-clamp-2">{item.title}</h3>
-                  {item.description && (
-                    <p className="text-sm text-muted-foreground line-clamp-3">{item.description}</p>
-                  )}
+                <CardContent className="p-4 space-y-3">
+                  <h3 className="font-semibold text-sm leading-snug line-clamp-2 min-h-[2.5rem]">
+                    {item.title}
+                  </h3>
 
                   <Button
-                    className="w-full mt-4"
+                    className="w-full"
+                    size="sm"
                     onClick={() => {
                       window.location.href = `/products/${item.slug || item.bind_id}`
                     }}
                   >
-                    <ShoppingCart className="w-4 h-4 mr-2" />
                     View Product
                   </Button>
                 </CardContent>
