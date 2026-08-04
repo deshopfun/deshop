@@ -153,11 +153,13 @@ const Product = (props: Props) => {
     if (!description) return showError('Incorrect description input')
     if (website && !isValidHttpUrl(website)) return showError('Incorrect website input')
     if (video && !isValidHttpUrl(video)) return showError('Incorrect video input')
+
+    var lowerSlug = slug.toLowerCase()
     try {
       const response: any = await axios.put(Http.product_base, {
         product_id: props.product_id,
         title,
-        slug,
+        slug: lowerSlug,
         body_html: description,
         product_type: productType,
         tags,
@@ -166,7 +168,7 @@ const Product = (props: Props) => {
         video,
       })
       if (response.result) {
-        window.location.href = `/products/${slug}`
+        window.location.href = `/products/${lowerSlug}`
         showSuccess('Updated successfully')
       } else showError('Update failed')
     } catch {

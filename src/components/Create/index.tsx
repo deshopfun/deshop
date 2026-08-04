@@ -251,6 +251,7 @@ const Create = () => {
     }
     if (productOption.length === 0) return showError('At least one product option is needed')
     if (imageList.length === 0) return showError('At least one image is needed')
+    var lowerSlug = slug.toLowerCase()
 
     try {
       const productImages: ProductImageType[] = imageList.map((src) => ({
@@ -260,7 +261,7 @@ const Create = () => {
       }))
       const response: any = await axios.post(Http.product, {
         title,
-        slug,
+        slug: lowerSlug,
         body_html: description,
         product_type: productType,
         tags,
