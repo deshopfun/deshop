@@ -61,6 +61,7 @@ import VideoPlayer from '../VIdeo/VideoPlayer'
 import { GetAbosolutePathByRelative } from '@/utils/image'
 import Recommended from './Recommended'
 import { useAbortableEffect } from '@/hooks/useAbortableEffect'
+import ProductStory from './Story'
 
 const RatingBar = ({ star, ratings }: { star: number; ratings: any[] }) => {
   const count = ratings.filter((r) => r.number === star).length
@@ -853,7 +854,7 @@ const ProductDetails = () => {
         <Recommended
           productType={product.product_type}
           excludeId={product.product_id}
-          pageSize={6}
+          pageSize={5}
         />
       )}
 
@@ -870,7 +871,7 @@ const ProductDetails = () => {
             </TabsList>
             <TabsContent value="0">
               <Product
-                product_id={product.product_id}
+                productId={product.product_id}
                 title={product.title}
                 slug={product.slug}
                 vendor={product.vendor}
@@ -887,12 +888,15 @@ const ProductDetails = () => {
             </TabsContent>
             <TabsContent value="1">
               <ProductVariant
-                product_id={product.product_id}
+                productId={product.product_id}
                 options={product.options}
                 currency={product.currency}
               />
             </TabsContent>
             <TabsContent value="2">
+              <ProductStory productId={product.product_id} />
+            </TabsContent>
+            <TabsContent value="3">
               <ProductRating />
             </TabsContent>
           </Tabs>

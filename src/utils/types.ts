@@ -62,6 +62,27 @@ export type ProductType = {
   ratings: RatingType[]
 }
 
+export type ProductStoryType = {
+  user_uuid: string
+  user_email: string
+  username: string
+  user_bio: string
+  user_avatar_url: string
+  product_id: number
+  product_slug: string
+  product_tags: string
+  title: string
+  sub_title: string
+  body_html: string
+  render_body_html: string
+  slug: string
+  cover_image: string
+  cover_image_caption: string
+  story_status: string
+  create_time: number
+  update_time: number
+}
+
 export type ProductImageType = {
   src: string
   width: number

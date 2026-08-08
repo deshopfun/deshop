@@ -24,6 +24,7 @@ import ReportProductDetails from '@/components/Report/Products/id'
 import Support from '@/components/Support'
 import { RouteType } from '@/utils/types'
 import Search from '@/components/Search'
+import StoryDetails from '@/components/Story/id'
 
 export const routes: RouteType[] = [
   {
@@ -261,6 +262,16 @@ export const routes: RouteType[] = [
     name: 'Search',
     title: 'Search',
     component: <Search />,
+    enableSidebar: true,
+    enableHomeHeader: true,
+    enableHomeFooter: true,
+    needLogin: false,
+  },
+  {
+    path: '/stories/[id]',
+    name: 'Story',
+    title: 'Story',
+    component: <StoryDetails />,
     enableSidebar: true,
     enableHomeHeader: true,
     enableHomeFooter: true,

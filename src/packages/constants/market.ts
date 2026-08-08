@@ -99,6 +99,11 @@ export const PRODUCT_TAB_DATAS: TAB_DATA[] = [
   },
   {
     id: 2,
+    title: 'Story',
+    tabId: 'story',
+  },
+  {
+    id: 3,
     title: 'Rating',
     tabId: 'rating',
   },

@@ -21,6 +21,7 @@ export class Http {
   static user_profile_by_username = this.httpPath + '/client/user-profile-by-username'
   static product_list = this.httpPath + '/client/product-list'
   static product_by_id = this.httpPath + '/client/product-by-unique'
+  static product_story_by_id = this.httpPath + '/client/product-story-by-unique'
   static product_variant_by_option = this.httpPath + '/client/product-variant-by-option'
   static product_variant_by_option_list = this.httpPath + '/client/product-variant-by-option-list'
   static product_rating_by_id = this.httpPath + '/client/product-rating-by-id'
@@ -49,6 +50,7 @@ export class Http {
   static product_image = this.httpPath + '/client/product/product-image'
   static product_variant = this.httpPath + '/client/product/product-variant'
   static product_rating = this.httpPath + '/client/product/product-rating'
+  static product_story = this.httpPath + '/client/product/product-story'
 
   // order
   static order = this.httpPath + '/client/order/order'

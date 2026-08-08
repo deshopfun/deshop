@@ -16,7 +16,7 @@ import { isValidHttpUrl } from '@/utils/verify'
 import { GetAbosolutePathByRelative } from '@/utils/image'
 
 type Props = {
-  product_id: number
+  productId: number
   title?: string
   slug?: string
   vendor?: string
@@ -157,7 +157,7 @@ const Product = (props: Props) => {
     var lowerSlug = slug.toLowerCase()
     try {
       const response: any = await axios.put(Http.product_base, {
-        product_id: props.product_id,
+        product_id: props.productId,
         title,
         slug: lowerSlug,
         body_html: description,
@@ -193,11 +193,11 @@ const Product = (props: Props) => {
     if (productOption.length === 0) return showError('At least one product option is needed')
     try {
       const response: any = await axios.put(Http.product_option, {
-        product_id: props.product_id,
+        product_id: props.productId,
         options: productOption,
       })
       if (response.result) {
-        await props.init(props.product_id)
+        await props.init(props.productId)
         showSuccess('Updated successfully')
       } else showError('Update failed')
     } catch {
@@ -214,11 +214,11 @@ const Product = (props: Props) => {
         height: 100,
       }))
       const response: any = await axios.put(Http.product_image, {
-        product_id: props.product_id,
+        product_id: props.productId,
         images: productImages,
       })
       if (response.result) {
-        await props.init(props.product_id)
+        await props.init(props.productId)
         showSuccess('Updated successfully')
       } else showError('Update failed')
     } catch {
@@ -230,11 +230,11 @@ const Product = (props: Props) => {
     if (status === props.productStatus) return showError('Product is already in this status')
     try {
       const response: any = await axios.put(Http.product_base, {
-        product_id: props.product_id,
+        product_id: props.productId,
         product_status: status,
       })
       if (response.result) {
-        await props.init(props.product_id)
+        await props.init(props.productId)
         showSuccess('Status updated')
       } else showError('Update failed')
     } catch {

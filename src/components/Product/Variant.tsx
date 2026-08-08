@@ -15,7 +15,7 @@ import { cn } from '@/lib/utils'
 import { GetAbosolutePathByRelative } from '@/utils/image'
 
 type Props = {
-  product_id: number
+  productId: number
   options?: ProductOptionType[]
   currency: string
 }
@@ -167,7 +167,7 @@ const ProductVariant = (props: Props) => {
     if (!option) return
     try {
       const response: any = await axios.get(Http.product_variant, {
-        params: { product_id: props.product_id, option },
+        params: { product_id: props.productId, option },
       })
       if (response.result) {
         const d = response.data
@@ -175,14 +175,14 @@ const ProductVariant = (props: Props) => {
         setImage(d.image)
         setBarcode(d.barcode)
         setCompareAtPrice(d.compare_at_price)
-        setInventoryPolicy(d.inventory_policy === "true" ? true : false)
-        setIsVirtual(d.is_virtual === "true" ? true : false)
+        setInventoryPolicy(d.inventory_policy === 'true' ? true : false)
+        setIsVirtual(d.is_virtual === 'true' ? true : false)
         setInventoryQuantity(d.inventory_quantity)
         setPrice(d.price)
         setPosition(d.position)
         setSku(d.sku)
         setTax(d.tax)
-        setTaxable(d.taxable === "true" ? true : false)
+        setTaxable(d.taxable === 'true' ? true : false)
         setDiscounts(d.discounts)
         setTip(d.tip)
       } else {
@@ -240,7 +240,7 @@ const ProductVariant = (props: Props) => {
 
     try {
       const response: any = await axios.post(Http.product_variant, {
-        product_id: props.product_id,
+        product_id: props.productId,
         image,
         position: parseInt(position),
         title,
@@ -251,9 +251,9 @@ const ProductVariant = (props: Props) => {
         barcode,
         inventory_quantity: parseInt(inventoryQuantity),
         sku,
-        inventory_policy: inventoryPolicy ? "true" : "false",
-        is_virtual: isVirtual  ? "true" : "false",
-        taxable: taxable  ? "true" : "false",
+        inventory_policy: inventoryPolicy ? 'true' : 'false',
+        is_virtual: isVirtual ? 'true' : 'false',
+        taxable: taxable ? 'true' : 'false',
         tax: taxable ? tax : undefined,
         option,
       })
