@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useState } from 'react'
 import { useRouter } from 'next/router'
 import Link from 'next/link'
 import { marked } from 'marked'
@@ -16,100 +16,29 @@ import {
   Bookmark,
   Upload,
   Shield,
+  RefreshCw,
 } from 'lucide-react'
 import axios from '@/utils/http/axios'
 import { Http } from '@/utils/http/http'
 import { CURRENCYS } from '@/packages/constants/currency'
 import { GetAbosolutePathByRelative } from '@/utils/image'
-import { ProductStoryType, ProductType } from '@/utils/types'
+import { ProductStoryType } from '@/utils/types'
 import { useSnackPresistStore, useUserPresistStore } from '@/lib'
 import { useAbortableEffect } from '@/hooks/useAbortableEffect'
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://deshop.space'
 
-type StoryItem = {
-  slug: string
-  title: string
-  subtitle?: string
-  cover?: string
-  cover_caption?: string
-  author_name?: string
-  author_bio?: string
-  author_avatar?: string
-  published_at: string
-  updated_at?: string
-  seo_title?: string
-  seo_description?: string
-  tags?: string[]
-  body_markdown: string
-  product_id?: number
-  product_slug?: string
+// NOTE: engagement numbers and responses below are placeholder/preview data —
+// the comments & reactions backend isn't wired up yet. Everything in this
+// block is visually flagged as a preview so it can't be mistaken for real
+// social proof. Replace with live data once the API exists.
+const PREVIEW_STORY_STATS = {
+  claps: '0',
+  responses: 0,
+  restacks: 0,
 }
 
-const STORIES: StoryItem[] = [
-  {
-    slug: 'deshop-crypto-checkout-guide',
-    title: 'How crypto checkout actually works on DESHOP',
-    subtitle:
-      'On-chain payment, mutual confirmation, and what trust looks like when both sides have to agree.',
-    cover: '/og-default.png',
-    cover_caption: 'DESHOP — discover, buy, and sell with crypto',
-    author_name: 'DESHOP Editorial',
-    author_bio: 'Product and marketplace notes from the DESHOP team.',
-    published_at: '2026-08-01T00:00:00.000Z',
-    updated_at: '2026-08-07T00:00:00.000Z',
-    seo_title: 'How crypto checkout works on DESHOP',
-    seo_description:
-      'A clear guide to paying with crypto on DESHOP: on-chain confirmation, mutual confirm between buyer and seller, and when an order is complete.',
-    tags: ['Crypto', 'Checkout', 'Trust'],
-    body_markdown: `
-What if checkout didn’t end when you hit pay — but only when the chain settles and both people say the deal is done?
-
-That is the bet DESHOP makes. Crypto is not a badge on a button; it is part of how completion is defined.
-
-## Payment is only the first step
-
-On many marketplaces, “paid” is treated as the finish line. Here, payment starts a sequence:
-
-1. You choose a product and options  
-2. You pay with supported crypto  
-3. The network confirms the transfer  
-4. Buyer and seller each confirm  
-
-Until those last steps land, the order is not complete. That is deliberate. It gives both sides a shared checkpoint instead of a silent assumption.
-
-## Why mutual confirmation matters
-
-Chains are public; intent is not. A transfer can succeed on-chain while delivery is still open, disputed, or misunderstood. Asking both sides to confirm is a simple way to say: *we agree this is done.*
-
-It will not fix every conflict. It does make the expected end state obvious — which is often what trust needs.
-
-## Write the product page for humans, too
-
-A listing that only chases keywords reads like it was written for a crawler. The same is true of checkout copy. Short, honest lines beat a wall of guarantees nobody reads.
-
-If you sell on DESHOP, say what the buyer gets, when you deliver, and what happens after payment. People stay for clarity, not for denser SEO.
-
-## FAQ
-
-### When is an order complete?
-
-After **on-chain confirmation** and **mutual confirmation** by buyer and seller.
-
-### What should buyers check before paying?
-
-Amount, asset, network, and the product terms on the listing. Crypto moves under network rules — verify before you send.
-`.trim(),
-  },
-]
-
-const STORY_STATS = {
-  claps: '3.7K',
-  responses: 75,
-  restacks: 28,
-}
-
-const FAKE_RESPONSES = [
+const PREVIEW_RESPONSES = [
   {
     id: 1,
     name: 'Alex Chen',
@@ -133,7 +62,7 @@ const FAKE_RESPONSES = [
   },
 ]
 
-const FAKE_RECOMMENDED = [
+const PREVIEW_RECOMMENDED = [
   {
     slug: 'why-we-built-deshop',
     title: 'Why we built DESHOP for open commerce',
@@ -153,22 +82,62 @@ const FAKE_RECOMMENDED = [
   {
     slug: 'on-chain-confirmation',
     title: 'On-chain confirmation, explained simply',
-    subtitle: 'What “confirmed” means for buyers and sellers.',
+    subtitle: 'What "confirmed" means for buyers and sellers.',
     author_name: 'DESHOP Editorial',
     date: 'Jun 30, 2026',
     read: '5 min read',
   },
 ]
 
-function estimateReadingTime(markdown: string) {
-  const words = markdown.trim().split(/\s+/).filter(Boolean).length
+// Backend timestamps have been inconsistent about seconds vs milliseconds in
+// this codebase, so normalize defensively: anything below the "seconds since
+// ~2001" threshold is treated as seconds and scaled up.
+const SECONDS_HEURISTIC_THRESHOLD = 10_000_000_000
+function toDate(timestamp: number | undefined | null): Date | null {
+  if (!timestamp) return null
+  const ms = timestamp < SECONDS_HEURISTIC_THRESHOLD ? timestamp * 1000 : timestamp
+  const date = new Date(ms)
+  return Number.isNaN(date.getTime()) ? null : date
+}
+
+function stripHtml(html: string) {
+  if (typeof window === 'undefined') return html.replace(/<[^>]*>/g, ' ')
+  const el = document.createElement('div')
+  el.innerHTML = html
+  return el.textContent || el.innerText || ''
+}
+
+function estimateReadingTime(html: string) {
+  const words = stripHtml(html).trim().split(/\s+/).filter(Boolean).length
   return Math.max(1, Math.ceil(words / 220))
 }
 
+function formatPrice(price: string, currencyCode: string) {
+  try {
+    return new Intl.NumberFormat('en-US', {
+      style: currencyCode ? 'currency' : 'decimal',
+      currency: currencyCode || undefined,
+      maximumFractionDigits: 2,
+    }).format(Number(price))
+  } catch {
+    // Unknown/unsupported currency code — fall back to a plain label.
+    return `${currencyCode} ${price}`.trim()
+  }
+}
+
+// Escape "<" so a title/subtitle containing "</script>" can't break out of
+// the inline JSON-LD script tag.
+function safeJsonLd(data: unknown) {
+  return JSON.stringify(data).replace(/</g, '\\u003c')
+}
+
+type LoadState = 'loading' | 'error' | 'not-found' | 'ready'
+
 const StoryDetails = () => {
   const router = useRouter()
-  const id = typeof router.query.id === 'string' ? router.query.id : ''
+  const slug = typeof router.query.id === 'string' ? router.query.id : ''
   const [story, setStory] = useState<ProductStoryType>()
+  const [loadState, setLoadState] = useState<LoadState>('loading')
 
   const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore((state) => state)
   const { getUuid, getIsLogin } = useUserPresistStore((state) => state)
@@ -184,80 +153,52 @@ const StoryDetails = () => {
     setSnackOpen(true)
   }
 
-  const init = async (id: any, signal?: AbortSignal) => {
+  const requireLogin = () => {
+    if (!getIsLogin?.() || !getUuid?.()) {
+      showError('Please log in to continue')
+      return false
+    }
+    return true
+  }
+
+  const init = async (slugValue: string, signal?: AbortSignal) => {
+    setLoadState('loading')
     try {
-      if (!id) return showError('Incorrect product id')
+      if (!slugValue) {
+        setLoadState('not-found')
+        return
+      }
       const response: any = await axios.get(Http.product_story_by_id, {
-        params: { slug: id },
+        params: { slug: slugValue },
         signal,
       })
-      if (response.result) {
+      if (response.result && response.data) {
         setStory({
           ...response.data,
           render_body_html: DOMPurify.sanitize(await marked(response.data.body_html || '')),
         })
+        setLoadState('ready')
       } else {
-        showError(response.message)
+        setLoadState('not-found')
       }
     } catch (e) {
       if (axios.isCancel(e) || (e as any)?.code === 'ERR_CANCELED') return
+      setLoadState('error')
       showError('Network error. Please try again later.')
     }
   }
 
   useAbortableEffect(
     (signal) => {
-      if (!router.isReady || !id) return
-      init(id, signal)
+      if (!router.isReady) return
+      init(slug, signal)
     },
-    [router.isReady, id]
+    [router.isReady, slug]
   )
 
-  // const story = useMemo(() => {
-  //   if (!router.isReady) return null
-  //   if (id) return STORIES.find((s) => s.slug === id) || null
-  //   return STORIES[0] || null
-  // }, [router.isReady, id])
+  const onRetry = () => init(slug)
 
-  // useEffect(() => {
-  //   if (!story) {
-  //     setBodyHtml('')
-  //     return
-  //   }
-  //   let cancelled = false
-  //   ;(async () => {
-  //     const raw = String(await marked(story.body_markdown || ''))
-  //     const safe = DOMPurify.sanitize(raw)
-  //     if (!cancelled) setBodyHtml(safe)
-  //   })()
-  //   return () => {
-  //     cancelled = true
-  //   }
-  // }, [story])
-
-  // useEffect(() => {
-  //   if (!story?.product_id && !story?.product_slug) {
-  //     setProduct(null)
-  //     return
-  //   }
-  //   let cancelled = false
-  //   ;(async () => {
-  //     try {
-  //       const params = story.product_id
-  //         ? { product_id: story.product_id }
-  //         : { slug: story.product_slug }
-  //       const res: any = await axios.get(Http.product_by_id, { params })
-  //       if (!cancelled && res.result) setProduct(res.data)
-  //     } catch (e) {
-  //       console.error(e)
-  //     }
-  //   })()
-  //   return () => {
-  //     cancelled = true
-  //   }
-  // }, [story?.product_id, story?.product_slug])
-
-  if (!router.isReady) {
+  if (!router.isReady || loadState === 'loading') {
     return (
       <div className="flex justify-center py-32">
         <Loader2 className="h-5 w-5 animate-spin text-gray-400" />
@@ -265,32 +206,49 @@ const StoryDetails = () => {
     )
   }
 
-  if (!story) {
+  if (loadState === 'error') {
     return (
       <div className="mx-auto max-w-[680px] px-6 py-32 text-center">
-        <p className="text-xl text-gray-900 mb-4">Story not found</p>
+        <p className="text-xl text-gray-900 mb-4">Couldn't load this story</p>
         <button
           type="button"
-          className="text-sm text-gray-500 underline underline-offset-4 hover:text-gray-900"
-          onClick={() => {
-            window.location.href = '/'
-          }}
+          className="inline-flex items-center gap-1.5 text-sm text-gray-500 underline underline-offset-4 hover:text-gray-900"
+          onClick={onRetry}
         >
-          Back to home
+          <RefreshCw className="h-3.5 w-3.5" />
+          Try again
         </button>
       </div>
     )
   }
 
+  if (loadState === 'not-found' || !story) {
+    return (
+      <div className="mx-auto max-w-[680px] px-6 py-32 text-center">
+        <p className="text-xl text-gray-900 mb-4">Story not found</p>
+        <Link
+          href="/"
+          className="text-sm text-gray-500 underline underline-offset-4 hover:text-gray-900"
+        >
+          Back to home
+        </Link>
+      </div>
+    )
+  }
+
   const minutes = estimateReadingTime(story.render_body_html)
-  // const currencyCode = CURRENCYS.find((c) => c.name === product?.currency)?.code ?? ''
-  // const price = product?.variants?.[0]?.price
-  // const productHref = story
-  //   ? `/products/${story.product_slug || story.product_id}`
-  //   : story.product_slug
-  //     ? `/products/${story.product_slug}`
-  //     : null
-  const productHref = `/products/${story.product_slug || story.product_id}`
+  const currencyCode = CURRENCYS.find((c) => c.name === story.currency)?.code ?? ''
+  const price = story.variants?.[0]?.price
+  const hasProduct = Boolean(story.product_slug || story.product_id)
+  const productHref = hasProduct ? `/products/${story.product_slug || story.product_id}` : ''
+
+  const tags = (story.product_tags || '')
+    .split(',')
+    .map((t) => t.trim())
+    .filter(Boolean)
+
+  const createdAt = toDate(story.create_time)
+  const updatedAt = toDate(story.update_time) || createdAt
 
   const coverSrc = story.cover_image
     ? story.cover_image.startsWith('http')
@@ -304,8 +262,8 @@ const StoryDetails = () => {
     headline: story.title,
     description: story.sub_title,
     image: coverSrc || undefined,
-    datePublished: story.create_time,
-    dateModified: story.update_time || story.create_time,
+    datePublished: createdAt?.toISOString(),
+    dateModified: (updatedAt || createdAt)?.toISOString(),
     author: { '@type': 'Person', name: story.username || 'DESHOP' },
     publisher: { '@type': 'Organization', name: 'DESHOP', url: SITE_URL },
     mainEntityOfPage: `${SITE_URL}/stories/${story.slug}`,
@@ -318,25 +276,27 @@ const StoryDetails = () => {
         await navigator.share({ title: story.title, url })
       } else {
         await navigator.clipboard.writeText(url)
+        showSuccess('Link copied')
       }
     } catch {
-      /* ignore */
+      /* user cancelled the native share sheet — nothing to report */
     }
+  }
+
+  const onBookmark = () => {
+    if (!requireLogin()) return
+    // Bookmark persistence isn't implemented yet.
+    showSuccess('Saved')
+  }
+
+  const onClap = () => {
+    if (!requireLogin()) return
   }
 
   return (
     <>
-      <MetaTags
-        title={story.title}
-        description={story.sub_title}
-        // image={story.cover_image}
-        image={coverSrc}
-        type="article"
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
+      <MetaTags title={story.title} description={story.sub_title} image={coverSrc} type="article" />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }} />
 
       <article className="bg-white text-gray-900">
         <div className="mx-auto max-w-[900px] px-6 pt-10 pb-24 sm:pt-14">
@@ -354,29 +314,39 @@ const StoryDetails = () => {
 
           {/* Author */}
           <div className="flex items-center gap-3 mb-10">
-            <Avatar className="h-12 w-12">
-              {story.user_avatar_url ? (
-                <AvatarImage src={GetAbosolutePathByRelative(story.user_avatar_url, 'avatar')} />
-              ) : null}
-              <AvatarFallback className="bg-gray-100 text-gray-700 text-sm font-medium">
-                {(story.username || 'D')[0]}
-              </AvatarFallback>
-            </Avatar>
-            <div className="flex flex-col min-w-0">
-              <span className="text-[15px] font-medium text-gray-900 truncate">
+            <button
+              type="button"
+              className="flex items-center gap-2.5 group"
+              onClick={() => (window.location.href = `/profile/${story.username}`)}
+            >
+              <Avatar className="h-12 w-12">
+                {story.user_avatar_url ? (
+                  <AvatarImage src={GetAbosolutePathByRelative(story.user_avatar_url)} />
+                ) : null}
+                <AvatarFallback className="bg-gray-100 text-gray-700 text-sm font-medium">
+                  {(story.username || 'D')[0]}
+                </AvatarFallback>
+              </Avatar>
+
+              <span className="text-[15px] font-medium text-gray-900 truncate group-hover:text-sky-600">
                 {story.username || 'DESHOP'}
               </span>
-              <div className="flex flex-wrap items-center gap-x-2 text-[13px] text-gray-500">
-                <time dateTime={story.create_time.toLocaleString()}>
-                  {new Date(story.create_time).toLocaleDateString('en-US', {
-                    month: 'short',
-                    day: 'numeric',
-                    year: 'numeric',
-                  })}
-                </time>
-                <span>·</span>
-                <span>{minutes} min read</span>
-              </div>
+            </button>
+
+            <div className="flex flex-wrap items-center gap-x-2 text-[13px] text-gray-500">
+              {createdAt && (
+                <>
+                  <time dateTime={createdAt.toISOString()}>
+                    {createdAt.toLocaleDateString('en-US', {
+                      month: 'short',
+                      day: 'numeric',
+                      year: 'numeric',
+                    })}
+                  </time>
+                  <span>·</span>
+                </>
+              )}
+              <span>{minutes} min read</span>
             </div>
           </div>
 
@@ -416,14 +386,13 @@ const StoryDetails = () => {
               [&_em]:italic
               [&_code]:text-[0.9em] [&_code]:bg-gray-100 [&_code]:px-1 [&_code]:rounded
             "
-            // dangerouslySetInnerHTML={{ __html: bodyHtml }}
             dangerouslySetInnerHTML={{ __html: story.render_body_html }}
           />
 
           {/* Tags */}
-          {story.product_tags && story.product_tags.split(',').length > 0 && (
+          {tags.length > 0 && (
             <div className="mt-12 flex flex-wrap gap-2">
-              {story.product_tags.split(',').map((tag) => (
+              {tags.map((tag) => (
                 <span
                   key={tag}
                   className="rounded-full bg-gray-100 px-3.5 py-1.5 text-[13px] text-gray-700"
@@ -434,15 +403,16 @@ const StoryDetails = () => {
             </div>
           )}
 
-          {/* Engagement bar */}
+          {/* Engagement bar (preview data — backend not wired up yet) */}
           <div className="mt-12 flex items-center justify-between border-y border-gray-100 py-3">
             <div className="flex items-center gap-5 text-gray-500">
               <button
                 type="button"
                 className="flex items-center gap-1.5 text-[14px] hover:text-gray-900 transition-colors"
+                onClick={onClap}
               >
                 <Hand className="h-[18px] w-[18px]" />
-                <span>{STORY_STATS.claps}</span>
+                <span>{PREVIEW_STORY_STATS.claps}</span>
               </button>
               <button
                 type="button"
@@ -452,14 +422,14 @@ const StoryDetails = () => {
                 }}
               >
                 <MessageCircle className="h-[18px] w-[18px]" />
-                <span>{STORY_STATS.responses}</span>
+                <span>{PREVIEW_STORY_STATS.responses}</span>
               </button>
               <button
                 type="button"
                 className="flex items-center gap-1.5 text-[14px] hover:text-gray-900 transition-colors"
               >
                 <Repeat2 className="h-[18px] w-[18px]" />
-                <span>{STORY_STATS.restacks}</span>
+                <span>{PREVIEW_STORY_STATS.restacks}</span>
               </button>
             </div>
             <div className="flex items-center gap-4 text-gray-500">
@@ -467,6 +437,7 @@ const StoryDetails = () => {
                 type="button"
                 className="hover:text-gray-900 transition-colors"
                 aria-label="Bookmark"
+                onClick={onBookmark}
               >
                 <Bookmark className="h-[18px] w-[18px]" />
               </button>
@@ -485,18 +456,30 @@ const StoryDetails = () => {
 
           {/* Author footer */}
           <div className="flex items-start gap-4">
-            <Avatar className="h-14 w-14 shrink-0">
-              {story.user_avatar_url ? (
-                <AvatarImage src={GetAbosolutePathByRelative(story.user_avatar_url, 'avatar')} />
-              ) : null}
-              <AvatarFallback className="bg-gray-100 text-gray-700">
-                {(story.username || 'D')[0]}
-              </AvatarFallback>
-            </Avatar>
+            <button
+              type="button"
+              onClick={() => (window.location.href = `/profile/${story.username}`)}
+            >
+              <Avatar className="h-14 w-14 shrink-0">
+                {story.user_avatar_url ? (
+                  <AvatarImage src={GetAbosolutePathByRelative(story.user_avatar_url)} />
+                ) : null}
+                <AvatarFallback className="bg-gray-100 text-gray-700">
+                  {(story.username || 'D')[0]}
+                </AvatarFallback>
+              </Avatar>
+            </button>
+
             <div>
-              <p className="text-[15px] font-semibold text-gray-900">
-                Written by {story.username || 'DESHOP'}
-              </p>
+              <button
+                type="button"
+                onClick={() => (window.location.href = `/profile/${story.username}`)}
+              >
+                <p className="text-[15px] font-semibold text-gray-900">
+                  Written by {story.username || 'DESHOP'}
+                </p>
+              </button>
+
               {story.user_bio && (
                 <p className="mt-1 text-[14px] text-gray-500 leading-relaxed">{story.user_bio}</p>
               )}
@@ -504,7 +487,7 @@ const StoryDetails = () => {
           </div>
 
           {/* Product CTA */}
-          {productHref && (
+          {hasProduct && (
             <div className="mt-14 rounded-sm border border-gray-200 bg-gray-50 px-5 py-6 sm:px-6">
               <p className="text-[13px] uppercase tracking-wide text-gray-500 mb-2">
                 From this story
@@ -512,33 +495,29 @@ const StoryDetails = () => {
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div className="min-w-0">
                   <p className="text-lg font-serif font-bold text-gray-900 truncate">
-                    {/* {product?.title || 'View product on DESHOP'} */}
+                    {story.product_title || 'View product on DESHOP'}
                   </p>
-                  {/* {price != null && (
+                  {price != null && (
                     <p className="text-[15px] text-gray-500 mt-0.5">
-                      From {currencyCode}
-                      {price}
+                      From {formatPrice(price, currencyCode)}
                     </p>
-                  )} */}
+                  )}
                 </div>
-                <Button
-                  className="shrink-0 h-11 rounded-full bg-gray-900 hover:bg-gray-800 gap-2 px-5"
-                  onClick={() => {
-                    window.location.href = productHref
-                  }}
-                >
-                  <ShoppingBag className="h-4 w-4" />
-                  View product
-                </Button>
+                <Link href={productHref}>
+                  <Button className="shrink-0 h-11 rounded-full bg-gray-900 hover:bg-gray-800 gap-2 px-5">
+                    <ShoppingBag className="h-4 w-4" />
+                    View product
+                  </Button>
+                </Link>
               </div>
             </div>
           )}
 
-          {/* Responses */}
-          <section id="responses" className="mt-16">
+          {/* Responses (preview data — comments backend not wired up yet) */}
+          {/* <section id="responses" className="mt-16">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-[22px] font-bold text-gray-900 tracking-tight">
-                Responses ({STORY_STATS.responses})
+                Responses ({PREVIEW_STORY_STATS.responses})
               </h2>
               <Shield className="h-5 w-5 text-gray-400" aria-hidden />
             </div>
@@ -553,16 +532,16 @@ const StoryDetails = () => {
               <input
                 type="text"
                 placeholder="What are your thoughts?"
-                className="w-full h-12 rounded-full bg-gray-100 px-5 text-[15px] text-gray-900 placeholder:text-gray-400 outline-none border border-transparent focus:border-gray-200 focus:bg-white transition-colors"
-                readOnly
+                className="w-full h-12 rounded-full bg-gray-100 px-5 text-[15px] text-gray-900 placeholder:text-gray-400 outline-none border border-transparent cursor-not-allowed"
+                disabled
               />
               <p className="mt-2 text-[12px] text-gray-400">
-                Comments coming soon — UI preview only.
+                Comments coming soon — preview only, the responses below are examples.
               </p>
             </div>
 
             <div className="flex flex-col divide-y divide-gray-100">
-              {FAKE_RESPONSES.map((r) => (
+              {PREVIEW_RESPONSES.map((r) => (
                 <div key={r.id} className="py-6 first:pt-0">
                   <div className="flex items-center gap-3 mb-2">
                     <Avatar className="h-8 w-8">
@@ -583,22 +562,19 @@ const StoryDetails = () => {
                 </div>
               ))}
             </div>
-          </section>
+          </section> */}
 
-          {/* Recommended */}
-          <section className="mt-20 pt-10 border-t border-gray-100">
+          {/* Recommended (preview data) */}
+          {/* <section className="mt-20 pt-10 border-t border-gray-100">
             <h2 className="text-[22px] font-bold text-gray-900 tracking-tight mb-8">
               Recommended from DESHOP
             </h2>
             <div className="flex flex-col gap-10">
-              {FAKE_RECOMMENDED.map((item) => (
-                <button
+              {PREVIEW_RECOMMENDED.map((item) => (
+                <Link
                   key={item.slug}
-                  type="button"
-                  className="text-left group"
-                  onClick={() => {
-                    window.location.href = `/stories/${item.slug}`
-                  }}
+                  href={`/stories/${item.slug}`}
+                  className="text-left group block"
                 >
                   <div className="flex items-center gap-2 mb-2">
                     <Avatar className="h-6 w-6">
@@ -617,19 +593,19 @@ const StoryDetails = () => {
                     <span className="mx-1">·</span>
                     {item.read}
                   </p>
-                </button>
+                </Link>
               ))}
             </div>
-          </section>
+          </section> */}
 
-          <p className="mt-14 text-center">
+          {/* <p className="mt-14 text-center">
             <Link
               href="/"
               className="text-[14px] text-gray-500 hover:text-gray-900 underline-offset-4 hover:underline"
             >
               Back to DESHOP
             </Link>
-          </p>
+          </p> */}
         </div>
       </article>
     </>

@@ -268,7 +268,7 @@ export const routes: RouteType[] = [
     needLogin: false,
   },
   {
-    path: '/stories/[id]',
+    path: '/story/[id]',
     name: 'Story',
     title: 'Story',
     component: <StoryDetails />,

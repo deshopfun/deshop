@@ -68,7 +68,9 @@ export type ProductStoryType = {
   username: string
   user_bio: string
   user_avatar_url: string
+  currency: string
   product_id: number
+  product_title: string
   product_slug: string
   product_tags: string
   title: string
@@ -81,6 +83,7 @@ export type ProductStoryType = {
   story_status: string
   create_time: number
   update_time: number
+  variants: ProductVariantType[]
 }
 
 export type ProductImageType = {

@@ -183,17 +183,28 @@ const ProductStory = ({ productId }: Props) => {
               <div className="h-8 w-8 rounded-lg bg-sky-50 flex items-center justify-center">
                 <Settings className="h-4 w-4 text-sky-500" />
               </div>
-              <h3 className="font-semibold">Base Info</h3>
+              <h3 className="font-semibold">Story Info</h3>
             </div>
-            <Button
-              className="h-9 bg-sky-500 hover:bg-sky-600 text-white gap-1.5"
-              onClick={() => {
-                onClickUpdateProductStory()
-              }}
-              disabled={saving}
-            >
-              <Save className="h-4 w-4" /> {saving ? 'Saving...' : 'Save'}
-            </Button>
+            <div className="flex items-center gap-2">
+              {storyStatus === 'active' && (
+                <Button
+                  size="sm"
+                  className="h-9 bg-green-500 hover:bg-green-600 text-white gap-1.5"
+                  onClick={() => (window.location.href = `/story/${slug}`)}
+                >
+                  See Website
+                </Button>
+              )}
+              <Button
+                className="h-9 bg-sky-500 hover:bg-sky-600 text-white gap-1.5"
+                onClick={() => {
+                  onClickUpdateProductStory()
+                }}
+                disabled={saving}
+              >
+                <Save className="h-4 w-4" /> {saving ? 'Saving...' : 'Save'}
+              </Button>
+            </div>
           </div>
 
           <div className="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
