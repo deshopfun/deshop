@@ -1,7 +1,6 @@
-import RecentViewCard from '@/components/Card/RecentViewCard'
-import NowTrendingCard from '@/components/Card/NowTrendingCard'
-import ExploreCard from '@/components/Card/ExploreCard'
-import IntroCard from '@/components/Card/IntroCard'
+import RecentView from '@/components/Home/RecentView'
+import AllMarket from '@/components/Home/AllMarket'
+import Intro from '@/components/Home/Intro'
 import { Button } from '@/components/ui/button'
 import { ChevronRight } from 'lucide-react'
 
@@ -9,7 +8,7 @@ const Home = () => {
   return (
     <div className="container mx-auto">
       <div>
-        <IntroCard />
+        <Intro />
       </div>
 
       {/* <div>
@@ -21,7 +20,7 @@ const Home = () => {
         </div>
 
         <div className="mt-4">
-          <RecentViewCard />
+          <RecentView />
         </div>
       </div> */}
 
@@ -33,7 +32,7 @@ const Home = () => {
         </div>
 
         <div className="mt-4">
-          <NowTrendingCard />
+          <AllMarket />
         </div>
       </div>
 
@@ -51,7 +50,7 @@ const Home = () => {
         </div>
 
         <div className="mt-4">
-          <ExploreCard />
+          <ExploreProduct />
         </div>
       </div> */}
     </div>

@@ -5,15 +5,15 @@ const items = [
   {
     image: '/images/default_image.png',
     title: 'Lizard',
-    description: 'Lizards are a widespread group of squamate reptiles, with over 6,000 species, ranging across all continents except Antarctica',
+    description:
+      'Lizards are a widespread group of squamate reptiles, with over 6,000 species, ranging across all continents except Antarctica',
     href: '#',
   },
 ]
 
-const RecentViewCard = () => {
+const RecentView = () => {
   return (
     <div className="flex flex-col gap-4">
-
       <div className="flex items-center gap-2">
         <Clock className="h-4 w-4 text-muted-foreground" />
         <h3 className="text-sm font-semibold text-muted-foreground">Recently Viewed</h3>
@@ -24,7 +24,9 @@ const RecentViewCard = () => {
           <Card
             key={i}
             className="cursor-pointer hover:shadow-md hover:-translate-y-1 transition-all duration-200 overflow-hidden group"
-            onClick={() => { window.location.href = item.href }}
+            onClick={() => {
+              window.location.href = item.href
+            }}
           >
             <img
               src={item.image}
@@ -40,9 +42,8 @@ const RecentViewCard = () => {
           </Card>
         ))}
       </div>
-
     </div>
   )
 }
 
-export default RecentViewCard
+export default RecentView

@@ -16,7 +16,7 @@ type Props = {
 
 const PAGE_SIZE = 20
 
-const NowTrendingCard = (props: Props) => {
+const AllMarket = (props: Props) => {
   const [products, setProducts] = useState<ProductType[]>([])
   const [currentProductType, setCurrentProductType] = useState<string>(props.productType || 'ALL')
   const [page, setPage] = useState(1)
@@ -186,4 +186,4 @@ const NowTrendingCard = (props: Props) => {
   )
 }
 
-export default NowTrendingCard
+export default AllMarket

@@ -305,7 +305,7 @@ const ProductStory = ({ productId }: Props) => {
               <ImageIcon className="h-4 w-4 text-orange-500" />
             </div>
             <div>
-              <h3 className="font-semibold">Cover Image</h3>
+              <h3 className="font-semibold">Cover Image <span className="text-red-500">*</span></h3>
               <p className="text-xs text-muted-foreground">Max 3MB · JPG / PNG / GIF / SVG</p>
             </div>
           </div>

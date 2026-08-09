@@ -1,6 +1,6 @@
 import { Http } from '@/utils/http/http'
 import axios from '@/utils/http/axios'
-import { ProductType } from '@/utils/types'
+import { ProductStoryType, ProductType } from '@/utils/types'
 import type { GetServerSideProps } from 'next'
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || Http.httpClient
@@ -8,6 +8,22 @@ const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || Http.httpClient
 async function getProducts(): Promise<ProductType[]> {
   try {
     const response: any = await axios.get(Http.product_list, {
+      params: { limit: 5000 },
+    })
+
+    if (response.result) {
+      return response.data || []
+    } else {
+      return []
+    }
+  } catch (e) {
+    return []
+  }
+}
+
+async function getStories(): Promise<ProductStoryType[]> {
+  try {
+    const response: any = await axios.get(Http.product_story_list, {
       params: { limit: 5000 },
     })
 
@@ -39,6 +55,7 @@ type SitemapUrl = {
 
 export const getServerSideProps: GetServerSideProps = async ({ res }) => {
   const products = await getProducts()
+  const stories = await getStories()
 
   const staticUrls: SitemapUrl[] = [
     { loc: SITE_URL, changefreq: 'daily', priority: '1.0' },
@@ -53,7 +70,14 @@ export const getServerSideProps: GetServerSideProps = async ({ res }) => {
     priority: '0.8',
   }))
 
-  const all: SitemapUrl[] = [...staticUrls, ...productUrls]
+  const storyUrls = stories.map((p) => ({
+    loc: `${SITE_URL}/story/${p.slug}`,
+    lastmod: p.update_time ? new Date(p.update_time).toISOString() : undefined,
+    changefreq: 'weekly',
+    priority: '0.7',
+  }))
+
+  const all: SitemapUrl[] = [...staticUrls, ...productUrls, ...storyUrls]
 
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">

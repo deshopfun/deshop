@@ -20,6 +20,7 @@ export class Http {
   static crypto_price = this.httpPath + '/client/crypto-price'
   static user_profile_by_username = this.httpPath + '/client/user-profile-by-username'
   static product_list = this.httpPath + '/client/product-list'
+  static product_story_list = this.httpPath + '/client/product-story-list'
   static product_by_id = this.httpPath + '/client/product-by-unique'
   static product_story_by_id = this.httpPath + '/client/product-story-by-unique'
   static product_variant_by_option = this.httpPath + '/client/product-variant-by-option'
