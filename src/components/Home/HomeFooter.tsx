@@ -15,11 +15,11 @@ const SUPPORT_LINKS = [
   { href: '/support', label: 'Help Center' },
   { href: '/support', label: 'Contact us' },
   { href: '/docs/fees', label: 'Fees' },
-  { href: '#', label: 'Status' },
+  { href: 'https://deshop.instatus.com', label: 'Status' },
 ]
 
 const COMPANY_LINKS = [
-  { href: '/docs', label: 'Documentation' },
+  { href: 'https://docs.deshop.space', label: 'Documentation' },
   { href: '/docs/terms-and-conditions', label: 'Terms of Use' },
   { href: '/docs/privacy-policy', label: 'Privacy Policy' },
   { href: '/create', label: 'Start Selling' },
@@ -30,7 +30,7 @@ const LEGAL_LINKS = [
   { href: '/docs/terms-and-conditions', label: 'Terms of Use' },
   { href: '/docs/fees', label: 'Fees' },
   { href: '/support', label: 'Help Center' },
-  { href: '/docs', label: 'Docs' },
+  { href: 'https://docs.deshop.space', label: 'Docs' },
 ]
 
 function BackToTop() {

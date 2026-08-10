@@ -274,13 +274,13 @@ const HomeHeader = () => {
                     <DropdownMenuItem onClick={() => (window.location.href = `/support`)}>
                       Support
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => (window.location.href = `#`)}>
+                    <DropdownMenuItem onClick={() => (window.location.href = `https://deshop.instatus.com`)}>
                       Status
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => (window.location.href = `#`)}>
+                    <DropdownMenuItem onClick={() => (window.location.href = `https://docs.deshop.space`)}>
                       Documentation
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => (window.location.href = `#`)}>
+                    <DropdownMenuItem onClick={() => (window.location.href = `/support`)}>
                       Help Center
                     </DropdownMenuItem>
                     <DropdownMenuItem

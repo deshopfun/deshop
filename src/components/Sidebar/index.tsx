@@ -29,7 +29,7 @@ const navItems = [
 ]
 
 const moreItems = [
-  { label: 'Documentation', href: '/docs' },
+  { label: 'Documentation', href: 'https://docs.deshop.space' },
   { label: 'Terms of Use', href: '/docs/terms-and-conditions' },
   { label: 'Help Center', href: '/support' },
 ]
