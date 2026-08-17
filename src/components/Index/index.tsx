@@ -17,7 +17,7 @@ const snackIcons = {
   info: { icon: Info, className: 'text-blue-500' },
 }
 
-const Home = () => {
+const Index = () => {
   const router = useRouter()
   const { snackOpen, snackMessage, snackSeverity, setSnackOpen } = useSnackPresistStore(
     (state) => state
@@ -100,4 +100,4 @@ const Home = () => {
   )
 }
 
-export default Home
+export default Index

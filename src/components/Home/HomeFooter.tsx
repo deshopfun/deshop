@@ -1,14 +1,15 @@
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
-import { Send, ChevronUp, X, Mail, Bot } from 'lucide-react'
+import { Send, ChevronUp, Mail } from 'lucide-react'
 import LanguageSwitcher from '../Language/LanguageSwitcher'
 import { PRODUCT_TYPE } from '@/packages/constants'
+import { SiGithub, SiX } from '@icons-pack/react-simple-icons'
 
 const SOCIAL_LINKS = [
   { href: 'https://t.me/deshop_tech_updates', label: 'Telegram', icon: Send },
-  { href: 'https://twitter.com/', label: 'X (Twitter)', icon: X },
-  { href: 'https://github.com/deshopfun', label: 'GitHub', icon: Bot },
+  { href: 'https://twitter.com/', label: 'X (Twitter)', icon: SiX },
+  { href: 'https://github.com/deshopfun', label: 'GitHub', icon: SiGithub },
 ]
 
 const SUPPORT_LINKS = [
