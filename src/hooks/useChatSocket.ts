@@ -1,5 +1,6 @@
 import { useUserPresistStore } from '@/lib'
 import { useCallback, useEffect, useRef, useState } from 'react'
+import { Http } from '@/utils/http/http'
 
 // ---- 协议：跟后端 Go 网关约定的信封结构保持一致 ----
 export type ServerEnvelope =
@@ -47,7 +48,6 @@ type UseChatSocketOptions = {
   onPresence?: (payload: Extract<ServerEnvelope, { type: 'presence' }>['payload']) => void
 }
 
-const WS_BASE_URL = process.env.NEXT_PUBLIC_WS_BASE_URL ?? 'ws://127.0.0.1:8899'
 const HEARTBEAT_INTERVAL_MS = 25000
 const MAX_RECONNECT_DELAY_MS = 30000
 
@@ -82,7 +82,7 @@ export function useChatSocket(options: UseChatSocketOptions) {
     if (!enabledRef.current) return
 
     const token = getAuthToken()
-    const url = `${WS_BASE_URL}/api/client/chat/ws${token ? `?token=${encodeURIComponent(token)}` : ''}`
+    const url = `${Http.baseWsHttpPath}/api/client/chat/ws${token ? `?token=${encodeURIComponent(token)}` : ''}`
     const ws = new WebSocket(url)
     wsRef.current = ws
 

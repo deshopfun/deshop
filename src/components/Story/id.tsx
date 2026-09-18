@@ -27,8 +27,6 @@ import { useSnackPresistStore, useUserPresistStore } from '@/lib'
 import { useAbortableEffect } from '@/hooks/useAbortableEffect'
 import { useShallow } from 'zustand/react/shallow'
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://deshop.space'
-
 // NOTE: engagement numbers and responses below are placeholder/preview data —
 // the comments & reactions backend isn't wired up yet. Everything in this
 // block is visually flagged as a preview so it can't be mistaken for real
@@ -278,8 +276,8 @@ const StoryDetails = () => {
     datePublished: createdAt?.toISOString(),
     dateModified: (updatedAt || createdAt)?.toISOString(),
     author: { '@type': 'Person', name: story.username || 'DESHOP' },
-    publisher: { '@type': 'Organization', name: 'DESHOP', url: SITE_URL },
-    mainEntityOfPage: `${SITE_URL}/stories/${story.slug}`,
+    publisher: { '@type': 'Organization', name: 'DESHOP', url: Http.baseHttpPath },
+    mainEntityOfPage: `${Http.baseHttpPath}/stories/${story.slug}`,
   }
 
   const onShare = async () => {

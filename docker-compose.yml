@@ -1,0 +1,23 @@
+services:
+  app:
+    image: viper00/deshop:0.0.1
+    # build:
+    #   context: .
+    #   dockerfile: Dockerfile
+    #   args:
+    #     NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID: your_real_project_id
+    #     NEXT_PUBLIC_ENVIRONMENT: production
+    restart: always
+    ports:
+      - "9999:3000"
+    env_file:
+      - .env.production
+    networks:
+      - app-network
+      - shared-network
+
+networks:
+  app-network:
+    driver: bridge
+  shared-network:
+    external: true

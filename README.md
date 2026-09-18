@@ -32,7 +32,7 @@ Live demo: **[deshop.space](https://deshop.space)**
   - Tron — `tronweb`
   - XRP Ledger — `xrpl`
   - Bitcoin Cash & related chains — `mainnet-js`
-- 📡 **Real-time market data** — Built-in WebSocket connection (`NEXT_PUBLIC_WS_BASE_URL`) for live price feeds and order status updates
+- 📡 **Real-time market data** — Built-in WebSocket connection for live price feeds and order status updates
 - 🎨 **Modern UI** — Tailwind CSS 4 + shadcn/ui + Radix UI, complemented by `lucide-react` icons and `swiper` carousels
 - 🗂️ **Lightweight state management** — [Zustand](https://zustand-demo.pmnd.rs/) for global state, [TanStack Query](https://tanstack.com/query) for async data fetching and caching
 - 🌍 **Localization-ready** — Ships with `country-flag-icons` for easy multi-region/multi-language expansion
@@ -86,8 +86,6 @@ cp .env.example .env
 | -------------------------------------- | --------------------------------------------------------------------------------------------------- | ---------------------------- |
 | `NEXT_PUBLIC_ENVIRONMENT`              | Runtime environment identifier                                                                      | `development` / `production` |
 | `NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID` | Reown / WalletConnect project ID, obtained from the [Reown Dashboard](https://dashboard.reown.com/) | `your_project_id`            |
-| `NEXT_PUBLIC_WS_BASE_URL`              | WebSocket endpoint for market data / push notifications                                             | `ws://127.0.0.1:8899`        |
-| `NEXT_PUBLIC_SITE_URL`                 | Public site URL                                                                                     | `https://deshop.space`       |
 
 ### 4. Run the development server
 

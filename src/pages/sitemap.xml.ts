@@ -3,8 +3,6 @@ import axios from '@/utils/http/axios'
 import { ProductStoryType, ProductType } from '@/utils/types'
 import type { GetServerSideProps } from 'next'
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || Http.httpClient
-
 async function getProducts(): Promise<ProductType[]> {
   try {
     const response: any = await axios.get(Http.product_list, {
@@ -58,20 +56,20 @@ export const getServerSideProps: GetServerSideProps = async ({ res }) => {
   const stories = await getStories()
 
   const staticUrls: SitemapUrl[] = [
-    { loc: SITE_URL, changefreq: 'daily', priority: '1.0' },
-    { loc: `${SITE_URL}/explore`, changefreq: 'daily', priority: '0.9' },
-    { loc: `${SITE_URL}/support`, changefreq: 'monthly', priority: '0.5' },
+    { loc: window.location.origin, changefreq: 'daily', priority: '1.0' },
+    { loc: `${window.location.origin}/explore`, changefreq: 'daily', priority: '0.9' },
+    { loc: `${window.location.origin}/support`, changefreq: 'monthly', priority: '0.5' },
   ]
 
   const productUrls = products.map((p) => ({
-    loc: `${SITE_URL}/products/${p.slug || p.product_id}`,
+    loc: `${window.location.origin}/products/${p.slug || p.product_id}`,
     lastmod: p.update_time ? new Date(p.update_time).toISOString() : undefined,
     changefreq: 'weekly',
     priority: '0.8',
   }))
 
   const storyUrls = stories.map((p) => ({
-    loc: `${SITE_URL}/story/${p.slug}`,
+    loc: `${window.location.origin}/story/${p.slug}`,
     lastmod: p.update_time ? new Date(p.update_time).toISOString() : undefined,
     changefreq: 'weekly',
     priority: '0.7',

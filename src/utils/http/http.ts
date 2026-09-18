@@ -1,13 +1,12 @@
 import { IS_DEVELOPMENT } from '@/packages/constants'
 
 export class Http {
-  static httpClient = IS_DEVELOPMENT ? 'http://127.0.0.1:9999' : 'https://deshop.space'
+  static privacy_policy_md = '/docs/privacy_policy.md'
+  static terms_and_conditions_md = '/docs/terms_and_conditions.md'
+  static fees_md = '/docs/fees.md'
 
-  static privacy_policy_md = this.httpClient + '/docs/privacy_policy.md'
-  static terms_and_conditions_md = this.httpClient + '/docs/terms_and_conditions.md'
-  static fees_md = this.httpClient + '/docs/fees.md'
-
-  static basehttpPath = IS_DEVELOPMENT ? 'http://127.0.0.1:8899' : 'https://api.deshop.space'
+  static baseHttpPath = IS_DEVELOPMENT ? 'http://127.0.0.1:8899' : 'https://api.deshop.space'
+  static baseWsHttpPath = IS_DEVELOPMENT ? 'ws://127.0.0.1:8899' : 'wss://api.deshop.space'
   static httpPath = IS_DEVELOPMENT ? 'http://127.0.0.1:8899/api' : 'https://api.deshop.space/api'
 
   static test = this.httpPath + '/client/test'

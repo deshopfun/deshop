@@ -7,7 +7,7 @@ export function GetAbosolutePathByRelative(
 ): string {
   if (!src || src == '')
     return type == 'image' ? '/images/default_image.png' : '/images/default_avatar.png'
-  return Http.basehttpPath + src
+  return Http.baseHttpPath + src
 }
 
 export function GetImgSrcByProductType(type: string): string {

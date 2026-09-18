@@ -32,7 +32,7 @@
   - Tron — `tronweb`
   - XRP Ledger — `xrpl`
   - Bitcoin Cash 等 — `mainnet-js`
-- 📡 **实时行情/推送**：内置 WebSocket 连接（`NEXT_PUBLIC_WS_BASE_URL`），实时同步行情与订单状态
+- 📡 **实时行情/推送**：内置 WebSocket 连接，实时同步行情与订单状态
 - 🎨 **现代化 UI**：Tailwind CSS 4 + shadcn/ui + Radix UI，配合 `lucide-react` 图标库与 `swiper` 轮播组件
 - 🗂️ **轻量状态管理**：使用 [Zustand](https://zustand-demo.pmnd.rs/) 管理全局状态，[TanStack Query](https://tanstack.com/query) 处理异步数据请求与缓存
 - 🌍 **国际化友好**：内置 `country-flag-icons`，便于多地区/多语言场景扩展
@@ -86,8 +86,6 @@ cp .env.example .env
 | -------------------------------------- | ---------------------------------------------------------------------------------------- | ---------------------------- |
 | `NEXT_PUBLIC_ENVIRONMENT`              | 运行环境标识                                                                             | `development` / `production` |
 | `NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID` | Reown / WalletConnect 项目 ID，需在 [Reown Dashboard](https://dashboard.reown.com/) 申请 | `your_project_id`            |
-| `NEXT_PUBLIC_WS_BASE_URL`              | 行情/推送 WebSocket 服务地址                                                             | `ws://127.0.0.1:8899`        |
-| `NEXT_PUBLIC_SITE_URL`                 | 站点访问地址                                                                             | `https://deshop.space`       |
 
 ### 4. 启动开发环境
 
