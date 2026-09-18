@@ -25,6 +25,7 @@ import { GetAbosolutePathByRelative } from '@/utils/image'
 import { ProductStoryType } from '@/utils/types'
 import { useSnackPresistStore, useUserPresistStore } from '@/lib'
 import { useAbortableEffect } from '@/hooks/useAbortableEffect'
+import { useShallow } from 'zustand/react/shallow'
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://deshop.space'
 
@@ -139,8 +140,20 @@ const StoryDetails = () => {
   const [story, setStory] = useState<ProductStoryType>()
   const [loadState, setLoadState] = useState<LoadState>('loading')
 
-  const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore((state) => state)
-  const { getUuid, getIsLogin } = useUserPresistStore((state) => state)
+  const { uuid, isLogin } = useUserPresistStore(
+    useShallow((state) => ({
+      uuid: state.uuid,
+      isLogin: state.isLogin,
+    }))
+  )
+
+  const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore(
+    useShallow((state) => ({
+      setSnackSeverity: state.setSnackSeverity,
+      setSnackMessage: state.setSnackMessage,
+      setSnackOpen: state.setSnackOpen,
+    }))
+  )
 
   const showError = (msg: string) => {
     setSnackSeverity('error')
@@ -154,7 +167,7 @@ const StoryDetails = () => {
   }
 
   const requireLogin = () => {
-    if (!getIsLogin?.() || !getUuid?.()) {
+    if (!isLogin || !uuid) {
       showError('Please log in to continue')
       return false
     }

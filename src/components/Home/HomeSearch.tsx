@@ -6,6 +6,7 @@ import { GetAbosolutePathByRelative } from '@/utils/image'
 import axios from '@/utils/http/axios'
 import { Http } from '@/utils/http/http'
 import { useSnackPresistStore } from '@/lib'
+import { useShallow } from 'zustand/react/shallow'
 
 type Tab = 'products' | 'profiles'
 
@@ -37,7 +38,13 @@ const HomeSearch = () => {
   const inputRef = useRef<HTMLInputElement>(null)
   const searchAbortRef = useRef<AbortController | null>(null)
 
-  const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore((state) => state)
+  const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore(
+    useShallow((state) => ({
+      setSnackSeverity: state.setSnackSeverity,
+      setSnackMessage: state.setSnackMessage,
+      setSnackOpen: state.setSnackOpen,
+    }))
+  )
 
   const debouncedQuery = useDebouncedValue(query, DEBOUNCE_MS)
 

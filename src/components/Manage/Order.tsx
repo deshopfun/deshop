@@ -29,6 +29,7 @@ import {
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { GetAbosolutePathByRelative } from '@/utils/image'
+import { useShallow } from 'zustand/react/shallow'
 
 const steps = ['Waiting for payment', 'Waiting for order confirm', 'Order complete']
 
@@ -83,7 +84,13 @@ const ManageOrder = () => {
   const [openPostOrderRateDialog, setPostOpenOrderRateDialog] = useState(false)
   const [openOrderRatingDialog, setOpenOrderRatingDialog] = useState(false)
 
-  const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore((state) => state)
+  const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore(
+    useShallow((state) => ({
+      setSnackSeverity: state.setSnackSeverity,
+      setSnackMessage: state.setSnackMessage,
+      setSnackOpen: state.setSnackOpen,
+    }))
+  )
 
   const showError = (msg: string) => {
     setSnackSeverity('error')

@@ -10,6 +10,7 @@ import { Label } from '@/components/ui/label'
 import { Card, CardContent } from '@/components/ui/card'
 import { Mail, KeyRound, ArrowRight, Loader2 } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { useShallow } from 'zustand/react/shallow'
 
 const Login = () => {
   const [email, setEmail] = useState('')
@@ -17,8 +18,22 @@ const Login = () => {
   const [showCode, setShowCode] = useState(false)
   const [loading, setLoading] = useState(false)
 
-  const { setSnackOpen, setSnackMessage, setSnackSeverity } = useSnackPresistStore((state) => state)
-  const { getIsLogin, setIsLogin, setAuth, setUuid } = useUserPresistStore((state) => state)
+  const { setIsLogin, isLogin, setAuth, setUuid } = useUserPresistStore(
+    useShallow((state) => ({
+      setIsLogin: state.setIsLogin,
+      isLogin: state.isLogin,
+      setAuth: state.setAuth,
+      setUuid: state.setUuid,
+    }))
+  )
+
+  const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore(
+    useShallow((state) => ({
+      setSnackSeverity: state.setSnackSeverity,
+      setSnackMessage: state.setSnackMessage,
+      setSnackOpen: state.setSnackOpen,
+    }))
+  )
 
   const showError = (msg: string) => {
     setSnackSeverity('error')
@@ -27,7 +42,7 @@ const Login = () => {
   }
 
   useEffect(() => {
-    if (getIsLogin()) window.location.href = '/'
+    if (isLogin) window.location.href = '/'
   }, [])
 
   const onLogin = async () => {

@@ -15,6 +15,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Link2, Loader2, Wallet } from 'lucide-react'
+import { useShallow } from 'zustand/react/shallow'
 
 type DialogType = {
   chain: CHAINIDS
@@ -32,8 +33,13 @@ export default function BindAddressDialog({
   const [address, setAddress] = useState('')
   const [loading, setLoading] = useState(false)
 
-  const { setSnackSeverity, setSnackOpen, setSnackMessage } = useSnackPresistStore((state) => state)
-
+  const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore(
+    useShallow((state) => ({
+      setSnackSeverity: state.setSnackSeverity,
+      setSnackMessage: state.setSnackMessage,
+      setSnackOpen: state.setSnackOpen,
+    }))
+  )
   const showError = (msg: string) => {
     setSnackSeverity('error')
     setSnackMessage(msg)

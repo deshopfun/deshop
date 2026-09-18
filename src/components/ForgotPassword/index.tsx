@@ -7,16 +7,21 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent } from '@/components/ui/card'
 import { Mail, ArrowRight, ArrowLeft, Loader2, CheckCircle2 } from 'lucide-react'
+import { useShallow } from 'zustand/react/shallow'
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState('')
   const [loading, setLoading] = useState(false)
   const [sent, setSent] = useState(false)
 
-  const { getIsLogin } = useUserPresistStore((state) => state)
+  const { isLogin } = useUserPresistStore(
+    useShallow((state) => ({
+      isLogin: state.isLogin,
+    }))
+  )
 
   useEffect(() => {
-    if (getIsLogin()) window.location.href = '/'
+    if (isLogin) window.location.href = '/'
   }, [])
 
   const onResetPassword = async () => {
@@ -35,7 +40,6 @@ const ForgotPassword = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-sky-50 via-white to-blue-50 flex items-center justify-center px-4">
       <div className="w-full max-w-md flex flex-col items-center gap-8">
-
         <div className="flex flex-col items-center gap-3 text-center">
           <SiteLogo />
           <div>
@@ -66,7 +70,9 @@ const ForgotPassword = () => {
                       type="email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      onKeyDown={(e) => { if (e.key === 'Enter') onResetPassword() }}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') onResetPassword()
+                      }}
                       placeholder="you@example.com"
                       className="pl-9 h-11"
                       autoFocus
@@ -79,10 +85,14 @@ const ForgotPassword = () => {
                   onClick={onResetPassword}
                   disabled={loading || !email}
                 >
-                  {loading
-                    ? <Loader2 className="h-4 w-4 animate-spin" />
-                    : <><Mail className="h-4 w-4" /> Send Reset Email <ArrowRight className="h-4 w-4" /></>
-                  }
+                  {loading ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <>
+                      <Mail className="h-4 w-4" /> Send Reset Email{' '}
+                      <ArrowRight className="h-4 w-4" />
+                    </>
+                  )}
                 </Button>
 
                 <div className="flex items-center gap-3">
@@ -94,7 +104,9 @@ const ForgotPassword = () => {
                 <Button
                   variant="outline"
                   className="h-11 gap-2"
-                  onClick={() => { window.location.href = '/login' }}
+                  onClick={() => {
+                    window.location.href = '/login'
+                  }}
                 >
                   <ArrowLeft className="h-4 w-4" /> Return to Login
                 </Button>
@@ -107,9 +119,7 @@ const ForgotPassword = () => {
                   </div>
                   <div>
                     <h2 className="text-xl font-bold">Check your email</h2>
-                    <p className="text-sm text-muted-foreground mt-1">
-                      We sent a reset link to
-                    </p>
+                    <p className="text-sm text-muted-foreground mt-1">We sent a reset link to</p>
                     <p className="text-sm font-semibold text-sky-600 mt-0.5">{email}</p>
                   </div>
                   <div className="px-4 py-3 bg-amber-50 rounded-xl text-amber-700 text-xs text-left w-full">
@@ -120,14 +130,18 @@ const ForgotPassword = () => {
                 <Button
                   variant="outline"
                   className="h-11 gap-2"
-                  onClick={() => { window.location.href = '/login' }}
+                  onClick={() => {
+                    window.location.href = '/login'
+                  }}
                 >
                   <ArrowLeft className="h-4 w-4" /> Return to Login
                 </Button>
 
                 <button
                   className="text-xs text-sky-500 hover:underline text-center"
-                  onClick={() => { setSent(false) }}
+                  onClick={() => {
+                    setSent(false)
+                  }}
                 >
                   Try a different email
                 </button>
@@ -138,11 +152,14 @@ const ForgotPassword = () => {
 
         <p className="text-xs text-muted-foreground text-center">
           By continuing, you agree to our{' '}
-          <a href="/docs/terms-and-conditions" className="text-sky-500 hover:underline">Terms of Service</a>
-          {' '}and{' '}
-          <a href="/docs/privacy-policy" className="text-sky-500 hover:underline">Privacy Policy</a>
+          <a href="/docs/terms-and-conditions" className="text-sky-500 hover:underline">
+            Terms of Service
+          </a>{' '}
+          and{' '}
+          <a href="/docs/privacy-policy" className="text-sky-500 hover:underline">
+            Privacy Policy
+          </a>
         </p>
-
       </div>
     </div>
   )

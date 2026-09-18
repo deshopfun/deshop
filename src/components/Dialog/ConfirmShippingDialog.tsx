@@ -14,6 +14,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Truck, Loader2, AlertCircle, User, Mail, Building2, Phone, MapPin } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { useShallow } from 'zustand/react/shallow'
 
 type DialogType = {
   orderId: number
@@ -46,7 +47,13 @@ export default function ConfirmShippingDialog({
   const [text, setText] = useState('')
   const [loading, setLoading] = useState(false)
 
-  const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore((state) => state)
+  const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore(
+    useShallow((state) => ({
+      setSnackSeverity: state.setSnackSeverity,
+      setSnackMessage: state.setSnackMessage,
+      setSnackOpen: state.setSnackOpen,
+    }))
+  )
 
   const showError = (msg: string) => {
     setSnackSeverity('error')

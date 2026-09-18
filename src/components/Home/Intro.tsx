@@ -11,12 +11,19 @@ import { ArrowRight, ShoppingBag, BarChart3, RefreshCw, Package, Layers } from '
 import { useAbortableEffect } from '@/hooks/useAbortableEffect'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { GetAbosolutePathByRelative } from '@/utils/image'
+import { useShallow } from 'zustand/react/shallow'
 
 const Intro = () => {
   const [stats, setStats] = useState<StatType>()
   const [stories, setStories] = useState<ProductStoryType[]>([])
 
-  const { setSnackSeverity, setSnackOpen, setSnackMessage } = useSnackPresistStore((state) => state)
+  const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore(
+    useShallow((state) => ({
+      setSnackSeverity: state.setSnackSeverity,
+      setSnackMessage: state.setSnackMessage,
+      setSnackOpen: state.setSnackOpen,
+    }))
+  )
 
   // const init = async (signal?: AbortSignal) => {
   //   try {

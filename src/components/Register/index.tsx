@@ -11,6 +11,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent } from '@/components/ui/card'
 import { Mail, ArrowRight, Loader2, ShieldCheck, Zap, Globe } from 'lucide-react'
+import { useShallow } from 'zustand/react/shallow'
 
 const features = [
   { icon: Globe, title: 'Decentralized', desc: 'No third-party constraints, fully open platform' },
@@ -29,8 +30,19 @@ const Register = () => {
   const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState(false)
 
-  const { setSnackOpen, setSnackMessage, setSnackSeverity } = useSnackPresistStore((state) => state)
-  const { getIsLogin } = useUserPresistStore((state) => state)
+  const { isLogin } = useUserPresistStore(
+    useShallow((state) => ({
+      isLogin: state.isLogin,
+    }))
+  )
+
+  const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore(
+    useShallow((state) => ({
+      setSnackSeverity: state.setSnackSeverity,
+      setSnackMessage: state.setSnackMessage,
+      setSnackOpen: state.setSnackOpen,
+    }))
+  )
 
   const showError = (msg: string) => {
     setSnackSeverity('error')
@@ -44,7 +56,7 @@ const Register = () => {
   }, [router.isReady, router.query])
 
   useEffect(() => {
-    if (getIsLogin()) window.location.href = '/'
+    if (isLogin) window.location.href = '/'
   }, [])
 
   const onRegister = async () => {

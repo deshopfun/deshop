@@ -32,6 +32,7 @@ import {
   Database,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { useShallow } from 'zustand/react/shallow'
 
 type DialogType = {
   orderId: number
@@ -70,7 +71,13 @@ export default function ConfirmPaymentDialog({
   const [selectId, setSelectId] = useState<number>(0)
   const [loading, setLoading] = useState(false)
 
-  const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore((state) => state)
+  const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore(
+    useShallow((state) => ({
+      setSnackSeverity: state.setSnackSeverity,
+      setSnackMessage: state.setSnackMessage,
+      setSnackOpen: state.setSnackOpen,
+    }))
+  )
 
   const showError = (msg: string) => {
     setSnackSeverity('error')

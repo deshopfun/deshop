@@ -11,6 +11,7 @@ import { User } from 'lucide-react'
 import { GetAbosolutePathByRelative } from '@/utils/image'
 import Link from 'next/link'
 import { ProfileType } from '@/utils/types'
+import { useShallow } from 'zustand/react/shallow'
 
 const SKELETON_ROWS = 3
 
@@ -21,7 +22,14 @@ const WhoToFollow = () => {
   const [loadError, setLoadError] = useState(false)
   const [followingUuids, setFollowingUuids] = useState<Set<string>>(new Set())
   const [pendingUuid, setPendingUuid] = useState<string | null>(null)
-  const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore((state) => state)
+
+  const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore(
+    useShallow((state) => ({
+      setSnackSeverity: state.setSnackSeverity,
+      setSnackMessage: state.setSnackMessage,
+      setSnackOpen: state.setSnackOpen,
+    }))
+  )
 
   const init = async (signal?: AbortSignal) => {
     setLoading(true)

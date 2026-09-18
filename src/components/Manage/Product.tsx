@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button'
 import { Package, Plus, ExternalLink } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { GetAbosolutePathByRelative } from '@/utils/image'
+import { useShallow } from 'zustand/react/shallow'
 
 const statusConfig: Record<string, { label: string; className: string }> = {
   active: { label: 'Active', className: 'bg-green-100 text-green-700 border-green-200' },
@@ -19,7 +20,13 @@ const statusConfig: Record<string, { label: string; className: string }> = {
 const ManageProduct = () => {
   const [products, setProducts] = useState<ProductType[]>([])
 
-  const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore((state) => state)
+  const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore(
+    useShallow((state) => ({
+      setSnackSeverity: state.setSnackSeverity,
+      setSnackMessage: state.setSnackMessage,
+      setSnackOpen: state.setSnackOpen,
+    }))
+  )
 
   const init = async () => {
     try {

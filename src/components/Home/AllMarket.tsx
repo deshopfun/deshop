@@ -9,6 +9,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { PackageOpen, Loader2 } from 'lucide-react'
 import { GetAbosolutePathByRelative } from '@/utils/image'
+import { useShallow } from 'zustand/react/shallow'
 
 type Props = {
   productType?: string
@@ -24,7 +25,13 @@ const AllMarket = (props: Props) => {
   const [loading, setLoading] = useState(false)
   const [loadingMore, setLoadingMore] = useState(false)
 
-  const { setSnackSeverity, setSnackOpen, setSnackMessage } = useSnackPresistStore((state) => state)
+  const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore(
+    useShallow((state) => ({
+      setSnackSeverity: state.setSnackSeverity,
+      setSnackMessage: state.setSnackMessage,
+      setSnackOpen: state.setSnackOpen,
+    }))
+  )
 
   const init = async (productType: string, pageNum = 1, append = false) => {
     if (append) {
@@ -67,7 +74,7 @@ const AllMarket = (props: Props) => {
 
   useEffect(() => {
     init(currentProductType, 1, false)
-  }, [])
+  }, [currentProductType])
 
   const handleCategoryClick = (productType: string) => {
     if (productType === currentProductType) return
@@ -137,18 +144,26 @@ const AllMarket = (props: Props) => {
                 <CardContent className="p-3 flex flex-col gap-1">
                   <p className="font-semibold text-sm line-clamp-2">{item.title}</p>
 
-                  {item.variants && item.variants.length > 0 && (
+                  {item.is_promote === 'true' ? (
                     <>
-                      <p className="text-xs text-muted-foreground">{item.variants[0].option}</p>
-                      <div className="flex items-center justify-between mt-1">
-                        <p className="font-bold text-red-500 text-base">
-                          {CURRENCYS.find((c) => c.name === item.currency)?.code}
-                          {item.variants[0].price}
-                        </p>
-                        <p className="text-xs text-muted-foreground">
-                          {item.variants[0].inventory_quantity} in stock
-                        </p>
-                      </div>
+                      <p className="text-muted-foreground text-sm line-clamp-3">{item.body_html}</p>
+                    </>
+                  ) : (
+                    <>
+                      {item.variants && item.variants.length > 0 && (
+                        <>
+                          <p className="text-xs text-muted-foreground">{item.variants[0].option}</p>
+                          <div className="flex items-center justify-between mt-1">
+                            <p className="font-bold text-red-500 text-base">
+                              {CURRENCYS.find((c) => c.name === item.currency)?.code}
+                              {item.variants[0].price}
+                            </p>
+                            <p className="text-xs text-muted-foreground">
+                              {item.variants[0].inventory_quantity} in stock
+                            </p>
+                          </div>
+                        </>
+                      )}
                     </>
                   )}
                 </CardContent>

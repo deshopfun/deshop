@@ -11,6 +11,7 @@ import { Label } from '@/components/ui/label'
 import { cn } from '@/lib/utils'
 import { Trash2, Save, Settings, Image as ImageIcon } from 'lucide-react'
 import { GetAbosolutePathByRelative } from '@/utils/image'
+import { useShallow } from 'zustand/react/shallow'
 
 type Props = {
   productId: number
@@ -36,7 +37,13 @@ const ProductStory = ({ productId }: Props) => {
   const [uploading, setUploading] = useState(false)
   const [saving, setSaving] = useState(false)
 
-  const { setSnackSeverity, setSnackOpen, setSnackMessage } = useSnackPresistStore((state) => state)
+  const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore(
+    useShallow((state) => ({
+      setSnackSeverity: state.setSnackSeverity,
+      setSnackMessage: state.setSnackMessage,
+      setSnackOpen: state.setSnackOpen,
+    }))
+  )
 
   const showError = (msg: string) => {
     setSnackSeverity('error')
@@ -305,7 +312,9 @@ const ProductStory = ({ productId }: Props) => {
               <ImageIcon className="h-4 w-4 text-orange-500" />
             </div>
             <div>
-              <h3 className="font-semibold">Cover Image <span className="text-red-500">*</span></h3>
+              <h3 className="font-semibold">
+                Cover Image <span className="text-red-500">*</span>
+              </h3>
               <p className="text-xs text-muted-foreground">Max 3MB · JPG / PNG / GIF / SVG</p>
             </div>
           </div>

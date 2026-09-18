@@ -42,6 +42,7 @@ import { useAbortableEffect } from '@/hooks/useAbortableEffect'
 import axios from '@/utils/http/axios'
 import { Http } from '@/utils/http/http'
 import { useChatSocket } from '@/hooks/useChatSocket'
+import { useShallow } from 'zustand/react/shallow'
 
 function formatTime(input: number): string {
   return new Date(input).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })
@@ -77,11 +78,23 @@ const Chat = () => {
   const selected = conversations?.find((c) => c.conversation_id === selectedId)
   const messages = selectedId ? (messagesByConversation[selectedId] ?? []) : []
 
-  const { getUuid, getIsLogin } = useUserPresistStore((state) => state)
-  const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore((state) => state)
+  const { uuid, isLogin } = useUserPresistStore(
+    useShallow((state) => ({
+      uuid: state.uuid,
+      isLogin: state.isLogin,
+    }))
+  )
+
+  const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore(
+    useShallow((state) => ({
+      setSnackSeverity: state.setSnackSeverity,
+      setSnackMessage: state.setSnackMessage,
+      setSnackOpen: state.setSnackOpen,
+    }))
+  )
 
   const initFollowings = async (signal?: AbortSignal) => {
-    if (!getIsLogin?.()) return
+    if (!isLogin) return
 
     try {
       const response: any = await axios.get(Http.follow, { signal })
@@ -100,7 +113,7 @@ const Chat = () => {
   }
 
   const initConversations = async (signal?: AbortSignal) => {
-    if (!getIsLogin?.()) return
+    if (!isLogin) return
 
     try {
       const response: any = await axios.get(Http.chat_conversation, { signal })
@@ -260,7 +273,7 @@ const Chat = () => {
   }
 
   const { send: sendWs } = useChatSocket({
-    enabled: getIsLogin(),
+    enabled: isLogin,
 
     onAck: (payload) => {
       setMessagesByConversation((prev) => {
@@ -332,7 +345,7 @@ const Chat = () => {
       conversation_id: selectedId,
       message_id: 0,
       client_message_id: clientMessageId,
-      sender_uuid: getUuid(),
+      sender_uuid: uuid,
       content: draft.trim(),
       create_time: new Date().getTime(),
       message_status: 'sending',
@@ -375,7 +388,7 @@ const Chat = () => {
     }
   }
 
-  if (!getIsLogin()) {
+  if (!isLogin) {
     return (
       <div className="max-w-6xl mx-auto px-4 py-6">
         <div className="flex items-center gap-3 mb-6">
@@ -670,7 +683,7 @@ const Chat = () => {
                   ) : (
                     <div className="space-y-3">
                       {messages.map((m, idx) => {
-                        const isMe = m.sender_uuid === getUuid()
+                        const isMe = m.sender_uuid === uuid
                         const prevSameSender =
                           idx > 0 && messages[idx - 1].sender_uuid === m.sender_uuid
                         const isFailed = isMe && m.message_status === 'failed'

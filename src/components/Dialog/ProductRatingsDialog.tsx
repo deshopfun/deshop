@@ -20,6 +20,7 @@ import { Star, Search, MessageSquare, X } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import Decimal from 'decimal.js'
 import { GetAbosolutePathByRelative } from '@/utils/image'
+import { useShallow } from 'zustand/react/shallow'
 
 type DialogType = {
   product_id: number
@@ -99,7 +100,13 @@ export default function ProductRatingsDialog({
   const [selectSortBy, setSelectSortBy] = useState('')
   const [selectRating, setSelectRating] = useState('')
 
-  const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore((state) => state)
+  const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore(
+    useShallow((state) => ({
+      setSnackSeverity: state.setSnackSeverity,
+      setSnackMessage: state.setSnackMessage,
+      setSnackOpen: state.setSnackOpen,
+    }))
+  )
 
   const avgRating = propsRatings?.length
     ? propsRatings

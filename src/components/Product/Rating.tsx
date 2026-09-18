@@ -16,6 +16,7 @@ import {
 } from '@/components/ui/dialog'
 import { Star, Plus, StarIcon } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { useShallow } from 'zustand/react/shallow'
 
 const StarPicker = ({ value, onChange }: { value: number; onChange: (v: number) => void }) => {
   const [hover, setHover] = useState(0)
@@ -59,7 +60,13 @@ const ProductRating = () => {
   const [image, setImage] = useState('')
   const [loading, setLoading] = useState(false)
 
-  const { setSnackSeverity, setSnackOpen, setSnackMessage } = useSnackPresistStore((state) => state)
+  const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore(
+    useShallow((state) => ({
+      setSnackSeverity: state.setSnackSeverity,
+      setSnackMessage: state.setSnackMessage,
+      setSnackOpen: state.setSnackOpen,
+    }))
+  )
 
   const showError = (msg: string) => {
     setSnackSeverity('error')

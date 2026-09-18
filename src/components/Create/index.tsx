@@ -32,6 +32,8 @@ import 'swiper/css/pagination'
 // @ts-ignore
 import 'swiper/css/scrollbar'
 import { GetAbosolutePathByRelative } from '@/utils/image'
+import { useShallow } from 'zustand/react/shallow'
+import SwitchRow from '../Switch/SwitchRow'
 
 const Create = () => {
   const [title, setTitle] = useState('')
@@ -50,9 +52,20 @@ const Create = () => {
   const [importText, setImportText] = useState('')
   const [parsing, setParsing] = useState(false)
   const [showImport, setShowImport] = useState(false)
+  const [isPromote, setIsPromote] = useState(false)
 
-  const { setSnackSeverity, setSnackOpen, setSnackMessage } = useSnackPresistStore((state) => state)
-  const { getIsLogin } = useUserPresistStore((state) => state)
+  const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore(
+    useShallow((state) => ({
+      setSnackSeverity: state.setSnackSeverity,
+      setSnackMessage: state.setSnackMessage,
+      setSnackOpen: state.setSnackOpen,
+    }))
+  )
+  const { isLogin } = useUserPresistStore(
+    useShallow((state) => ({
+      isLogin: state.isLogin,
+    }))
+  )
 
   const showError = (msg: string) => {
     setSnackSeverity('error')
@@ -120,12 +133,14 @@ const Create = () => {
       const newType = get('product_type', 'productType', 'Type', 'type')
       const newTags = get('tags', 'Tags')
       const newDesc = get('description', 'Description', 'body_html', 'body')
+      const newPromote = get('is_promote', 'IsPromote', 'Promote', 'promote')
 
       if (newTitle) setTitle(newTitle)
       if (newSlug) setSlug(newSlug)
       if (newVendor) setVendor(newVendor)
       if (newTags) setTags(newTags)
       if (newDesc) setDescription(newDesc)
+      if (newPromote) setIsPromote(newPromote === 'true')
 
       if (newType) {
         const matched = Object.values(PRODUCT_TYPE).find(
@@ -232,7 +247,7 @@ const Create = () => {
   }
 
   const onClickCreateProduct = async () => {
-    if (!getIsLogin?.()) return showError('Need login')
+    if (!isLogin) return showError('Need login')
     if (!title) return showError('Incorrect title input')
     if (!slug) return showError('Incorrect slug input')
     if (!productType) return showError('Incorrect product type')
@@ -268,6 +283,7 @@ const Create = () => {
         vendor,
         images: productImages,
         options: productOption,
+        is_promote: isPromote ? 'true' : 'false',
       })
       if (response.result) {
         setSnackSeverity('success')
@@ -334,7 +350,8 @@ Title: My Product
 Slug: my-product
 Type: OPENSOURCE
 Tags: ai,tool
-Description:
+Description: xxxxxx
+Promote: true
 Multi-line description...
 
 Option1: Color
@@ -472,6 +489,15 @@ Values1: Red,Blue,Green
                   onChange={(e) => setDescription(e.target.value)}
                   placeholder="Write a detailed description..."
                   className="min-h-32 resize-y"
+                />
+              </div>
+
+              <div className="flex flex-col">
+                <SwitchRow
+                  label="Promote"
+                  desc="This product is only for promotion"
+                  checked={isPromote}
+                  onCheckedChange={setIsPromote}
                 />
               </div>
             </CardContent>

@@ -12,6 +12,7 @@ import { Button } from '@/components/ui/button'
 import { Switch } from '@/components/ui/switch'
 import { Wallet, Link2, CheckCircle2 } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { useShallow } from 'zustand/react/shallow'
 
 const ManageWallet = () => {
   const [wallets, setWallets] = useState<WalletType[]>([])
@@ -19,22 +20,39 @@ const ManageWallet = () => {
   const [selectAddress, setSelectAddress] = useState<string>()
   const [openEditAddressDialog, setOpenEditAddressDialog] = useState(false)
 
-  const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore((state) => state)
+  const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore(
+    useShallow((state) => ({
+      setSnackSeverity: state.setSnackSeverity,
+      setSnackMessage: state.setSnackMessage,
+      setSnackOpen: state.setSnackOpen,
+    }))
+  )
 
-  const showError = (msg: string) => { setSnackSeverity('error'); setSnackMessage(msg); setSnackOpen(true) }
-  const showSuccess = (msg: string) => { setSnackSeverity('success'); setSnackMessage(msg); setSnackOpen(true) }
+  const showError = (msg: string) => {
+    setSnackSeverity('error')
+    setSnackMessage(msg)
+    setSnackOpen(true)
+  }
+  const showSuccess = (msg: string) => {
+    setSnackSeverity('success')
+    setSnackMessage(msg)
+    setSnackOpen(true)
+  }
 
   const init = async () => {
     try {
       const response: any = await axios.get(Http.wallet)
       setWallets(response.result ? response.data : [])
-    } catch { showError('Network error. Please try again later.') }
+    } catch {
+      showError('Network error. Please try again later.')
+    }
   }
 
-  useEffect(() => { init() }, [])
+  useEffect(() => {
+    init()
+  }, [])
 
-  const getWallet = (chainId: CHAINIDS) =>
-    wallets?.find((w) => w.chain_id === chainId)
+  const getWallet = (chainId: CHAINIDS) => wallets?.find((w) => w.chain_id === chainId)
 
   const isCoinEnabled = (chainId: CHAINIDS, coinName: string) => {
     const wallet = getWallet(chainId)
@@ -51,11 +69,17 @@ const ManageWallet = () => {
         : [...disableArray, coin].join(',')
 
       const response: any = await axios.put(Http.wallet, {
-        handle: "false", chain_id: chain, disable_coin: newDisableCoin,
+        handle: 'false',
+        chain_id: chain,
+        disable_coin: newDisableCoin,
       })
-      if (response.result) { await init(); showSuccess('Updated successfully') }
-      else showError(response.message)
-    } catch { showError('Network error. Please try again later.') }
+      if (response.result) {
+        await init()
+        showSuccess('Updated successfully')
+      } else showError(response.message)
+    } catch {
+      showError('Network error. Please try again later.')
+    }
   }
 
   const handleCloseDialog = async () => {
@@ -65,14 +89,15 @@ const ManageWallet = () => {
 
   return (
     <div className="flex flex-col gap-4">
-
       <div className="flex items-center gap-2">
         <div className="h-8 w-8 rounded-lg bg-sky-50 flex items-center justify-center">
           <Wallet className="h-4 w-4 text-sky-500" />
         </div>
         <div>
           <h3 className="font-semibold">Wallet Setup</h3>
-          <p className="text-xs text-muted-foreground">Bind your addresses and manage accepted coins</p>
+          <p className="text-xs text-muted-foreground">
+            Bind your addresses and manage accepted coins
+          </p>
         </div>
       </div>
 
@@ -83,20 +108,24 @@ const ManageWallet = () => {
         return (
           <Card key={index} className="border-0 shadow-sm overflow-hidden">
             <CardContent className="p-0">
-
-              <div className={cn(
-                "px-5 py-4 flex items-center justify-between border-b",
-                hasAddress ? "bg-green-50" : "bg-gray-50"
-              )}>
+              <div
+                className={cn(
+                  'px-5 py-4 flex items-center justify-between border-b',
+                  hasAddress ? 'bg-green-50' : 'bg-gray-50'
+                )}
+              >
                 <div className="flex items-center gap-3">
-                  <div className={cn(
-                    "h-9 w-9 rounded-xl flex items-center justify-center",
-                    hasAddress ? "bg-green-100" : "bg-gray-100"
-                  )}>
-                    {hasAddress
-                      ? <CheckCircle2 className="h-5 w-5 text-green-500" />
-                      : <Wallet className="h-5 w-5 text-gray-400" />
-                    }
+                  <div
+                    className={cn(
+                      'h-9 w-9 rounded-xl flex items-center justify-center',
+                      hasAddress ? 'bg-green-100' : 'bg-gray-100'
+                    )}
+                  >
+                    {hasAddress ? (
+                      <CheckCircle2 className="h-5 w-5 text-green-500" />
+                    ) : (
+                      <Wallet className="h-5 w-5 text-gray-400" />
+                    )}
                   </div>
                   <div>
                     <p className="font-semibold text-sm">{item.name}</p>
@@ -113,10 +142,10 @@ const ManageWallet = () => {
                 <Button
                   size="sm"
                   className={cn(
-                    "h-8 gap-1.5 text-xs",
+                    'h-8 gap-1.5 text-xs',
                     hasAddress
-                      ? "bg-green-500 hover:bg-green-600 text-white"
-                      : "bg-sky-500 hover:bg-sky-600 text-white"
+                      ? 'bg-green-500 hover:bg-green-600 text-white'
+                      : 'bg-sky-500 hover:bg-sky-600 text-white'
                   )}
                   onClick={() => {
                     setSelectChain(item.chainId)
@@ -136,8 +165,8 @@ const ManageWallet = () => {
                     <div
                       key={ci}
                       className={cn(
-                        "flex items-center justify-between px-5 py-3 transition-colors",
-                        !enabled && "opacity-50"
+                        'flex items-center justify-between px-5 py-3 transition-colors',
+                        !enabled && 'opacity-50'
                       )}
                     >
                       <div className="flex items-center gap-3">
@@ -146,10 +175,12 @@ const ManageWallet = () => {
                         </div>
                         <div>
                           <p className="text-sm font-medium">{coinItem.name}</p>
-                          <p className={cn(
-                            "text-xs mt-0.5",
-                            enabled ? "text-green-500" : "text-muted-foreground"
-                          )}>
+                          <p
+                            className={cn(
+                              'text-xs mt-0.5',
+                              enabled ? 'text-green-500' : 'text-muted-foreground'
+                            )}
+                          >
                             {enabled ? 'Accepted' : 'Disabled'}
                           </p>
                         </div>
@@ -162,7 +193,6 @@ const ManageWallet = () => {
                   )
                 })}
               </div>
-
             </CardContent>
           </Card>
         )

@@ -5,12 +5,19 @@ import { useEffect, useState } from 'react'
 import { Http } from '@/utils/http/http'
 import { Card, CardContent } from '@/components/ui/card'
 import { ShieldCheck, Loader2 } from 'lucide-react'
+import { useShallow } from 'zustand/react/shallow'
 
 const DocsPrivacyPolicy = () => {
   const [content, setContent] = useState('')
   const [loading, setLoading] = useState(true)
 
-  const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore((state) => state)
+  const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore(
+    useShallow((state) => ({
+      setSnackSeverity: state.setSnackSeverity,
+      setSnackMessage: state.setSnackMessage,
+      setSnackOpen: state.setSnackOpen,
+    }))
+  )
 
   const init = async () => {
     setLoading(true)

@@ -8,6 +8,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { MapPin, Plus, Trash2, Copy, Pencil, CheckCircle2, Star } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { useShallow } from 'zustand/react/shallow'
 
 const ManageAddress = () => {
   const [alignment, setAlignment] = useState<'received' | 'delivery'>('received')
@@ -16,8 +17,14 @@ const ManageAddress = () => {
   const [currentAddress, setCurrentAddress] = useState<AddressType>()
   const [openDialog, setOpenDialog] = useState(false)
 
-  const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore((state) => state)
-
+  const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore(
+    useShallow((state) => ({
+      setSnackSeverity: state.setSnackSeverity,
+      setSnackMessage: state.setSnackMessage,
+      setSnackOpen: state.setSnackOpen,
+    }))
+  )
+  
   const showError = (msg: string) => {
     setSnackSeverity('error')
     setSnackMessage(msg)

@@ -1,43 +1,46 @@
-import { ChainAccountType, QRCodeText, WalletAccountType } from './types';
-import { Bip39 } from './bip39';
-import { CHAINIDS } from '@/packages/constants';
-import { BTC } from './chain/btc';
-import { ETH } from './chain/eth';
-import { SOLANA } from './chain/solana';
-import { LTC } from './chain/ltc';
-import { TRON } from './chain/tron';
-import { TON } from './chain/ton';
-import { BITCOINCASH } from './chain/bitcoincash';
-import { XRP } from './chain/xrp';
-import { BSC } from './chain/bsc';
-import { ARB } from './chain/arb';
-import { AVAX } from './chain/avalanche';
-import { POL } from './chain/pol';
-import { BASE } from './chain/base';
-import { OP } from './chain/op';
-import { ARBNOVA } from './chain/arbnova';
+import { ChainAccountType, QRCodeText, WalletAccountType } from './types'
+import { Bip39 } from './bip39'
+import { CHAINIDS } from '@/packages/constants'
+import { BTC } from './chain/btc'
+import { ETH } from './chain/eth'
+import { SOLANA } from './chain/solana'
+import { LTC } from './chain/ltc'
+import { TRON } from './chain/tron'
+import { TON } from './chain/ton'
+import { BITCOINCASH } from './chain/bitcoincash'
+import { XRP } from './chain/xrp'
+import { BSC } from './chain/bsc'
+import { ARB } from './chain/arb'
+import { AVAX } from './chain/avalanche'
+import { POL } from './chain/pol'
+import { BASE } from './chain/base'
+import { OP } from './chain/op'
+import { ARBNOVA } from './chain/arbnova'
 
 export class WEB3 {
   // support: Import and generate wallet
   static async generateWallet(mnemonic: string = ''): Promise<WalletAccountType> {
-    const isGenerate = mnemonic === '' ? true : false;
+    const isGenerate = mnemonic === ''
 
-    if (mnemonic !== '' && !Bip39.validateMnemonic(mnemonic)) throw new Error('Invalid mnemonic');
-    mnemonic = mnemonic === '' ? Bip39.generateMnemonic() : mnemonic;
+    if (mnemonic !== '' && !Bip39.validateMnemonic(mnemonic)) throw new Error('Invalid mnemonic')
+    mnemonic = mnemonic === '' ? Bip39.generateMnemonic() : mnemonic
 
-    const seed = await Bip39.generateSeed(mnemonic);
+    const seed = await Bip39.generateSeed(mnemonic)
 
     // mainnet
-    const mainnetAccount = await this.createAccountBySeed(seed, mnemonic);
+    const mainnetAccount = await this.createAccountBySeed(seed, mnemonic)
 
     return {
       isGenerate: isGenerate,
       mnemonic: mnemonic,
       account: [...mainnetAccount],
-    };
+    }
   }
 
-  static async createAccountBySeed(seed: Buffer, mnemonic: string): Promise<Array<ChainAccountType>> {
+  static async createAccountBySeed(
+    seed: Buffer,
+    mnemonic: string
+  ): Promise<Array<ChainAccountType>> {
     return await Promise.all([
       ...BTC.createAccountBySeed(seed),
       ETH.createAccountBySeed(seed),
@@ -47,20 +50,23 @@ export class WEB3 {
       await TON.createAccountBySeed(seed, mnemonic),
       await BITCOINCASH.createAccountBySeed(seed, mnemonic),
       XRP.createAccountBySeed(seed, mnemonic),
-    ]);
+    ])
   }
 
-  static async createAccountByPrivateKey(chain: CHAINIDS, privateKey: string): Promise<Array<ChainAccountType>> {
+  static async createAccountByPrivateKey(
+    chain: CHAINIDS,
+    privateKey: string
+  ): Promise<Array<ChainAccountType>> {
     switch (chain) {
       case CHAINIDS.BITCOIN:
-        return BTC.createAccountByPrivateKey(privateKey);
+        return BTC.createAccountByPrivateKey(privateKey)
       case CHAINIDS.LITECOIN:
-        return Array<ChainAccountType>(LTC.createAccountByPrivateKey(privateKey));
+        return Array<ChainAccountType>(LTC.createAccountByPrivateKey(privateKey))
       case CHAINIDS.XRP:
         // return Array<ChainAccountType>(XRP.createAccountByPrivateKey( privateKey));
-        return [];
+        return []
       case CHAINIDS.BITCOINCASH:
-        return Array<ChainAccountType>(await BITCOINCASH.createAccountByPrivateKey(privateKey));
+        return Array<ChainAccountType>(await BITCOINCASH.createAccountByPrivateKey(privateKey))
       case CHAINIDS.ETHEREUM:
       case CHAINIDS.BSC:
       case CHAINIDS.ARBITRUM_ONE:
@@ -69,37 +75,37 @@ export class WEB3 {
       case CHAINIDS.POLYGON:
       case CHAINIDS.BASE:
       case CHAINIDS.OPTIMISM:
-        return Array<ChainAccountType>(ETH.createAccountByPrivateKey(privateKey));
+        return Array<ChainAccountType>(ETH.createAccountByPrivateKey(privateKey))
       case CHAINIDS.TRON:
-        return Array<ChainAccountType>(TRON.createAccountByPrivateKey(privateKey));
+        return Array<ChainAccountType>(TRON.createAccountByPrivateKey(privateKey))
       case CHAINIDS.SOLANA:
-        return Array<ChainAccountType>(SOLANA.createAccountByPrivateKey(privateKey));
+        return Array<ChainAccountType>(SOLANA.createAccountByPrivateKey(privateKey))
       case CHAINIDS.TON:
-        return Array<ChainAccountType>(await TON.createAccountByPrivateKey(privateKey));
+        return Array<ChainAccountType>(await TON.createAccountByPrivateKey(privateKey))
       default:
-        return [];
+        return []
     }
   }
 
   static async checkAccountStatus(chain: CHAINIDS, address: string): Promise<number> {
     switch (chain) {
       case CHAINIDS.XRP:
-        return (await XRP.checkAccountStatus(address)) ? 1 : 2;
+        return (await XRP.checkAccountStatus(address)) ? 1 : 2
       default:
-        return 0;
+        return 0
     }
   }
 
   static async checkAddress(chain: CHAINIDS, address: string): Promise<boolean> {
     switch (chain) {
       case CHAINIDS.BITCOIN:
-        return BTC.checkAddress(address);
+        return BTC.checkAddress(address)
       case CHAINIDS.LITECOIN:
-        return LTC.checkAddress(address);
+        return LTC.checkAddress(address)
       case CHAINIDS.XRP:
-        return XRP.checkAddress(address);
+        return XRP.checkAddress(address)
       case CHAINIDS.BITCOINCASH:
-        return await BITCOINCASH.checkAddress(address);
+        return await BITCOINCASH.checkAddress(address)
       case CHAINIDS.ETHEREUM:
       case CHAINIDS.BSC:
       case CHAINIDS.ARBITRUM_ONE:
@@ -108,163 +114,168 @@ export class WEB3 {
       case CHAINIDS.POLYGON:
       case CHAINIDS.BASE:
       case CHAINIDS.OPTIMISM:
-        return ETH.checkAddress(address);
+        return ETH.checkAddress(address)
       case CHAINIDS.TRON:
-        return TRON.checkAddress(address);
+        return TRON.checkAddress(address)
       case CHAINIDS.SOLANA:
-        return SOLANA.checkAddress(address);
+        return SOLANA.checkAddress(address)
       case CHAINIDS.TON:
-        return TON.checkAddress(address);
+        return TON.checkAddress(address)
       default:
-        return false;
+        return false
     }
   }
 
   static checkQRCodeText(chain: CHAINIDS, text: string): boolean {
     switch (chain) {
       case CHAINIDS.BITCOIN:
-        return BTC.checkQRCodeText(text);
+        return BTC.checkQRCodeText(text)
       case CHAINIDS.LITECOIN:
-        return LTC.checkQRCodeText(text);
+        return LTC.checkQRCodeText(text)
       case CHAINIDS.XRP:
-        return XRP.checkQRCodeText(text);
+        return XRP.checkQRCodeText(text)
       case CHAINIDS.BITCOINCASH:
-        return BITCOINCASH.checkQRCodeText(text);
+        return BITCOINCASH.checkQRCodeText(text)
       case CHAINIDS.ETHEREUM:
-        return ETH.checkQRCodeText(text);
+        return ETH.checkQRCodeText(text)
       case CHAINIDS.TRON:
-        return TRON.checkQRCodeText(text);
+        return TRON.checkQRCodeText(text)
       case CHAINIDS.SOLANA:
-        return SOLANA.checkQRCodeText(text);
+        return SOLANA.checkQRCodeText(text)
       case CHAINIDS.BSC:
-        return BSC.checkQRCodeText(text);
+        return BSC.checkQRCodeText(text)
       case CHAINIDS.ARBITRUM_ONE:
-        return ARB.checkQRCodeText(text);
+        return ARB.checkQRCodeText(text)
       case CHAINIDS.AVALANCHE:
-        return AVAX.checkQRCodeText(text);
+        return AVAX.checkQRCodeText(text)
       case CHAINIDS.POLYGON:
-        return POL.checkQRCodeText(text);
+        return POL.checkQRCodeText(text)
       case CHAINIDS.BASE:
-        return BASE.checkQRCodeText(text);
+        return BASE.checkQRCodeText(text)
       case CHAINIDS.OPTIMISM:
-        return OP.checkQRCodeText(text);
+        return OP.checkQRCodeText(text)
       case CHAINIDS.TON:
-        return TON.checkQRCodeText(text);
+        return TON.checkQRCodeText(text)
       case CHAINIDS.ARBITRUM_NOVA:
-        return ARBNOVA.checkQRCodeText(text);
+        return ARBNOVA.checkQRCodeText(text)
       default:
-        return false;
+        return false
     }
   }
 
   static parseQRCodeText(chain: CHAINIDS, text: string): QRCodeText {
     switch (chain) {
       case CHAINIDS.BITCOIN:
-        return BTC.parseQRCodeText(text);
+        return BTC.parseQRCodeText(text)
       case CHAINIDS.LITECOIN:
-        return LTC.parseQRCodeText(text);
+        return LTC.parseQRCodeText(text)
       case CHAINIDS.XRP:
-        return XRP.parseQRCodeText(text);
+        return XRP.parseQRCodeText(text)
       case CHAINIDS.BITCOINCASH:
-        return BITCOINCASH.parseQRCodeText(text);
+        return BITCOINCASH.parseQRCodeText(text)
       case CHAINIDS.ETHEREUM:
-        return ETH.parseQRCodeText(text);
+        return ETH.parseQRCodeText(text)
       case CHAINIDS.TRON:
-        return TRON.parseQRCodeText(text);
+        return TRON.parseQRCodeText(text)
       case CHAINIDS.SOLANA:
-        return SOLANA.parseQRCodeText(text);
+        return SOLANA.parseQRCodeText(text)
       case CHAINIDS.BSC:
-        return BSC.parseQRCodeText(text);
+        return BSC.parseQRCodeText(text)
       case CHAINIDS.ARBITRUM_ONE:
-        return ARB.parseQRCodeText(text);
+        return ARB.parseQRCodeText(text)
       case CHAINIDS.AVALANCHE:
-        return AVAX.parseQRCodeText(text);
+        return AVAX.parseQRCodeText(text)
       case CHAINIDS.POLYGON:
-        return POL.parseQRCodeText(text);
+        return POL.parseQRCodeText(text)
       case CHAINIDS.BASE:
-        return BASE.parseQRCodeText(text);
+        return BASE.parseQRCodeText(text)
       case CHAINIDS.OPTIMISM:
-        return OP.parseQRCodeText(text);
+        return OP.parseQRCodeText(text)
       case CHAINIDS.TON:
-        return TON.parseQRCodeText(text);
+        return TON.parseQRCodeText(text)
       case CHAINIDS.ARBITRUM_NOVA:
-        return ARBNOVA.parseQRCodeText(text);
+        return ARBNOVA.parseQRCodeText(text)
       default:
-        return {} as QRCodeText;
+        return {} as QRCodeText
     }
   }
 
-  static generateQRCodeText(chain: CHAINIDS, address: string, contractAddress?: string, amount?: string): string {
+  static generateQRCodeText(
+    chain: CHAINIDS,
+    address: string,
+    contractAddress?: string,
+    amount?: string
+  ): string {
     switch (chain) {
       case CHAINIDS.BITCOIN:
-        return BTC.generateQRCodeText(address, amount);
+        return BTC.generateQRCodeText(address, amount)
       case CHAINIDS.LITECOIN:
-        return LTC.generateQRCodeText(address, amount);
+        return LTC.generateQRCodeText(address, amount)
       case CHAINIDS.XRP:
-        return XRP.generateQRCodeText(address, amount);
+        return XRP.generateQRCodeText(address, amount)
       case CHAINIDS.BITCOINCASH:
-        return BITCOINCASH.generateQRCodeText(address, amount);
+        return BITCOINCASH.generateQRCodeText(address, amount)
       case CHAINIDS.ETHEREUM:
-        return ETH.generateQRCodeText(address, contractAddress, amount);
+        return ETH.generateQRCodeText(address, contractAddress, amount)
       case CHAINIDS.TRON:
-        return TRON.generateQRCodeText(address, contractAddress, amount);
+        return TRON.generateQRCodeText(address, contractAddress, amount)
       case CHAINIDS.SOLANA:
-        return SOLANA.generateQRCodeText(address, contractAddress, amount);
+        return SOLANA.generateQRCodeText(address, contractAddress, amount)
       case CHAINIDS.BSC:
-        return BSC.generateQRCodeText(address, contractAddress, amount);
+        return BSC.generateQRCodeText(address, contractAddress, amount)
       case CHAINIDS.ARBITRUM_ONE:
-        return ARB.generateQRCodeText(address, contractAddress, amount);
+        return ARB.generateQRCodeText(address, contractAddress, amount)
       case CHAINIDS.AVALANCHE:
-        return AVAX.generateQRCodeText(address, contractAddress, amount);
+        return AVAX.generateQRCodeText(address, contractAddress, amount)
       case CHAINIDS.POLYGON:
-        return POL.generateQRCodeText(address, contractAddress, amount);
+        return POL.generateQRCodeText(address, contractAddress, amount)
       case CHAINIDS.BASE:
-        return BASE.generateQRCodeText(address, contractAddress, amount);
+        return BASE.generateQRCodeText(address, contractAddress, amount)
       case CHAINIDS.OPTIMISM:
-        return OP.generateQRCodeText(address, contractAddress, amount);
+        return OP.generateQRCodeText(address, contractAddress, amount)
       case CHAINIDS.TON:
-        return TON.generateQRCodeText(address, contractAddress, amount);
+        return TON.generateQRCodeText(address, contractAddress, amount)
       case CHAINIDS.ARBITRUM_NOVA:
-        return ARBNOVA.generateQRCodeText(address, contractAddress, amount);
+        return ARBNOVA.generateQRCodeText(address, contractAddress, amount)
       default:
-        return '';
+        return ''
     }
   }
 
   static getChainIds(chain: CHAINIDS): CHAINIDS {
     switch (chain) {
       case CHAINIDS.BITCOIN:
-        return BTC.getChainIds();
+        return BTC.getChainIds()
       case CHAINIDS.LITECOIN:
-        return LTC.getChainIds();
+        return LTC.getChainIds()
       case CHAINIDS.XRP:
-        return XRP.getChainIds();
+        return XRP.getChainIds()
       case CHAINIDS.BITCOINCASH:
-        return BITCOINCASH.getChainIds();
+        return BITCOINCASH.getChainIds()
       case CHAINIDS.ETHEREUM:
-        return ETH.getChainIds();
+        return ETH.getChainIds()
       case CHAINIDS.TRON:
-        return TRON.getChainIds();
+        return TRON.getChainIds()
       case CHAINIDS.SOLANA:
-        return SOLANA.getChainIds();
+        return SOLANA.getChainIds()
       case CHAINIDS.BSC:
-        return BSC.getChainIds();
+        return BSC.getChainIds()
       case CHAINIDS.ARBITRUM_ONE:
-        return ARB.getChainIds();
+        return ARB.getChainIds()
       case CHAINIDS.ARBITRUM_NOVA:
-        return ARBNOVA.getChainIds();
+        return ARBNOVA.getChainIds()
       case CHAINIDS.AVALANCHE:
-        return AVAX.getChainIds();
+        return AVAX.getChainIds()
       case CHAINIDS.POLYGON:
-        return POL.getChainIds();
+        return POL.getChainIds()
       case CHAINIDS.BASE:
-        return BASE.getChainIds();
+        return BASE.getChainIds()
       case CHAINIDS.OPTIMISM:
-        return OP.getChainIds();
+        return OP.getChainIds()
       case CHAINIDS.TON:
-        return TON.getChainIds();
+        return TON.getChainIds()
       default:
-        return CHAINIDS.NONE;
+        return CHAINIDS.NONE
     }
   }
 }

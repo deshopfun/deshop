@@ -16,6 +16,7 @@ import { Plus, Minus, Trash2, ShoppingCart, User, AlertCircle, Loader2 } from 'l
 import Decimal from 'decimal.js'
 import { GetAbosolutePathByRelative } from '@/utils/image'
 import { CartSkuInfo } from '@/utils/types'
+import { useShallow } from 'zustand/react/shallow'
 
 type MergedLine = CartLineType & {
   sku?: CartSkuInfo
@@ -32,12 +33,18 @@ type MergedGroup = {
 }
 
 const Cart = () => {
-  const { getCart, updateQuantity, removeFromCart, resetCart } = useCartPresistStore((s) => s)
-  const cart = getCart()
-
   const [skuMap, setSkuMap] = useState<Record<string, CartSkuInfo>>({})
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)
+
+  const { cart, updateQuantity, removeFromCart, resetCart } = useCartPresistStore(
+    useShallow((state) => ({
+      cart: state.cart,
+      updateQuantity: state.updateQuantity,
+      removeFromCart: state.removeFromCart,
+      resetCart: state.resetCart,
+    }))
+  )
 
   const fetchSkuData = async () => {
     const items = cart.flatMap((c) =>

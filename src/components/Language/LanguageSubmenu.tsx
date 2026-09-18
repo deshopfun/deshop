@@ -9,11 +9,19 @@ import { useRouter } from 'next/router'
 import { Globe, Check } from 'lucide-react'
 import { LOCALES } from '@/packages/constants'
 import { useUserPresistStore } from '@/lib'
+import { useShallow } from 'zustand/react/shallow'
 
 const LanguageSubmenu = () => {
-  const { getUserLanguage, setUserLanguage } = useUserPresistStore((state) => state)
   const router = useRouter()
-  const current = getUserLanguage() ?? router.locale ?? 'en'
+
+  const { userLanguage, setUserLanguage } = useUserPresistStore(
+    useShallow((state) => ({
+      userLanguage: state.userLanguage,
+      setUserLanguage: state.setUserLanguage,
+    }))
+  )
+
+  const current = userLanguage ?? router.locale ?? 'en'
   const currentLocale = LOCALES.find((l) => l.code === current)
 
   const changeLocale = (code: string) => {

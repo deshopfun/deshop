@@ -14,6 +14,7 @@ import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 
 import { ChevronDown, ChevronUp, ShoppingBag } from 'lucide-react'
+import { useShallow } from 'zustand/react/shallow'
 
 const Explore = () => {
   const router = useRouter()
@@ -24,7 +25,13 @@ const Explore = () => {
   const [currentProductType, setCurrentProductType] = useState<string>(PRODUCT_TYPE.OPENSOURCE)
   const [isClick, setIsClick] = useState<boolean>(false)
 
-  const { setSnackSeverity, setSnackOpen, setSnackMessage } = useSnackPresistStore((state) => state)
+  const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore(
+    useShallow((state) => ({
+      setSnackSeverity: state.setSnackSeverity,
+      setSnackMessage: state.setSnackMessage,
+      setSnackOpen: state.setSnackOpen,
+    }))
+  )
 
   const init = async (productType: string) => {
     try {

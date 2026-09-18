@@ -8,13 +8,25 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Bell, BellOff, CheckCheck, ExternalLink, Eye } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { useShallow } from 'zustand/react/shallow'
 
 const Notification = () => {
   const [notifications, setNotifications] = useState<NotificationType[]>([])
   const [activeFilter, setActiveFilter] = useState<string | 'all'>('all')
 
-  const { setSnackOpen, setSnackMessage, setSnackSeverity } = useSnackPresistStore((state) => state)
-  const { getIsLogin } = useUserPresistStore((state) => state)
+  const { isLogin } = useUserPresistStore(
+    useShallow((state) => ({
+      isLogin: state.isLogin,
+    }))
+  )
+
+  const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore(
+    useShallow((state) => ({
+      setSnackSeverity: state.setSnackSeverity,
+      setSnackMessage: state.setSnackMessage,
+      setSnackOpen: state.setSnackOpen,
+    }))
+  )
 
   const showError = (msg: string) => {
     setSnackSeverity('error')
@@ -28,7 +40,7 @@ const Notification = () => {
   }
 
   const init = async () => {
-    if (!getIsLogin?.()) return
+    if (!isLogin) return
     try {
       const response: any = await axios.get(Http.user_notification)
       if (response.result) {

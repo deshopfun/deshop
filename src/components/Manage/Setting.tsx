@@ -16,6 +16,7 @@ import {
 } from '@/components/ui/select'
 import { Settings, User, Mail, Gift, FileText, Clock, Coins, Save, Loader2 } from 'lucide-react'
 import { GetAbosolutePathByRelative } from '@/utils/image'
+import { useShallow } from 'zustand/react/shallow'
 
 const InfoRow = ({ icon: Icon, label, value }: { icon: any; label: string; value?: string }) => (
   <div className="flex items-center justify-between py-3 border-b border-dashed border-gray-100 last:border-0">
@@ -32,7 +33,13 @@ const ManageSetting = () => {
   const [currency, setCurrency] = useState('')
   const [loading, setLoading] = useState(false)
 
-  const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore((state) => state)
+  const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore(
+    useShallow((state) => ({
+      setSnackSeverity: state.setSnackSeverity,
+      setSnackMessage: state.setSnackMessage,
+      setSnackOpen: state.setSnackOpen,
+    }))
+  )
 
   const showError = (msg: string) => {
     setSnackSeverity('error')

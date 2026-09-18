@@ -35,6 +35,7 @@ import {
 import { cn } from '@/lib/utils'
 import { GetAbosolutePathByRelative } from '@/utils/image'
 import { useAbortableEffect } from '@/hooks/useAbortableEffect'
+import { useShallow } from 'zustand/react/shallow'
 
 const InfoRow = ({ label, children }: { label: string; children: React.ReactNode }) => (
   <div className="flex items-center justify-between gap-4 py-2 border-b border-dashed border-gray-100 last:border-0">
@@ -95,8 +96,19 @@ const OrderDetails = () => {
 
   const [order, setOrder] = useState<OrderType>()
 
-  const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore((state) => state)
-  const { getUuid } = useUserPresistStore((state) => state)
+  const { uuid } = useUserPresistStore(
+    useShallow((state) => ({
+      uuid: state.uuid,
+    }))
+  )
+
+  const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore(
+    useShallow((state) => ({
+      setSnackSeverity: state.setSnackSeverity,
+      setSnackMessage: state.setSnackMessage,
+      setSnackOpen: state.setSnackOpen,
+    }))
+  )
 
   const init = async (orderId: any, signal?: AbortSignal) => {
     if (!orderId) return
@@ -314,7 +326,7 @@ const OrderDetails = () => {
         </Card>
       )}
 
-      {order.payment_confirmed !== 'true' && getUuid() !== order.user_uuid ? (
+      {order.payment_confirmed !== 'true' && uuid !== order.user_uuid ? (
         <Button
           className="h-12 bg-sky-500 hover:bg-sky-600 text-white font-semibold gap-2"
           onClick={() => {

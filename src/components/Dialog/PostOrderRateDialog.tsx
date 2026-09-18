@@ -20,6 +20,7 @@ import { Separator } from '@/components/ui/separator'
 
 import { Star, Upload, X, Image as ImageIcon } from 'lucide-react'
 import { GetAbosolutePathByRelative } from '@/utils/image'
+import { useShallow } from 'zustand/react/shallow'
 
 type DialogType = {
   orderId: number
@@ -37,7 +38,13 @@ export default function PostOrderRateDialog({
   const [ratings, setRatings] = useState<PostRatingType[]>([])
   const [countRating, setCountRating] = useState<number>(0)
 
-  const { setSnackSeverity, setSnackOpen, setSnackMessage } = useSnackPresistStore((state) => state)
+  const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore(
+    useShallow((state) => ({
+      setSnackSeverity: state.setSnackSeverity,
+      setSnackMessage: state.setSnackMessage,
+      setSnackOpen: state.setSnackOpen,
+    }))
+  )
 
   const uploadFile = async (files: FileList | null, ratingIndex: number) => {
     if (!files || files.length !== 1) {

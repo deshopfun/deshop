@@ -51,6 +51,7 @@ export type ProductType = {
   vendor: string
   website: string
   video: string
+  is_promote: string
   currency: string
   product_status: string
   collect_status: string

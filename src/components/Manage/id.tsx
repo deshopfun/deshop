@@ -13,6 +13,7 @@ import { UserType } from '@/utils/types'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
 import { ShieldAlert, LayoutDashboard } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { useShallow } from 'zustand/react/shallow'
 
 const ManageDetails = () => {
   const router = useRouter()
@@ -22,8 +23,19 @@ const ManageDetails = () => {
   const [user, setUser] = useState<UserType>()
   const [tabValue, setTabValue] = useState('0')
 
-  const { getUuid } = useUserPresistStore((state) => state)
-  const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore((state) => state)
+  const { uuid } = useUserPresistStore(
+    useShallow((state) => ({
+      uuid: state.uuid,
+    }))
+  )
+
+  const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore(
+    useShallow((state) => ({
+      setSnackSeverity: state.setSnackSeverity,
+      setSnackMessage: state.setSnackMessage,
+      setSnackOpen: state.setSnackOpen,
+    }))
+  )
 
   const showError = (msg: string) => {
     setSnackSeverity('error')
@@ -45,7 +57,7 @@ const ManageDetails = () => {
   }, [tab])
 
   const init = async () => {
-    if (!getUuid()) return showError('Need login')
+    if (!uuid) return showError('Need login')
     try {
       const response: any = await axios.get(Http.user_manage)
       if (response.result) {

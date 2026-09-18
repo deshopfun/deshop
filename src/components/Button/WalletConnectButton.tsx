@@ -11,6 +11,7 @@ import { WalletConnectType } from '@/utils/types'
 import { Button } from '@/components/ui/button'
 import { Wallet, Send, Loader2, AlertTriangle } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { useShallow } from 'zustand/react/shallow'
 
 const WalletConnectButton = (props: WalletConnectType) => {
   const [connectNetwork, setConnectNetwork] = useState<AppKitNetwork>()
@@ -21,7 +22,13 @@ const WalletConnectButton = (props: WalletConnectType) => {
   const { address, isConnected } = useAppKitAccount()
   const { data: hash, sendTransaction } = useSendTransaction()
 
-  const { setSnackOpen, setSnackSeverity, setSnackMessage } = useSnackPresistStore((state) => state)
+  const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore(
+    useShallow((state) => ({
+      setSnackSeverity: state.setSnackSeverity,
+      setSnackMessage: state.setSnackMessage,
+      setSnackOpen: state.setSnackOpen,
+    }))
+  )
 
   const showError = (msg: string) => {
     setSnackSeverity('error')

@@ -20,6 +20,7 @@ import {
 
 import { Camera, User } from 'lucide-react'
 import { GetAbosolutePathByRelative } from '@/utils/image'
+import { useShallow } from 'zustand/react/shallow'
 
 type DialogType = {
   avatarUrl?: string
@@ -34,7 +35,13 @@ export default function EditProfileDialog(props: DialogType) {
   const [username, setUsername] = useState<string>('')
   const [bio, setBio] = useState<string>('')
 
-  const { setSnackSeverity, setSnackOpen, setSnackMessage } = useSnackPresistStore((state) => state)
+  const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore(
+    useShallow((state) => ({
+      setSnackSeverity: state.setSnackSeverity,
+      setSnackMessage: state.setSnackMessage,
+      setSnackOpen: state.setSnackOpen,
+    }))
+  )
 
   const handleClose = () => {
     props.setOpenDialog(false)

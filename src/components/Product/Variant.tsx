@@ -9,69 +9,18 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Switch } from '@/components/ui/switch'
 import { ImagePlus, Trash2, Save, Package, SlidersHorizontal } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { GetAbosolutePathByRelative } from '@/utils/image'
+import { useShallow } from 'zustand/react/shallow'
+import SwitchRow from '../Switch/SwitchRow'
+import CurrencyInput from '../Input/CurrencyInput'
 
 type Props = {
   productId: number
   options?: ProductOptionType[]
   currency: string
 }
-
-const CurrencyInput = ({
-  label,
-  desc,
-  value,
-  onChange,
-  placeholder,
-  currencyCode,
-}: {
-  label: string
-  desc?: string
-  value: string
-  onChange: (v: string) => void
-  placeholder?: string
-  currencyCode: string
-}) => (
-  <div className="flex flex-col gap-1.5">
-    <Label>{label}</Label>
-    {desc && <p className="text-xs text-muted-foreground">{desc}</p>}
-    <div className="relative">
-      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground font-medium">
-        {currencyCode}
-      </span>
-      <Input
-        type="number"
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        placeholder={placeholder}
-        className="pl-10"
-      />
-    </div>
-  </div>
-)
-
-const SwitchRow = ({
-  label,
-  desc,
-  checked,
-  onCheckedChange,
-}: {
-  label: string
-  desc?: string
-  checked: boolean
-  onCheckedChange: (v: boolean) => void
-}) => (
-  <div className="flex items-start justify-between gap-4 py-3 border-b border-dashed last:border-0">
-    <div>
-      <p className="text-sm font-medium">{label}</p>
-      {desc && <p className="text-xs text-muted-foreground mt-0.5">{desc}</p>}
-    </div>
-    <Switch checked={checked} onCheckedChange={onCheckedChange} />
-  </div>
-)
 
 const ProductVariant = (props: Props) => {
   const [currency, setCurrency] = useState('')
@@ -95,7 +44,13 @@ const ProductVariant = (props: Props) => {
   const [optionThreeValue, setOptionThreeValue] = useState('')
   const [uploading, setUploading] = useState(false)
 
-  const { setSnackSeverity, setSnackOpen, setSnackMessage } = useSnackPresistStore((state) => state)
+  const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore(
+    useShallow((state) => ({
+      setSnackSeverity: state.setSnackSeverity,
+      setSnackMessage: state.setSnackMessage,
+      setSnackOpen: state.setSnackOpen,
+    }))
+  )
 
   const showError = (msg: string) => {
     setSnackSeverity('error')
@@ -175,14 +130,14 @@ const ProductVariant = (props: Props) => {
         setImage(d.image)
         setBarcode(d.barcode)
         setCompareAtPrice(d.compare_at_price)
-        setInventoryPolicy(d.inventory_policy === 'true' ? true : false)
-        setIsVirtual(d.is_virtual === 'true' ? true : false)
+        setInventoryPolicy(d.inventory_policy === 'true')
+        setIsVirtual(d.is_virtual === 'true')
         setInventoryQuantity(d.inventory_quantity)
         setPrice(d.price)
         setPosition(d.position)
         setSku(d.sku)
         setTax(d.tax)
-        setTaxable(d.taxable === 'true' ? true : false)
+        setTaxable(d.taxable === 'true')
         setDiscounts(d.discounts)
         setTip(d.tip)
       } else {

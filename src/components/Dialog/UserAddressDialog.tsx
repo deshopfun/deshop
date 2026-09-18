@@ -22,6 +22,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { MapPin, Loader2, User, Mail, Building2, Phone } from 'lucide-react'
+import { useShallow } from 'zustand/react/shallow'
 
 type DialogType = {
   openDialog: boolean
@@ -73,7 +74,13 @@ export default function UserAddressDialog(props: DialogType) {
   const [zip, setZip] = useState('')
   const [loading, setLoading] = useState(false)
 
-  const { setSnackSeverity, setSnackOpen, setSnackMessage } = useSnackPresistStore((state) => state)
+  const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore(
+    useShallow((state) => ({
+      setSnackSeverity: state.setSnackSeverity,
+      setSnackMessage: state.setSnackMessage,
+      setSnackOpen: state.setSnackOpen,
+    }))
+  )
 
   const showError = (msg: string) => {
     setSnackSeverity('error')

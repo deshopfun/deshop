@@ -9,6 +9,7 @@ import { useSnackPresistStore, useUserPresistStore } from '@/lib'
 import { RouteType } from '@/utils/types'
 import { cn } from '@/lib/utils'
 import { CheckCircle2, XCircle, AlertCircle, Info, X } from 'lucide-react'
+import { useShallow } from 'zustand/react/shallow'
 
 const snackIcons = {
   success: { icon: CheckCircle2, className: 'text-green-500' },
@@ -19,11 +20,23 @@ const snackIcons = {
 
 const Index = () => {
   const router = useRouter()
-  const { snackOpen, snackMessage, snackSeverity, setSnackOpen } = useSnackPresistStore(
-    (state) => state
-  )
-  const { sidebarCollapsed, setSidebarCollapsed } = useUserPresistStore((state) => state)
   const [currentRoute, setCurrentRoute] = useState<RouteType>()
+
+  const { sidebarCollapsed, setSidebarCollapsed } = useUserPresistStore(
+    useShallow((state) => ({
+      sidebarCollapsed: state.sidebarCollapsed,
+      setSidebarCollapsed: state.setSidebarCollapsed,
+    }))
+  )
+
+  const { snackSeverity, snackMessage, snackOpen, setSnackOpen } = useSnackPresistStore(
+    useShallow((state) => ({
+      snackSeverity: state.snackSeverity,
+      snackMessage: state.snackMessage,
+      snackOpen: state.snackOpen,
+      setSnackOpen: state.setSnackOpen,
+    }))
+  )
 
   const handleSidebarCollapsedChange = (collapsed: boolean) => {
     setSidebarCollapsed(collapsed)

@@ -48,6 +48,7 @@ import {
 import { GetAbosolutePathByRelative } from '@/utils/image'
 import LanguageSubmenu from '../Language/LanguageSubmenu'
 import { cn } from '@/lib/utils'
+import { useShallow } from 'zustand/react/shallow'
 
 const HOW_IT_WORKS_STEPS = [
   {
@@ -91,9 +92,26 @@ const HomeHeader = () => {
   const [howItWorksOpen, setHowItWorksOpen] = useState(false)
   const [stepIndex, setStepIndex] = useState(0)
 
-  const { setSnackOpen, setSnackMessage, setSnackSeverity } = useSnackPresistStore((state) => state)
-  const { getIsLogin, resetUser } = useUserPresistStore((state) => state)
-  const { getCart } = useCartPresistStore((state) => state)
+  const { resetUser, isLogin } = useUserPresistStore(
+    useShallow((state) => ({
+      resetUser: state.resetUser,
+      isLogin: state.isLogin,
+    }))
+  )
+
+  const { cart } = useCartPresistStore(
+    useShallow((state) => ({
+      cart: state.cart,
+    }))
+  )
+
+  const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore(
+    useShallow((state) => ({
+      setSnackSeverity: state.setSnackSeverity,
+      setSnackMessage: state.setSnackMessage,
+      setSnackOpen: state.setSnackOpen,
+    }))
+  )
 
   const onClickLogout = async () => {
     resetUser()
@@ -102,7 +120,7 @@ const HomeHeader = () => {
 
   const init = async () => {
     try {
-      if (!getIsLogin?.()) return
+      if (!isLogin) return
 
       const response: any = await axios.get(Http.user_setting)
 
@@ -165,14 +183,14 @@ const HomeHeader = () => {
               >
                 <ShoppingCart className="h-6 w-6" />
               </Button>
-              {getCart().length > 0 && (
+              {cart.length > 0 && (
                 <Badge className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs bg-sky-500">
-                  {getCart().length > 99 ? '99+' : getCart().length}
+                  {cart.length > 99 ? '99+' : cart.length}
                 </Badge>
               )}
             </div>
 
-            {getIsLogin() && (
+            {isLogin && (
               <div className="relative">
                 <Button
                   variant="ghost"
@@ -202,7 +220,7 @@ const HomeHeader = () => {
               Create
             </Button>
 
-            {getIsLogin() ? (
+            {isLogin ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" className="h-11 flex items-center gap-2 px-3">
@@ -274,10 +292,14 @@ const HomeHeader = () => {
                     <DropdownMenuItem onClick={() => (window.location.href = `/support`)}>
                       Support
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => (window.location.href = `https://deshop.instatus.com`)}>
+                    <DropdownMenuItem
+                      onClick={() => (window.location.href = `https://deshop.instatus.com`)}
+                    >
                       Status
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => (window.location.href = `https://docs.deshop.space`)}>
+                    <DropdownMenuItem
+                      onClick={() => (window.location.href = `https://docs.deshop.space`)}
+                    >
                       Documentation
                     </DropdownMenuItem>
                     <DropdownMenuItem onClick={() => (window.location.href = `/support`)}>
@@ -416,12 +438,12 @@ const HomeHeader = () => {
                   className="flex-1 h-11 rounded-xl bg-sky-500 hover:bg-sky-600 text-white font-semibold"
                   onClick={() => {
                     setHowItWorksOpen(false)
-                    if (!getIsLogin()) {
+                    if (!isLogin) {
                       window.location.href = '/login'
                     }
                   }}
                 >
-                  {getIsLogin() ? 'Got it' : 'Get started'}
+                  {isLogin ? 'Got it' : 'Get started'}
                 </Button>
               ) : (
                 <Button

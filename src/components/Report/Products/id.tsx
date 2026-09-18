@@ -18,6 +18,7 @@ import { Separator } from '@/components/ui/separator'
 import { AlertTriangle, Send } from 'lucide-react'
 import { GetAbosolutePathByRelative } from '@/utils/image'
 import { useAbortableEffect } from '@/hooks/useAbortableEffect'
+import { useShallow } from 'zustand/react/shallow'
 
 const ReportProductDetails = () => {
   const router = useRouter()
@@ -27,7 +28,13 @@ const ReportProductDetails = () => {
   const [selectReport, setSelectReport] = useState<string>('')
   const [details, setDetails] = useState<string>('')
 
-  const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore((state) => state)
+  const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore(
+    useShallow((state) => ({
+      setSnackSeverity: state.setSnackSeverity,
+      setSnackMessage: state.setSnackMessage,
+      setSnackOpen: state.setSnackOpen,
+    }))
+  )
 
   const init = async (productId: any, signal?: AbortSignal) => {
     try {

@@ -19,6 +19,7 @@ import { User, Edit } from 'lucide-react'
 import { UserType } from '@/utils/types'
 import { GetAbosolutePathByRelative } from '@/utils/image'
 import WhoToFollow from './WhoToFollow'
+import { useShallow } from 'zustand/react/shallow'
 
 const ProfileDetails = () => {
   const router = useRouter()
@@ -29,8 +30,20 @@ const ProfileDetails = () => {
   const [activeTab, setActiveTab] = useState('products')
   const [openEditProfileDialog, setOpenEditProfileDialog] = useState<boolean>(false)
 
-  const { getUuid, getIsLogin } = useUserPresistStore((state) => state)
-  const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore((state) => state)
+  const { uuid, isLogin } = useUserPresistStore(
+    useShallow((state) => ({
+      uuid: state.uuid,
+      isLogin: state.isLogin,
+    }))
+  )
+
+  const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore(
+    useShallow((state) => ({
+      setSnackSeverity: state.setSnackSeverity,
+      setSnackMessage: state.setSnackMessage,
+      setSnackOpen: state.setSnackOpen,
+    }))
+  )
 
   useEffect(() => {
     if (tab) {
@@ -91,7 +104,7 @@ const ProfileDetails = () => {
     [router.isReady, id]
   )
 
-  const isOwnProfile = getUuid() === user?.profile?.uuid
+  const isOwnProfile = uuid === user?.profile?.uuid
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
@@ -176,7 +189,7 @@ const ProfileDetails = () => {
           </Tabs>
         </div>
 
-        {getIsLogin() && (
+        {isLogin && (
           <div className="lg:col-span-4">
             <WhoToFollow />
           </div>

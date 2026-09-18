@@ -6,6 +6,7 @@ import { Http } from '@/utils/http/http'
 import { useSnackPresistStore } from '@/lib'
 import { ProductType, ProfileType, SearchType } from '@/utils/types'
 import { GetAbosolutePathByRelative } from '@/utils/image'
+import { useShallow } from 'zustand/react/shallow'
 
 type Tab = 'products' | 'profiles'
 
@@ -22,7 +23,13 @@ const Search = () => {
   const q = typeof router.query.q === 'string' ? router.query.q : ''
   const initialTab: Tab = router.query.type === 'profiles' ? 'profiles' : 'products'
 
-  const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore((state) => state)
+  const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore(
+    useShallow((state) => ({
+      setSnackSeverity: state.setSnackSeverity,
+      setSnackMessage: state.setSnackMessage,
+      setSnackOpen: state.setSnackOpen,
+    }))
+  )
 
   const [inputValue, setInputValue] = useState(q)
   const [tab, setTab] = useState<Tab>(initialTab)

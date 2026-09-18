@@ -34,6 +34,7 @@ import {
 } from 'lucide-react'
 import { GetAbosolutePathByRelative } from '@/utils/image'
 import { useAbortableEffect } from '@/hooks/useAbortableEffect'
+import { useShallow } from 'zustand/react/shallow'
 
 const steps = [
   'Choose Payment Method',
@@ -77,7 +78,14 @@ const PaymentDetails = () => {
   const [changingMethod, setChangingMethod] = useState(false)
   const [manualRefreshing, setManualRefreshing] = useState(false)
   const [expired, setExpired] = useState(false)
-  const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore((state) => state)
+
+  const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore(
+    useShallow((state) => ({
+      setSnackSeverity: state.setSnackSeverity,
+      setSnackMessage: state.setSnackMessage,
+      setSnackOpen: state.setSnackOpen,
+    }))
+  )
 
   const activeStepRef = useRef(activeStep)
   useEffect(() => {

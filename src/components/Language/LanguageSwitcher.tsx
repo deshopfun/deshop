@@ -3,13 +3,21 @@ import { useEffect, useRef, useState } from 'react'
 import { Globe, Check } from 'lucide-react'
 import { LOCALES } from '@/packages/constants'
 import { useUserPresistStore } from '@/lib'
+import { useShallow } from 'zustand/react/shallow'
 
 const LanguageSwitcher = () => {
-  const { getUserLanguage, setUserLanguage } = useUserPresistStore((state) => state)
   const router = useRouter()
   const [open, setOpen] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
-  const current = getUserLanguage() ?? router.locale ?? 'en'
+
+  const { userLanguage, setUserLanguage } = useUserPresistStore(
+    useShallow((state) => ({
+      userLanguage: state.userLanguage,
+      setUserLanguage: state.setUserLanguage,
+    }))
+  )
+
+  const current = userLanguage ?? router.locale ?? 'en'
 
   useEffect(() => {
     function onClickOutside(e: MouseEvent) {

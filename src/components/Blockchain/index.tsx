@@ -14,12 +14,19 @@ import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import { ExternalLink, ChevronRight, Wallet } from 'lucide-react'
 import { useAbortableEffect } from '@/hooks/useAbortableEffect'
+import { useShallow } from 'zustand/react/shallow'
 
 const Blockchain = () => {
   const [blockchainOrder, setBlockchainOrder] = useState<BlockchainOrderType>()
   const [selectBlockchain, setSelectBlockchain] = useState<BLOCKCHAIN>(BLOCKCHAINNAMES[0])
 
-  const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore((state) => state)
+  const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore(
+    useShallow((state) => ({
+      setSnackSeverity: state.setSnackSeverity,
+      setSnackMessage: state.setSnackMessage,
+      setSnackOpen: state.setSnackOpen,
+    }))
+  )
 
   const init = async (block: BLOCKCHAIN, signal?: AbortSignal) => {
     try {

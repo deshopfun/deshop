@@ -7,6 +7,7 @@ import { Bell } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { SiteLogo } from '@/components/Logo/SiteLogo'
 import { cn } from '@/lib/utils'
+import { useShallow } from 'zustand/react/shallow'
 
 type Props = {
   collapsed?: boolean
@@ -14,16 +15,27 @@ type Props = {
 
 const SidebarHeader = ({ collapsed = false }: Props) => {
   const [notificationNumber, setNotificationNumber] = useState(0)
-  const { setSnackOpen, setSnackMessage, setSnackSeverity } = useSnackPresistStore((state) => state)
-  const { getIsLogin } = useUserPresistStore((state) => state)
 
+  const { isLogin } = useUserPresistStore(
+    useShallow((state) => ({
+      isLogin: state.isLogin,
+    }))
+  )
+
+  const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore(
+    useShallow((state) => ({
+      setSnackSeverity: state.setSnackSeverity,
+      setSnackMessage: state.setSnackMessage,
+      setSnackOpen: state.setSnackOpen,
+    }))
+  )
   const init = async () => {
     try {
-      if (!getIsLogin?.()) return
+      if (!isLogin) return
       const response: any = await axios.get(Http.user_notification)
       if (response.result) {
         const list = response.data || []
-        const count = list.filter((item: any) => item.is_read === "false").length
+        const count = list.filter((item: any) => item.is_read === 'false').length
         setNotificationNumber(count)
       } else {
         setSnackSeverity('error')
@@ -49,7 +61,7 @@ const SidebarHeader = ({ collapsed = false }: Props) => {
       >
         <SiteLogo collapsed={collapsed} />
 
-        {getIsLogin() && (
+        {isLogin && (
           <div className="relative inline-flex">
             <Button
               className="h-9 w-9 shadow-sm"

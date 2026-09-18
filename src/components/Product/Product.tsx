@@ -14,6 +14,8 @@ import { cn } from '@/lib/utils'
 import { ImagePlus, Trash2, Plus, Save, Settings, Layers, Image } from 'lucide-react'
 import { isValidHttpUrl } from '@/utils/verify'
 import { GetAbosolutePathByRelative } from '@/utils/image'
+import { useShallow } from 'zustand/react/shallow'
+import SwitchRow from '../Switch/SwitchRow'
 
 type Props = {
   productId: number
@@ -25,6 +27,7 @@ type Props = {
   description?: string
   website?: string
   video?: string
+  isPromote?: string
   options?: ProductOptionType[]
   images?: ProductImageType[]
   productStatus?: string
@@ -87,8 +90,15 @@ const Product = (props: Props) => {
   const [optionThreeValue, setOptionThreeValue] = useState('')
   const [imageList, setImageList] = useState<string[]>([])
   const [uploading, setUploading] = useState(false)
+  const [isPromote, setIsPromote] = useState(false)
 
-  const { setSnackSeverity, setSnackOpen, setSnackMessage } = useSnackPresistStore((state) => state)
+  const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore(
+    useShallow((state) => ({
+      setSnackSeverity: state.setSnackSeverity,
+      setSnackMessage: state.setSnackMessage,
+      setSnackOpen: state.setSnackOpen,
+    }))
+  )
 
   const showError = (msg: string) => {
     setSnackSeverity('error')
@@ -110,6 +120,7 @@ const Product = (props: Props) => {
     setDescription(props.description || '')
     setWebsite(props.website || '')
     setVideo(props.video || '')
+    setIsPromote(props.isPromote === 'true')
     if (props.options) {
       setOptionOne(props.options[0]?.name || '')
       setOptionOneValue(props.options[0]?.value || '')
@@ -166,6 +177,7 @@ const Product = (props: Props) => {
         vendor,
         website,
         video,
+        is_promote: isPromote ? 'true' : 'false',
       })
       if (response.result) {
         window.location.href = `/products/${lowerSlug}`
@@ -407,6 +419,15 @@ const Product = (props: Props) => {
               value={video}
               onChange={(e) => setVideo(e.target.value)}
               placeholder={'Video presentation of your product'}
+            />
+          </div>
+
+          <div className="flex flex-col">
+            <SwitchRow
+              label="Promote"
+              desc="This product is only for promotion"
+              checked={isPromote}
+              onCheckedChange={setIsPromote}
             />
           </div>
         </CardContent>

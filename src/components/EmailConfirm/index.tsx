@@ -1,49 +1,56 @@
-import { useSnackPresistStore } from '@/lib';
-import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
-import axios from '@/utils/http/axios';
-import { Http } from '@/utils/http/http';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { SiteLogo } from '@/components/Logo/SiteLogo';
-import { MailCheck, ShieldCheck, ArrowRight, Loader2 } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { useSnackPresistStore } from '@/lib'
+import { useRouter } from 'next/router'
+import { useEffect, useState } from 'react'
+import axios from '@/utils/http/axios'
+import { Http } from '@/utils/http/http'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent } from '@/components/ui/card'
+import { SiteLogo } from '@/components/Logo/SiteLogo'
+import { MailCheck, ShieldCheck, ArrowRight, Loader2 } from 'lucide-react'
+import { cn } from '@/lib/utils'
+import { useShallow } from 'zustand/react/shallow'
 
 const EmailConfirm = () => {
-  const router = useRouter();
+  const router = useRouter()
   const code = typeof router.query.code === 'string' ? router.query.code : ''
 
-  const [showLogin, setShowLogin] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [showLogin, setShowLogin] = useState(false)
+  const [loading, setLoading] = useState(false)
 
-  const { setSnackOpen, setSnackMessage, setSnackSeverity } = useSnackPresistStore((state) => state);
+  const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore(
+    useShallow((state) => ({
+      setSnackSeverity: state.setSnackSeverity,
+      setSnackMessage: state.setSnackMessage,
+      setSnackOpen: state.setSnackOpen,
+    }))
+  )
 
   const showError = (msg: string) => {
-    setSnackSeverity('error');
-    setSnackMessage(msg);
-    setSnackOpen(true);
-  };
+    setSnackSeverity('error')
+    setSnackMessage(msg)
+    setSnackOpen(true)
+  }
 
   const onClickVerify = async () => {
-    if (!code) return showError('Incorrect code input');
-    setLoading(true);
+    if (!code) return showError('Incorrect code input')
+    setLoading(true)
     try {
-      const response: any = await axios.get(Http.verify_invitation, { params: { code } });
+      const response: any = await axios.get(Http.verify_invitation, { params: { code } })
       if (response.result) {
-        setShowLogin(true);
-        setSnackSeverity('success');
-        setSnackMessage('Registration successful, please proceed to log in');
-        setSnackOpen(true);
+        setShowLogin(true)
+        setSnackSeverity('success')
+        setSnackMessage('Registration successful, please proceed to log in')
+        setSnackOpen(true)
       } else {
-        showError('Verification failed, please try again');
+        showError('Verification failed, please try again')
       }
     } catch (e) {
-      showError('Network error. Please try again later.');
-      console.error(e);
+      showError('Network error. Please try again later.')
+      console.error(e)
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-sky-50 via-white to-blue-50 flex items-center justify-center px-4">
@@ -56,7 +63,7 @@ const EmailConfirm = () => {
               'px-8 py-8 flex flex-col items-center gap-3 text-center text-white transition-all duration-500',
               showLogin
                 ? 'bg-gradient-to-br from-green-500 to-emerald-400'
-                : 'bg-gradient-to-br from-blue-600 to-sky-400',
+                : 'bg-gradient-to-br from-blue-600 to-sky-400'
             )}
           >
             <div className="h-16 w-16 rounded-full bg-white/20 flex items-center justify-center">
@@ -67,7 +74,9 @@ const EmailConfirm = () => {
               )}
             </div>
             <div>
-              <h1 className="text-xl font-bold">{showLogin ? 'Email Verified!' : 'Verify your email'}</h1>
+              <h1 className="text-xl font-bold">
+                {showLogin ? 'Email Verified!' : 'Verify your email'}
+              </h1>
               <p className="text-white/80 text-sm mt-1">
                 {showLogin
                   ? 'Your account has been created successfully'
@@ -80,8 +89,8 @@ const EmailConfirm = () => {
             {!showLogin ? (
               <>
                 <div className="bg-sky-50 rounded-xl px-4 py-3 text-sm text-sky-700">
-                  We received your registration request. Click <span className="font-semibold">Verify</span> to activate
-                  your account.
+                  We received your registration request. Click{' '}
+                  <span className="font-semibold">Verify</span> to activate your account.
                 </div>
 
                 <Button
@@ -107,7 +116,7 @@ const EmailConfirm = () => {
                 <Button
                   className="h-11 bg-sky-500 hover:bg-sky-600 text-white font-semibold gap-2"
                   onClick={() => {
-                    window.location.href = '/login';
+                    window.location.href = '/login'
                   }}
                 >
                   Go to log in
@@ -120,7 +129,7 @@ const EmailConfirm = () => {
               variant="ghost"
               className="h-10 text-muted-foreground hover:text-gray-800"
               onClick={() => {
-                window.location.href = '/';
+                window.location.href = '/'
               }}
             >
               Back to home
@@ -140,7 +149,7 @@ const EmailConfirm = () => {
         </p>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default EmailConfirm;
+export default EmailConfirm

@@ -11,6 +11,7 @@ import { Separator } from '@/components/ui/separator'
 
 import { Trash2, Heart, ShoppingCart } from 'lucide-react'
 import { GetAbosolutePathByRelative } from '@/utils/image'
+import { useShallow } from 'zustand/react/shallow'
 
 const Collect = () => {
   const [collect, setCollect] = useState<CollectType[]>([])
@@ -18,7 +19,13 @@ const Collect = () => {
   // const [collectLive, setCollectLive] = useState<CollectType[]>([]);
   // const [collectChat, setCollectChat] = useState<CollectType[]>([]);
 
-  const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore((state) => state)
+  const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore(
+    useShallow((state) => ({
+      setSnackSeverity: state.setSnackSeverity,
+      setSnackMessage: state.setSnackMessage,
+      setSnackOpen: state.setSnackOpen,
+    }))
+  )
 
   const init = async () => {
     try {
