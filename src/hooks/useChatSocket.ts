@@ -153,7 +153,6 @@ export function useChatSocket(options: UseChatSocketOptions) {
       wsRef.current?.close()
       wsRef.current = null
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [options.enabled, connect, cleanup])
 
   const send = useCallback((envelope: ClientEnvelope): boolean => {

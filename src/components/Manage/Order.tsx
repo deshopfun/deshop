@@ -483,7 +483,12 @@ import { GetAbosolutePathByRelative } from '@/utils/image'
 import { useShallow } from 'zustand/react/shallow'
 
 // 4 步流程：待支付 -> 待确认收货 -> 待最终确认 -> 完成
-const steps = ['Waiting for payment', 'Waiting for receipt confirm', 'Waiting for order confirm', 'Order complete']
+const steps = [
+  'Waiting for payment',
+  'Waiting for receipt confirm',
+  'Waiting for order confirm',
+  'Order complete',
+]
 
 // 需要按后端 constant.FinancialStatusToString 实际字符串取值调整
 const VOIDED_STATUSES = ['voided']
@@ -922,7 +927,7 @@ const ManageOrder = () => {
           />
           <ConfirmPaymentDialog
             orderId={currentOrder.order_id}
-            confirmNumber={currentOrder.payment_confirmed_number} // 字段名需要你确认
+            confirmNumber={currentOrder.payment_confirmed_number}
             transactions={currentOrder.transactions?.filter(
               (item: TransactionType) => item.transaction_model !== 'default'
             )}

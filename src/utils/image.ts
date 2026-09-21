@@ -32,6 +32,31 @@ export function GetImgSrcByProductType(type: string): string {
       return baseUrl + '/images/product/rwa.jpg'
     case PRODUCT_TYPE.PERSONAL:
       return baseUrl + '/images/product/personal.jpg'
+    case PRODUCT_TYPE.DEFI:
+      return baseUrl + '/images/product/personal.jpg'
+    case PRODUCT_TYPE.NFT:
+      return baseUrl + '/images/product/personal.jpg'
+    case PRODUCT_TYPE.DEVTOOLS:
+      return baseUrl + '/images/product/personal.jpg'
+    case PRODUCT_TYPE.PRIVACY:
+      return baseUrl + '/images/product/personal.jpg'
+    case PRODUCT_TYPE.IDENTITY:
+      return baseUrl + '/images/product/personal.jpg'
+    case PRODUCT_TYPE.DAO:
+      return baseUrl + '/images/product/personal.jpg'
+    case PRODUCT_TYPE.DATA:
+      return baseUrl + '/images/product/personal.jpg'
+    case PRODUCT_TYPE.SECURITY:
+      return baseUrl + '/images/product/personal.jpg'
+    case PRODUCT_TYPE.ANALYTICS:
+      return baseUrl + '/images/product/personal.jpg'
+    case PRODUCT_TYPE.PAYMENTS:
+      return baseUrl + '/images/product/personal.jpg'
+    case PRODUCT_TYPE.PRODUCTIVITY:
+      return baseUrl + '/images/product/personal.jpg'
+    case PRODUCT_TYPE.MEDIA:
+      return baseUrl + '/images/product/personal.jpg'
+
     // case PRODUCT_TYPE.WOMEN:
     //   return baseUrl + '/images/product/women.jpg';
     // case PRODUCT_TYPE.MEN:

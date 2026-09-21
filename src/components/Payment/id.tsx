@@ -31,6 +31,8 @@ import {
   RotateCw,
   Share2,
   Wallet,
+  XCircle,
+  Ban,
 } from 'lucide-react'
 import { GetAbosolutePathByRelative } from '@/utils/image'
 import { useAbortableEffect } from '@/hooks/useAbortableEffect'
@@ -44,24 +46,39 @@ const steps = [
   'Transaction Complete',
 ]
 
-// ---- 交易状态映射：按你后端真实枚举调整这四个值 ----
+// ---- 交易状态映射：按你后端真实枚举调整这几个值 ----
 // PENDING：用户还没付款 / 没有 tx hash
 // CONFIRMING：链上已经检测到交易，但确认数还不够｜交易进行中，等待双边确认交易配对
-// COMPLETED：确认数够了，订单完成｜双方确认交易成功，进行产品交付确认环节
+// SUCCESS：确认数够了，订单完成｜双方确认交易成功，进行产品交付确认环节
+// FAILED：交易失败或出错，需要和成功严格区分，不能和 success 合并映射到同一个终态
 const PENDING_TX_STATUS = 'pending'
-const CONFIRMING_TX_STATUS = 'pending blockchain' // TODO: 换成真实的"链上确认中"状态码
-const COMPLETED_TX_STATUSES = new Set(['success', 'failure', 'error'])
+const CONFIRMING_TX_STATUS = 'pending blockchain'
+const SUCCESS_TX_STATUS = 'success'
+const FAILED_TX_STATUSES = new Set(['failure', 'error'])
 
 // success failure pending error
 
+// 需要按后端 constant.FinancialStatusToString 实际字符串取值调整
+const VOIDED_STATUSES = ['voided']
+const REFUNDED_STATUSES = ['refunded', 'partially_refunded']
+
 const POLL_INTERVAL_MS = 10000
+
+// step: 0-3 沿用原有四步；FAILED_STEP 表示"支付失败"这个独立终态，
+// 不能再和 3（成功）合并，否则失败交易会被展示成"支付成功"
+const FAILED_STEP = -1
 
 function statusToStep(status: string | undefined): number {
   if (status === undefined) return 0
-  if (COMPLETED_TX_STATUSES.has(status)) return 3
+  if (status === SUCCESS_TX_STATUS) return 3
+  if (FAILED_TX_STATUSES.has(status)) return FAILED_STEP
   if (status === CONFIRMING_TX_STATUS) return 2
   if (status === PENDING_TX_STATUS) return 1
   return 0
+}
+
+function isTerminalStep(step: number) {
+  return step === 3 || step === FAILED_STEP
 }
 
 const PaymentDetails = () => {
@@ -70,6 +87,7 @@ const PaymentDetails = () => {
 
   const [activeStep, setActiveStep] = useState(0)
   const [order, setOrder] = useState<any>()
+  const [orderClosed, setOrderClosed] = useState(false)
   const [loadError, setLoadError] = useState(false)
   const [blockchains, setBlockchains] = useState<BLOCKCHAIN[]>([])
   const [expandedChain, setExpandedChain] = useState<string | null>(null)
@@ -119,12 +137,21 @@ const PaymentDetails = () => {
         setBlockchains(newBlockchains)
         setOrder(response.data)
 
-        const tx =
-          response.data.transactions?.find((item: TransactionType) => item.select === 'true') ??
-          response.data.transactions?.find(
-            (item: TransactionType) => item.transaction_model === 'default'
-          )
-        setActiveStep(statusToStep(tx?.transaction_status))
+        // 订单已经被取消/退款：不管交易走到哪一步，都不应该继续展示支付流程，
+        // 防止用户在一个已作废的订单上继续转账
+        const closed =
+          VOIDED_STATUSES.includes(response.data.financial_status) ||
+          REFUNDED_STATUSES.includes(response.data.financial_status)
+        setOrderClosed(closed)
+
+        if (!closed) {
+          const tx =
+            response.data.transactions?.find((item: TransactionType) => item.select === 'true') ??
+            response.data.transactions?.find(
+              (item: TransactionType) => item.transaction_model === 'default'
+            )
+          setActiveStep(statusToStep(tx?.transaction_status))
+        }
       } else {
         setLoadError(true)
         setSnackSeverity('error')
@@ -149,7 +176,8 @@ const PaymentDetails = () => {
       init(id, signal)
 
       const interval = setInterval(() => {
-        if (activeStepRef.current === 3) {
+        // 成功和失败都是终态，都要停止轮询，不能只判断 === 3
+        if (isTerminalStep(activeStepRef.current)) {
           clearInterval(interval)
           return
         }
@@ -227,7 +255,11 @@ const PaymentDetails = () => {
   }
 
   const onClickChangeMethod = async () => {
-    if (!order?.transactions?.[0]) {
+    const currentTx =
+      order?.transactions?.find((item: TransactionType) => item.select === 'true') ??
+      order?.transactions?.find((item: TransactionType) => item.transaction_model === 'default')
+
+    if (!currentTx) {
       setActiveStep(0)
       return
     }
@@ -236,7 +268,7 @@ const PaymentDetails = () => {
     try {
       // await axios.post(Http.transaction_cancel, {
       //   order_id: order.order_id,
-      //   transaction_id: order.transactions[0].id,
+      //   transaction_id: currentTx.transaction_id,
       // })
     } catch (e) {
       console.error('failed to cancel pending transaction', e)
@@ -300,15 +332,19 @@ const PaymentDetails = () => {
   const currencySymbol = order.currency || 'USD'
   const currencyCode = CURRENCYS.find((c) => c.name === currencySymbol)?.code ?? ''
   const transactions: any[] = order.transactions ?? []
-  const tx = transactions[0]
+  const tx =
+    transactions?.find((item: TransactionType) => item.select === 'true') ??
+    transactions?.find((item: TransactionType) => item.transaction_model === 'default')
 
-  const chainName = tx ? FindChainNamesByChainids(tx.blockchain.chain_id) : ''
-  const token = tx
-    ? FindTokenByChainIdsAndSymbol(tx.blockchain.chain_id as CHAINIDS, tx.blockchain.token as COINS)
-    : undefined
+  const chainName = tx?.blockchain ? FindChainNamesByChainids(tx.blockchain.chain_id) : ''
+  const token =
+    tx?.blockchain && tx.blockchain.address
+      ? FindTokenByChainIdsAndSymbol(tx.blockchain.chain_id as CHAINIDS, tx.blockchain.token as COINS)
+      : undefined
 
   const getPaymentLink = () => {
-    if (!tx) return ''
+    // 交易记录或链上地址缺失时不要生成一个残缺的支付链接
+    if (!tx?.blockchain?.address) return ''
     const base = `${chainName}:${tx.blockchain.address}`
 
     if (token?.isMainCoin) {
@@ -316,6 +352,22 @@ const PaymentDetails = () => {
     }
 
     return `${base}?` + `token=${token?.contractAddress}&` + `amount=${tx.blockchain.crypto_amount}`
+  }
+
+  // 订单已取消/退款：无论交易走到哪一步，都直接拦住支付流程
+  if (orderClosed) {
+    return (
+      <div className="max-w-2xl mx-auto text-center py-20">
+        <div className="w-20 h-20 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-6">
+          <Ban className="w-10 h-10 text-gray-400" />
+        </div>
+        <h2 className="text-2xl font-bold mb-2">This order is no longer available for payment</h2>
+        <p className="text-muted-foreground">
+          The order has been cancelled or refunded. Please contact support if you believe this is a
+          mistake.
+        </p>
+      </div>
+    )
   }
 
   return (
@@ -326,7 +378,13 @@ const PaymentDetails = () => {
             <div key={index} className="flex items-center">
               <div
                 className={`w-8 h-8 rounded-full flex items-center justify-center border-2 
-                ${activeStep >= index ? 'bg-primary border-primary text-white' : 'border-muted'}`}
+                ${
+                  activeStep === FAILED_STEP
+                    ? 'border-red-200 text-red-400'
+                    : activeStep >= index
+                      ? 'bg-primary border-primary text-white'
+                      : 'border-muted'
+                }`}
               >
                 {index + 1}
               </div>
@@ -694,6 +752,51 @@ const PaymentDetails = () => {
           <Button variant="ghost" className="mt-6" onClick={onShare}>
             <Share2 className="w-4 h-4 mr-1" />
             Share this payment
+          </Button>
+        </div>
+      )}
+
+      {activeStep === FAILED_STEP && tx && (
+        <div className="max-w-2xl mx-auto text-center py-12">
+          <div className="w-20 h-20 rounded-full bg-red-50 flex items-center justify-center mx-auto mb-6">
+            <XCircle className="w-10 h-10 text-red-500" />
+          </div>
+          <h2 className="text-3xl font-bold mb-2">Payment failed</h2>
+          <p className="text-muted-foreground mb-8">
+            {tx.message || 'This transaction could not be completed. Please try again.'}
+          </p>
+
+          <Card className="text-left">
+            <CardContent className="p-8 space-y-5">
+              <div className="flex justify-between text-sm">
+                <span>Amount</span>
+                <span>
+                  {tx.blockchain?.crypto_amount} {tx.blockchain?.token}
+                </span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span>Blockchain</span>
+                <span>{chainName}</span>
+              </div>
+              {tx.blockchain?.hash && (
+                <div className="flex justify-between text-sm items-center">
+                  <span>Transaction Hash</span>
+                  <a
+                    href={GetBlockchainTxUrlByChainIds(tx.blockchain.chain_id, tx.blockchain.hash)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-600 hover:underline inline-flex items-center gap-1"
+                  >
+                    {OmitMiddleString(tx.blockchain.hash)}
+                    <ExternalLink className="w-3 h-3" />
+                  </a>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          <Button className="mt-6" onClick={onClickChangeMethod} disabled={changingMethod}>
+            {changingMethod ? 'Switching...' : 'Try a different payment method'}
           </Button>
         </div>
       )}

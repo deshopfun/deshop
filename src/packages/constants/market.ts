@@ -25,6 +25,18 @@ export const PRODUCT_TYPE = {
   SOCIAL: 'Social',
   RWA: 'RWA',
   PERSONAL: 'Personal',
+  DEFI: 'DeFi',
+  NFT: 'NFT',
+  DEVTOOLS: 'Developer Tools',
+  PRIVACY: 'Privacy',
+  IDENTITY: 'Identity',
+  DAO: 'DAO',
+  DATA: 'Data',
+  SECURITY: 'Security',
+  ANALYTICS: 'Analytics',
+  PAYMENTS: 'Payments',
+  PRODUCTIVITY: 'Productivity',
+  MEDIA: 'Media',
 }
 
 export const COLLECT_TYPE = {
