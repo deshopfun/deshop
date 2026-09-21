@@ -33,6 +33,8 @@ import {
   Store,
   ChevronRight,
   ChevronLeft,
+  FilePenLine,
+  Diamond,
 } from 'lucide-react'
 import {
   AlertDialog,
@@ -265,8 +267,16 @@ const HomeHeader = () => {
                         window.location.href = `/manage/${username}?tab=products`
                       }}
                     >
-                      <Package className="mr-2 h-4 w-4" />
+                      <Diamond className="mr-2 h-4 w-4" />
                       Products
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={() => {
+                        window.location.href = `/manage/${username}?tab=orders`
+                      }}
+                    >
+                      <FilePenLine className="mr-2 h-4 w-4" />
+                      Orders
                     </DropdownMenuItem>
                     <DropdownMenuItem
                       onClick={() => {

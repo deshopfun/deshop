@@ -166,12 +166,14 @@ export type OrderType = {
   total_tip: string
   // total_shipping: string;
   currency: string
+  cancel_reason: string
+  cancel_reason_type: string
   confirmed: string
   confirmed_number: string
   payment_confirmed: string
   payment_confirmed_number: string
-  // shipping_confirmed: string;
-  // shipping_confirmed_number: string;
+  shipping_confirmed: string
+  shipping_confirmed_number: string;
   financial_status: string
   process_time: number
   create_time: number
@@ -180,7 +182,7 @@ export type OrderType = {
   ratings: RatingType[]
   wallets: WalletType[]
   transactions: TransactionType[]
-  // shipping: AddressType;
+  shipping: AddressType;
   detect_transaction: string
 }
 
@@ -210,6 +212,7 @@ export type TransactionType = {
   message: string
   source_name: string
   transaction_status: string
+  transaction_model: string
   blockchain: BlockchainType
 }
 

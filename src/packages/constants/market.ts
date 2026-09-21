@@ -178,3 +178,22 @@ export const CHAT_MESSAGE_STATUS = {
   DELETE: 'delete',
   FAILED: 'failed',
 }
+
+export const FINANCIAL_STATUS = {
+  PAID: 'paid',
+  PENDING: 'pending',
+  AUTHORIZED: 'authorized',
+  PARTIALLY_PAID: 'partially_paid',
+  PARTIALLY_REFUNDED: 'partially_refunded',
+  REFUNDED: 'refunded',
+  VOIDED: 'voided',
+}
+
+export const CANCEL_REASON_TYPE = {
+  MERCHANT: 'merchant',
+  CUSTOMER: 'customer',
+  FRAUD: 'fraud',
+  INVENTORY: 'inventory',
+  PAYMENT_TIMEOUT: 'payment_timeout',
+  OTHER: 'other',
+}

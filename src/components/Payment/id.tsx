@@ -35,6 +35,7 @@ import {
 import { GetAbosolutePathByRelative } from '@/utils/image'
 import { useAbortableEffect } from '@/hooks/useAbortableEffect'
 import { useShallow } from 'zustand/react/shallow'
+import { TransactionType } from '@/utils/types'
 
 const steps = [
   'Choose Payment Method',
@@ -118,8 +119,12 @@ const PaymentDetails = () => {
         setBlockchains(newBlockchains)
         setOrder(response.data)
 
-        const status = response.data.transactions?.[0]?.transaction_status
-        setActiveStep(statusToStep(status))
+        const tx =
+          response.data.transactions?.find((item: TransactionType) => item.select === 'true') ??
+          response.data.transactions?.find(
+            (item: TransactionType) => item.transaction_model === 'default'
+          )
+        setActiveStep(statusToStep(tx?.transaction_status))
       } else {
         setLoadError(true)
         setSnackSeverity('error')

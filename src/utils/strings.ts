@@ -1,3 +1,4 @@
+import { CANCEL_REASON_TYPE, FINANCIAL_STATUS } from '@/packages/constants'
 import { generate } from 'random-words'
 import { Hex } from 'viem'
 
@@ -123,38 +124,114 @@ export function FormatNumberToEnglish(num: number, decimals: number = 1): string
   return `${sign}${absNum.toFixed(decimals)}`
 }
 
+export type Alignment = 'buy' | 'sell'
+
 export function OrderStatusText(
-  alignment: 'buy' | 'sell',
-  payment_confirm: boolean,
-  // shipping_confirm: boolean,
-  confirm: boolean
-  // shipping_type: number,
+  alignment: Alignment,
+  financialStatus: string,
+  paymentConfirm: boolean,
+  shippingConfirm: boolean,
+  confirm: boolean,
+  cancelReasonType?: string
 ): string {
-  if (!payment_confirm) {
-    return alignment === 'buy' ? 'To be paid' : 'Waiting for payment by buyers'
+  if (financialStatus === FINANCIAL_STATUS.VOIDED) {
+    return getVoidedText(alignment, cancelReasonType)
+  }
+  if (financialStatus === FINANCIAL_STATUS.REFUNDED) {
+    return 'Order refunded'
   }
 
-  // if (!shipping_confirm) {
-  //   if (shipping_type === 1) {
-  //     return alignment === 'buy' ? 'Goods to be received' : 'Waiting for delivery';
-  //   }
-  //   return alignment === 'buy' ? 'To be picked up' : 'Waiting for buyers to pick up';
-  // }
+  if (!paymentConfirm) {
+    return alignment === 'buy'
+      ? 'Waiting for seller to confirm payment'
+      : 'Please confirm you received payment'
+  }
 
-  return confirm ? 'Order successful' : 'Waiting for order to be confirmed'
+  if (!shippingConfirm) {
+    return alignment === 'buy'
+      ? 'Please confirm you received the goods'
+      : 'Waiting for buyer to confirm receipt'
+  }
+
+  if (!confirm) {
+    return alignment === 'buy'
+      ? 'Waiting for seller to complete the order'
+      : 'Please confirm to complete the order'
+  }
+
+  return 'Order successful'
 }
 
+function getVoidedText(alignment: Alignment, cancelReasonType?: string): string {
+  switch (cancelReasonType) {
+    case CANCEL_REASON_TYPE.PAYMENT_TIMEOUT:
+      return alignment === 'buy'
+        ? 'Order cancelled (payment timeout)'
+        : 'Order cancelled: buyer did not pay in time'
+    case CANCEL_REASON_TYPE.CUSTOMER:
+      return 'Order cancelled by buyer'
+    default:
+      return 'Order cancelled'
+  }
+}
+
+// export function OrderStatusText(
+//   alignment: 'buy' | 'sell',
+//   payment_confirm: boolean,
+//   // shipping_confirm: boolean,
+//   confirm: boolean
+//   // shipping_type: number,
+// ): string {
+//   if (!payment_confirm) {
+//     return alignment === 'buy' ? 'To be paid' : 'Waiting for payment by buyers'
+//   }
+
+//   // if (!shipping_confirm) {
+//   //   if (shipping_type === 1) {
+//   //     return alignment === 'buy' ? 'Goods to be received' : 'Waiting for delivery';
+//   //   }
+//   //   return alignment === 'buy' ? 'To be picked up' : 'Waiting for buyers to pick up';
+//   // }
+
+//   return confirm ? 'Order successful' : 'Waiting for order to be confirmed'
+// }
+
 export function OrderShippingStatusText(
-  alignment: 'buy' | 'sell',
-  shipping_confirm: boolean,
-  shipping_type: number
+  alignment: Alignment,
+  financialStatus: string,
+  shippingConfirm: boolean,
+  shippingType: number
 ): string {
-  if (!shipping_confirm) {
-    if (shipping_type === 1) {
+  // 未付款或已取消/退款的订单，不显示发货相关状态
+  if (
+    financialStatus === FINANCIAL_STATUS.PENDING ||
+    financialStatus === FINANCIAL_STATUS.VOIDED ||
+    financialStatus === FINANCIAL_STATUS.REFUNDED
+  ) {
+    return ''
+  }
+
+  if (!shippingConfirm) {
+    if (shippingType === 1) {
       return alignment === 'buy' ? 'Goods to be received' : 'Waiting for delivery'
     }
     return alignment === 'buy' ? 'To be picked up' : 'Waiting for buyers to pick up'
-  } else {
-    return 'Shipping transaction successful'
   }
+
+  return 'Shipping transaction successful'
 }
+
+// export function OrderShippingStatusText(
+//   alignment: 'buy' | 'sell',
+//   shipping_confirm: boolean,
+//   shipping_type: number
+// ): string {
+//   if (!shipping_confirm) {
+//     if (shipping_type === 1) {
+//       return alignment === 'buy' ? 'Goods to be received' : 'Waiting for delivery'
+//     }
+//     return alignment === 'buy' ? 'To be picked up' : 'Waiting for buyers to pick up'
+//   } else {
+//     return 'Shipping transaction successful'
+//   }
+// }
