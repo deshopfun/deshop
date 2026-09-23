@@ -24,7 +24,7 @@ const Home = () => {
         </div>
       </div> */}
 
-      <div className="mt-8">
+      <div className="mt-4">
         <div className="flex items-center">
           <p className="text-2xl font-bold" color={'textPrimary'}>
             All markets

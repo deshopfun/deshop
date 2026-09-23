@@ -25,6 +25,7 @@ import Support from '@/components/Support'
 import { RouteType } from '@/utils/types'
 import Search from '@/components/Search'
 import StoryDetails from '@/components/Story/id'
+import Welcome from '../Welcome'
 
 export const routes: RouteType[] = [
   {
@@ -33,6 +34,16 @@ export const routes: RouteType[] = [
     title: 'Home',
     component: <Home />,
     enableSidebar: true,
+    enableHomeHeader: true,
+    enableHomeFooter: true,
+    needLogin: false,
+  },
+  {
+    path: '/welcome',
+    name: 'Welcome',
+    title: 'Welcome',
+    component: <Welcome />,
+    enableSidebar: false,
     enableHomeHeader: true,
     enableHomeFooter: true,
     needLogin: false,

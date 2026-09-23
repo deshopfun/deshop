@@ -76,7 +76,7 @@ const HomeFooter = () => {
               </div>
               <span className="text-xl font-bold text-gray-900 tracking-wide">DESHOP</span>
             </Link>
-            <p className="mt-2 text-sm text-gray-500">Decentralized Digital Exchange Platform</p>
+            <p className="mt-2 text-sm text-gray-500">Decentralized open source product display and trading platform</p>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-8">

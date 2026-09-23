@@ -158,20 +158,26 @@ const Recommended = ({ productType, excludeId, pageSize = PAGE_SIZE_DEFAULT }: P
             <CardContent className="p-3 flex flex-col gap-1">
               <p className="font-semibold text-sm line-clamp-2">{item.title}</p>
 
-              {item.variants && item.variants.length > 0 && (
+              {item.is_promote === 'true' ? (
                 <>
-                  <p className="text-xs text-muted-foreground line-clamp-1">
-                    {item.variants[0].option}
-                  </p>
-                  <div className="flex items-center justify-between mt-1 gap-2">
-                    <p className="font-bold text-red-500 text-base">
-                      {CURRENCYS.find((c) => c.name === item.currency)?.code}
-                      {item.variants[0].price}
-                    </p>
-                    <p className="text-xs text-muted-foreground shrink-0">
-                      {item.variants[0].inventory_quantity} in stock
-                    </p>
-                  </div>
+                  <p className="text-muted-foreground text-sm line-clamp-3">{item.body_html}</p>
+                </>
+              ) : (
+                <>
+                  {item.variants && item.variants.length > 0 && (
+                    <>
+                      <p className="text-xs text-muted-foreground">{item.variants[0].option}</p>
+                      <div className="flex items-center justify-between mt-1">
+                        <p className="font-bold text-red-500 text-base">
+                          {CURRENCYS.find((c) => c.name === item.currency)?.code}
+                          {item.variants[0].price}
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          {item.variants[0].inventory_quantity} in stock
+                        </p>
+                      </div>
+                    </>
+                  )}
                 </>
               )}
             </CardContent>

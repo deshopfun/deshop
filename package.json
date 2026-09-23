@@ -2,7 +2,7 @@
   "name": "deshop",
   "version": "0.1.0",
   "license": "MIT",
-  "description": "Decentralized Digital Exchange Platform",
+  "description": "Decentralized open source product display and trading platform",
   "private": true,
   "type": "module",
   "scripts": {

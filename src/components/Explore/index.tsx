@@ -148,7 +148,7 @@ const Explore = () => {
         </div>
 
         {products.length > 0 ? (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
             {products.map((item, index) => {
               const firstVariant = item.variants?.[0]
 
@@ -160,33 +160,48 @@ const Explore = () => {
                     window.location.href = `/products/${item.slug || item.product_id}`
                   }}
                 >
-                  <div className="aspect-[4/3] relative bg-muted">
+                  <div className="relative w-full h-48 overflow-hidden bg-[#F1F3F7]">
                     <img
-                      src={GetAbosolutePathByRelative(item.images?.[0]?.src, 'avatar')}
+                      src={GetAbosolutePathByRelative(item.images?.[0]?.src)}
+                      alt="img"
+                      aria-hidden="true"
+                      className="absolute inset-0 h-full w-full scale-110 object-cover blur-xl opacity-60"
+                    />
+                    <img
+                      src={GetAbosolutePathByRelative(item.images?.[0]?.src)}
                       alt={item.title}
-                      className="w-full h-full object-cover transition-transform hover:scale-105"
-                      loading="lazy"
+                      className="relative h-full w-full object-contain"
                     />
                   </div>
 
                   <CardContent className="p-4 space-y-3">
-                    <h3 className="font-semibold line-clamp-2 leading-tight">{item.title}</h3>
+                    <p className="font-semibold text-sm line-clamp-2">{item.title}</p>
 
-                    {firstVariant && (
-                      <div>
-                        <p className="text-sm text-muted-foreground line-clamp-1">
-                          {firstVariant.option}
+                    {item.is_promote === 'true' ? (
+                      <>
+                        <p className="text-muted-foreground text-sm line-clamp-3">
+                          {item.body_html}
                         </p>
-                        <div className="flex items-center justify-between mt-2">
-                          <p className="text-xl font-bold text-primary">
-                            {CURRENCYS.find((c) => c.name === item.currency)?.code}
-                            {firstVariant.price}
-                          </p>
-                          <p className="text-xs text-muted-foreground">
-                            {firstVariant.inventory_quantity} in stock
-                          </p>
-                        </div>
-                      </div>
+                      </>
+                    ) : (
+                      <>
+                        {item.variants && item.variants.length > 0 && (
+                          <>
+                            <p className="text-xs text-muted-foreground">
+                              {item.variants[0].option}
+                            </p>
+                            <div className="flex items-center justify-between mt-1">
+                              <p className="font-bold text-red-500 text-base">
+                                {CURRENCYS.find((c) => c.name === item.currency)?.code}
+                                {item.variants[0].price}
+                              </p>
+                              <p className="text-xs text-muted-foreground">
+                                {item.variants[0].inventory_quantity} in stock
+                              </p>
+                            </div>
+                          </>
+                        )}
+                      </>
                     )}
                   </CardContent>
                 </Card>

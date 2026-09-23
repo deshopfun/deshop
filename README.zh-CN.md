@@ -2,7 +2,7 @@
 
 # DeShop
 
-**去中心化数字资产交易平台 · Decentralized Digital Exchange Platform**
+**去中心化的开源产品展示与交易平台 · Decentralized open source product display and trading platform**
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 [![Next.js](https://img.shields.io/badge/Next.js-16-black?logo=next.js)](https://nextjs.org/)
@@ -17,7 +17,7 @@
 
 ## 📖 简介
 
-**DeShop** 是一个基于 Web3 的去中心化数字资产交易平台，用户无需依赖中心化机构托管资金，即可通过自己的钱包直接完成资产的连接、查看与交易。项目原生支持多条主流公链，前端使用 Next.js 16 + React 19 构建，界面基于 Tailwind CSS 4 与 shadcn/ui 组件库，提供流畅、现代的交互体验。
+**DeShop** 是一个基于 Web3 的去中心化的开源产品展示与交易平台，用户无需依赖中心化机构托管资金，即可通过自己的钱包直接完成资产的连接、查看与交易。项目原生支持多条主流公链，前端使用 Next.js 16 + React 19 构建，界面基于 Tailwind CSS 4 与 shadcn/ui 组件库，提供流畅、现代的交互体验。
 
 线上体验地址：**[deshop.space](https://deshop.space)**
 

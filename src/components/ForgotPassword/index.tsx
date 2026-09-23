@@ -45,7 +45,7 @@ const ForgotPassword = () => {
           <div>
             <h1 className="text-2xl font-extrabold text-gray-900">Welcome to Deshop</h1>
             <p className="text-sm text-muted-foreground mt-1">
-              Decentralized digital exchange platform
+              Decentralized open source product display and trading platform
             </p>
           </div>
         </div>

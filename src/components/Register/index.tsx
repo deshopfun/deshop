@@ -96,8 +96,9 @@ const Register = () => {
                 </span>
               </h1>
               <p className="text-muted-foreground mt-3 text-sm leading-relaxed">
-                Deshop is a decentralized digital exchange platform where anyone can list products,
-                anyone can purchase products, with no third-party constraints.
+                Deshop is a Decentralized open source product display and trading platform where
+                anyone can list products, anyone can purchase products, with no third-party
+                constraints.
               </p>
             </div>
           </div>

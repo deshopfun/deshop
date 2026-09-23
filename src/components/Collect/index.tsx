@@ -108,7 +108,7 @@ const Collect = () => {
         </div>
 
         {collectProduct.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {collectProduct.map((item, index) => (
               <Card
                 key={index}
@@ -132,12 +132,10 @@ const Collect = () => {
                 </div>
 
                 <CardContent className="p-4 space-y-3">
-                  <h3 className="font-semibold text-sm leading-snug line-clamp-2 min-h-[2.5rem]">
-                    {item.title}
-                  </h3>
-
+                  <p className="font-semibold text-sm line-clamp-2">{item.title}</p>
+                  <p className="text-muted-foreground text-sm line-clamp-3">{item.description}</p>
                   <Button
-                    className="w-full"
+                    className="w-full mt-2"
                     size="sm"
                     onClick={() => {
                       window.location.href = `/products/${item.slug || item.bind_id}`

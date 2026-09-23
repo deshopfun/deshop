@@ -93,8 +93,8 @@ const AllMarket = (props: Props) => {
 
   return (
     <div>
-      <div className="mb-6 overflow-x-auto scrollbar-hide">
-        <div className="flex items-center gap-2 pb-1 min-w-max">
+      <div className="mb-6">
+        <div className="flex flex-wrap items-center gap-2">
           {categories.map(([key, value]) => {
             const isActive = currentProductType === value
 
@@ -103,13 +103,13 @@ const AllMarket = (props: Props) => {
                 key={key}
                 onClick={() => handleCategoryClick(value)}
                 className={`
-                  px-4 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-all
-                  ${
-                    isActive
-                      ? 'bg-blue-600 text-white shadow-sm'
-                      : 'bg-muted text-muted-foreground hover:bg-muted/80 hover:text-foreground'
-                  }
-                `}
+            px-4 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-all
+            ${
+              isActive
+                ? 'bg-blue-600 text-white shadow-sm'
+                : 'bg-muted text-muted-foreground hover:bg-muted/80 hover:text-foreground'
+            }
+          `}
               >
                 {value === 'ALL' ? 'All' : value}
               </button>
@@ -133,11 +133,17 @@ const AllMarket = (props: Props) => {
                   window.location.href = `/products/${item.slug || item.product_id}`
                 }}
               >
-                <div className="relative">
+                <div className="relative w-full h-48 overflow-hidden bg-[#F1F3F7]">
+                  <img
+                    src={GetAbosolutePathByRelative(item.images?.[0]?.src)}
+                    alt="img"
+                    aria-hidden="true"
+                    className="absolute inset-0 h-full w-full scale-110 object-cover blur-xl opacity-60"
+                  />
                   <img
                     src={GetAbosolutePathByRelative(item.images?.[0]?.src)}
                     alt={item.title}
-                    className="w-full h-48 object-cover"
+                    className="relative h-full w-full object-contain"
                   />
                 </div>
 
