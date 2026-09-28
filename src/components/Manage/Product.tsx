@@ -10,6 +10,7 @@ import { Package, Plus, ExternalLink } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { GetAbosolutePathByRelative } from '@/utils/image'
 import { useShallow } from 'zustand/react/shallow'
+import Link from 'next/link'
 
 const statusConfig: Record<string, { label: string; className: string }> = {
   active: { label: 'Active', className: 'bg-green-100 text-green-700 border-green-200' },
@@ -72,66 +73,66 @@ const ManageProduct = () => {
           {products.map((item, index) => {
             const status = statusConfig[item.product_status ?? 'draft']
             return (
-              <Card
-                key={index}
-                className="cursor-pointer hover:shadow-md hover:-translate-y-1 transition-all duration-200 overflow-hidden group"
-                onClick={() => {
-                  window.location.href = `/products/${item.slug || item.product_id}`
-                }}
+              <Link
+                key={item.product_id ?? index}
+                href={`/products/${item.slug || item.product_id}`}
+                className="block"
               >
-                <div className="relative overflow-hidden">
-                  <img
-                    src={GetAbosolutePathByRelative(item.images?.[0]?.src)}
-                    alt={item.title}
-                    className="w-full h-44 object-cover group-hover:scale-105 transition-transform duration-300"
-                  />
-                  <div className="absolute top-2 right-2">
-                    <span
-                      className={cn(
-                        'text-xs font-semibold px-2 py-1 rounded-full border',
-                        status.className
-                      )}
-                    >
-                      {status.label}
-                    </span>
-                  </div>
-                </div>
-
-                <CardContent className="p-4 flex flex-col gap-2">
-                  <div className="flex items-start justify-between gap-2">
-                    <p className="font-semibold text-sm line-clamp-1 flex-1">{item.title}</p>
-                    <Badge className="bg-sky-100 text-sky-700 border-sky-200 text-xs shrink-0">
-                      {item.product_type}
-                    </Badge>
-                  </div>
-
-                  {item.tags && (
-                    <div className="flex flex-wrap gap-1">
-                      {item.tags
-                        .split(',')
-                        .slice(0, 3)
-                        .map((tag, i) => (
-                          <span
-                            key={i}
-                            className="text-xs px-2 py-0.5 bg-gray-100 text-gray-500 rounded-full"
-                          >
-                            {tag.trim()}
-                          </span>
-                        ))}
-                      {item.tags.split(',').length > 3 && (
-                        <span className="text-xs px-2 py-0.5 bg-gray-100 text-gray-400 rounded-full">
-                          +{item.tags.split(',').length - 3}
-                        </span>
-                      )}
+                <Card className="h-full hover:shadow-md hover:-translate-y-1 transition-all duration-200 overflow-hidden group">
+                  <div className="relative overflow-hidden">
+                    <img
+                      src={GetAbosolutePathByRelative(item.images?.[0]?.src)}
+                      alt={item.title}
+                      className="w-full h-44 object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
+                    <div className="absolute top-2 right-2">
+                      <span
+                        className={cn(
+                          'text-xs font-semibold px-2 py-1 rounded-full border',
+                          status.className
+                        )}
+                      >
+                        {status.label}
+                      </span>
                     </div>
-                  )}
-
-                  <div className="flex items-center gap-1 text-xs text-sky-500 mt-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <ExternalLink className="h-3 w-3" />
-                    View product
                   </div>
-                </CardContent>
-              </Card>
+
+                  <CardContent className="p-4 flex flex-col gap-2">
+                    <div className="flex items-start justify-between gap-2">
+                      <p className="font-semibold text-sm line-clamp-1 flex-1">{item.title}</p>
+                      <Badge className="bg-sky-100 text-sky-700 border-sky-200 text-xs shrink-0">
+                        {item.product_type}
+                      </Badge>
+                    </div>
+
+                    {item.tags && (
+                      <div className="flex flex-wrap gap-1">
+                        {item.tags
+                          .split(',')
+                          .slice(0, 3)
+                          .map((tag, i) => (
+                            <span
+                              key={i}
+                              className="text-xs px-2 py-0.5 bg-gray-100 text-gray-500 rounded-full"
+                            >
+                              {tag.trim()}
+                            </span>
+                          ))}
+                        {item.tags.split(',').length > 3 && (
+                          <span className="text-xs px-2 py-0.5 bg-gray-100 text-gray-400 rounded-full">
+                            +{item.tags.split(',').length - 3}
+                          </span>
+                        )}
+                      </div>
+                    )}
+
+                    <div className="flex items-center gap-1 text-xs text-sky-500 mt-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <ExternalLink className="h-3 w-3" />
+                      View product
+                    </div>
+                  </CardContent>
+                </Card>
+              </Link>
             )
           })}
         </div>

@@ -4,6 +4,7 @@ import { GetAbosolutePathByRelative } from '@/utils/image'
 import { CURRENCYS } from '@/packages/constants'
 import { PackageOpen } from 'lucide-react'
 import { Badge } from '../ui/badge'
+import Link from 'next/link'
 
 type Props = {
   uuid?: string
@@ -18,56 +19,58 @@ const ProfileProduct = ({ products }: Props) => {
       {products && products.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {products.map((item, index) => (
-            <Card
-              key={index}
-              className="overflow-hidden cursor-pointer hover:shadow-xl transition-all duration-200 hover:-translate-y-0.5"
-              onClick={() => {
-                window.location.href = `/products/${item.slug || item.product_id}`
-              }}
+            <Link
+              key={item.product_id ?? index}
+              href={`/products/${item.slug || item.product_id}`}
+              className="block"
             >
-              {item.images?.[0]?.src && (
-                <div className="aspect-video relative overflow-hidden bg-muted">
-                  <img
-                    src={GetAbosolutePathByRelative(item.images[0].src)}
-                    alt={item.title}
-                    className="w-full h-full object-cover transition-transform hover:scale-105 duration-300"
-                    loading="lazy"
-                  />
-                </div>
-              )}
-
-              <CardContent className="p-5 space-y-4">
-                <div className="flex items-start justify-between gap-3">
-                  <h3 className="font-semibold text-lg leading-tight line-clamp-2">{item.title}</h3>
-                  <Badge variant="default" className="shrink-0 mt-0.5">
-                    {item.product_type}
-                  </Badge>
-                </div>
-
-                <p className="text-sm text-muted-foreground">{item.vendor}</p>
-
-                {item.tags && item.tags.trim() && (
-                  <div className="flex flex-wrap gap-1">
-                    {item.tags.split(',').map((tag, idx) => (
-                      <Badge key={idx} variant="outline" className="text-xs">
-                        {tag.trim()}
-                      </Badge>
-                    ))}
+              <Card className="h-full hover:shadow-md hover:-translate-y-1 transition-all duration-200 overflow-hidden group">
+                {item.images?.[0]?.src && (
+                  <div className="aspect-video relative overflow-hidden bg-muted">
+                    <img
+                      src={GetAbosolutePathByRelative(item.images[0].src)}
+                      alt={item.title}
+                      className="w-full h-full object-cover transition-transform hover:scale-105 duration-300"
+                      loading="lazy"
+                    />
                   </div>
                 )}
 
-                {item.product_status === 'active' && (
-                  <div className="flex justify-end pt-1">
-                    <Badge
-                      variant="default"
-                      className="bg-green-600 hover:bg-green-600 text-white border-green-600 font-medium"
-                    >
-                      Active
+                <CardContent className="p-5 space-y-4">
+                  <div className="flex items-start justify-between gap-3">
+                    <h3 className="font-semibold text-lg leading-tight line-clamp-2">
+                      {item.title}
+                    </h3>
+                    <Badge variant="default" className="shrink-0 mt-0.5">
+                      {item.product_type}
                     </Badge>
                   </div>
-                )}
-              </CardContent>
-            </Card>
+
+                  <p className="text-sm text-muted-foreground">{item.vendor}</p>
+
+                  {item.tags && item.tags.trim() && (
+                    <div className="flex flex-wrap gap-1">
+                      {item.tags.split(',').map((tag, idx) => (
+                        <Badge key={idx} variant="outline" className="text-xs">
+                          {tag.trim()}
+                        </Badge>
+                      ))}
+                    </div>
+                  )}
+
+                  {item.product_status === 'active' && (
+                    <div className="flex justify-end pt-1">
+                      <Badge
+                        variant="default"
+                        className="bg-green-600 hover:bg-green-600 text-white border-green-600 font-medium"
+                      >
+                        Active
+                      </Badge>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </Link>
           ))}
         </div>
       ) : (

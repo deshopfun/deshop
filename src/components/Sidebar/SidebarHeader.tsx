@@ -33,7 +33,7 @@ const SidebarHeader = ({ collapsed = false }: Props) => {
     try {
       if (!isLogin) return
       const response: any = await axios.get(Http.user_notification)
-      if (response.result) {
+      if (response && response.result) {
         const list = response.data || []
         const count = list.filter((item: any) => item.is_read === 'false').length
         setNotificationNumber(count)

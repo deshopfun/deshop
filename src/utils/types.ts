@@ -61,6 +61,7 @@ export type ProductType = {
   options: ProductOptionType[]
   variants: ProductVariantType[]
   ratings: RatingType[]
+  story: ProductStoryType
 }
 
 export type ProductStoryType = {
@@ -173,7 +174,7 @@ export type OrderType = {
   payment_confirmed: string
   payment_confirmed_number: string
   shipping_confirmed: string
-  shipping_confirmed_number: string;
+  shipping_confirmed_number: string
   financial_status: string
   process_time: number
   create_time: number
@@ -182,7 +183,7 @@ export type OrderType = {
   ratings: RatingType[]
   wallets: WalletType[]
   transactions: TransactionType[]
-  shipping: AddressType;
+  shipping: AddressType
   detect_transaction: string
 }
 

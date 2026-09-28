@@ -51,6 +51,7 @@ import { GetAbosolutePathByRelative } from '@/utils/image'
 import LanguageSubmenu from '../Language/LanguageSubmenu'
 import { cn } from '@/lib/utils'
 import { useShallow } from 'zustand/react/shallow'
+import Link from 'next/link'
 
 const HOW_IT_WORKS_STEPS = [
   {
@@ -125,8 +126,7 @@ const HomeHeader = () => {
       if (!isLogin) return
 
       const response: any = await axios.get(Http.user_setting)
-
-      if (response.result) {
+      if (response && response.result) {
         setAvatarUrl(response.data.avatar_url)
         setUsername(response.data.username)
         response.data.collects && setCollectNumber(response.data.collects.length)
@@ -254,71 +254,83 @@ const HomeHeader = () => {
                     <DropdownMenuLabel className="text-xs text-muted-foreground">
                       Manage
                     </DropdownMenuLabel>
-                    <DropdownMenuItem
-                      onClick={() => {
-                        window.location.href = `/profile/${username}`
-                      }}
-                    >
-                      <User className="mr-2 h-4 w-4" />
-                      Profile
+                    <DropdownMenuItem asChild>
+                      <Link href={`/profile/${username}`} className="flex w-full items-center">
+                        <User className="mr-2 h-4 w-4" />
+                        Profile
+                      </Link>
                     </DropdownMenuItem>
-                    <DropdownMenuItem
-                      onClick={() => {
-                        window.location.href = `/manage/${username}?tab=products`
-                      }}
-                    >
-                      <Diamond className="mr-2 h-4 w-4" />
-                      Products
+                    <DropdownMenuItem asChild>
+                      <Link
+                        href={`/manage/${username}?tab=products`}
+                        className="flex w-full items-center"
+                      >
+                        <Diamond className="mr-2 h-4 w-4" />
+                        Products
+                      </Link>
                     </DropdownMenuItem>
-                    <DropdownMenuItem
-                      onClick={() => {
-                        window.location.href = `/manage/${username}?tab=orders`
-                      }}
-                    >
-                      <FilePenLine className="mr-2 h-4 w-4" />
-                      Orders
+                    <DropdownMenuItem asChild>
+                      <Link
+                        href={`/manage/${username}?tab=orders`}
+                        className="flex w-full items-center"
+                      >
+                        <FilePenLine className="mr-2 h-4 w-4" />
+                        Orders
+                      </Link>
                     </DropdownMenuItem>
-                    <DropdownMenuItem
-                      onClick={() => {
-                        window.location.href = `/manage/${username}?tab=wallets`
-                      }}
-                    >
-                      <Wallet className="mr-2 h-4 w-4" />
-                      Wallets
+                    <DropdownMenuItem asChild>
+                      <Link
+                        href={`/manage/${username}?tab=wallets`}
+                        className="flex w-full items-center"
+                      >
+                        <Wallet className="mr-2 h-4 w-4" />
+                        Wallets
+                      </Link>
                     </DropdownMenuItem>
-                    <DropdownMenuItem
-                      onClick={() => {
-                        window.location.href = `/manage/${username}?tab=settings`
-                      }}
-                    >
-                      <Settings className="mr-2 h-4 w-4" />
-                      Settings
+                    <DropdownMenuItem asChild>
+                      <Link
+                        href={`/manage/${username}?tab=settings`}
+                        className="flex w-full items-center"
+                      >
+                        <Settings className="mr-2 h-4 w-4" />
+                        Settings
+                      </Link>
                     </DropdownMenuItem>
                   </DropdownMenuGroup>
 
                   <DropdownMenuSeparator />
 
                   <DropdownMenuGroup>
-                    <DropdownMenuItem onClick={() => (window.location.href = `/support`)}>
-                      Support
+                    <DropdownMenuItem asChild>
+                      <Link href={`/support`} className="flex w-full items-center">
+                        Support
+                      </Link>
                     </DropdownMenuItem>
-                    <DropdownMenuItem
-                      onClick={() => (window.location.href = `https://deshop.instatus.com`)}
-                    >
-                      Status
+                    <DropdownMenuItem asChild>
+                      <Link
+                        href={`https://deshop.instatus.com`}
+                        className="flex w-full items-center"
+                      >
+                        Status
+                      </Link>
                     </DropdownMenuItem>
-                    <DropdownMenuItem
-                      onClick={() => (window.location.href = `https://docs.deshop.space`)}
-                    >
-                      Documentation
+                    <DropdownMenuItem asChild>
+                      <Link href={`https://docs.deshop.space`} className="flex w-full items-center">
+                        Documentation
+                      </Link>
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => (window.location.href = `/support`)}>
-                      Help Center
+                    <DropdownMenuItem asChild>
+                      <Link href={`/support`} className="flex w-full items-center">
+                        Help Center
+                      </Link>
                     </DropdownMenuItem>
-                    <DropdownMenuItem
-                      onClick={() => (window.location.href = `/docs/terms-and-conditions`)}
-                    >
-                      Terms of Use
+                    <DropdownMenuItem asChild>
+                      <Link
+                        href={`/docs/terms-and-conditions`}
+                        className="flex w-full items-center"
+                      >
+                        Terms of Use
+                      </Link>
                     </DropdownMenuItem>
                     <LanguageSubmenu />
                   </DropdownMenuGroup>

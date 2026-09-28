@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button'
 import { Loader2, ChevronRight } from 'lucide-react'
 import { GetAbosolutePathByRelative } from '@/utils/image'
 import { useShallow } from 'zustand/react/shallow'
+import Link from 'next/link'
 
 type Props = {
   productType?: string
@@ -138,50 +139,50 @@ const Recommended = ({ productType, excludeId, pageSize = PAGE_SIZE_DEFAULT }: P
       </button>
 
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-        {products.map((item) => (
-          <Card
-            key={item.product_id}
-            className="cursor-pointer hover:shadow-md hover:-translate-y-1 transition-all duration-200 overflow-hidden"
-            onClick={() => {
-              window.location.href = `/products/${item.slug || item.product_id}`
-            }}
+        {products.map((item, index) => (
+          <Link
+            key={item.product_id ?? index}
+            href={`/products/${item.slug || item.product_id}`}
+            className="block"
           >
-            <div className="relative">
-              <img
-                src={GetAbosolutePathByRelative(item.images?.[0]?.src)}
-                alt={item.title}
-                className="w-full h-48 object-cover"
-                loading="lazy"
-              />
-            </div>
+            <Card className="h-full hover:shadow-md hover:-translate-y-1 transition-all duration-200 overflow-hidden group">
+              <div className="relative">
+                <img
+                  src={GetAbosolutePathByRelative(item.images?.[0]?.src)}
+                  alt={item.title}
+                  className="w-full h-48 object-cover"
+                  loading="lazy"
+                />
+              </div>
 
-            <CardContent className="p-3 flex flex-col gap-1">
-              <p className="font-semibold text-sm line-clamp-2">{item.title}</p>
+              <CardContent className="p-3 flex flex-col gap-1">
+                <p className="font-semibold text-sm line-clamp-2">{item.title}</p>
 
-              {item.is_promote === 'true' ? (
-                <>
-                  <p className="text-muted-foreground text-sm line-clamp-3">{item.body_html}</p>
-                </>
-              ) : (
-                <>
-                  {item.variants && item.variants.length > 0 && (
-                    <>
-                      <p className="text-xs text-muted-foreground">{item.variants[0].option}</p>
-                      <div className="flex items-center justify-between mt-1">
-                        <p className="font-bold text-red-500 text-base">
-                          {CURRENCYS.find((c) => c.name === item.currency)?.code}
-                          {item.variants[0].price}
-                        </p>
-                        <p className="text-xs text-muted-foreground">
-                          {item.variants[0].inventory_quantity} in stock
-                        </p>
-                      </div>
-                    </>
-                  )}
-                </>
-              )}
-            </CardContent>
-          </Card>
+                {item.is_promote === 'true' ? (
+                  <>
+                    <p className="text-muted-foreground text-sm line-clamp-3">{item.body_html}</p>
+                  </>
+                ) : (
+                  <>
+                    {item.variants && item.variants.length > 0 && (
+                      <>
+                        <p className="text-xs text-muted-foreground">{item.variants[0].option}</p>
+                        <div className="flex items-center justify-between mt-1">
+                          <p className="font-bold text-red-500 text-base">
+                            {CURRENCYS.find((c) => c.name === item.currency)?.code}
+                            {item.variants[0].price}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            {item.variants[0].inventory_quantity} in stock
+                          </p>
+                        </div>
+                      </>
+                    )}
+                  </>
+                )}
+              </CardContent>
+            </Card>
+          </Link>
         ))}
       </div>
 

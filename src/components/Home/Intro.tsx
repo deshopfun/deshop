@@ -11,6 +11,7 @@ import { useAbortableEffect } from '@/hooks/useAbortableEffect'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { GetAbosolutePathByRelative } from '@/utils/image'
 import { useShallow } from 'zustand/react/shallow'
+import Link from 'next/link'
 
 const HIGHLIGHTS = [
   {
@@ -169,42 +170,40 @@ const Intro = () => {
               {!storiesLoading &&
                 stories.length > 0 &&
                 stories.map((item, index) => (
-                  <div
-                    key={index}
-                    className="group flex gap-2.5 p-2.5 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer"
-                    onClick={() => (window.location.href = `/story/${item.slug}`)}
-                  >
-                    <Avatar className="h-9 w-9 shrink-0">
-                      {item.cover_image ? (
-                        <AvatarImage
-                          src={GetAbosolutePathByRelative(item.cover_image)}
-                          alt={item.title}
-                        />
-                      ) : null}
-                      <AvatarFallback className="bg-sky-100 text-sky-700 text-xs font-semibold">
-                        {item.title ? item.title.charAt(0).toUpperCase() : '?'}
-                      </AvatarFallback>
-                    </Avatar>
+                  <Link key={index} href={`/story/${item.slug}`} className="block">
+                    <div className="group flex gap-2.5 p-2.5 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer">
+                      <Avatar className="h-9 w-9 shrink-0">
+                        {item.cover_image ? (
+                          <AvatarImage
+                            src={GetAbosolutePathByRelative(item.cover_image)}
+                            alt={item.title}
+                          />
+                        ) : null}
+                        <AvatarFallback className="bg-sky-100 text-sky-700 text-xs font-semibold">
+                          {item.title ? item.title.charAt(0).toUpperCase() : '?'}
+                        </AvatarFallback>
+                      </Avatar>
 
-                    <div className="min-w-0 flex-1">
-                      <p className="text-sm font-medium text-gray-900 line-clamp-2 group-hover:text-sky-700 transition-colors leading-snug">
-                        {item.title}
-                      </p>
-                      <div className="mt-0.5 flex items-center gap-1 text-xs text-muted-foreground">
-                        <span className="truncate">{item.username}</span>
-                        <span>·</span>
-                        <span className="shrink-0">
-                          <time dateTime={new Date(item.create_time).toISOString()}>
-                            {new Date(item.create_time).toLocaleDateString('en-US', {
-                              month: 'short',
-                              day: 'numeric',
-                              year: 'numeric',
-                            })}
-                          </time>
-                        </span>
+                      <div className="min-w-0 flex-1">
+                        <p className="text-sm font-medium text-gray-900 line-clamp-2 group-hover:text-sky-700 transition-colors leading-snug">
+                          {item.title}
+                        </p>
+                        <div className="mt-0.5 flex items-center gap-1 text-xs text-muted-foreground">
+                          <span className="truncate">{item.username}</span>
+                          <span>·</span>
+                          <span className="shrink-0">
+                            <time dateTime={new Date(item.create_time).toISOString()}>
+                              {new Date(item.create_time).toLocaleDateString('en-US', {
+                                month: 'short',
+                                day: 'numeric',
+                                year: 'numeric',
+                              })}
+                            </time>
+                          </span>
+                        </div>
                       </div>
                     </div>
-                  </div>
+                  </Link>
                 ))}
             </div>
           </div>
