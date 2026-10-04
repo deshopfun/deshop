@@ -45,10 +45,10 @@ const Notification = () => {
       const response: any = await axios.get(Http.user_notification)
       if (response.result) {
         setNotifications(
-          response.data.map((item: NotificationType) => ({
+          response.data?.map((item: NotificationType) => ({
             ...item,
             url: window.location.origin + item.url,
-          }))
+          })) || []
         )
       } else {
         showError(response.message)

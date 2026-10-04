@@ -126,6 +126,7 @@ const ProductVariant = (props: Props) => {
       })
       if (response.result) {
         const d = response.data
+        console.log(d)
         setTitle(d.title)
         setImage(d.image)
         setBarcode(d.barcode)

@@ -316,8 +316,8 @@ const Cart = () => {
                   </div>
 
                   <Button
-                    className="w-full"
                     size="lg"
+                    className="h-12 w-full bg-sky-500 hover:bg-sky-600 text-white font-semibold text-base shadow-md shadow-sky-500/20 transition-all"
                     disabled={hasIssues(group)}
                     onClick={() => (window.location.href = `/checkout/${group.uuid}`)}
                   >
