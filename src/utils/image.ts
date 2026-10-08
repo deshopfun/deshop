@@ -10,82 +10,31 @@ export function GetAbosolutePathByRelative(
   return Http.baseHttpPath + src
 }
 
+const PRODUCT_TYPE_IMAGE: Record<string, string> = {
+  [PRODUCT_TYPE.OPENSOURCE]: 'open-source',
+  [PRODUCT_TYPE.AI]: 'ai',
+  [PRODUCT_TYPE.INFRASTRUCTURE]: 'infrastructure',
+  [PRODUCT_TYPE.DEVTOOLS]: 'developer-tools',
+  [PRODUCT_TYPE.DEFI]: 'defi',
+  [PRODUCT_TYPE.EXCHANGE]: 'exchange',
+  [PRODUCT_TYPE.WALLET]: 'wallet',
+  [PRODUCT_TYPE.PAYMENTS]: 'payments',
+  [PRODUCT_TYPE.NFT]: 'nft',
+  [PRODUCT_TYPE.RWA]: 'rwa',
+  [PRODUCT_TYPE.GAMING]: 'gaming',
+  [PRODUCT_TYPE.SOCIAL]: 'social',
+  [PRODUCT_TYPE.MEDIA]: 'media',
+  [PRODUCT_TYPE.EDUCATION]: 'education',
+  [PRODUCT_TYPE.PRODUCTIVITY]: 'productivity',
+  [PRODUCT_TYPE.DAO]: 'dao',
+  [PRODUCT_TYPE.IDENTITY]: 'identity',
+  [PRODUCT_TYPE.SECURITY]: 'security',
+  [PRODUCT_TYPE.DATA]: 'data',
+  [PRODUCT_TYPE.OTHER]: 'other',
+}
+
 export function GetImgSrcByProductType(type: string): string {
-  const baseUrl = window.location.origin
-
-  switch (type) {
-    case PRODUCT_TYPE.OPENSOURCE:
-      return baseUrl + '/images/product/opensource.jpg'
-    case PRODUCT_TYPE.AI:
-      return baseUrl + '/images/product/ai.jpg'
-    case PRODUCT_TYPE.INFRASTRUCTURE:
-      return baseUrl + '/images/product/infrastructure.jpg'
-    case PRODUCT_TYPE.GAMING:
-      return baseUrl + '/images/product/gaming.jpg'
-    case PRODUCT_TYPE.CGAMING:
-      return baseUrl + '/images/product/cgaming.jpg'
-    case PRODUCT_TYPE.EDUCATION:
-      return baseUrl + '/images/product/education.jpg'
-    case PRODUCT_TYPE.SOCIAL:
-      return baseUrl + '/images/product/social.jpg'
-    case PRODUCT_TYPE.RWA:
-      return baseUrl + '/images/product/rwa.jpg'
-    case PRODUCT_TYPE.PERSONAL:
-      return baseUrl + '/images/product/personal.jpg'
-    case PRODUCT_TYPE.DEFI:
-      return baseUrl + '/images/product/personal.jpg'
-    case PRODUCT_TYPE.NFT:
-      return baseUrl + '/images/product/personal.jpg'
-    case PRODUCT_TYPE.DEVTOOLS:
-      return baseUrl + '/images/product/personal.jpg'
-    case PRODUCT_TYPE.PRIVACY:
-      return baseUrl + '/images/product/personal.jpg'
-    case PRODUCT_TYPE.IDENTITY:
-      return baseUrl + '/images/product/personal.jpg'
-    case PRODUCT_TYPE.DAO:
-      return baseUrl + '/images/product/personal.jpg'
-    case PRODUCT_TYPE.DATA:
-      return baseUrl + '/images/product/personal.jpg'
-    case PRODUCT_TYPE.SECURITY:
-      return baseUrl + '/images/product/personal.jpg'
-    case PRODUCT_TYPE.ANALYTICS:
-      return baseUrl + '/images/product/personal.jpg'
-    case PRODUCT_TYPE.PAYMENTS:
-      return baseUrl + '/images/product/personal.jpg'
-    case PRODUCT_TYPE.PRODUCTIVITY:
-      return baseUrl + '/images/product/personal.jpg'
-    case PRODUCT_TYPE.MEDIA:
-      return baseUrl + '/images/product/personal.jpg'
-
-    // case PRODUCT_TYPE.WOMEN:
-    //   return baseUrl + '/images/product/women.jpg';
-    // case PRODUCT_TYPE.MEN:
-    //   return baseUrl + '/images/product/men.jpg';
-    // case PRODUCT_TYPE.BEAUTY:
-    //   return baseUrl + '/images/product/beauty.jpg';
-    // case PRODUCT_TYPE.FOOD:
-    //   return baseUrl + '/images/product/food.jpg';
-    // case PRODUCT_TYPE.BABY:
-    //   return baseUrl + '/images/product/baby.jpg';
-    // case PRODUCT_TYPE.HOME:
-    //   return baseUrl + '/images/product/home.jpg';
-    // case PRODUCT_TYPE.FITNESS:
-    //   return baseUrl + '/images/product/fitness.jpg';
-    // case PRODUCT_TYPE.ACCESSORIES:
-    //   return baseUrl + '/images/product/accessories.jpg';
-    // case PRODUCT_TYPE.PET:
-    //   return baseUrl + '/images/product/pet.jpg';
-    // case PRODUCT_TYPE.GAMES:
-    //   return baseUrl + '/images/product/games.jpg';
-    // case PRODUCT_TYPE.ELECTRONICS:
-    //   return baseUrl + '/images/product/electronics.jpg';
-    // case PRODUCT_TYPE.ARTS:
-    //   return baseUrl + '/images/product/arts.jpg';
-    // case PRODUCT_TYPE.LUGGAGE:
-    //   return baseUrl + '/images/product/luggage.jpg';
-    // case PRODUCT_TYPE.SPORTING:
-    //   return baseUrl + '/images/product/sporting.jpg';
-    default:
-      return baseUrl + '/images/product/opensource.jpg'
-  }
+  const baseUrl = typeof window !== 'undefined' ? window.location.origin : ''
+  const name = PRODUCT_TYPE_IMAGE[type] ?? PRODUCT_TYPE_IMAGE[PRODUCT_TYPE.OTHER]
+  return `${baseUrl}/images/product/${name}.svg`
 }

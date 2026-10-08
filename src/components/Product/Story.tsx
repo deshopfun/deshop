@@ -9,7 +9,7 @@ import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
 import { cn } from '@/lib/utils'
-import { Trash2, Save, Settings, Image as ImageIcon } from 'lucide-react'
+import { Trash2, Save, Settings, Image as ImageIcon, ImagePlus } from 'lucide-react'
 import { GetAbosolutePathByRelative } from '@/utils/image'
 import { useShallow } from 'zustand/react/shallow'
 
@@ -22,9 +22,6 @@ const statusConfig: Record<string, { label: string; className: string }> = {
   archived: { label: 'Archived', className: 'bg-blue-100 text-blue-700 border-blue-200' },
   draft: { label: 'Draft', className: 'bg-amber-100 text-amber-700 border-amber-200' },
 }
-
-const MAX_FILE_SIZE_BYTES = 3 * 1024 * 1024
-const ACCEPTED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/gif', 'image/svg+xml']
 
 const ProductStory = ({ productId }: Props) => {
   const [slug, setSlug] = useState('')
@@ -94,39 +91,25 @@ const ProductStory = ({ productId }: Props) => {
     }
   }, [productId, init])
 
-  const validateFile = (file: File) => {
-    if (!ACCEPTED_IMAGE_TYPES.includes(file.type)) {
-      showError('Unsupported file type. Please upload JPG / PNG / GIF / SVG.')
-      return false
-    }
-    if (file.size > MAX_FILE_SIZE_BYTES) {
-      showError('File too large. Max size is 3MB.')
-      return false
-    }
-    return true
-  }
+  const MAX_SIZE = 1 * 1024 * 1024
+  const ACCEPT_TYPES = ['image/jpeg', 'image/png', 'image/gif', 'image/svg+xml']
 
-  const uploadFile = async (files: FileList | null, inputEl?: HTMLInputElement | null) => {
-    if (!files || files.length !== 1) {
-      showError('Only support uploading one file')
-      return
-    }
-    const file = files[0]
-    if (!validateFile(file)) {
-      if (inputEl) inputEl.value = ''
-      return
-    }
+  const uploadFile = async (files: FileList | null) => {
+    const file = files?.[0]
+    if (!file) return showError('Not found the file')
+
+    if (!ACCEPT_TYPES.includes(file.type)) return showError('Unsupported file type')
+    if (file.size > MAX_SIZE) return showError('File exceeds 1MB')
 
     setUploading(true)
     try {
       const formData = new FormData()
       formData.append('files', file)
-
       const response: any = await axios.post(Http.upload_file, formData, {
         params: { file_type: FILE_TYPE.Image },
         headers: { 'Content-Type': 'multipart/form-data' },
       })
-      if (response.result && response.data?.urls?.[0]) {
+      if (response.result && response.data.urls.length > 0) {
         setCoverImage(response.data.urls[0])
         showSuccess('Image uploaded')
       } else {
@@ -136,8 +119,6 @@ const ProductStory = ({ productId }: Props) => {
       showError('Network error. Please try again later.')
     } finally {
       setUploading(false)
-      // Allow re-selecting the same file again.
-      if (inputEl) inputEl.value = ''
     }
   }
 
@@ -315,7 +296,7 @@ const ProductStory = ({ productId }: Props) => {
               <h3 className="font-semibold">
                 Cover Image <span className="text-red-500">*</span>
               </h3>
-              <p className="text-xs text-muted-foreground">Max 3MB · JPG / PNG / GIF / SVG</p>
+              <p className="text-xs text-muted-foreground">Max 1MB · JPG / PNG / GIF / SVG</p>
             </div>
           </div>
 
@@ -343,15 +324,24 @@ const ProductStory = ({ productId }: Props) => {
                   uploading ? 'border-sky-300 bg-sky-50' : 'hover:border-sky-300 hover:bg-sky-50'
                 )}
               >
-                <span className="text-xs text-muted-foreground">
-                  {uploading ? 'Uploading...' : 'Click to upload'}
-                </span>
+                <div className="h-12 w-12 rounded-full bg-gray-100 flex items-center justify-center">
+                  <ImagePlus className="h-6 w-6 text-gray-400" />
+                </div>
+                <div className="text-center">
+                  <p className="text-sm font-medium text-gray-600">
+                    {uploading ? 'Uploading...' : 'Click to upload image'}
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-0.5">Only one image</p>
+                </div>
                 <input
                   type="file"
-                  accept={ACCEPTED_IMAGE_TYPES.join(',')}
+                  accept={ACCEPT_TYPES.join(',')}
                   className="sr-only"
                   disabled={uploading}
-                  onChange={(e) => uploadFile(e.target.files, e.target)}
+                  onChange={(e) => {
+                    uploadFile(e.target.files)
+                    e.target.value = ''
+                  }}
                 />
               </label>
             )}

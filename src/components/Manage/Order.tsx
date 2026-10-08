@@ -773,7 +773,6 @@ const ManageOrder = () => {
                             <Link2 className="h-3.5 w-3.5" /> Check blockchain
                           </Button>
 
-                          {/* 买家：未付款时去支付 */}
                           {alignment === 'buy' && item.payment_confirmed === 'false' && (
                             <Button
                               size="sm"
@@ -786,7 +785,6 @@ const ManageOrder = () => {
                             </Button>
                           )}
 
-                          {/* 卖家：确认收款 */}
                           {alignment === 'sell' && item.payment_confirmed === 'false' && (
                             <Button
                               size="sm"
@@ -797,7 +795,6 @@ const ManageOrder = () => {
                             </Button>
                           )}
 
-                          {/* 买家：已付款、卖家未确认收货前的中间态，确认收货 */}
                           {alignment === 'buy' &&
                             item.payment_confirmed === 'true' &&
                             item.shipping_confirmed !== 'true' && (

@@ -445,7 +445,6 @@ const CheckoutDetails = () => {
   return (
     <div className="min-h-[70vh] bg-gradient-to-b from-background to-muted/30">
       <div className="container mx-auto max-w-2xl py-8 px-4">
-        {/* Header */}
         <div className="mb-8">
           <button
             onClick={() => (window.location.href = '/cart')}
@@ -460,7 +459,6 @@ const CheckoutDetails = () => {
           </p>
         </div>
 
-        {/* Blocking Alert */}
         {hasBlockingIssues && (
           <div className="mb-6 flex items-start gap-3 rounded-2xl border border-red-200 bg-red-50 px-4 py-3.5 text-sm text-red-700">
             <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
@@ -478,7 +476,6 @@ const CheckoutDetails = () => {
         )}
 
         <div className="space-y-6">
-          {/* Items Card */}
           <Card className="overflow-hidden border-0 shadow-sm ring-1 ring-border/60">
             <CardHeader className="pb-3">
               <CardTitle className="flex items-center gap-2 text-base font-semibold">
@@ -502,7 +499,6 @@ const CheckoutDetails = () => {
                         (line.isUnavailable || line.exceedsStock) && 'opacity-75'
                       )}
                     >
-                      {/* Image */}
                       <div className="relative shrink-0">
                         <img
                           src={
@@ -520,7 +516,6 @@ const CheckoutDetails = () => {
                         )}
                       </div>
 
-                      {/* Info */}
                       <div className="min-w-0 flex-1">
                         <p className="text-sm font-medium leading-snug line-clamp-2">
                           {line.sku?.title ?? line.snapshotTitle}
@@ -553,7 +548,6 @@ const CheckoutDetails = () => {
                         </div>
                       </div>
 
-                      {/* Line Total */}
                       <div className="shrink-0 text-right">
                         {lineTotal ? (
                           <p className="text-sm font-semibold tabular-nums">{fmt(lineTotal)}</p>
@@ -568,7 +562,6 @@ const CheckoutDetails = () => {
             </CardContent>
           </Card>
 
-          {/* Summary Card */}
           <Card className="border-0 shadow-sm ring-1 ring-border/60">
             <CardHeader className="pb-3">
               <CardTitle className="text-base font-semibold">Order Summary</CardTitle>
@@ -617,7 +610,6 @@ const CheckoutDetails = () => {
             </CardContent>
           </Card>
 
-          {/* Pay Section */}
           <div className="space-y-3">
             <Button
               size="lg"

@@ -37,7 +37,6 @@ const MetaTags: FC<Props> = ({
 
   return (
     <Head>
-      {/* Primary */}
       <title>{metaTitle}</title>
       <meta name="description" content={metaDescription} />
       <meta name="robots" content={noIndex ? 'noindex, nofollow' : 'index, follow'} />
@@ -47,7 +46,6 @@ const MetaTags: FC<Props> = ({
       />
       <link rel="canonical" href={canonicalUrl} />
 
-      {/* Open Graph */}
       <meta property="og:type" content={type} />
       <meta property="og:site_name" content={APP_NAME} />
       <meta property="og:title" content={metaTitle} />
@@ -58,13 +56,11 @@ const MetaTags: FC<Props> = ({
       <meta property="og:image:height" content="630" />
       <meta property="og:locale" content="en_US" />
 
-      {/* Twitter */}
       <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:title" content={metaTitle} />
       <meta name="twitter:description" content={metaDescription} />
       <meta name="twitter:image" content={metaImage} />
 
-      {/* Optional brand */}
       <meta name="application-name" content={APP_NAME} />
       <meta name="theme-color" content="#0ea5e9" />
     </Head>

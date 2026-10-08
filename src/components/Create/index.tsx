@@ -20,6 +20,7 @@ import {
   Upload,
   ChevronDown,
   ChevronUp,
+  X,
 } from 'lucide-react'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import { Navigation, Pagination } from 'swiper/modules'
@@ -224,18 +225,35 @@ const Create = () => {
     reader.readAsText(file)
   }
 
-  const uploadFile = async (files: FileList) => {
-    if (!files.length) return showError('Not found the file')
+  const MAX_SIZE = 3 * 1024 * 1024
+  const ACCEPT_TYPES = ['image/jpeg', 'image/png', 'image/gif', 'image/svg+xml']
+
+  const uploadFile = async (files: FileList | null) => {
+    if (!files || !files.length) return showError('Not found the file')
+
+    const validFiles = Array.from(files).filter((file) => {
+      if (!ACCEPT_TYPES.includes(file.type)) {
+        showError(`${file.name}: unsupported file type`)
+        return false
+      }
+      if (file.size > MAX_SIZE) {
+        showError(`${file.name}: exceeds 3MB`)
+        return false
+      }
+      return true
+    })
+    if (!validFiles.length) return
+
     setUploading(true)
     try {
       const formData = new FormData()
-      Array.from(files).forEach((file) => formData.append('files', file))
+      validFiles.forEach((file) => formData.append('files', file))
       const response: any = await axios.post(Http.upload_file, formData, {
         params: { file_type: FILE_TYPE.Image },
         headers: { 'Content-Type': 'multipart/form-data' },
       })
       if (response.result && response.data.urls.length > 0) {
-        setImageList(response.data.urls)
+        setImageList((prev) => [...prev, ...response.data.urls])
       } else {
         showError('Upload Failed')
       }
@@ -244,6 +262,10 @@ const Create = () => {
     } finally {
       setUploading(false)
     }
+  }
+
+  const removeImage = (index: number) => {
+    setImageList((prev) => prev.filter((_, i) => i !== index))
   }
 
   const onClickCreateProduct = async () => {
@@ -314,7 +336,6 @@ const Create = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 flex flex-col gap-6">
-          {/* Collapsible Import Section */}
           <Card className="border-sky-100 bg-sky-50/30">
             <CardContent className="p-0">
               <button
@@ -398,7 +419,6 @@ Values1: Red,Blue,Green
             </CardContent>
           </Card>
 
-          {/* Product Details */}
           <Card>
             <CardContent className="p-6 flex flex-col gap-4">
               <h2 className="font-semibold text-base">Product Details</h2>
@@ -503,7 +523,6 @@ Values1: Red,Blue,Green
             </CardContent>
           </Card>
 
-          {/* Product Options - Dynamic */}
           <Card>
             <CardContent className="p-6 flex flex-col gap-4">
               <div className="flex items-center justify-between">
@@ -575,7 +594,6 @@ Values1: Red,Blue,Green
             </CardContent>
           </Card>
 
-          {/* Product Images */}
           <Card>
             <CardContent className="p-6 flex flex-col gap-4">
               <div className="flex items-center justify-between">
@@ -595,7 +613,7 @@ Values1: Red,Blue,Green
                     onClick={() => setImageList([])}
                   >
                     <Trash2 className="h-4 w-4" />
-                    Clear
+                    Clear all
                   </Button>
                 )}
               </div>
@@ -604,24 +622,46 @@ Values1: Red,Blue,Green
                 <div className="grid grid-cols-3 gap-3">
                   {imageList.map((src, i) => (
                     <div
-                      key={i}
-                      className="relative aspect-square rounded-xl overflow-hidden border"
+                      key={`${src}-${i}`}
+                      className="group relative aspect-square rounded-xl overflow-hidden border"
                     >
                       <img
                         src={GetAbosolutePathByRelative(src)}
                         alt="product"
                         className="w-full h-full object-cover"
                       />
+                      <button
+                        type="button"
+                        aria-label="Remove image"
+                        onClick={() => removeImage(i)}
+                        className="absolute top-1.5 right-1.5 h-6 w-6 rounded-full bg-black/60 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 focus:opacity-100 hover:bg-red-500 transition"
+                      >
+                        <X className="h-3.5 w-3.5" />
+                      </button>
                     </div>
                   ))}
-                  <label className="aspect-square rounded-xl border-2 border-dashed border-gray-200 flex flex-col items-center justify-center cursor-pointer hover:border-sky-300 hover:bg-sky-50 transition-colors">
+
+                  <label
+                    className={cn(
+                      'aspect-square rounded-xl border-2 border-dashed flex flex-col items-center justify-center cursor-pointer transition-colors',
+                      uploading
+                        ? 'border-sky-300 bg-sky-50 pointer-events-none'
+                        : 'border-gray-200 hover:border-sky-300 hover:bg-sky-50'
+                    )}
+                  >
                     <Plus className="h-6 w-6 text-gray-400" />
-                    <span className="text-xs text-gray-400 mt-1">Add more</span>
+                    <span className="text-xs text-gray-400 mt-1">
+                      {uploading ? 'Uploading...' : 'Add more'}
+                    </span>
                     <input
                       type="file"
                       className="sr-only"
                       multiple
-                      onChange={(e: any) => uploadFile(e.target.files)}
+                      accept={ACCEPT_TYPES.join(',')}
+                      onChange={(e) => {
+                        uploadFile(e.target.files)
+                        e.target.value = ''
+                      }}
                     />
                   </label>
                 </div>
@@ -647,7 +687,11 @@ Values1: Red,Blue,Green
                     type="file"
                     className="sr-only"
                     multiple
-                    onChange={(e: any) => uploadFile(e.target.files)}
+                    accept={ACCEPT_TYPES.join(',')}
+                    onChange={(e) => {
+                      uploadFile(e.target.files)
+                      e.target.value = ''
+                    }}
                   />
                 </label>
               )}
@@ -663,7 +707,6 @@ Values1: Red,Blue,Green
           </Button>
         </div>
 
-        {/* Preview */}
         <div className="flex flex-col gap-4">
           <div className="sticky top-24">
             <h2 className="font-semibold text-base mb-3">Preview</h2>

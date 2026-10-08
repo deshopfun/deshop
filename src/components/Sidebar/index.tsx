@@ -9,6 +9,9 @@ import {
   CircleEllipsis,
   PanelLeftClose,
   PanelLeftOpen,
+  Compass,
+  Radius,
+  MessageCircleMore,
 } from 'lucide-react'
 import SidebarHeader from './SidebarHeader'
 import SidebarFooter from './SidebarFooter'
@@ -21,9 +24,9 @@ import {
 
 const navItems = [
   { label: 'Home', href: '/', icon: House },
-  // { label: 'Explore', href: '/explore', icon: Compass },
-  { label: 'Chat', href: '/chat', icon: MessageCircle },
-  { label: 'Blockchain', href: '/blockchain', icon: Bitcoin },
+  { label: 'Explore', href: '/explore', icon: Compass },
+  { label: 'Chat', href: '/chat', icon: MessageCircleMore },
+  { label: 'Blockchain', href: '/blockchain', icon: Radius },
   // { label: 'Livestreams', href: '/live', icon: Tv },
   { label: 'Support', href: '/support', icon: Info },
 ]

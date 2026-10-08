@@ -424,7 +424,6 @@ const Chat = () => {
 
       <Card className="h-[75vh] overflow-hidden p-0">
         <div className="grid grid-cols-1 md:grid-cols-[320px_1fr] h-full min-h-0">
-          {/* 左侧：会话列表 */}
           <div className={`border-r flex-col ${mobileView === 'list' ? 'flex' : 'hidden'} md:flex`}>
             <div className="p-4 border-b space-y-3 shrink-0">
               <div className="flex items-center justify-between">
@@ -561,7 +560,6 @@ const Chat = () => {
                       </div>
                     </button>
 
-                    {/* 删除会话：默认隐藏，hover 到这一行才出现，避免列表看起来太拥挤 */}
                     <AlertDialog>
                       <AlertDialogTrigger asChild>
                         <button
@@ -597,7 +595,6 @@ const Chat = () => {
             </div>
           </div>
 
-          {/* 右侧：当前会话 */}
           <div
             className={`flex-col min-h-0 h-full ${mobileView === 'thread' ? 'flex' : 'hidden'} md:flex`}
           >
@@ -624,7 +621,6 @@ const Chat = () => {
               </div>
             ) : (
               <>
-                {/* 会话头部 */}
                 <div className="flex items-center gap-3 px-4 py-3 border-b shrink-0">
                   <Button
                     variant="ghost"
@@ -661,7 +657,6 @@ const Chat = () => {
                   </div>
                 </div>
 
-                {/* 消息列表 / 新会话初始化引导 */}
                 <div ref={scrollRef} className="flex-1 min-h-0 overflow-y-auto px-4 py-4">
                   {messages.length === 0 ? (
                     <div className="h-full flex items-center justify-center text-center">
@@ -743,7 +738,6 @@ const Chat = () => {
                   )}
                 </div>
 
-                {/* 输入框 */}
                 <div className="p-3 border-t shrink-0">
                   <div className="flex items-end gap-2">
                     <Input

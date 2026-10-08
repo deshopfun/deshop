@@ -16,7 +16,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { Badge } from '@/components/ui/badge'
-import { Dialog, DialogContent } from '@/components/ui/dialog'
+import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog'
 import {
   ShoppingCart,
   Heart,
@@ -25,7 +25,6 @@ import {
   Settings,
   LogOut,
   Wallet,
-  Package,
   Info,
   Search,
   ShoppingBag,
@@ -35,6 +34,7 @@ import {
   ChevronLeft,
   FilePenLine,
   Diamond,
+  X,
 } from 'lucide-react'
 import {
   AlertDialog,
@@ -88,12 +88,17 @@ const HOW_IT_WORKS_STEPS = [
   },
 ]
 
+// 顶部图标按钮：手机 40px，≥sm 44px
+const ICON_BTN = 'h-10 w-10 sm:h-11 sm:w-11 shadow-sm'
+const ICON = 'h-5 w-5 sm:h-6 sm:w-6'
+
 const HomeHeader = () => {
   const [avatarUrl, setAvatarUrl] = useState<string>()
   const [username, setUsername] = useState<string>()
   const [collectNumber, setCollectNumber] = useState<number>(0)
   const [howItWorksOpen, setHowItWorksOpen] = useState(false)
   const [stepIndex, setStepIndex] = useState(0)
+  const [mobileSearchOpen, setMobileSearchOpen] = useState(false)
 
   const { resetUser, isLogin } = useUserPresistStore(
     useShallow((state) => ({
@@ -144,6 +149,14 @@ const HomeHeader = () => {
     init()
   }, [])
 
+  // 屏幕放大到桌面宽度后，自动收起手机端的搜索栏
+  useEffect(() => {
+    const mq = window.matchMedia('(min-width: 768px)')
+    const onChange = (e: MediaQueryListEvent) => e.matches && setMobileSearchOpen(false)
+    mq.addEventListener('change', onChange)
+    return () => mq.removeEventListener('change', onChange)
+  }, [])
+
   const openHowItWorks = () => {
     setStepIndex(0)
     setHowItWorksOpen(true)
@@ -156,37 +169,49 @@ const HomeHeader = () => {
   return (
     <>
       <header className="sticky top-0 z-50 w-full border-b bg-white/80 backdrop-blur-md shadow-sm">
-        <div className="container mx-auto px-4 h-16 grid grid-cols-3 items-center gap-4">
-          <div></div>
+        <div className="container mx-auto px-3 sm:px-4 h-14 sm:h-16 flex items-center justify-between gap-2 md:grid md:grid-cols-3 md:gap-4">
+          <div />
 
-          <div className="flex justify-center">
+          <div className="hidden md:flex justify-center">
             <HomeSearch />
           </div>
 
-          <div className="flex items-center justify-end gap-1.5 sm:gap-2">
-            {/* How it works */}
+          <div className="ml-auto flex items-center justify-end gap-0.5 sm:gap-2">
             <Button
               variant="ghost"
-              className="h-10 px-2.5 sm:px-3 text-sm text-muted-foreground hover:text-foreground gap-1.5"
+              size="icon"
+              className={cn(ICON_BTN, 'md:hidden')}
+              aria-label={mobileSearchOpen ? 'Close search' : 'Open search'}
+              aria-expanded={mobileSearchOpen}
+              onClick={() => setMobileSearchOpen((v) => !v)}
+            >
+              {mobileSearchOpen ? <X className={ICON} /> : <Search className={ICON} />}
+            </Button>
+
+            <Button
+              variant="ghost"
+              className="h-10 w-10 sm:w-auto sm:h-10 px-0 sm:px-3 text-sm text-muted-foreground hover:text-foreground gap-1.5"
+              aria-label="How it works"
               onClick={openHowItWorks}
             >
-              <Info className="h-4 w-4 shrink-0" />
-              <span className="hidden sm:inline">How it works</span>
+              <Info className="h-5 w-5 sm:h-4 sm:w-4 shrink-0" />
+              <span className="hidden lg:inline">How it works</span>
             </Button>
 
             <div className="relative">
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-11 w-11 shadow-sm"
+                className={ICON_BTN}
+                aria-label="Cart"
                 onClick={() => {
                   window.location.href = '/cart'
                 }}
               >
-                <ShoppingCart className="h-6 w-6" />
+                <ShoppingCart className={ICON} />
               </Button>
               {cart.length > 0 && (
-                <Badge className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs bg-sky-500">
+                <Badge className="absolute -top-1 -right-1 h-5 min-w-5 flex items-center justify-center px-1 text-xs bg-sky-500">
                   {cart.length > 99 ? '99+' : cart.length}
                 </Badge>
               )}
@@ -197,15 +222,16 @@ const HomeHeader = () => {
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="h-11 w-11 shadow-sm"
+                  className={ICON_BTN}
+                  aria-label="Favorites"
                   onClick={() => {
                     window.location.href = '/collect'
                   }}
                 >
-                  <Heart className="h-6 w-6" />
+                  <Heart className={ICON} />
                 </Button>
                 {collectNumber > 0 && (
-                  <Badge className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs bg-sky-500">
+                  <Badge className="absolute -top-1 -right-1 h-5 min-w-5 flex items-center justify-center px-1 text-xs bg-sky-500">
                     {collectNumber > 99 ? '99+' : collectNumber}
                   </Badge>
                 )}
@@ -225,8 +251,12 @@ const HomeHeader = () => {
             {isLogin ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="h-11 flex items-center gap-2 px-3">
-                    <Avatar className="h-9 w-9">
+                  <Button
+                    variant="ghost"
+                    className="h-10 sm:h-11 flex items-center gap-2 px-1.5 sm:px-3"
+                    aria-label="Account menu"
+                  >
+                    <Avatar className="h-8 w-8 sm:h-9 sm:w-9">
                       <AvatarImage src={GetAbosolutePathByRelative(avatarUrl, 'avatar')} />
                       <AvatarFallback>{username?.[0]?.toUpperCase()}</AvatarFallback>
                     </Avatar>
@@ -236,14 +266,18 @@ const HomeHeader = () => {
                   </Button>
                 </DropdownMenuTrigger>
 
-                <DropdownMenuContent className="w-52" align="end">
+                <DropdownMenuContent
+                  className="w-56 max-h-[var(--radix-dropdown-menu-content-available-height)] overflow-y-auto"
+                  align="end"
+                  collisionPadding={8}
+                >
                   <div className="flex items-center gap-2 p-2 mb-1">
                     <Avatar className="h-8 w-8">
                       <AvatarImage src={GetAbosolutePathByRelative(avatarUrl, 'avatar')} />
                       <AvatarFallback>{username?.[0]?.toUpperCase()}</AvatarFallback>
                     </Avatar>
-                    <div className="flex flex-col">
-                      <p className="text-sm font-medium">{username}</p>
+                    <div className="flex flex-col min-w-0">
+                      <p className="text-sm font-medium truncate">{username}</p>
                       <p className="text-xs text-muted-foreground">Account</p>
                     </div>
                   </div>
@@ -254,6 +288,17 @@ const HomeHeader = () => {
                     <DropdownMenuLabel className="text-xs text-muted-foreground">
                       Manage
                     </DropdownMenuLabel>
+
+                    <DropdownMenuItem asChild className="md:hidden py-2.5">
+                      <Link
+                        href="/create"
+                        className="flex w-full items-center font-medium text-green-700 focus:text-green-700"
+                      >
+                        <Plus className="mr-2 h-4 w-4" />
+                        Create
+                      </Link>
+                    </DropdownMenuItem>
+
                     <DropdownMenuItem asChild>
                       <Link href={`/profile/${username}`} className="flex w-full items-center">
                         <User className="mr-2 h-4 w-4" />
@@ -348,14 +393,14 @@ const HomeHeader = () => {
                       </DropdownMenuItem>
                     </AlertDialogTrigger>
 
-                    <AlertDialogContent>
+                    <AlertDialogContent className="w-[calc(100%-2rem)] max-w-md">
                       <AlertDialogHeader>
                         <AlertDialogTitle>Log out of your account?</AlertDialogTitle>
                         <AlertDialogDescription>
                           You&apos;ll need to sign in again to access your account.
                         </AlertDialogDescription>
                       </AlertDialogHeader>
-                      <AlertDialogFooter>
+                      <AlertDialogFooter className="gap-2 sm:gap-0">
                         <AlertDialogCancel>Cancel</AlertDialogCancel>
                         <AlertDialogAction
                           className="bg-red-500 hover:bg-red-600 focus:ring-red-500"
@@ -369,7 +414,7 @@ const HomeHeader = () => {
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1.5 sm:gap-2">
                 <Button
                   variant="outline"
                   className="h-11 px-4 text-sm hidden sm:flex"
@@ -380,7 +425,7 @@ const HomeHeader = () => {
                   Log in
                 </Button>
                 <Button
-                  className="h-11 px-4 text-sm bg-sky-500 hover:bg-sky-600 text-white"
+                  className="h-10 sm:h-11 px-3 sm:px-4 text-sm bg-sky-500 hover:bg-sky-600 text-white whitespace-nowrap"
                   onClick={() => {
                     window.location.href = '/login'
                   }}
@@ -391,11 +436,19 @@ const HomeHeader = () => {
             )}
           </div>
         </div>
+
+        {mobileSearchOpen && (
+          <div className="md:hidden border-t bg-white/90 px-3 py-2.5">
+            <div className="w-full">
+              <HomeSearch />
+            </div>
+          </div>
+        )}
       </header>
 
       <Dialog open={howItWorksOpen} onOpenChange={setHowItWorksOpen}>
-        <DialogContent className="max-w-md p-0 overflow-hidden rounded-2xl border-0 shadow-2xl gap-0">
-          <div className="relative bg-gradient-to-b from-gray-900 to-gray-800 px-6 pt-8 pb-10">
+        <DialogContent className="w-[calc(100%-2rem)] max-w-md max-h-[90vh] overflow-y-auto p-0 rounded-2xl border-0 shadow-2xl gap-0">
+          <div className="relative bg-gradient-to-b from-gray-900 to-gray-800 px-4 sm:px-6 pt-8 pb-8 sm:pb-10">
             <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-sky-500/10 via-transparent to-transparent" />
 
             <div className="relative mx-auto max-w-[280px]">
@@ -420,27 +473,34 @@ const HomeHeader = () => {
               </div>
             </div>
 
-            <div className="flex justify-center gap-1.5 mt-6">
+            <div className="relative flex justify-center mt-4">
               {HOW_IT_WORKS_STEPS.map((_, i) => (
                 <button
                   key={i}
                   type="button"
+                  aria-label={`Go to step ${i + 1}`}
                   onClick={() => setStepIndex(i)}
-                  className={cn(
-                    'h-1.5 rounded-full transition-all',
-                    i === stepIndex ? 'w-6 bg-white' : 'w-1.5 bg-white/40 hover:bg-white/60'
-                  )}
-                />
+                  className="px-1 py-2"
+                >
+                  <span
+                    className={cn(
+                      'block h-1.5 rounded-full transition-all',
+                      i === stepIndex ? 'w-6 bg-white' : 'w-1.5 bg-white/40'
+                    )}
+                  />
+                </button>
               ))}
             </div>
           </div>
 
-          <div className="bg-white px-6 pt-5 pb-6 flex flex-col gap-5">
+          <div className="bg-white px-4 sm:px-6 pt-5 pb-6 flex flex-col gap-5">
             <div>
-              <h2 className="text-lg font-bold text-gray-900">{currentStep.title}</h2>
-              <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
+              <DialogTitle className="text-lg font-bold text-gray-900 leading-snug">
+                {currentStep.title}
+              </DialogTitle>
+              <DialogDescription className="mt-2 text-sm text-muted-foreground leading-relaxed">
                 {currentStep.description}
-              </p>
+              </DialogDescription>
             </div>
 
             <div className="flex items-center gap-2">

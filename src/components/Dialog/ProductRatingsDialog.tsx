@@ -149,7 +149,6 @@ export default function ProductRatingsDialog({
   return (
     <Dialog open={openDialog} onOpenChange={setOpenDialog}>
       <DialogContent className="max-w-2xl max-h-[85vh] flex flex-col p-0 gap-0 overflow-hidden rounded-2xl shadow-xl">
-        {/* Header */}
         <DialogHeader className="px-6 py-4 border-b shrink-0 bg-white">
           <DialogTitle className="text-lg font-semibold tracking-tight">
             Ratings & Reviews
@@ -157,10 +156,8 @@ export default function ProductRatingsDialog({
         </DialogHeader>
 
         <div className="flex-1 overflow-y-auto">
-          {/* Summary */}
           <div className="px-6 py-6 bg-gradient-to-b from-gray-50 to-white border-b">
             <div className="flex items-center gap-6 sm:gap-10">
-              {/* Big score */}
               <div className="flex flex-col items-center gap-1.5 shrink-0 min-w-[88px]">
                 <span className="text-5xl font-bold tracking-tight text-gray-900 leading-none">
                   {avgRating}
@@ -171,7 +168,6 @@ export default function ProductRatingsDialog({
                 </span>
               </div>
 
-              {/* Distribution bars */}
               <div className="flex-1 flex flex-col gap-0.5">
                 {[5, 4, 3, 2, 1].map((s) => (
                   <RatingBar
@@ -186,9 +182,7 @@ export default function ProductRatingsDialog({
             </div>
           </div>
 
-          {/* Filters */}
           <div className="px-6 py-3.5 border-b bg-white sticky top-0 z-10">
-            {/* Row 1: Search */}
             <div className="relative w-full">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
               <Input
@@ -208,7 +202,6 @@ export default function ProductRatingsDialog({
               )}
             </div>
 
-            {/* Row 2: Sort + Rating */}
             <div className="flex gap-2 mt-2.5">
               <Select value={selectSortBy} onValueChange={setSelectSortBy}>
                 <SelectTrigger className="h-9 flex-1 bg-gray-50 border-gray-200">
@@ -239,7 +232,6 @@ export default function ProductRatingsDialog({
             </div>
           </div>
 
-          {/* Review list */}
           <div className="px-6 py-5">
             <p className="text-xs font-medium text-muted-foreground mb-4 uppercase tracking-wide">
               {filteredRatings.length} result{filteredRatings.length !== 1 ? 's' : ''}
@@ -252,7 +244,6 @@ export default function ProductRatingsDialog({
                     key={index}
                     className="rounded-xl border border-gray-100 bg-white p-4 hover:border-gray-200 hover:shadow-sm transition-all"
                   >
-                    {/* User row */}
                     <div className="flex items-start justify-between gap-3 mb-2.5">
                       <div className="flex items-center gap-3">
                         <Avatar className="h-9 w-9 border border-gray-100">
@@ -276,7 +267,6 @@ export default function ProductRatingsDialog({
                       <StarRow value={item.number} />
                     </div>
 
-                    {/* Option tags */}
                     {item.product_option && (
                       <div className="flex flex-wrap gap-1.5 mb-2.5">
                         {item.product_option.split(',').map((opt, i) => (
@@ -291,7 +281,6 @@ export default function ProductRatingsDialog({
                       </div>
                     )}
 
-                    {/* Image */}
                     {item.image && (
                       <img
                         src={GetAbosolutePathByRelative(item.image)}
@@ -301,7 +290,6 @@ export default function ProductRatingsDialog({
                       />
                     )}
 
-                    {/* Body */}
                     {item.body && (
                       <p className="text-sm text-gray-600 leading-relaxed whitespace-pre-line">
                         {item.body}
@@ -339,7 +327,6 @@ export default function ProductRatingsDialog({
           </div>
         </div>
 
-        {/* Footer */}
         <div className="px-6 py-3.5 border-t bg-white shrink-0">
           <Button
             variant="outline"

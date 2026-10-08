@@ -26,6 +26,7 @@ import { ProductStoryType } from '@/utils/types'
 import { useSnackPresistStore, useUserPresistStore } from '@/lib'
 import { useAbortableEffect } from '@/hooks/useAbortableEffect'
 import { useShallow } from 'zustand/react/shallow'
+import ImageLightbox from '../Image/ImageLightbox'
 
 // NOTE: engagement numbers and responses below are placeholder/preview data —
 // the comments & reactions backend isn't wired up yet. Everything in this
@@ -137,6 +138,9 @@ const StoryDetails = () => {
   const slug = typeof router.query.id === 'string' ? router.query.id : ''
   const [story, setStory] = useState<ProductStoryType>()
   const [loadState, setLoadState] = useState<LoadState>('loading')
+  const [lightboxOpen, setLightboxOpen] = useState(false)
+  const [lightboxIndex, setLightboxIndex] = useState(0)
+  const [lightboxImages, setLightboxImages] = useState<string[]>([])
 
   const { uuid, isLogin } = useUserPresistStore(
     useShallow((state) => ({
@@ -304,6 +308,13 @@ const StoryDetails = () => {
     if (!requireLogin()) return
   }
 
+  const openLightbox = (images: string[], index = 0) => {
+    if (!images.length) return
+    setLightboxImages(images)
+    setLightboxIndex(index)
+    setLightboxOpen(true)
+  }
+
   return (
     <>
       <MetaTags title={story.title} description={story.sub_title} image={coverSrc} type="article" />
@@ -311,7 +322,6 @@ const StoryDetails = () => {
 
       <article className="bg-white text-gray-900">
         <div className="mx-auto max-w-[900px] px-6 pt-10 pb-24 sm:pt-14">
-          {/* Title */}
           <header className="mb-8">
             <h1 className="font-serif text-[2rem] sm:text-[2.5rem] leading-[1.15] tracking-tight text-gray-900 font-bold">
               {story.title}
@@ -323,7 +333,6 @@ const StoryDetails = () => {
             )}
           </header>
 
-          {/* Author */}
           <div className="flex items-center gap-3 mb-10">
             <button
               type="button"
@@ -361,13 +370,13 @@ const StoryDetails = () => {
             </div>
           </div>
 
-          {/* Cover */}
           {coverSrc && (
             <figure className="mb-10 -mx-6 sm:mx-0">
               <img
                 src={coverSrc}
                 alt={story.title}
                 className="w-full max-h-[480px] object-cover sm:rounded-sm"
+                onClick={() => openLightbox([coverSrc])}
               />
               {story.cover_image_caption && (
                 <figcaption className="mt-3 px-6 sm:px-0 text-center text-[13px] text-gray-500 leading-relaxed">
@@ -377,7 +386,6 @@ const StoryDetails = () => {
             </figure>
           )}
 
-          {/* Body */}
           <div
             className="
               text-[18px] sm:text-[20px] leading-[1.7] text-gray-800
@@ -400,7 +408,6 @@ const StoryDetails = () => {
             dangerouslySetInnerHTML={{ __html: story.render_body_html }}
           />
 
-          {/* Tags */}
           {tags.length > 0 && (
             <div className="mt-12 flex flex-wrap gap-2">
               {tags.map((tag) => (
@@ -414,7 +421,6 @@ const StoryDetails = () => {
             </div>
           )}
 
-          {/* Engagement bar (preview data — backend not wired up yet) */}
           <div className="mt-12 flex items-center justify-between border-y border-gray-100 py-3">
             <div className="flex items-center gap-5 text-gray-500">
               <button
@@ -465,7 +471,6 @@ const StoryDetails = () => {
 
           <Separator className="my-12" />
 
-          {/* Author footer */}
           <div className="flex items-start gap-4">
             <button
               type="button"
@@ -497,7 +502,6 @@ const StoryDetails = () => {
             </div>
           </div>
 
-          {/* Product CTA */}
           {hasProduct && (
             <div className="mt-14 rounded-sm border border-gray-200 bg-gray-50 px-5 py-6 sm:px-6">
               <p className="text-[13px] uppercase tracking-wide text-gray-500 mb-2">
@@ -508,11 +512,6 @@ const StoryDetails = () => {
                   <p className="text-lg font-serif font-bold text-gray-900 truncate">
                     {story.product_title || 'View product on DESHOP'}
                   </p>
-                  {price != null && (
-                    <p className="text-[15px] text-gray-500 mt-0.5">
-                      From {formatPrice(price, currencyCode)}
-                    </p>
-                  )}
                 </div>
                 <Link href={productHref}>
                   <Button className="shrink-0 h-11 rounded-full bg-gray-900 hover:bg-gray-800 gap-2 px-5">
@@ -619,6 +618,14 @@ const StoryDetails = () => {
           </p> */}
         </div>
       </article>
+
+      <ImageLightbox
+        images={lightboxImages}
+        index={lightboxIndex}
+        open={lightboxOpen}
+        onClose={() => setLightboxOpen(false)}
+        onChange={setLightboxIndex}
+      />
     </>
   )
 }
