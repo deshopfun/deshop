@@ -79,7 +79,7 @@ const Notification = () => {
     init()
   }, [])
 
-  const unreadCount = notifications?.filter((n) => n.is_read === 'true').length
+  const unreadCount = notifications?.filter((n) => n.is_read === 'false').length
 
   const filteredNotifications = useMemo(() => {
     if (!notifications) return []
@@ -88,7 +88,7 @@ const Notification = () => {
   }, [notifications, activeFilter])
 
   const filteredUnreadCount = useMemo(() => {
-    return filteredNotifications.filter((row) => row.is_read === 'true').length
+    return filteredNotifications.filter((row) => row.is_read === 'false').length
   }, [filteredNotifications])
 
   return (

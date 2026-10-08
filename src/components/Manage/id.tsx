@@ -14,6 +14,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
 import { ShieldAlert, LayoutDashboard } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useShallow } from 'zustand/react/shallow'
+import ManageTransaction from './Transaction'
 
 const ManageDetails = () => {
   const router = useRouter()
@@ -78,9 +79,10 @@ const ManageDetails = () => {
   const tabComponents: Record<string, React.ReactNode> = {
     '0': <ManageProduct />,
     '1': <ManageOrder />,
-    '2': <ManageWallet />,
-    '3': <ManageNotification />,
-    '4': <ManageSetting />,
+    '2': <ManageTransaction />,
+    '3': <ManageWallet />,
+    '4': <ManageNotification />,
+    '5': <ManageSetting />,
   }
 
   return (

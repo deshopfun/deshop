@@ -116,24 +116,29 @@ export const MANAGE_TAB_DATAS: TAB_DATA[] = [
   },
   {
     id: 2,
+    title: 'Transactions',
+    tabId: 'transactions',
+  },
+  {
+    id: 3,
     title: 'Wallets',
     tabId: 'wallets',
   },
-  // {
-  //   id: 3,
-  //   title: 'Addresses',
-  //   tabId: 'Addresses',
-  // },
   {
-    id: 3,
+    id: 4,
     title: 'Notifications',
     tabId: 'notifications',
   },
   {
-    id: 4,
+    id: 5,
     title: 'Settings',
     tabId: 'settings',
   },
+  // {
+  //   id: 666,
+  //   title: 'Addresses',
+  //   tabId: 'Addresses',
+  // },
 ]
 
 export const FILE_TYPE = {

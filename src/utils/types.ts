@@ -383,19 +383,3 @@ export type ConversationMessage = {
   message_status: string
   // message_status: 'sending' | 'sent' | 'read' | 'unread' | 'delete' | 'failed'
 }
-
-// 「复用」功能：卖家自己的其他商品及其扩展内容
-export type ProductExtrasSource = {
-  product_id: number | string
-  title: string
-  product_type?: string
-  highlights?: ProductHighlightType[]
-  specs?: ProductSpecType[]
-  faqs?: ProductFaqType[]
-  plan_image?: string
-  plan_image_caption?: string
-}
-
-// Http 里新增：
-//   product_extras:          PUT  保存当前商品的扩展内容
-//   product_extras_sources:  GET  返回当前登录卖家的所有商品（含上面的扩展字段）

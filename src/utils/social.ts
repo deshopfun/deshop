@@ -1,4 +1,3 @@
-// utils/social.tsx
 import type { ComponentType } from 'react'
 import { Globe } from 'lucide-react'
 import { SiDiscord, SiGithub, SiInspire, SiTelegram, SiX, SiYoutube } from '@icons-pack/react-simple-icons'
