@@ -1,7 +1,7 @@
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 
-type SiteLogoProps = {
+interface SiteLogoProps {
   collapsed?: boolean
   className?: string
 }

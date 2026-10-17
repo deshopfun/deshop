@@ -24,7 +24,7 @@ import {
 import { MapPin, Loader2, User, Mail, Building2, Phone } from 'lucide-react'
 import { useShallow } from 'zustand/react/shallow'
 
-type DialogType = {
+interface DialogType {
   openDialog: boolean
   handleCloseDialog: () => Promise<void>
   handle: number

@@ -1,15 +1,15 @@
-export type COUNTRY = {
-  name: string;
-  code: string;
-  provinces: PROVINCE[];
-};
+export interface COUNTRY {
+  name: string
+  code: string
+  provinces: PROVINCE[]
+}
 
-export type PROVINCE = {
-  name: string;
-  code: string;
-  subdivision?: string;
-  native?: string;
-};
+export interface PROVINCE {
+  name: string
+  code: string
+  subdivision?: string
+  native?: string
+}
 
 export const COUNTRYPROVINCES: COUNTRY[] = [
   {
@@ -16912,4 +16912,4 @@ export const COUNTRYPROVINCES: COUNTRY[] = [
       },
     ],
   },
-];
+]

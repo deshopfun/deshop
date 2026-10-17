@@ -9,7 +9,7 @@ import {
 import { Button } from '@/components/ui/button'
 import { Truck, User, Mail, Building2, Phone, MapPin } from 'lucide-react'
 
-type DialogType = {
+interface DialogType {
   alignment: 'buy' | 'sell'
   shippingConfirmed: string
   shipping: AddressType

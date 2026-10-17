@@ -16,7 +16,7 @@ import { useShallow } from 'zustand/react/shallow'
 import { WalletType } from '@/utils/types'
 import { FindChainNamesByChainids } from '@/utils/web3'
 
-type Props = {
+interface Props {
   open: boolean
   onOpenChange: (open: boolean) => void
   username?: string

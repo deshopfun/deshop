@@ -39,7 +39,7 @@ export type ClientEnvelope =
   | { type: 'read'; payload: { conversation_id: number; last_read_message_id: number } }
   | { type: 'ping' }
 
-type UseChatSocketOptions = {
+interface UseChatSocketOptions {
   enabled: boolean // 未登录/未挂载时传 false，不建立连接
   onAck?: (payload: Extract<ServerEnvelope, { type: 'ack' }>['payload']) => void
   onMessage?: (payload: Extract<ServerEnvelope, { type: 'message' }>['payload']) => void

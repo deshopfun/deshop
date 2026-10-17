@@ -1,8 +1,8 @@
-export type REPORT = {
-  id: number;
-  title: string;
-  content: string;
-};
+export interface REPORT {
+  id: number
+  title: string
+  content: string
+}
 
 export const REPORTS: REPORT[] = [
   {
@@ -32,4 +32,4 @@ export const REPORTS: REPORT[] = [
     title: 'Other',
     content: 'Please explain why should be removed.',
   },
-];
+]

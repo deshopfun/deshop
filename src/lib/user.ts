@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 
-type UserPersistState = {
+interface UserPersistState {
   auth: string
   uuid: string
   isLogin: boolean
@@ -11,7 +11,7 @@ type UserPersistState = {
   sidebarCollapsed: boolean
 }
 
-type UserPersistAction = {
+interface UserPersistAction {
   setAuth: (auth: string) => void
   getAuth: () => string
   setUuid: (uuid: string) => void

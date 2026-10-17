@@ -37,7 +37,7 @@ import { useShallow } from 'zustand/react/shallow'
 import SwitchRow from '../Switch/SwitchRow'
 import { useListField } from '@/hooks/useListField'
 
-type Props = {
+interface Props {
   productId: number
   title?: string
   slug?: string

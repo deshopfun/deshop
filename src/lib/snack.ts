@@ -1,13 +1,13 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 
-type SnackPersistState = {
+interface SnackPersistState {
   snackOpen: boolean
   snackMessage: string
   snackSeverity: 'success' | 'info' | 'warning' | 'error'
 }
 
-type SnackPersistAction = {
+interface SnackPersistAction {
   setSnackOpen: (snackOpen: boolean) => void
   getSnackOpen: () => boolean
   setSnackMessage: (message: string) => void

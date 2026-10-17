@@ -26,7 +26,7 @@ import {
   Database,
 } from 'lucide-react'
 
-type DialogType = {
+interface DialogType {
   currency: string
   transactions: TransactionType[]
   openDialog: boolean

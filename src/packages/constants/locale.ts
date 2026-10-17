@@ -21,7 +21,7 @@ import {
   US,
 } from 'country-flag-icons/react/3x2'
 
-export type LOCALE = {
+export interface LOCALE {
   code: string
   label: string
   flag: FlagComponent

@@ -1,13 +1,12 @@
-import { ReplyType } from '@/utils/types';
+import { ReplyType } from '@/utils/types'
 import { Card, CardContent } from '@/components/ui/card'
 
-type Props = {
-  uuid?: string;
-  reply?: ReplyType[];
-};
+interface Props {
+  uuid?: string
+  reply?: ReplyType[]
+}
 
-const ProfileReply = ({reply}: Props) => {
-
+const ProfileReply = ({ reply }: Props) => {
   return (
     <div className="space-y-6">
       <h2 className="text-2xl font-semibold tracking-tight">All replies</h2>
@@ -17,16 +16,16 @@ const ProfileReply = ({reply}: Props) => {
           {reply.map((item, index) => (
             <Card></Card>
           ))}
-          </div>
-      ):(
+        </div>
+      ) : (
         <Card>
           <CardContent className="p-12 text-center">
             <p className="text-muted-foreground text-lg">Not found</p>
           </CardContent>
         </Card>
       )}
-      </div>
-  );
-};
+    </div>
+  )
+}
 
-export default ProfileReply;
+export default ProfileReply

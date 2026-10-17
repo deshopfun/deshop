@@ -1,6 +1,6 @@
 import * as AspectRatio from '@radix-ui/react-aspect-ratio'
 
-type YoutubePlayerProps = {
+interface YoutubePlayerProps {
   videoSrc: string
   title?: string
 }

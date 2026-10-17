@@ -13,7 +13,7 @@ import { Trash2, Save, Settings, Image as ImageIcon, ImagePlus } from 'lucide-re
 import { GetAbosolutePathByRelative } from '@/utils/image'
 import { useShallow } from 'zustand/react/shallow'
 
-type Props = {
+interface Props {
   productId: number
 }
 

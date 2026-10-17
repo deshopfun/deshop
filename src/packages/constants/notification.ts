@@ -1,4 +1,4 @@
-export type NOTIFICATION = {
+export interface NOTIFICATION {
   id: number
   uniqueId: string
   title: string

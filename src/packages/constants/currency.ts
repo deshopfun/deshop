@@ -1,7 +1,7 @@
-export type CURRENCY = {
-  name: string;
-  code: string;
-};
+export interface CURRENCY {
+  name: string
+  code: string
+}
 
 export const CURRENCYS: CURRENCY[] = [
   { name: 'USD', code: '$' }, // 美元
@@ -51,4 +51,4 @@ export const CURRENCYS: CURRENCY[] = [
   { name: 'VND', code: '₫' }, // 越南盾
   { name: 'ZAR', code: 'R' }, // 南非兰特
   { name: 'XDR', code: 'XDR' }, // 特别提款权
-];
+]

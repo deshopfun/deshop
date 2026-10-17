@@ -16,7 +16,7 @@ import { Truck, Loader2, AlertCircle, User, Mail, Building2, Phone, MapPin } fro
 import { cn } from '@/lib/utils'
 import { useShallow } from 'zustand/react/shallow'
 
-type DialogType = {
+interface DialogType {
   orderId: number
   confirmNumber: string
   shipping: AddressType

@@ -5,7 +5,7 @@ import { useRouter } from 'next/router'
 
 const DEFAULT_OG_IMAGE = `/og-default.png` // 1200x630
 
-type Props = {
+interface Props {
   title?: string
   description?: string
   image?: string

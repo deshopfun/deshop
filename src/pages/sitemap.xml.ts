@@ -44,7 +44,7 @@ function escapeXml(s: string) {
     .replace(/'/g, '&apos;')
 }
 
-type SitemapUrl = {
+interface SitemapUrl {
   loc: string
   lastmod?: string
   changefreq: string

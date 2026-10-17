@@ -16,7 +16,7 @@ import { useShallow } from 'zustand/react/shallow'
 import SwitchRow from '../Switch/SwitchRow'
 import CurrencyInput from '../Input/CurrencyInput'
 
-type Props = {
+interface Props {
   productId: number
   options?: ProductOptionType[]
   currency: string

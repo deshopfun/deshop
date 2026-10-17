@@ -3,7 +3,7 @@ import dynamic from 'next/dynamic'
 
 const WagmiContextProvider = dynamic(() => import('./WagmiContextProvider'), { ssr: false })
 
-type Props = {
+interface Props {
   children: ReactNode
 }
 

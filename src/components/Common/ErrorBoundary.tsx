@@ -2,11 +2,11 @@ import Custom500 from '@/pages/500';
 import type { ReactNode } from 'react';
 import React, { Component } from 'react';
 
-type Props = {
+interface Props {
   children?: ReactNode;
 };
 
-type State = {
+interface State {
   hasError: boolean;
 };
 

@@ -22,7 +22,7 @@ import { Star, Upload, X, Image as ImageIcon } from 'lucide-react'
 import { GetAbosolutePathByRelative } from '@/utils/image'
 import { useShallow } from 'zustand/react/shallow'
 
-type DialogType = {
+interface DialogType {
   orderId: number
   orderItems: PostRatingType[]
   openDialog: boolean

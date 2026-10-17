@@ -1,16 +1,16 @@
-import { CHAINNAMES, CHAINIDS } from './chain';
-import { COINS } from './coin';
+import { CHAINNAMES, CHAINIDS } from './chain'
+import { COINS } from './coin'
 
-export type COIN = {
-  chainId: CHAINIDS;
-  name: COINS;
-  isMainCoin: boolean;
-  symbol: COINS;
-  contractAddress?: string;
-  decimals: number;
-  displayDecimals: number;
-  icon: any;
-};
+export interface COIN {
+  chainId: CHAINIDS
+  name: COINS
+  isMainCoin: boolean
+  symbol: COINS
+  contractAddress?: string
+  decimals: number
+  displayDecimals: number
+  icon: any
+}
 
 export const BITCOIN_COINS: COIN[] = [
   {
@@ -22,7 +22,7 @@ export const BITCOIN_COINS: COIN[] = [
     displayDecimals: 8,
     icon: require('@/assets/coin/btc.svg'),
   },
-];
+]
 
 export const LITECOIN_COINS: COIN[] = [
   {
@@ -34,7 +34,7 @@ export const LITECOIN_COINS: COIN[] = [
     displayDecimals: 8,
     icon: require('@/assets/coin/ltc.svg'),
   },
-];
+]
 
 export const XRP_COINS: COIN[] = [
   {
@@ -46,7 +46,7 @@ export const XRP_COINS: COIN[] = [
     displayDecimals: 8,
     icon: require('@/assets/coin/xrp.svg'),
   },
-];
+]
 
 export const BITCOINCASH_COINS: COIN[] = [
   {
@@ -58,7 +58,7 @@ export const BITCOINCASH_COINS: COIN[] = [
     displayDecimals: 8,
     icon: require('@/assets/coin/bch.svg'),
   },
-];
+]
 
 export const ETHEREUM_COINS: COIN[] = [
   {
@@ -100,7 +100,7 @@ export const ETHEREUM_COINS: COIN[] = [
     contractAddress: '0x6B175474E89094C44Da98b954EedeAC495271d0F',
     icon: require('@/assets/coin/dai.svg'),
   },
-];
+]
 
 export const TRON_COINS: COIN[] = [
   {
@@ -132,7 +132,7 @@ export const TRON_COINS: COIN[] = [
     contractAddress: 'TEkxiTehnzSmSe2XqrBj4w32RUN966rdz8',
     icon: require('@/assets/coin/usdc.svg'),
   },
-];
+]
 
 export const SOLANA_COINS: COIN[] = [
   {
@@ -164,7 +164,7 @@ export const SOLANA_COINS: COIN[] = [
     contractAddress: 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',
     icon: require('@/assets/coin/usdc.svg'),
   },
-];
+]
 
 export const BSC_COINS: COIN[] = [
   {
@@ -196,7 +196,7 @@ export const BSC_COINS: COIN[] = [
     contractAddress: '0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d',
     icon: require('@/assets/coin/usdc.svg'),
   },
-];
+]
 
 export const ARBITRUM_COINS: COIN[] = [
   {
@@ -238,7 +238,7 @@ export const ARBITRUM_COINS: COIN[] = [
     contractAddress: '0xda10009cbd5d07dd0cecc66161fc93d7c9000da1',
     icon: require('@/assets/coin/dai.svg'),
   },
-];
+]
 
 export const ARBITRUM_NOVA_COINS: COIN[] = [
   {
@@ -270,7 +270,7 @@ export const ARBITRUM_NOVA_COINS: COIN[] = [
     contractAddress: '0xda10009cbd5d07dd0cecc66161fc93d7c9000da1',
     icon: require('@/assets/coin/dai.svg'),
   },
-];
+]
 
 export const AVALANCHE_COINS: COIN[] = [
   {
@@ -302,7 +302,7 @@ export const AVALANCHE_COINS: COIN[] = [
     contractAddress: '0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E',
     icon: require('@/assets/coin/usdc.svg'),
   },
-];
+]
 
 export const POLYGON_COINS: COIN[] = [
   {
@@ -334,7 +334,7 @@ export const POLYGON_COINS: COIN[] = [
     contractAddress: '0x3c499c542cEF5E3811e1192ce70d8cC03d5c3359',
     icon: require('@/assets/coin/usdc.svg'),
   },
-];
+]
 
 export const BASE_COINS: COIN[] = [
   {
@@ -356,7 +356,7 @@ export const BASE_COINS: COIN[] = [
     contractAddress: '0x833589fcd6edb6e08f4c7c32d4f71b54bda02913',
     icon: require('@/assets/coin/usdc.svg'),
   },
-];
+]
 
 export const OPTIMISM_COINS: COIN[] = [
   {
@@ -398,7 +398,7 @@ export const OPTIMISM_COINS: COIN[] = [
     contractAddress: '0xda10009cbd5d07dd0cecc66161fc93d7c9000da1',
     icon: require('@/assets/coin/dai.svg'),
   },
-];
+]
 
 export const TON_COINS: COIN[] = [
   {
@@ -420,21 +420,21 @@ export const TON_COINS: COIN[] = [
     contractAddress: 'EQCxE6mUtQJKFnGfaROTKOt1lZbDiiX1kCixRv7Nw2Id_sDs',
     icon: require('@/assets/coin/usdt.svg'),
   },
-];
+]
 
-export type BLOCKCHAIN = {
-  name: CHAINNAMES;
-  desc: string;
-  chainId: CHAINIDS;
-  explorerUrl?: string;
-  websiteUrl?: string;
-  rpc?: string[];
-  icon?: any;
+export interface BLOCKCHAIN {
+  name: CHAINNAMES
+  desc: string
+  chainId: CHAINIDS
+  explorerUrl?: string
+  websiteUrl?: string
+  rpc?: string[]
+  icon?: any
 
-  coins: COIN[];
+  coins: COIN[]
 
-  time?: number;
-};
+  time?: number
+}
 
 export const BLOCKCHAINNAMES: BLOCKCHAIN[] = [
   {
@@ -563,7 +563,11 @@ export const BLOCKCHAINNAMES: BLOCKCHAIN[] = [
     explorerUrl: 'https://snowtrace.io',
     websiteUrl: 'https://www.avax.network',
     coins: AVALANCHE_COINS,
-    rpc: ['https://avalanche-c-chain-rpc.publicnode.com', 'https://avalanche.drpc.org', 'https://1rpc.io/avax/c'],
+    rpc: [
+      'https://avalanche-c-chain-rpc.publicnode.com',
+      'https://avalanche.drpc.org',
+      'https://1rpc.io/avax/c',
+    ],
     icon: require('@/assets/chain/avalanche.svg'),
   },
   {
@@ -573,7 +577,11 @@ export const BLOCKCHAINNAMES: BLOCKCHAIN[] = [
     explorerUrl: 'https://polygonscan.com',
     websiteUrl: 'https://polygon.technology',
     coins: POLYGON_COINS,
-    rpc: ['https://polygon-bor-rpc.publicnode.com', 'https://polygon-pokt.nodies.app', 'https://1rpc.io/matic'],
+    rpc: [
+      'https://polygon-bor-rpc.publicnode.com',
+      'https://polygon-pokt.nodies.app',
+      'https://1rpc.io/matic',
+    ],
     icon: require('@/assets/chain/polygon.svg'),
   },
   {
@@ -617,4 +625,4 @@ export const BLOCKCHAINNAMES: BLOCKCHAIN[] = [
     rpc: ['https://tonscan.org'],
     icon: require('@/assets/chain/ton.svg'),
   },
-];
+]

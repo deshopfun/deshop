@@ -1,6 +1,13 @@
 import type { ComponentType } from 'react'
 import { Globe } from 'lucide-react'
-import { SiDiscord, SiGithub, SiInspire, SiTelegram, SiX, SiYoutube } from '@icons-pack/react-simple-icons'
+import {
+  SiDiscord,
+  SiGithub,
+  SiInspire,
+  SiTelegram,
+  SiX,
+  SiYoutube,
+} from '@icons-pack/react-simple-icons'
 import { isValidHttpUrl } from '@/utils/verify'
 import type { ProfileType } from '@/utils/types'
 
@@ -9,7 +16,7 @@ export type SocialValues = Record<SocialKey, string>
 
 type IconType = ComponentType<{ className?: string }>
 
-export type SocialConfig = {
+export interface SocialConfig {
   key: SocialKey
   label: string
   icon: IconType

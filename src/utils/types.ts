@@ -1,6 +1,6 @@
 import { CHAINIDS } from '@/packages/constants'
 
-export type RouteType = {
+export interface RouteType {
   path: string
   name: string
   title: string
@@ -11,14 +11,14 @@ export type RouteType = {
   needLogin: boolean
 }
 
-export type SearchType = {
+export interface SearchType {
   profiles: ProfileType[]
   products: ProductType[]
   total_product: number
   total_profile: number
 }
 
-export type UserType = {
+export interface UserType {
   profile: ProfileType
   products: ProductType[]
   followers: ProfileType[]
@@ -26,7 +26,7 @@ export type UserType = {
   wallets: WalletType[]
 }
 
-export type ProfileType = {
+export interface ProfileType {
   uuid: string
   avatar_url: string
   bio: string
@@ -44,7 +44,7 @@ export type ProfileType = {
   create_time: number
 }
 
-export type ProductType = {
+export interface ProductType {
   product_id: number
   user_uuid: string
   user_email: string
@@ -78,7 +78,7 @@ export type ProductType = {
   story: ProductStoryType
 }
 
-export type ProductStoryType = {
+export interface ProductStoryType {
   user_uuid: string
   user_email: string
   username: string
@@ -102,33 +102,33 @@ export type ProductStoryType = {
   variants: ProductVariantType[]
 }
 
-export type ProductImageType = {
+export interface ProductImageType {
   src: string
   width: number
   height: number
 }
 
-export type ProductHighlightType = {
+export interface ProductHighlightType {
   title: string
   description: string
 }
 
-export type ProductSpecType = {
+export interface ProductSpecType {
   label: string
   value: string
 }
 
-export type ProductFaqType = {
+export interface ProductFaqType {
   question: string
   answer: string
 }
 
-export type ProductOptionType = {
+export interface ProductOptionType {
   name: string
   value: string
 }
 
-export type ProductVariantType = {
+export interface ProductVariantType {
   title: string
   barcode: string
   compare_at_price: string
@@ -150,13 +150,13 @@ export type ProductVariantType = {
   weight_unit: string
 }
 
-export type ProductItemType = {
+export interface ProductItemType {
   product_id: number
   option: string
   quantity: number
 }
 
-export type CartSkuInfo = {
+export interface CartSkuInfo {
   product_id: number
   option: string
   user_uuid: string
@@ -178,7 +178,7 @@ export type CartSkuInfo = {
   product_status: string
 }
 
-export type OrderType = {
+export interface OrderType {
   order_id: number
   customer_uuid: string
   customer_email: string
@@ -216,7 +216,7 @@ export type OrderType = {
   detect_transaction: string
 }
 
-export type OrderItemType = {
+export interface OrderItemType {
   product_id: number
   slug: string
   option: string
@@ -226,14 +226,14 @@ export type OrderItemType = {
   image: string
 }
 
-export type WalletType = {
+export interface WalletType {
   chain_id: number
   chain_name: string
   address: string
   disable_coin: string
 }
 
-export type TransactionType = {
+export interface TransactionType {
   select: string
   transaction_id: number
   amount: string
@@ -246,7 +246,7 @@ export type TransactionType = {
   blockchain: BlockchainType
 }
 
-export type BlockchainType = {
+export interface BlockchainType {
   rate: string
   chain_id: number
   hash: string
@@ -258,7 +258,7 @@ export type BlockchainType = {
   block_timestamp: number
 }
 
-export type BlockchainOrderType = {
+export interface BlockchainOrderType {
   chain_id: number
   latest_block: string
   cache_block: string
@@ -266,7 +266,7 @@ export type BlockchainOrderType = {
   orders: OrderType[]
 }
 
-export type WalletConnectType = {
+export interface WalletConnectType {
   chainIds: CHAINIDS
   address: string
   contractAddress?: string
@@ -278,7 +278,7 @@ export type WalletConnectType = {
   color?: 'inherit' | 'primary' | 'secondary' | 'success' | 'error' | 'info' | 'warning'
 }
 
-export type StatType = {
+export interface StatType {
   product_number: number
   order_number: number
   trading_volume: number
@@ -287,7 +287,7 @@ export type StatType = {
   variant_number: number
 }
 
-export type AddressType = {
+export interface AddressType {
   address_id: number
   first_name: string
   last_name: string
@@ -306,7 +306,7 @@ export type AddressType = {
   is_default: string
 }
 
-export type CollectType = {
+export interface CollectType {
   bind_id: number
   slug: string
   collect_type: string
@@ -315,7 +315,7 @@ export type CollectType = {
   image_srcs: string[]
 }
 
-export type RatingType = {
+export interface RatingType {
   username: string
   rating_id: number
   product_option: string
@@ -325,7 +325,7 @@ export type RatingType = {
   create_time: number
 }
 
-export type PostRatingType = {
+export interface PostRatingType {
   product_id: number
   option: string
   quantity: number
@@ -337,7 +337,7 @@ export type PostRatingType = {
   rating_body?: string
 }
 
-export type NotificationType = {
+export interface NotificationType {
   notification_id: number
   title: string
   description: string
@@ -348,21 +348,21 @@ export type NotificationType = {
   create_time: number
 }
 
-export type ReplyType = {}
+export interface ReplyType {}
 
-export type TabPanelType = {
+export interface TabPanelType {
   children?: React.ReactNode
   index: number
   value: number
 }
 
-export type Chat = {
+export interface Chat {
   chat_id: number
   title: string
   description: string
 }
 
-export type Conversation = {
+export interface Conversation {
   conversation_id: number
   peer_uuid: string
   peer_username: string
@@ -373,7 +373,7 @@ export type Conversation = {
   unread_count: number
 }
 
-export type ConversationMessage = {
+export interface ConversationMessage {
   conversation_id: number
   message_id: number
   client_message_id: string

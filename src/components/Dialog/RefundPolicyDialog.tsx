@@ -2,7 +2,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Button } from '@/components/ui/button'
 import { ShieldCheck, PackageX, Clock, AlertCircle, MessageCircle } from 'lucide-react'
 
-type DialogType = {
+interface DialogType  {
   openDialog: boolean
   setOpenDialog: (value: boolean) => void
 }

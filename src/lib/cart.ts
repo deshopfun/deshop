@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 
-export type CartLineType = {
+export interface CartLineType {
   productId: number
   option: string
   quantity: number
@@ -10,16 +10,16 @@ export type CartLineType = {
   snapshotSlug?: string
 }
 
-export type CartType = {
+export interface CartType {
   uuid: string
   variant: CartLineType[]
 }
 
-type CartPersistState = {
+interface CartPersistState {
   cart: CartType[]
 }
 
-type CartPersistAction = {
+interface CartPersistAction {
   setCart: (carts: CartType[]) => void
   getCart: () => CartType[]
   addToCart: (uuid: string, line: CartLineType) => void

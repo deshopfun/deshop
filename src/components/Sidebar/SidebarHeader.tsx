@@ -9,7 +9,7 @@ import { SiteLogo } from '@/components/Logo/SiteLogo'
 import { cn } from '@/lib/utils'
 import { useShallow } from 'zustand/react/shallow'
 
-type Props = {
+interface Props {
   collapsed?: boolean
 }
 

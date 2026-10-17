@@ -34,7 +34,7 @@ import {
 import { cn } from '@/lib/utils'
 import { useShallow } from 'zustand/react/shallow'
 
-type DialogType = {
+interface DialogType  {
   orderId: number
   confirmNumber: string
   transactions: TransactionType[]

@@ -13,7 +13,7 @@ import { Star, Calendar } from 'lucide-react'
 import { Http } from '@/utils/http/http'
 import { GetAbosolutePathByRelative } from '@/utils/image'
 
-type DialogType = {
+interface DialogType  {
   ratings: RatingType[]
   openDialog: boolean
   handleCloseDialog: () => Promise<void>

@@ -5,14 +5,7 @@ import { Http } from '@/utils/http/http'
 import { useEffect, useState } from 'react'
 import { CURRENCYS } from '@/packages/constants/currency'
 import Decimal from 'decimal.js'
-import {
-  AlertCircle,
-  Loader2,
-  Package,
-  ShoppingBag,
-  ShieldCheck,
-  ArrowLeft,
-} from 'lucide-react'
+import { AlertCircle, Loader2, Package, ShoppingBag, ShieldCheck, ArrowLeft } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -21,7 +14,7 @@ import { GetAbosolutePathByRelative } from '@/utils/image'
 import { CartSkuInfo } from '@/utils/types'
 import { cn } from '@/lib/utils' // 如果没有 cn 工具，可自行实现或删除相关 className
 
-type MergedLine = CartLineType & {
+interface MergedLine extends CartLineType {
   sku?: CartSkuInfo
   isUnavailable: boolean
   exceedsStock: boolean
@@ -264,7 +257,9 @@ const CheckoutDetails = () => {
                         />
                         {line.isUnavailable && (
                           <div className="absolute inset-0 flex items-center justify-center rounded-xl bg-black/40">
-                            <span className="text-[10px] font-semibold text-white">Unavailable</span>
+                            <span className="text-[10px] font-semibold text-white">
+                              Unavailable
+                            </span>
                           </div>
                         )}
                       </div>
@@ -278,9 +273,7 @@ const CheckoutDetails = () => {
                         <div className="mt-2 flex flex-wrap items-center gap-2">
                           <span className="text-xs text-muted-foreground">
                             Qty {line.quantity}
-                            {line.sku && !line.isUnavailable && (
-                              <> · {fmt(line.sku.price)} each</>
-                            )}
+                            {line.sku && !line.isUnavailable && <> · {fmt(line.sku.price)} each</>}
                           </span>
 
                           {line.isUnavailable && (

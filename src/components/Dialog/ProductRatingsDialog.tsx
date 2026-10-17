@@ -22,7 +22,7 @@ import Decimal from 'decimal.js'
 import { GetAbosolutePathByRelative } from '@/utils/image'
 import { useShallow } from 'zustand/react/shallow'
 
-type DialogType = {
+interface DialogType  {
   product_id: number
   ratings: RatingType[]
   openDialog: boolean

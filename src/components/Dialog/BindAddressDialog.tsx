@@ -17,7 +17,7 @@ import { Label } from '@/components/ui/label'
 import { Link2, Loader2, Wallet } from 'lucide-react'
 import { useShallow } from 'zustand/react/shallow'
 
-type DialogType = {
+interface DialogType {
   chain: CHAINIDS
   address?: string
   openDialog: boolean

@@ -56,7 +56,7 @@ export const WEIGHT_UNIT_TYPE = {
   LIANG: 'liang',
 }
 
-export type TAB_DATA = {
+export interface TAB_DATA {
   id: number
   title: string
   tabId: string

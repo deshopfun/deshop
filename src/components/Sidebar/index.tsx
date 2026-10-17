@@ -37,7 +37,7 @@ const moreItems = [
   { label: 'Help Center', href: '/support' },
 ]
 
-type HomeSidebarProps = {
+interface HomeSidebarProps {
   collapsed: boolean
   onCollapsedChange: (collapsed: boolean) => void
 }

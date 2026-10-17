@@ -15,7 +15,7 @@ import { PackageCheck, Loader2, AlertCircle } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useShallow } from 'zustand/react/shallow'
 
-type DialogType = {
+interface DialogType  {
   orderId: number
   confirmNumber: string
   openDialog: boolean

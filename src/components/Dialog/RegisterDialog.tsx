@@ -8,7 +8,7 @@ import {
 import { Button } from '@/components/ui/button'
 import { MailCheck } from 'lucide-react'
 
-type DialogType = {
+interface DialogType  {
   email: string
   openDialog: boolean
   setOpenDialog: (value: boolean) => void

@@ -24,7 +24,7 @@ import { useShallow } from 'zustand/react/shallow'
 import { cn } from '@/lib/utils'
 import { EMPTY_SOCIALS, SOCIALS, SocialKey, SocialValues, normalizeSocial } from '@/utils/social'
 
-type DialogType = {
+interface DialogType  {
   avatarUrl?: string
   username?: string
   bio?: string

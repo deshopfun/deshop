@@ -18,13 +18,13 @@ import { GetAbosolutePathByRelative } from '@/utils/image'
 import { CartSkuInfo } from '@/utils/types'
 import { useShallow } from 'zustand/react/shallow'
 
-type MergedLine = CartLineType & {
+interface MergedLine extends CartLineType {
   sku?: CartSkuInfo
   isUnavailable: boolean
   exceedsStock: boolean
 }
 
-type MergedGroup = {
+interface MergedGroup {
   uuid: string
   username: string
   avatarUrl: string

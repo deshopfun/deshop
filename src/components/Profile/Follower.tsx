@@ -7,7 +7,7 @@ import Link from 'next/link'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { User } from 'lucide-react'
 
-type Props = {
+interface Props {
   uuid?: string
   followers?: ProfileType[]
 }

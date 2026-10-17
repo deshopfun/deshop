@@ -14,7 +14,7 @@ import { useSnackPresistStore } from '@/lib'
 import { useShallow } from 'zustand/react/shallow'
 import { cn } from '@/lib/utils'
 
-type Props = {
+interface Props {
   open: boolean
   onOpenChange: (open: boolean) => void
   username?: string
@@ -134,7 +134,7 @@ const formatCount = (n: number) => {
   return String(n)
 }
 
-type PaintOptions = {
+interface PaintOptions {
   theme: Theme
   username: string
   bio: string

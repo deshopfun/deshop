@@ -1,7 +1,10 @@
 // hooks/useListField.ts
 import { useCallback, useState } from 'react'
 
-type Options = { max?: number; min?: number }
+interface Options {
+  max?: number
+  min?: number
+}
 
 /**
  * 通用的"可增删改的列表"状态。

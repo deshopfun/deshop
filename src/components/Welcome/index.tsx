@@ -1,15 +1,15 @@
 import { useState } from 'react'
 
-type DeshopWelcomeProps = {
+interface DeshopWelcomeProps {
   className?: string
 }
 
-type Step = {
+interface Step {
   title: string
   body: string
 }
 
-type FaqItem = {
+interface FaqItem {
   question: string
   answer: string
 }

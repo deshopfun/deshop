@@ -1,17 +1,17 @@
-import { CHAINIDS } from '@/packages/constants/blockchain';
+import { CHAINIDS } from '@/packages/constants/blockchain'
 
-export type WalletAccountType = {
-  isGenerate: boolean;
-  mnemonic: string;
-  account: Array<ChainAccountType>;
-};
+export interface WalletAccountType {
+  isGenerate: boolean
+  mnemonic: string
+  account: Array<ChainAccountType>
+}
 
-export type ChainAccountType = {
-  chain: CHAINIDS;
-  address: string;
-  privateKey?: string;
-  note?: string;
-};
+export interface ChainAccountType {
+  chain: CHAINIDS
+  address: string
+  privateKey?: string
+  note?: string
+}
 
 export enum BTCTYPE {
   NATIVESEGWIT = 'NATIVESEGWIT',
@@ -20,10 +20,10 @@ export enum BTCTYPE {
   LEGACY = 'LEGACY',
 }
 
-export type QRCodeText = {
-  networkString: string;
-  address: string;
-  token?: string;
-  tokenAddress?: string;
-  amount: string;
-};
+export interface QRCodeText {
+  networkString: string
+  address: string
+  token?: string
+  tokenAddress?: string
+  amount: string
+}

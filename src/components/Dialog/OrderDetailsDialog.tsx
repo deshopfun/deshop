@@ -11,7 +11,7 @@ import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import { Card, CardContent } from '@/components/ui/card'
 
-type DialogType = {
+interface DialogType {
   order: OrderType
   openDialog: boolean
   handleCloseDialog: () => Promise<void>

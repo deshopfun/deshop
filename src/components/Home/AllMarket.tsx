@@ -12,7 +12,7 @@ import { GetAbosolutePathByRelative } from '@/utils/image'
 import { useShallow } from 'zustand/react/shallow'
 import Link from 'next/link'
 
-type Props = {
+interface Props {
   productType?: string
 }
 

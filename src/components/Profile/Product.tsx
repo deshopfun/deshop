@@ -6,7 +6,7 @@ import { PackageOpen } from 'lucide-react'
 import { Badge } from '../ui/badge'
 import Link from 'next/link'
 
-type Props = {
+interface Props {
   uuid?: string
   products?: ProductType[]
 }
