@@ -34,6 +34,7 @@ import 'swiper/css/pagination'
 import 'swiper/css/scrollbar'
 import { GetAbosolutePathByRelative } from '@/utils/image'
 import { useShallow } from 'zustand/react/shallow'
+import DOMPurify from 'dompurify'
 import SwitchRow from '../Switch/SwitchRow'
 
 const Create = () => {
@@ -759,7 +760,7 @@ Values1: Red,Blue,Green
                     {description && (
                       <div
                         className="text-sm text-muted-foreground line-clamp-4 prose prose-sm max-w-none"
-                        dangerouslySetInnerHTML={{ __html: description }}
+                        dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(description) }}
                       />
                     )}
                   </CardContent>

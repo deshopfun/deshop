@@ -1,93 +1,34 @@
-import { useSnackPresistStore } from '@/lib'
 import { CURRENCYS } from '@/packages/constants/currency'
 import { PRODUCT_TYPE } from '@/packages/constants'
-import { useEffect, useState } from 'react'
-import axios from '@/utils/http/axios'
-import { Http } from '@/utils/http/http'
-import { ProductType } from '@/utils/types'
+import { useMemo, useState } from 'react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { PackageOpen, Loader2 } from 'lucide-react'
 import { GetAbosolutePathByRelative } from '@/utils/image'
-import { useShallow } from 'zustand/react/shallow'
 import Link from 'next/link'
+import { useProductListInfinite } from '@/hooks/queries/useProductList'
+import RemoteImage from '@/components/Image/RemoteImage'
 
 interface Props {
   productType?: string
 }
 
-const PAGE_SIZE = 20
-
 const AllMarket = (props: Props) => {
-  const [products, setProducts] = useState<ProductType[]>([])
   const [currentProductType, setCurrentProductType] = useState<string>(props.productType || 'ALL')
-  const [page, setPage] = useState(1)
-  const [hasMore, setHasMore] = useState(true)
-  const [loading, setLoading] = useState(false)
-  const [loadingMore, setLoadingMore] = useState(false)
 
-  const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore(
-    useShallow((state) => ({
-      setSnackSeverity: state.setSnackSeverity,
-      setSnackMessage: state.setSnackMessage,
-      setSnackOpen: state.setSnackOpen,
-    }))
-  )
+  const { data, isLoading, isFetchingNextPage, hasNextPage, fetchNextPage, isError } =
+    useProductListInfinite(currentProductType)
 
-  const init = async (productType: string, pageNum = 1, append = false) => {
-    if (append) {
-      setLoadingMore(true)
-    } else {
-      setLoading(true)
-    }
-
-    try {
-      const params: any = {
-        limit: PAGE_SIZE,
-        offset: (pageNum - 1) * PAGE_SIZE,
-      }
-
-      if (productType && productType !== 'ALL') {
-        params.product_type = productType
-      }
-
-      const response: any = await axios.get(Http.product_list, { params })
-
-      if (response.result) {
-        const list: ProductType[] = response.data || []
-        setProducts((prev) => (append ? [...prev, ...list] : list))
-        setHasMore(list.length >= PAGE_SIZE)
-        setPage(pageNum)
-      } else {
-        if (!append) setProducts([])
-        setHasMore(false)
-      }
-    } catch (e) {
-      setSnackSeverity('error')
-      setSnackMessage('The network error occurred. Please try again later')
-      setSnackOpen(true)
-      console.error(e)
-    } finally {
-      setLoading(false)
-      setLoadingMore(false)
-    }
-  }
-
-  useEffect(() => {
-    init(currentProductType, 1, false)
-  }, [currentProductType])
+  const products = useMemo(() => data?.pages.flatMap((page) => page) ?? [], [data])
 
   const handleCategoryClick = (productType: string) => {
     if (productType === currentProductType) return
     setCurrentProductType(productType)
-    setPage(1)
-    setHasMore(true)
-    init(productType, 1, false)
   }
 
   const handleShowMore = () => {
-    if (loadingMore || !hasMore) return
-    init(currentProductType, page + 1, true)
+    if (isFetchingNextPage || !hasNextPage) return
+    fetchNextPage()
   }
 
   const categories = [['ALL', 'ALL'], ...Object.entries(PRODUCT_TYPE)]
@@ -119,9 +60,13 @@ const AllMarket = (props: Props) => {
         </div>
       </div>
 
-      {loading ? (
+      {isLoading ? (
         <div className="flex items-center justify-center py-24 text-muted-foreground">
           <Loader2 className="h-6 w-6 animate-spin" />
+        </div>
+      ) : isError ? (
+        <div className="flex flex-col items-center justify-center py-24 text-muted-foreground">
+          <p className="text-sm">The network error occurred. Please try again later</p>
         </div>
       ) : products && products.length > 0 ? (
         <>
@@ -134,16 +79,20 @@ const AllMarket = (props: Props) => {
               >
                 <Card className="h-full hover:shadow-md hover:-translate-y-1 transition-all duration-200 overflow-hidden group">
                   <div className="relative w-full h-48 overflow-hidden bg-[#F1F3F7]">
-                    <img
+                    <RemoteImage
                       src={GetAbosolutePathByRelative(item.images?.[0]?.src)}
-                      alt="img"
+                      alt=""
                       aria-hidden="true"
-                      className="absolute inset-0 h-full w-full scale-110 object-cover blur-xl opacity-60"
+                      fill
+                      sizes="(max-width: 640px) 50vw, (max-width: 1024px) 25vw, 20vw"
+                      className="scale-110 object-cover blur-xl opacity-60"
                     />
-                    <img
+                    <RemoteImage
                       src={GetAbosolutePathByRelative(item.images?.[0]?.src)}
                       alt={item.title}
-                      className="relative h-full w-full object-contain"
+                      fill
+                      sizes="(max-width: 640px) 50vw, (max-width: 1024px) 25vw, 20vw"
+                      className="object-contain"
                     />
                   </div>
 
@@ -182,15 +131,15 @@ const AllMarket = (props: Props) => {
             ))}
           </div>
 
-          {hasMore && (
+          {hasNextPage && (
             <div className="flex justify-center mt-8">
               <Button
                 variant="outline"
                 className="min-w-[200px] h-11 rounded-full"
                 onClick={handleShowMore}
-                disabled={loadingMore}
+                disabled={isFetchingNextPage}
               >
-                {loadingMore ? (
+                {isFetchingNextPage ? (
                   <>
                     <Loader2 className="h-4 w-4 mr-2 animate-spin" />
                     Loading...

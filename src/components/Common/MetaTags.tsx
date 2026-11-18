@@ -2,6 +2,7 @@ import { FC } from 'react'
 import Head from 'next/head'
 import { APP_DESCRIPTION, APP_NAME } from '@/packages/constants'
 import { useRouter } from 'next/router'
+import { getSiteOrigin, toAbsoluteUrl } from '@/utils/seo'
 
 const DEFAULT_OG_IMAGE = `/og-default.png` // 1200x630
 
@@ -23,17 +24,14 @@ const MetaTags: FC<Props> = ({
   canonicalPath,
 }) => {
   const router = useRouter()
+  const origin = getSiteOrigin()
 
   const metaTitle = title ? `${title} | ${APP_NAME}` : APP_NAME
   const metaDescription = description || APP_DESCRIPTION
-  const metaImage = image
-    ? image.startsWith('http')
-      ? image
-      : `${image.startsWith('/') ? '' : '/'}${image}`
-    : DEFAULT_OG_IMAGE
+  const metaImage = toAbsoluteUrl(image || DEFAULT_OG_IMAGE, origin)
 
   const path = canonicalPath ?? router.asPath.split('?')[0]
-  const canonicalUrl = `${path === '/' ? '' : path}`
+  const canonicalUrl = toAbsoluteUrl(path === '/' ? '/' : path, origin)
 
   return (
     <Head>

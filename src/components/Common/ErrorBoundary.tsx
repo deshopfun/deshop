@@ -1,26 +1,34 @@
-import Custom500 from '@/pages/500';
-import type { ReactNode } from 'react';
-import React, { Component } from 'react';
+import Custom500 from '@/pages/500'
+import type { ErrorInfo, ReactNode } from 'react'
+import React, { Component } from 'react'
 
 interface Props {
-  children?: ReactNode;
-};
+  children?: ReactNode
+}
 
 interface State {
-  hasError: boolean;
-};
+  hasError: boolean
+}
 
 class ErrorBoundary extends Component<Props, State> {
-  state = {
+  state: State = {
     hasError: false,
-  };
+  }
+
+  static getDerivedStateFromError(): State {
+    return { hasError: true }
+  }
+
+  componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+    console.error('ErrorBoundary caught an error:', error, errorInfo)
+  }
 
   render() {
     if (this.state.hasError) {
-      return <Custom500 />;
+      return <Custom500 />
     }
-    return this.props.children;
+    return this.props.children
   }
 }
 
-export default ErrorBoundary;
+export default ErrorBoundary

@@ -27,6 +27,7 @@ import { useSnackPresistStore, useUserPresistStore } from '@/lib'
 import { useAbortableEffect } from '@/hooks/useAbortableEffect'
 import { useShallow } from 'zustand/react/shallow'
 import ImageLightbox from '../Image/ImageLightbox'
+import { safeJsonLd } from '@/utils/seo'
 
 // NOTE: engagement numbers and responses below are placeholder/preview data —
 // the comments & reactions backend isn't wired up yet. Everything in this
@@ -123,12 +124,6 @@ function formatPrice(price: string, currencyCode: string) {
     // Unknown/unsupported currency code — fall back to a plain label.
     return `${currencyCode} ${price}`.trim()
   }
-}
-
-// Escape "<" so a title/subtitle containing "</script>" can't break out of
-// the inline JSON-LD script tag.
-function safeJsonLd(data: unknown) {
-  return JSON.stringify(data).replace(/</g, '\\u003c')
 }
 
 type LoadState = 'loading' | 'error' | 'not-found' | 'ready'

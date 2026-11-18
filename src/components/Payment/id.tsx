@@ -1,6 +1,6 @@
-import { useEffect, useRef, useState } from 'react'
+import { useState } from 'react'
 import { QRCodeSVG } from 'qrcode.react'
-import { BLOCKCHAIN, BLOCKCHAINNAMES, CHAINIDS, COINS, CURRENCYS } from '@/packages/constants'
+import { CHAINIDS, COINS, CURRENCYS } from '@/packages/constants'
 import Image from 'next/image'
 import axios from '@/utils/http/axios'
 import { Http } from '@/utils/http/http'
@@ -35,9 +35,11 @@ import {
   Ban,
 } from 'lucide-react'
 import { GetAbosolutePathByRelative } from '@/utils/image'
-import { useAbortableEffect } from '@/hooks/useAbortableEffect'
 import { useShallow } from 'zustand/react/shallow'
 import { TransactionType } from '@/utils/types'
+import { useQueryClient } from '@tanstack/react-query'
+import { queryKeys } from '@/lib/queryClient'
+import { FAILED_STEP, useOrderPayment } from '@/hooks/queries/useOrder'
 
 const steps = [
   'Choose Payment Method',
@@ -46,50 +48,12 @@ const steps = [
   'Transaction Complete',
 ]
 
-// ---- 交易状态映射：按你后端真实枚举调整这几个值 ----
-// PENDING：用户还没付款 / 没有 tx hash
-// CONFIRMING：链上已经检测到交易，但确认数还不够｜交易进行中，等待双边确认交易配对
-// SUCCESS：确认数够了，订单完成｜双方确认交易成功，进行产品交付确认环节
-// FAILED：交易失败或出错，需要和成功严格区分，不能和 success 合并映射到同一个终态
-const PENDING_TX_STATUS = 'pending'
-const CONFIRMING_TX_STATUS = 'pending blockchain'
-const SUCCESS_TX_STATUS = 'success'
-const FAILED_TX_STATUSES = new Set(['failure', 'error'])
-
-// success failure pending error
-
-// 需要按后端 constant.FinancialStatusToString 实际字符串取值调整
-const VOIDED_STATUSES = ['voided']
-const REFUNDED_STATUSES = ['refunded', 'partially_refunded']
-
-const POLL_INTERVAL_MS = 10000
-
-// step: 0-3 沿用原有四步；FAILED_STEP 表示"支付失败"这个独立终态，
-// 不能再和 3（成功）合并，否则失败交易会被展示成"支付成功"
-const FAILED_STEP = -1
-
-function statusToStep(status: string | undefined): number {
-  if (status === undefined) return 0
-  if (status === SUCCESS_TX_STATUS) return 3
-  if (FAILED_TX_STATUSES.has(status)) return FAILED_STEP
-  if (status === CONFIRMING_TX_STATUS) return 2
-  if (status === PENDING_TX_STATUS) return 1
-  return 0
-}
-
-function isTerminalStep(step: number) {
-  return step === 3 || step === FAILED_STEP
-}
-
 const PaymentDetails = () => {
   const router = useRouter()
   const id = typeof router.query.id === 'string' ? router.query.id : ''
+  const queryClient = useQueryClient()
 
-  const [activeStep, setActiveStep] = useState(0)
-  const [order, setOrder] = useState<any>()
-  const [orderClosed, setOrderClosed] = useState(false)
-  const [loadError, setLoadError] = useState(false)
-  const [blockchains, setBlockchains] = useState<BLOCKCHAIN[]>([])
+  const [uiActiveStep, setUiActiveStep] = useState<number | null>(null)
   const [expandedChain, setExpandedChain] = useState<string | null>(null)
   const [pasteTxId, setPasteTxId] = useState<boolean>(false)
   const [txid, setTxid] = useState<string>('')
@@ -106,92 +70,20 @@ const PaymentDetails = () => {
     }))
   )
 
-  const activeStepRef = useRef(activeStep)
-  useEffect(() => {
-    activeStepRef.current = activeStep
-  }, [activeStep])
+  const orderQuery = useOrderPayment(id, router.isReady && !!id)
+  const order = orderQuery.data?.order
+  const blockchains = orderQuery.data?.blockchains ?? []
+  const orderClosed = orderQuery.data?.orderClosed ?? false
+  const activeStep = uiActiveStep ?? orderQuery.data?.activeStep ?? 0
+  const loadError = orderQuery.isError
 
-  const init = async (orderId: string, signal?: AbortSignal) => {
-    if (!orderId) return
-
-    try {
-      const response: any = await axios.get(Http.order_by_id, {
-        params: { order_id: Number(orderId) },
-        signal,
-      })
-
-      if (response.result) {
-        setLoadError(false)
-
-        const newBlockchains: BLOCKCHAIN[] = BLOCKCHAINNAMES.reduce((acc: BLOCKCHAIN[], chain) => {
-          const wallet = response.data.wallets?.find((w: any) => w.chain_id === chain.chainId)
-          if (wallet?.address) {
-            const coins = chain.coins.filter((coin) => !wallet.disable_coin?.includes(coin.name))
-            if (coins.length > 0) {
-              acc.push({ ...chain, coins })
-            }
-          }
-          return acc
-        }, [])
-
-        setBlockchains(newBlockchains)
-        setOrder(response.data)
-
-        // 订单已经被取消/退款：不管交易走到哪一步，都不应该继续展示支付流程，
-        // 防止用户在一个已作废的订单上继续转账
-        const closed =
-          VOIDED_STATUSES.includes(response.data.financial_status) ||
-          REFUNDED_STATUSES.includes(response.data.financial_status)
-        setOrderClosed(closed)
-
-        if (!closed) {
-          const tx =
-            response.data.transactions?.find((item: TransactionType) => item.select === 'true') ??
-            response.data.transactions?.find(
-              (item: TransactionType) => item.transaction_model === 'default'
-            )
-          setActiveStep(statusToStep(tx?.transaction_status))
-        }
-      } else {
-        setLoadError(true)
-        setSnackSeverity('error')
-        setSnackMessage(response.message ?? 'Failed to load order')
-        setSnackOpen(true)
-      }
-    } catch (e) {
-      if (axios.isCancel(e) || (e as any)?.code === 'ERR_CANCELED') return
-
-      setLoadError(true)
-      setSnackSeverity('error')
-      setSnackMessage('Network error occurred')
-      setSnackOpen(true)
-      console.error(e)
-    }
+  const refreshOrder = async () => {
+    await queryClient.invalidateQueries({ queryKey: queryKeys.order.detail(id) })
   }
-
-  useAbortableEffect(
-    (signal) => {
-      if (!router.isReady || !id) return
-
-      init(id, signal)
-
-      const interval = setInterval(() => {
-        // 成功和失败都是终态，都要停止轮询，不能只判断 === 3
-        if (isTerminalStep(activeStepRef.current)) {
-          clearInterval(interval)
-          return
-        }
-        init(id)
-      }, POLL_INTERVAL_MS)
-
-      return () => clearInterval(interval)
-    },
-    [router.isReady, id]
-  )
 
   const onManualRefresh = async () => {
     setManualRefreshing(true)
-    await init(id)
+    await refreshOrder()
     setSnackSeverity('success')
     setSnackMessage('Refresh successful')
     setSnackOpen(true)
@@ -208,7 +100,8 @@ const PaymentDetails = () => {
       })
 
       if (res.result) {
-        await init(id)
+        setUiActiveStep(null)
+        await refreshOrder()
       } else {
         setSnackSeverity('error')
         setSnackMessage(res.message ?? 'Failed to select payment method')
@@ -238,7 +131,8 @@ const PaymentDetails = () => {
         setSnackOpen(true)
         setPasteTxId(false)
         setTxid('')
-        await init(id)
+        setUiActiveStep(null)
+        await refreshOrder()
       } else {
         setSnackSeverity('error')
         setSnackMessage(res.message)
@@ -260,7 +154,7 @@ const PaymentDetails = () => {
       order?.transactions?.find((item: TransactionType) => item.transaction_model === 'default')
 
     if (!currentTx) {
-      setActiveStep(0)
+      setUiActiveStep(0)
       return
     }
 
@@ -275,7 +169,7 @@ const PaymentDetails = () => {
     } finally {
       setChangingMethod(false)
       setExpandedChain(null)
-      setActiveStep(0)
+      setUiActiveStep(0)
     }
   }
 
@@ -317,7 +211,7 @@ const PaymentDetails = () => {
     return (
       <div className="py-20 text-center space-y-4">
         <p className="text-muted-foreground">Failed to load payment details.</p>
-        <Button variant="outline" onClick={() => init(id)}>
+        <Button variant="outline" onClick={() => refreshOrder()}>
           <RotateCw className="mr-2 w-4 h-4" />
           Retry
         </Button>

@@ -1,10 +1,11 @@
+import type { ComponentType } from 'react'
 import { CHAINIDS } from '@/packages/constants'
 
 export interface RouteType {
   path: string
   name: string
   title: string
-  component: any
+  Component: ComponentType
   enableSidebar: boolean
   enableHomeHeader: boolean
   enableHomeFooter: boolean

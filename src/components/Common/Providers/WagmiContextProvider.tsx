@@ -1,13 +1,14 @@
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { QueryClientProvider } from '@tanstack/react-query'
 import { createAppKit } from '@reown/appkit/react'
 import { mainnet } from '@reown/appkit/networks'
 import React, { type ReactNode } from 'react'
 import { cookieToInitialState, WagmiProvider, type Config } from 'wagmi'
 import { GetAllSupportAppKitNetwork } from '@/utils/web3'
 import { WALLETCONNECT_PROJECT_ID } from '@/packages/constants'
+import { createAppQueryClient } from '@/lib/queryClient'
 import { wagmiAdapter } from './WagmiAdapter'
 
-const queryClient = new QueryClient()
+const queryClient = createAppQueryClient()
 
 const metadata = {
   name: 'Deshop',

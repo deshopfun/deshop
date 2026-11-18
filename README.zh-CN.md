@@ -24,14 +24,7 @@
 ## ✨ 核心特性
 
 - 🔗 **多链钱包接入**：通过 [Reown AppKit](https://reown.com/appkit)（原 WalletConnect）+ [wagmi](https://wagmi.sh/) / [viem](https://viem.sh/) 一键连接 EVM 系钱包（MetaMask、OKX Wallet 等）
-- 🌐 **多公链资产支持**：原生集成以下链的资产读取与交易能力
-  - EVM 系（Ethereum 及兼容链）— `ethers` / `viem` / `wagmi`
-  - Solana — `@solana/web3.js`
-  - TON — `@ton/core` / `@ton/crypto` / `@ton/ton`
-  - Bitcoin — `bitcoinjs-lib` / `bip32` / `bip39` / `ecpair` / `tiny-secp256k1`
-  - Tron — `tronweb`
-  - XRP Ledger — `xrpl`
-  - Bitcoin Cash 等 — `mainnet-js`
+- 🌐 **多链支付与浏览器链接**：结账/订单支持 EVM、Solana、TON、Bitcoin、Tron、XRP 等地址与二维码；EVM 转账通过 AppKit + wagmi
 - 📡 **实时行情/推送**：内置 WebSocket 连接，实时同步行情与订单状态
 - 🎨 **现代化 UI**：Tailwind CSS 4 + shadcn/ui + Radix UI，配合 `lucide-react` 图标库与 `swiper` 轮播组件
 - 🗂️ **轻量状态管理**：使用 [Zustand](https://zustand-demo.pmnd.rs/) 管理全局状态，[TanStack Query](https://tanstack.com/query) 处理异步数据请求与缓存
@@ -44,13 +37,13 @@
 
 | 分类       | 技术选型                                                                        |
 | ---------- | ------------------------------------------------------------------------------- |
-| 框架       | [Next.js 16](https://nextjs.org/)（App Router）+ [React 19](https://react.dev/) |
+| 框架       | [Next.js 16](https://nextjs.org/)（Pages Router）+ [React 19](https://react.dev/) |
 | 语言       | TypeScript                                                                      |
 | 样式       | Tailwind CSS 4 / shadcn/ui / Radix UI / class-variance-authority                |
 | 状态管理   | Zustand                                                                         |
 | 数据请求   | TanStack Query / Axios                                                          |
 | 钱包连接   | Reown AppKit / wagmi / viem                                                     |
-| 区块链 SDK | ethers.js、@solana/web3.js、@ton/ton、bitcoinjs-lib、tronweb、xrpl、mainnet-js  |
+| 区块链       | Reown AppKit / wagmi / viem / ethers（EVM）；多链浏览器与支付辅助                          |
 | 工具库     | decimal.js、dompurify、marked、qrcode.react、swiper                             |
 | 部署       | Docker                                                                          |
 
@@ -58,7 +51,7 @@
 
 ### 环境要求
 
-- Node.js `^16.0.0 || ^18.0.0 || >=20.0.0`
+- Node.js `>=18.18.0`
 - 包管理器：Yarn（推荐，仓库内含 `yarn.lock`）
 
 ### 1. 克隆项目
@@ -86,6 +79,8 @@ cp .env.example .env
 | -------------------------------------- | ---------------------------------------------------------------------------------------- | ---------------------------- |
 | `NEXT_PUBLIC_ENVIRONMENT`              | 运行环境标识                                                                             | `development` / `production` |
 | `NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID` | Reown / WalletConnect 项目 ID，需在 [Reown Dashboard](https://dashboard.reown.com/) 申请 | `your_project_id`            |
+| `NEXT_PUBLIC_SITE_URL`                 | 可选，sitemap 使用的站点根地址（无尾部斜杠）                                             | `https://deshop.space`       |
+| `NEXT_PUBLIC_WS_AUTH_IN_QUERY`         | 旧版聊天 WS `?token=` 鉴权（默认关闭，优先子协议）                                       | 仅 API 未升级时设为 `true`   |
 
 ### 4. 启动开发环境
 
@@ -117,7 +112,7 @@ yarn lint
 docker build -t deshop .
 
 # 运行容器
-docker run -d -p 9999:9999 --env-file .env --name deshop deshop
+docker run -d -p 9999:3000 --env-file .env --name deshop deshop
 ```
 
 或直接执行仓库内的部署脚本：

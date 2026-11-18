@@ -32,6 +32,10 @@ export type ServerEnvelope =
 
 export type ClientEnvelope =
   | {
+      type: 'auth'
+      payload: { token: string }
+    }
+  | {
       type: 'message'
       payload: { conversation_id: number; client_message_id: string; content: string }
     }
@@ -51,13 +55,21 @@ interface UseChatSocketOptions {
 const HEARTBEAT_INTERVAL_MS = 25000
 const MAX_RECONNECT_DELAY_MS = 30000
 
-// token 存在 localStorage 就走这里；如果你项目走的是 httpOnly cookie 鉴权，
-// 同源的 WebSocket 握手会自动带 cookie，这个函数可以直接返回 null，URL 里不用拼 token
+// Legacy fallback: only when NEXT_PUBLIC_WS_AUTH_IN_QUERY=true (tokens leak into access logs / Referer)
+const AUTH_IN_QUERY = process.env.NEXT_PUBLIC_WS_AUTH_IN_QUERY === 'true'
+
 function getAuthToken(): string | null {
-  // if (typeof window === 'undefined') return null
-  // return window.localStorage.getItem('Authorization')
   const { getAuth } = useUserPresistStore.getState()
-  return getAuth()
+  return getAuth() || null
+}
+
+/** Build a RFC6455-safe subprotocol carrying the bearer token (not written to URL/query logs). */
+function buildAuthProtocol(token: string): string {
+  const encoded =
+    typeof btoa === 'function'
+      ? btoa(token).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '')
+      : token
+  return `deshop.bearer.${encoded}`
 }
 
 export function useChatSocket(options: UseChatSocketOptions) {
@@ -82,13 +94,27 @@ export function useChatSocket(options: UseChatSocketOptions) {
     if (!enabledRef.current) return
 
     const token = getAuthToken()
-    const url = `${Http.baseWsHttpPath}/api/client/chat/ws${token ? `?token=${encodeURIComponent(token)}` : ''}`
-    const ws = new WebSocket(url)
+    const baseUrl = `${Http.baseWsHttpPath}/api/client/chat/ws`
+    const url =
+      AUTH_IN_QUERY && token
+        ? `${baseUrl}?token=${encodeURIComponent(token)}`
+        : baseUrl
+
+    // Prefer Sec-WebSocket-Protocol over query string so tokens are not logged in access logs / Referer.
+    // Backend should accept protocol `deshop.bearer.<base64url(token)>` and/or first-message `{ type: 'auth' }`.
+    const ws =
+      !AUTH_IN_QUERY && token
+        ? new WebSocket(url, [buildAuthProtocol(token)])
+        : new WebSocket(url)
     wsRef.current = ws
 
     ws.onopen = () => {
       setConnected(true)
       reconnectAttemptRef.current = 0
+
+      if (!AUTH_IN_QUERY && token && ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify({ type: 'auth', payload: { token } } satisfies ClientEnvelope))
+      }
 
       heartbeatTimerRef.current = setInterval(() => {
         if (ws.readyState === WebSocket.OPEN) {
@@ -156,6 +182,7 @@ export function useChatSocket(options: UseChatSocketOptions) {
   }, [options.enabled, connect, cleanup])
 
   const send = useCallback((envelope: ClientEnvelope): boolean => {
+    if (envelope.type === 'auth') return false
     if (wsRef.current?.readyState === WebSocket.OPEN) {
       wsRef.current.send(JSON.stringify(envelope))
       return true

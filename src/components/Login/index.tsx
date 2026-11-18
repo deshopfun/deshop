@@ -1,5 +1,6 @@
 import { useSnackPresistStore, useUserPresistStore } from '@/lib'
 import { useEffect, useState } from 'react'
+import { useRouter } from 'next/router'
 import { IsValidEmail } from '@/utils/verify'
 import axios from '@/utils/http/axios'
 import { Http } from '@/utils/http/http'
@@ -13,10 +14,18 @@ import { cn } from '@/lib/utils'
 import { useShallow } from 'zustand/react/shallow'
 
 const Login = () => {
+  const router = useRouter()
   const [email, setEmail] = useState('')
   const [code, setCode] = useState('')
   const [showCode, setShowCode] = useState(false)
   const [loading, setLoading] = useState(false)
+
+  const redirectTarget = (() => {
+    const raw = router.query.redirect
+    const value = typeof raw === 'string' ? raw : Array.isArray(raw) ? raw[0] : ''
+    if (!value || !value.startsWith('/') || value.startsWith('//')) return '/'
+    return value
+  })()
 
   const { setIsLogin, isLogin, setAuth, setUuid } = useUserPresistStore(
     useShallow((state) => ({
@@ -42,8 +51,8 @@ const Login = () => {
   }
 
   useEffect(() => {
-    if (isLogin) window.location.href = '/'
-  }, [])
+    if (isLogin) window.location.href = redirectTarget
+  }, [isLogin, redirectTarget])
 
   const onLogin = async () => {
     if (!email || !IsValidEmail(email)) return showError('Please enter a valid email')
@@ -58,7 +67,7 @@ const Login = () => {
           setAuth(response.data.auth)
           setUuid(response.data.uuid)
           setIsLogin(true)
-          window.location.href = '/'
+          window.location.href = redirectTarget
         } else {
           showError('Login failed, please check your code')
         }

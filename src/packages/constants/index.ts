@@ -1,5 +1,5 @@
 export * from './blockchain'
-export * from './countryState'
+// countryState is large (~17k lines) — import from '@/packages/constants/countryState' only where needed
 export * from './currency'
 export * from './general'
 export * from './market'

@@ -1,7 +1,7 @@
 import { Http } from '@/utils/http/http'
 import axios from '@/utils/http/axios'
 import { ProductStoryType, ProductType } from '@/utils/types'
-import type { GetServerSideProps } from 'next'
+import type { GetServerSideProps, GetServerSidePropsContext } from 'next'
 
 async function getProducts(): Promise<ProductType[]> {
   try {
@@ -44,6 +44,25 @@ function escapeXml(s: string) {
     .replace(/'/g, '&apos;')
 }
 
+function getSiteOrigin(req: GetServerSidePropsContext['req']): string {
+  const configured = process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, '')
+  if (configured) return configured
+
+  const forwardedProto = req.headers['x-forwarded-proto']
+  const proto = (Array.isArray(forwardedProto) ? forwardedProto[0] : forwardedProto)
+    ?.split(',')[0]
+    ?.trim()
+  const forwardedHost = req.headers['x-forwarded-host']
+  const hostHeader = (Array.isArray(forwardedHost) ? forwardedHost[0] : forwardedHost) || req.headers.host
+  const host = hostHeader?.split(',')[0]?.trim()
+
+  if (host) {
+    return `${proto || 'https'}://${host}`
+  }
+
+  return 'https://deshop.space'
+}
+
 interface SitemapUrl {
   loc: string
   lastmod?: string
@@ -51,25 +70,26 @@ interface SitemapUrl {
   priority: string
 }
 
-export const getServerSideProps: GetServerSideProps = async ({ res }) => {
+export const getServerSideProps: GetServerSideProps = async ({ res, req }) => {
+  const origin = getSiteOrigin(req)
   const products = await getProducts()
   const stories = await getStories()
 
   const staticUrls: SitemapUrl[] = [
-    { loc: window.location.origin, changefreq: 'daily', priority: '1.0' },
-    { loc: `${window.location.origin}/explore`, changefreq: 'daily', priority: '0.9' },
-    { loc: `${window.location.origin}/support`, changefreq: 'monthly', priority: '0.5' },
+    { loc: origin, changefreq: 'daily', priority: '1.0' },
+    { loc: `${origin}/explore`, changefreq: 'daily', priority: '0.9' },
+    { loc: `${origin}/support`, changefreq: 'monthly', priority: '0.5' },
   ]
 
   const productUrls = products.map((p) => ({
-    loc: `${window.location.origin}/products/${p.slug || p.product_id}`,
+    loc: `${origin}/products/${p.slug || p.product_id}`,
     lastmod: p.update_time ? new Date(p.update_time).toISOString() : undefined,
     changefreq: 'weekly',
     priority: '0.8',
   }))
 
   const storyUrls = stories.map((p) => ({
-    loc: `${window.location.origin}/story/${p.slug}`,
+    loc: `${origin}/story/${p.slug}`,
     lastmod: p.update_time ? new Date(p.update_time).toISOString() : undefined,
     changefreq: 'weekly',
     priority: '0.7',

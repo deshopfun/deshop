@@ -21,11 +21,13 @@ const snackIcons = {
 const Index = () => {
   const router = useRouter()
   const [currentRoute, setCurrentRoute] = useState<RouteType>()
+  const [authReady, setAuthReady] = useState(() => useUserPresistStore.persist.hasHydrated())
 
-  const { sidebarCollapsed, setSidebarCollapsed } = useUserPresistStore(
+  const { sidebarCollapsed, setSidebarCollapsed, isLogin } = useUserPresistStore(
     useShallow((state) => ({
       sidebarCollapsed: state.sidebarCollapsed,
       setSidebarCollapsed: state.setSidebarCollapsed,
+      isLogin: state.isLogin,
     }))
   )
 
@@ -43,14 +45,25 @@ const Index = () => {
   }
 
   useEffect(() => {
+    const unsub = useUserPresistStore.persist.onFinishHydration(() => setAuthReady(true))
+    if (useUserPresistStore.persist.hasHydrated()) setAuthReady(true)
+    return unsub
+  }, [])
+
+  useEffect(() => {
+    if (!authReady) return
+
     const route = routes.find((item) => item.path === router.pathname)
     if (!route) return
-    if (route?.needLogin) {
-      window.location.href = '/login'
+
+    if (route.needLogin && !isLogin) {
+      const redirect = encodeURIComponent(router.asPath || router.pathname)
+      window.location.href = `/login?redirect=${redirect}`
       return
     }
+
     setCurrentRoute(route)
-  }, [router.pathname])
+  }, [router.pathname, router.asPath, isLogin, authReady])
 
   useEffect(() => {
     setSnackOpen(false)
@@ -64,6 +77,14 @@ const Index = () => {
 
   const SnackIcon = snackSeverity ? snackIcons[snackSeverity]?.icon : Info
   const snackIconClass = snackSeverity ? snackIcons[snackSeverity]?.className : ''
+
+  if (!authReady || !currentRoute) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center text-sm text-muted-foreground">
+        Loading…
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -83,13 +104,17 @@ const Index = () => {
             )}
           >
             {currentRoute?.enableHomeHeader && <HomeHeader />}
-            <main className="flex-1 p-6">{currentRoute?.component || null}</main>
+            <main className="flex-1 p-6">
+              {currentRoute?.Component ? <currentRoute.Component /> : null}
+            </main>
             {currentRoute?.enableHomeFooter && <HomeFooter />}
           </div>
         </div>
       ) : (
         <div className="flex flex-col min-h-screen">
-          <main className="flex-1">{currentRoute?.component || null}</main>
+          <main className="flex-1">
+            {currentRoute?.Component ? <currentRoute.Component /> : null}
+          </main>
           {currentRoute?.enableHomeFooter && <HomeFooter />}
         </div>
       )}

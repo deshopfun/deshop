@@ -24,14 +24,7 @@ Live demo: **[deshop.space](https://deshop.space)**
 ## ✨ Key Features
 
 - 🔗 **Multi-chain wallet connection** — One-click wallet connection for EVM chains (MetaMask, OKX Wallet, etc.) via [Reown AppKit](https://reown.com/appkit) (formerly WalletConnect) + [wagmi](https://wagmi.sh/) / [viem](https://viem.sh/)
-- 🌐 **Multi-chain asset support** — Native integration for reading and transacting assets across:
-  - EVM chains (Ethereum & compatible networks) — `ethers` / `viem` / `wagmi`
-  - Solana — `@solana/web3.js`
-  - TON — `@ton/core` / `@ton/crypto` / `@ton/ton`
-  - Bitcoin — `bitcoinjs-lib` / `bip32` / `bip39` / `ecpair` / `tiny-secp256k1`
-  - Tron — `tronweb`
-  - XRP Ledger — `xrpl`
-  - Bitcoin Cash & related chains — `mainnet-js`
+- 🌐 **Multi-chain payments & explorers** — Checkout and order flows support addresses / QR across EVM, Solana, TON, Bitcoin, Tron, XRP, and more; EVM transfers use AppKit + wagmi
 - 📡 **Real-time market data** — Built-in WebSocket connection for live price feeds and order status updates
 - 🎨 **Modern UI** — Tailwind CSS 4 + shadcn/ui + Radix UI, complemented by `lucide-react` icons and `swiper` carousels
 - 🗂️ **Lightweight state management** — [Zustand](https://zustand-demo.pmnd.rs/) for global state, [TanStack Query](https://tanstack.com/query) for async data fetching and caching
@@ -44,13 +37,13 @@ Live demo: **[deshop.space](https://deshop.space)**
 
 | Category          | Technology                                                                      |
 | ----------------- | ------------------------------------------------------------------------------- |
-| Framework         | [Next.js 16](https://nextjs.org/) (App Router) + [React 19](https://react.dev/) |
+| Framework         | [Next.js 16](https://nextjs.org/) (Pages Router) + [React 19](https://react.dev/) |
 | Language          | TypeScript                                                                      |
 | Styling           | Tailwind CSS 4 / shadcn/ui / Radix UI / class-variance-authority                |
 | State Management  | Zustand                                                                         |
 | Data Fetching     | TanStack Query / Axios                                                          |
 | Wallet Connection | Reown AppKit / wagmi / viem                                                     |
-| Blockchain SDKs   | ethers.js, @solana/web3.js, @ton/ton, bitcoinjs-lib, tronweb, xrpl, mainnet-js  |
+| Blockchain        | Reown AppKit / wagmi / viem / ethers (EVM); multi-chain explorer & payment helpers |
 | Utilities         | decimal.js, dompurify, marked, qrcode.react, swiper                             |
 | Deployment        | Docker                                                                          |
 
@@ -58,7 +51,7 @@ Live demo: **[deshop.space](https://deshop.space)**
 
 ### Prerequisites
 
-- Node.js `^16.0.0 || ^18.0.0 || >=20.0.0`
+- Node.js `>=18.18.0`
 - Package manager: Yarn (recommended — the repo includes a `yarn.lock`)
 
 ### 1. Clone the repository
@@ -86,6 +79,8 @@ cp .env.example .env
 | -------------------------------------- | --------------------------------------------------------------------------------------------------- | ---------------------------- |
 | `NEXT_PUBLIC_ENVIRONMENT`              | Runtime environment identifier                                                                      | `development` / `production` |
 | `NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID` | Reown / WalletConnect project ID, obtained from the [Reown Dashboard](https://dashboard.reown.com/) | `your_project_id`            |
+| `NEXT_PUBLIC_SITE_URL`                 | Optional canonical origin for sitemap (no trailing slash)                                           | `https://deshop.space`       |
+| `NEXT_PUBLIC_WS_AUTH_IN_QUERY`         | Legacy chat WS `?token=` auth (default off; prefer subprotocol)                                     | `true` only if API not updated |
 
 ### 4. Run the development server
 
@@ -117,7 +112,7 @@ The project ships with a `Dockerfile` and a `deploy.sh` script for quick image b
 docker build -t deshop .
 
 # Run the container
-docker run -d -p 9999:9999 --env-file .env --name deshop deshop
+docker run -d -p 9999:3000 --env-file .env --name deshop deshop
 ```
 
 Or run the bundled deployment script directly:

@@ -1,9 +1,10 @@
 import { useSnackPresistStore } from '@/lib'
-import { COUNTRYPROVINCES } from '@/packages/constants/countryState'
+import type { COUNTRY } from '@/packages/constants/countryState'
 import { useEffect, useState } from 'react'
 import axios from '@/utils/http/axios'
 import { Http } from '@/utils/http/http'
 import { IsValidEmail } from '@/utils/verify'
+import type { ApiResponse } from '@/utils/http/types'
 import {
   Dialog,
   DialogContent,
@@ -73,6 +74,7 @@ export default function UserAddressDialog(props: DialogType) {
   const [province, setProvince] = useState('')
   const [zip, setZip] = useState('')
   const [loading, setLoading] = useState(false)
+  const [countries, setCountries] = useState<COUNTRY[]>([])
 
   const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore(
     useShallow((state) => ({
@@ -107,8 +109,19 @@ export default function UserAddressDialog(props: DialogType) {
     setZip(props.zip || '')
   }, [props])
 
+  useEffect(() => {
+    if (!props.openDialog || countries.length > 0) return
+    let cancelled = false
+    import('@/packages/constants/countryState').then((mod) => {
+      if (!cancelled) setCountries(mod.COUNTRYPROVINCES)
+    })
+    return () => {
+      cancelled = true
+    }
+  }, [props.openDialog, countries.length])
+
   const provinces = country
-    ? (COUNTRYPROVINCES.find((c) => c.name === country)?.provinces ?? [])
+    ? (countries.find((c) => c.name === country)?.provinces ?? [])
     : []
 
   const onClickSaveAddress = async () => {
@@ -124,12 +137,12 @@ export default function UserAddressDialog(props: DialogType) {
     if (!zip) return showError('Incorrect ZIP input')
     if (props.kind !== 'received' && props.kind !== 'delivery') return
 
-    const countryCode = COUNTRYPROVINCES.find((c) => c.name === country)?.code
+    const countryCode = countries.find((c) => c.name === country)?.code
     if (!countryCode) return showError('Incorrect country code')
 
-    const provinceCode = COUNTRYPROVINCES.find((c) => c.name === country)?.provinces.find(
-      (p) => p.name === province
-    )?.code
+    const provinceCode = countries
+      .find((c) => c.name === country)
+      ?.provinces.find((p) => p.name === province)?.code
     if (!provinceCode) return showError('Incorrect province code')
 
     const payload = {
@@ -150,7 +163,7 @@ export default function UserAddressDialog(props: DialogType) {
 
     setLoading(true)
     try {
-      let response: any
+      let response: ApiResponse<unknown>
       if (props.handle === 1) {
         response = await axios.post(Http.address, { ...payload, kind: props.kind })
       } else if (props.handle === 2) {
@@ -266,7 +279,7 @@ export default function UserAddressDialog(props: DialogType) {
                 <SelectValue placeholder="Select country" />
               </SelectTrigger>
               <SelectContent>
-                {COUNTRYPROVINCES.map((c, i) => (
+                {countries.map((c, i) => (
                   <SelectItem key={i} value={c.name}>
                     {c.name}
                   </SelectItem>

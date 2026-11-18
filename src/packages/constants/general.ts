@@ -4,3 +4,4 @@ export const ENV = process.env.NEXT_PUBLIC_ENVIRONMENT ?? 'development'
 export const IS_DEVELOPMENT = process.env.NEXT_PUBLIC_ENVIRONMENT === 'development'
 export const IS_PRODUCATION = !IS_DEVELOPMENT
 export const WALLETCONNECT_PROJECT_ID = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID
+export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, '') || 'https://deshop.space'

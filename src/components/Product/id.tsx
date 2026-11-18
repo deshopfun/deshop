@@ -1,8 +1,4 @@
-import { useCartPresistStore, useSnackPresistStore, useUserPresistStore } from '@/lib'
 import { useRouter } from 'next/router'
-import axios from '@/utils/http/axios'
-import { Http } from '@/utils/http/http'
-import { useEffect, useState } from 'react'
 import { Navigation, Pagination, Thumbs } from 'swiper/modules'
 import { Swiper, SwiperSlide } from 'swiper/react'
 // @ts-ignore
@@ -15,7 +11,7 @@ import 'swiper/css/pagination'
 import 'swiper/css/thumbs'
 import ProductRatingsDialog from '@/components/Dialog/ProductRatingsDialog'
 import RefundPolicyDialog from '@/components/Dialog/RefundPolicyDialog'
-import { COLLECT_TYPE, PRODUCT_TAB_DATAS } from '@/packages/constants'
+import { PRODUCT_TAB_DATAS } from '@/packages/constants'
 import Product from './Product'
 import ProductVariant from './Variant'
 import ProductRating from './Rating'
@@ -26,10 +22,6 @@ import {
   SpecsSection,
   FaqSection,
 } from './Productsections'
-import { CURRENCYS } from '@/packages/constants/currency'
-import { marked } from 'marked'
-import DOMPurify from 'dompurify'
-import { ProductType, ProductVariantType } from '@/utils/types'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -71,10 +63,9 @@ import Decimal from 'decimal.js'
 import VideoPlayer from '../VIdeo/VideoPlayer'
 import { GetAbosolutePathByRelative } from '@/utils/image'
 import Recommended from './Recommended'
-import { useAbortableEffect } from '@/hooks/useAbortableEffect'
 import ProductStory from './Story'
-import { useShallow } from 'zustand/react/shallow'
 import ImageLightbox from '../Image/ImageLightbox'
+import { useProductDetails } from '@/hooks/useProductDetails'
 
 // 如果全局 Header 是固定定位，把这里改成 Header 高度（px）
 const NAV_STICKY_TOP = 70
@@ -110,226 +101,52 @@ const ProductDetails = () => {
   const router = useRouter()
   const id = typeof router.query.id === 'string' ? router.query.id : ''
 
-  const [product, setProduct] = useState<ProductType>()
-  const [openRatingsDialog, setOpenRatingsDialog] = useState(false)
-  const [openRefundPolicy, setOpenRefundPolicy] = useState(false)
-  const [tabValue, setTabValue] = useState('0')
-  const [optionOneValue, setOptionOneValue] = useState('')
-  const [optionTwoValue, setOptionTwoValue] = useState('')
-  const [optionThreeValue, setOptionThreeValue] = useState('')
-  const [currentProductVariant, setCurrentProductVariant] = useState<ProductVariantType>()
-  const [isSelectOption, setIsSelectOption] = useState(false)
-  const [quantity, setQuantity] = useState(1)
-  const [thumbsSwiper, setThumbsSwiper] = useState<any>(null)
-  const [showStory, setShowStory] = useState(false)
-  const [storyHtml, setStoryHtml] = useState('')
-  const [showAbout, setShowAbout] = useState(true)
-  const [aboutExpanded, setAboutExpanded] = useState(false)
-  const [lightboxOpen, setLightboxOpen] = useState(false)
-  const [lightboxIndex, setLightboxIndex] = useState(0)
-  const [lightboxImages, setLightboxImages] = useState<string[]>([])
+  const {
+    product,
+    loading,
+    storyHtml,
+    openRatingsDialog,
+    setOpenRatingsDialog,
+    openRefundPolicy,
+    setOpenRefundPolicy,
+    tabValue,
+    setTabValue,
+    optionOneValue,
+    setOptionOneValue,
+    optionTwoValue,
+    setOptionTwoValue,
+    optionThreeValue,
+    setOptionThreeValue,
+    currentProductVariant,
+    isSelectOption,
+    quantity,
+    setQuantity,
+    thumbsSwiper,
+    setThumbsSwiper,
+    showStory,
+    setShowStory,
+    showAbout,
+    setShowAbout,
+    aboutExpanded,
+    setAboutExpanded,
+    lightboxOpen,
+    setLightboxOpen,
+    lightboxIndex,
+    setLightboxIndex,
+    lightboxImages,
+    setLightboxImages,
+    uuid,
+    isLogin,
+    currencyCode,
+    avgRating,
+    highlights,
+    onClickAddToCart,
+    onClickBuyNow,
+    onClickFavorite,
+    init,
+  } = useProductDetails(id, router.isReady)
 
-  const { uuid, isLogin } = useUserPresistStore(
-    useShallow((state) => ({
-      uuid: state.uuid,
-      isLogin: state.isLogin,
-    }))
-  )
-
-  const { addToCart: addCartLine } = useCartPresistStore(
-    useShallow((state) => ({
-      addToCart: state.addToCart,
-    }))
-  )
-
-  const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore(
-    useShallow((state) => ({
-      setSnackSeverity: state.setSnackSeverity,
-      setSnackMessage: state.setSnackMessage,
-      setSnackOpen: state.setSnackOpen,
-    }))
-  )
-
-  const showError = (msg: string) => {
-    setSnackSeverity('error')
-    setSnackMessage(msg)
-    setSnackOpen(true)
-  }
-  const showSuccess = (msg: string) => {
-    setSnackSeverity('success')
-    setSnackMessage(msg)
-    setSnackOpen(true)
-  }
-
-  const currencyCode = CURRENCYS.find((c) => c.name === product?.currency)?.code ?? ''
-
-  const init = async (id: any, signal?: AbortSignal) => {
-    try {
-      if (!id) return showError('Incorrect product id')
-      const endpoint = isLogin ? Http.product_by_login_id : Http.product_by_id
-      const isNumericId = typeof id === 'number' || /^\d+$/.test(String(id))
-      const response: any = await axios.get(endpoint, {
-        params: isNumericId ? { product_id: id } : { slug: id },
-        signal,
-      })
-      if (response.result) {
-        setProduct({
-          ...response.data,
-          render_body_html: DOMPurify.sanitize(await marked(response.data.body_html || '')),
-        })
-        setStoryHtml(
-          response.data.story?.body_html
-            ? DOMPurify.sanitize(await marked(response.data.story.body_html))
-            : ''
-        )
-      } else {
-        showError(response.message)
-      }
-    } catch (e) {
-      if (axios.isCancel(e) || (e as any)?.code === 'ERR_CANCELED') return
-      showError('Network error. Please try again later.')
-    }
-  }
-
-  const initOptionValue = async (one: string, two: string, three: string) => {
-    if (!product) return
-    let option = ''
-    switch (product.options.length) {
-      case 3:
-        if (!one || !two || !three) return
-        option = `${one},${two},${three}`
-        break
-      case 2:
-        if (!one || !two) return
-        option = `${one},${two}`
-        break
-      case 1:
-        if (!one) return
-        option = one
-        break
-      default:
-        return
-    }
-    setIsSelectOption(true)
-    try {
-      const response: any = await axios.get(Http.product_variant_by_option, {
-        params: { product_id: product.product_id, option },
-      })
-      if (response.result) {
-        setCurrentProductVariant({
-          ...response.data,
-          inventory_policy: response.data.inventory_policy,
-          taxable: response.data.taxable,
-          is_virtual: response.data.is_virtual,
-        })
-      } else {
-        setCurrentProductVariant(undefined)
-        setQuantity(1)
-      }
-    } catch {
-      showError('Network error. Please try again later.')
-    }
-  }
-
-  const buildOption = () => {
-    if (!product) return null
-    switch (product.options.length) {
-      case 3:
-        if (!optionOneValue || !optionTwoValue || !optionThreeValue) return null
-        return `${optionOneValue},${optionTwoValue},${optionThreeValue}`
-      case 2:
-        if (!optionOneValue || !optionTwoValue) return null
-        return `${optionOneValue},${optionTwoValue}`
-      case 1:
-        if (!optionOneValue) return null
-        return optionOneValue
-      default:
-        return null
-    }
-  }
-
-  const addToCart = () => {
-    if (!product || !currentProductVariant) return
-    const option = buildOption()
-    if (option === null) return
-
-    addCartLine(product.user_uuid, {
-      productId: product.product_id,
-      option,
-      quantity,
-      snapshotTitle: product.title,
-      snapshotImage: String(currentProductVariant.image ?? ''),
-      snapshotSlug: product.slug,
-    })
-  }
-
-  const onClickAddToCart = () => {
-    if (!product || !currentProductVariant) return showError('Please select a variant.')
-    if (quantity <= 0) return showError('At least one quantity is required.')
-    if (quantity > currentProductVariant.inventory_quantity)
-      return showError('Not enough stock for the selected quantity.')
-    if (uuid === product.user_uuid) return showError('Cannot buy your own products.')
-    addToCart()
-    showSuccess('Added to cart successfully')
-  }
-
-  const onClickBuyNow = () => {
-    if (!product || !currentProductVariant) return showError('Please select a variant.')
-    if (quantity <= 0) return showError('At least one quantity is required.')
-    if (quantity > currentProductVariant.inventory_quantity)
-      return showError('Not enough stock for the selected quantity.')
-    if (uuid === product.user_uuid) return showError('Cannot buy your own products.')
-    addToCart()
-    window.location.href = `/checkout/${product.user_uuid}`
-  }
-
-  const onClickFavorite = async () => {
-    if (!product?.product_id) return showError('Incorrect product id')
-    try {
-      const response: any = await axios.put(Http.collect, {
-        collect_type: COLLECT_TYPE.PRODUCT,
-        bind_id: product.product_id,
-      })
-      if (response.result) {
-        await init(id)
-      } else {
-        showError(response.message)
-      }
-    } catch {
-      showError('Network error. Please try again later.')
-    }
-  }
-
-  const avgRating = product?.ratings?.length
-    ? product.ratings
-        .reduce((s, r) => s.plus(new Decimal(r.number ?? 0)), new Decimal(0))
-        .dividedBy(product.ratings.length)
-        .toFixed(1)
-    : '0.0'
-
-  // 优先使用卖家填写的 highlights；没有时回退到 tags
-  const highlights = (
-    product?.highlights?.length
-      ? product.highlights.map((h) => h.title)
-      : (product?.tags || '')
-          .split(',')
-          .map((t) => t.trim())
-          .filter(Boolean)
-  ).slice(0, 4)
-
-  useAbortableEffect(
-    (signal) => {
-      if (!router.isReady || !id) return
-      init(id, signal)
-    },
-    [router.isReady, id]
-  )
-
-  useEffect(() => {
-    initOptionValue(optionOneValue, optionTwoValue, optionThreeValue)
-  }, [optionOneValue, optionTwoValue, optionThreeValue])
-
-  if (!product) {
+  if (loading || !product) {
     return (
       <div className="flex items-center justify-center min-h-96">
         <div className="animate-pulse text-muted-foreground text-sm">Loading product...</div>

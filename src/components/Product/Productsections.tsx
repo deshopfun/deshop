@@ -3,6 +3,8 @@ import { ArrowRight, Check, ChevronDown, ZoomIn } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { GetAbosolutePathByRelative } from '@/utils/image'
 import { ProductFaqType, ProductHighlightType, ProductSpecType } from '@/utils/types'
+import { safeJsonLd } from '@/utils/seo'
+import RemoteImage from '@/components/Image/RemoteImage'
 
 const Shell = ({ id, title, children }: { id: string; title: string; children: ReactNode }) => (
   <section
@@ -102,7 +104,14 @@ export const PlansSection = ({
         onClick={() => onOpen(src)}
         className="group relative block w-full rounded-xl overflow-hidden border border-gray-100 bg-gray-50 cursor-zoom-in"
       >
-        <img src={src} alt="Plans and pricing" className="w-full h-auto object-contain" />
+        <RemoteImage
+          src={src}
+          alt="Plans and pricing"
+          width={1200}
+          height={675}
+          className="w-full h-auto object-contain"
+          sizes="(max-width: 768px) 100vw, 720px"
+        />
         <span className="absolute bottom-3 right-3 inline-flex items-center gap-1 rounded-full bg-black/60 text-white text-xs px-2.5 py-1 opacity-0 group-hover:opacity-100 transition-opacity">
           <ZoomIn className="h-3.5 w-3.5" /> Click to enlarge
         </span>
@@ -144,8 +153,7 @@ export const SpecsSection = ({ items }: { items: ProductSpecType[] }) => (
 export const FaqSection = ({ items }: { items: ProductFaqType[] }) => {
   const [open, setOpen] = useState<number | null>(0)
 
-  // SEO：FAQPage 结构化数据（转义 < 防止 </script> 注入）
-  const jsonLd = JSON.stringify({
+  const jsonLd = safeJsonLd({
     '@context': 'https://schema.org',
     '@type': 'FAQPage',
     mainEntity: items.map((f) => ({
@@ -153,7 +161,7 @@ export const FaqSection = ({ items }: { items: ProductFaqType[] }) => {
       name: f.question,
       acceptedAnswer: { '@type': 'Answer', text: f.answer },
     })),
-  }).replace(/</g, '\\u003c')
+  })
 
   return (
     <Shell id="faq" title="Frequently asked questions">

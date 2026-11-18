@@ -1,38 +1,56 @@
-import Blockchain from '@/components/Blockchain'
-import Cart from '@/components/Cart'
-import Chat from '@/components/Chat'
-import CheckoutDetails from '@/components/Checkout/id'
-import Collect from '@/components/Collect'
-import Create from '@/components/Create'
-import DocsFees from '@/components/Docs/Fees'
-import DocsPrivacyPolicy from '@/components/Docs/PrivacyPolicy'
-import DocsTermsAndConditions from '@/components/Docs/TermsAndConditions'
-import EmailConfirm from '@/components/EmailConfirm'
-import Explore from '@/components/Explore'
-import ForgotPassword from '@/components/ForgotPassword'
-import Home from '@/components/Home'
-import Live from '@/components/Live'
-import Login from '@/components/Login'
-import ManageDetails from '@/components/Manage/id'
-import Notification from '@/components/Notification'
-import OrderDetails from '@/components/Order/id'
-import PaymentDetails from '@/components/Payment/id'
-import ProductDetails from '@/components/Product/id'
-import ProfileDetails from '@/components/Profile/id'
-import Register from '@/components/Register'
-import ReportProductDetails from '@/components/Report/Products/id'
-import Support from '@/components/Support'
+import dynamic from 'next/dynamic'
+import type { ComponentType } from 'react'
 import { RouteType } from '@/utils/types'
-import Search from '@/components/Search'
-import StoryDetails from '@/components/Story/id'
-import Welcome from '../Welcome'
+
+const PageLoading = () => (
+  <div className="flex min-h-[40vh] items-center justify-center text-sm text-muted-foreground">
+    Loading…
+  </div>
+)
+
+function lazyPage(loader: () => Promise<{ default: ComponentType<any> }>) {
+  return dynamic(loader, {
+    ssr: false,
+    loading: () => <PageLoading />,
+  })
+}
+
+const Home = lazyPage(() => import('@/components/Home'))
+const Welcome = lazyPage(() => import('../Welcome'))
+const Login = lazyPage(() => import('@/components/Login'))
+const Register = lazyPage(() => import('@/components/Register'))
+const EmailConfirm = lazyPage(() => import('@/components/EmailConfirm'))
+const ForgotPassword = lazyPage(() => import('@/components/ForgotPassword'))
+const Explore = lazyPage(() => import('@/components/Explore'))
+const Live = lazyPage(() => import('@/components/Live'))
+const Notification = lazyPage(() => import('@/components/Notification'))
+const Chat = lazyPage(() => import('@/components/Chat'))
+const ProfileDetails = lazyPage(() => import('@/components/Profile/id'))
+const Support = lazyPage(() => import('@/components/Support'))
+const Create = lazyPage(() => import('@/components/Create'))
+const ProductDetails = lazyPage(() => import('@/components/Product/id'))
+const Cart = lazyPage(() => import('@/components/Cart'))
+const Checkout = lazyPage(() => import('@/components/Checkout'))
+const CheckoutDetails = lazyPage(() => import('@/components/Checkout/id'))
+const PaymentDetails = lazyPage(() => import('@/components/Payment/id'))
+const Collect = lazyPage(() => import('@/components/Collect'))
+const OrderDetails = lazyPage(() => import('@/components/Order/id'))
+const Manage = lazyPage(() => import('@/components/Manage'))
+const ManageDetails = lazyPage(() => import('@/components/Manage/id'))
+const DocsFees = lazyPage(() => import('@/components/Docs/Fees'))
+const DocsPrivacyPolicy = lazyPage(() => import('@/components/Docs/PrivacyPolicy'))
+const DocsTermsAndConditions = lazyPage(() => import('@/components/Docs/TermsAndConditions'))
+const ReportProductDetails = lazyPage(() => import('@/components/Report/Products/id'))
+const Blockchain = lazyPage(() => import('@/components/Blockchain'))
+const Search = lazyPage(() => import('@/components/Search'))
+const StoryDetails = lazyPage(() => import('@/components/Story/id'))
 
 export const routes: RouteType[] = [
   {
     path: '/',
     name: 'Home',
     title: 'Home',
-    component: <Home />,
+    Component: Home,
     enableSidebar: true,
     enableHomeHeader: true,
     enableHomeFooter: true,
@@ -42,7 +60,7 @@ export const routes: RouteType[] = [
     path: '/welcome',
     name: 'Welcome',
     title: 'Welcome',
-    component: <Welcome />,
+    Component: Welcome,
     enableSidebar: false,
     enableHomeHeader: true,
     enableHomeFooter: true,
@@ -52,7 +70,7 @@ export const routes: RouteType[] = [
     path: '/login',
     name: 'Login',
     title: 'Login',
-    component: <Login />,
+    Component: Login,
     enableSidebar: false,
     enableHomeHeader: false,
     enableHomeFooter: false,
@@ -62,7 +80,7 @@ export const routes: RouteType[] = [
     path: '/register',
     name: 'Register',
     title: 'Register',
-    component: <Register />,
+    Component: Register,
     enableSidebar: false,
     enableHomeHeader: false,
     enableHomeFooter: false,
@@ -72,7 +90,17 @@ export const routes: RouteType[] = [
     path: '/confirm',
     name: 'Confirm',
     title: 'Email confirm',
-    component: <EmailConfirm />,
+    Component: EmailConfirm,
+    enableSidebar: false,
+    enableHomeHeader: false,
+    enableHomeFooter: false,
+    needLogin: false,
+  },
+  {
+    path: '/forgot-password',
+    name: 'ForgotPassword',
+    title: 'Forgot password',
+    Component: ForgotPassword,
     enableSidebar: false,
     enableHomeHeader: false,
     enableHomeFooter: false,
@@ -82,7 +110,7 @@ export const routes: RouteType[] = [
     path: '/explore',
     name: 'Explore',
     title: 'Explore',
-    component: <Explore />,
+    Component: Explore,
     enableSidebar: true,
     enableHomeHeader: true,
     enableHomeFooter: true,
@@ -92,7 +120,7 @@ export const routes: RouteType[] = [
     path: '/live',
     name: 'Live',
     title: 'Live',
-    component: <Live />,
+    Component: Live,
     enableSidebar: true,
     enableHomeHeader: true,
     enableHomeFooter: true,
@@ -102,27 +130,27 @@ export const routes: RouteType[] = [
     path: '/notification',
     name: 'Notification',
     title: 'Notification',
-    component: <Notification />,
+    Component: Notification,
     enableSidebar: true,
     enableHomeHeader: true,
     enableHomeFooter: true,
-    needLogin: false,
+    needLogin: true,
   },
   {
     path: '/chat',
     name: 'Chat',
     title: 'Chat',
-    component: <Chat />,
+    Component: Chat,
     enableSidebar: true,
     enableHomeHeader: true,
     enableHomeFooter: true,
-    needLogin: false,
+    needLogin: true,
   },
   {
     path: '/profile/[id]',
     name: 'Profile',
     title: 'Profile',
-    component: <ProfileDetails />,
+    Component: ProfileDetails,
     enableSidebar: true,
     enableHomeHeader: true,
     enableHomeFooter: true,
@@ -132,7 +160,7 @@ export const routes: RouteType[] = [
     path: '/support',
     name: 'Support',
     title: 'Support',
-    component: <Support />,
+    Component: Support,
     enableSidebar: true,
     enableHomeHeader: true,
     enableHomeFooter: true,
@@ -142,17 +170,17 @@ export const routes: RouteType[] = [
     path: '/create',
     name: 'Create',
     title: 'Create',
-    component: <Create />,
+    Component: Create,
     enableSidebar: true,
     enableHomeHeader: true,
     enableHomeFooter: true,
-    needLogin: false,
+    needLogin: true,
   },
   {
     path: '/products/[id]',
     name: 'Product',
     title: 'Product',
-    component: <ProductDetails />,
+    Component: ProductDetails,
     enableSidebar: true,
     enableHomeHeader: true,
     enableHomeFooter: true,
@@ -162,67 +190,87 @@ export const routes: RouteType[] = [
     path: '/cart',
     name: 'Cart',
     title: 'Cart',
-    component: <Cart />,
+    Component: Cart,
     enableSidebar: true,
     enableHomeHeader: true,
     enableHomeFooter: true,
-    needLogin: false,
+    needLogin: true,
+  },
+  {
+    path: '/checkout',
+    name: 'Checkout',
+    title: 'Checkout',
+    Component: Checkout,
+    enableSidebar: true,
+    enableHomeHeader: true,
+    enableHomeFooter: true,
+    needLogin: true,
   },
   {
     path: '/checkout/[id]',
-    name: 'Checkout',
+    name: 'CheckoutDetails',
     title: 'Checkout',
-    component: <CheckoutDetails />,
+    Component: CheckoutDetails,
     enableSidebar: true,
     enableHomeHeader: true,
     enableHomeFooter: true,
-    needLogin: false,
+    needLogin: true,
   },
   {
     path: '/payment/[id]',
     name: 'PaymentDetails',
     title: 'PaymentDetails',
-    component: <PaymentDetails />,
+    Component: PaymentDetails,
     enableSidebar: true,
     enableHomeHeader: true,
     enableHomeFooter: true,
-    needLogin: false,
+    needLogin: true,
   },
   {
     path: '/collect',
     name: 'Collect',
     title: 'Collect',
-    component: <Collect />,
+    Component: Collect,
     enableSidebar: true,
     enableHomeHeader: true,
     enableHomeFooter: true,
-    needLogin: false,
+    needLogin: true,
   },
   {
     path: '/order/[id]',
     name: 'OrderDetails',
     title: 'OrderDetails',
-    component: <OrderDetails />,
+    Component: OrderDetails,
     enableSidebar: true,
     enableHomeHeader: true,
     enableHomeFooter: true,
-    needLogin: false,
+    needLogin: true,
+  },
+  {
+    path: '/manage',
+    name: 'Manage',
+    title: 'Manage',
+    Component: Manage,
+    enableSidebar: true,
+    enableHomeHeader: true,
+    enableHomeFooter: true,
+    needLogin: true,
   },
   {
     path: '/manage/[id]',
-    name: 'Manage',
+    name: 'ManageDetails',
     title: 'Manage',
-    component: <ManageDetails />,
+    Component: ManageDetails,
     enableSidebar: true,
     enableHomeHeader: true,
     enableHomeFooter: true,
-    needLogin: false,
+    needLogin: true,
   },
   {
     path: '/docs/fees',
     name: 'Fees',
     title: 'Fees',
-    component: <DocsFees />,
+    Component: DocsFees,
     enableSidebar: true,
     enableHomeHeader: true,
     enableHomeFooter: true,
@@ -232,7 +280,7 @@ export const routes: RouteType[] = [
     path: '/docs/privacy-policy',
     name: 'Privacy policy',
     title: 'Privacy policy',
-    component: <DocsPrivacyPolicy />,
+    Component: DocsPrivacyPolicy,
     enableSidebar: true,
     enableHomeHeader: true,
     enableHomeFooter: true,
@@ -242,7 +290,7 @@ export const routes: RouteType[] = [
     path: '/docs/terms-and-conditions',
     name: 'Terms and conditions',
     title: 'Terms and conditions',
-    component: <DocsTermsAndConditions />,
+    Component: DocsTermsAndConditions,
     enableSidebar: true,
     enableHomeHeader: true,
     enableHomeFooter: true,
@@ -252,17 +300,17 @@ export const routes: RouteType[] = [
     path: '/report/products/[id]',
     name: 'ReportProductDetails',
     title: 'ReportProductDetails',
-    component: <ReportProductDetails />,
+    Component: ReportProductDetails,
     enableSidebar: true,
     enableHomeHeader: true,
     enableHomeFooter: true,
-    needLogin: false,
+    needLogin: true,
   },
   {
     path: '/blockchain',
     name: 'Blockchain',
     title: 'Blockchain',
-    component: <Blockchain />,
+    Component: Blockchain,
     enableSidebar: true,
     enableHomeHeader: true,
     enableHomeFooter: true,
@@ -272,7 +320,7 @@ export const routes: RouteType[] = [
     path: '/search',
     name: 'Search',
     title: 'Search',
-    component: <Search />,
+    Component: Search,
     enableSidebar: true,
     enableHomeHeader: true,
     enableHomeFooter: true,
@@ -282,7 +330,7 @@ export const routes: RouteType[] = [
     path: '/story/[id]',
     name: 'Story',
     title: 'Story',
-    component: <StoryDetails />,
+    Component: StoryDetails,
     enableSidebar: true,
     enableHomeHeader: true,
     enableHomeFooter: true,
