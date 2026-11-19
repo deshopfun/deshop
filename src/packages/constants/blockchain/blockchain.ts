@@ -9,7 +9,7 @@ export interface COIN {
   contractAddress?: string
   decimals: number
   displayDecimals: number
-  icon: any
+  icon: string
 }
 
 export const BITCOIN_COINS: COIN[] = [
@@ -429,7 +429,7 @@ export interface BLOCKCHAIN {
   explorerUrl?: string
   websiteUrl?: string
   rpc?: string[]
-  icon?: any
+  icon?: string
 
   coins: COIN[]
 

@@ -80,6 +80,8 @@ const ImageLightbox = ({
         </>
       )}
 
+      {/* Lightbox needs unconstrained natural sizing; next/image fights max-vh containment. */}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src={images[index]}
         alt={`preview ${index + 1}`}

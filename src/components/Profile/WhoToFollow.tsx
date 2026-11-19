@@ -1,27 +1,20 @@
-import { useState } from 'react'
-import { useRouter } from 'next/router'
-import axios from '@/utils/http/axios'
-import { Http } from '@/utils/http/http'
+import { useEffect, useState } from 'react'
 import { useSnackPresistStore } from '@/lib'
-import { useAbortableEffect } from '@/hooks/useAbortableEffect'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { User } from 'lucide-react'
 import { GetAbosolutePathByRelative } from '@/utils/image'
 import Link from 'next/link'
-import { ProfileType } from '@/utils/types'
 import { useShallow } from 'zustand/react/shallow'
+import { useRecommendToFollow, useToggleFollow } from '@/hooks/queries/useFollow'
 
 const SKELETON_ROWS = 3
 
 const WhoToFollow = () => {
-  const router = useRouter()
-  const [users, setUsers] = useState<ProfileType[]>([])
-  const [loading, setLoading] = useState(true)
-  const [loadError, setLoadError] = useState(false)
   const [followingUuids, setFollowingUuids] = useState<Set<string>>(new Set())
-  const [pendingUuid, setPendingUuid] = useState<string | null>(null)
+  const recommendQuery = useRecommendToFollow(5)
+  const toggleFollow = useToggleFollow()
 
   const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore(
     useShallow((state) => ({
@@ -31,64 +24,44 @@ const WhoToFollow = () => {
     }))
   )
 
-  const init = async (signal?: AbortSignal) => {
-    setLoading(true)
+  const users = recommendQuery.data ?? []
+  const loading = recommendQuery.isLoading
+  const loadError = recommendQuery.isError
 
-    try {
-      const response: any = await axios.get(Http.recommend_to_follow, {
-        params: { limit: 5 },
-        signal,
-      })
-
-      if (response.result) {
-        setUsers(response.data ?? [])
-        setLoadError(false)
-      } else {
-        setLoadError(true)
-      }
-    } catch (e) {
-      if (axios.isCancel(e) || (e as any)?.code === 'ERR_CANCELED') return
-
+  useEffect(() => {
+    if (recommendQuery.isError) {
       setSnackSeverity('error')
-      setSnackMessage('The network error occurred. Please try again later.')
+      setSnackMessage(
+        (recommendQuery.error as Error)?.message ||
+          'The network error occurred. Please try again later.'
+      )
       setSnackOpen(true)
-      console.error(e)
-    } finally {
-      setLoading(false)
     }
-  }
-
-  useAbortableEffect((signal) => {
-    init(signal)
-  }, [])
+  }, [
+    recommendQuery.isError,
+    recommendQuery.error,
+    setSnackSeverity,
+    setSnackMessage,
+    setSnackOpen,
+  ])
 
   const onToggleFollow = async (uuid: string) => {
-    if (pendingUuid) return
+    if (toggleFollow.isPending) return
 
     const isFollowing = followingUuids.has(uuid)
-    setPendingUuid(uuid)
-
     try {
-      const response: any = await axios.put(Http.follow, { uuid })
-
-      if (response.result) {
-        setFollowingUuids((prev) => {
-          const next = new Set(prev)
-          isFollowing ? next.delete(uuid) : next.add(uuid)
-          return next
-        })
-      } else {
-        setSnackSeverity('error')
-        setSnackMessage(response.message ?? 'Action failed')
-        setSnackOpen(true)
-      }
+      await toggleFollow.mutateAsync(uuid)
+      setFollowingUuids((prev) => {
+        const next = new Set(prev)
+        if (isFollowing) next.delete(uuid)
+        else next.add(uuid)
+        return next
+      })
     } catch (e) {
       setSnackSeverity('error')
-      setSnackMessage('Network error occurred')
+      setSnackMessage((e as Error)?.message || 'Network error occurred')
       setSnackOpen(true)
       console.error(e)
-    } finally {
-      setPendingUuid(null)
     }
   }
 
@@ -160,7 +133,7 @@ const WhoToFollow = () => {
                       size="sm"
                       variant={isFollowing ? 'outline' : 'default'}
                       onClick={() => onToggleFollow(u.uuid)}
-                      disabled={pendingUuid === u.uuid}
+                      disabled={toggleFollow.isPending && toggleFollow.variables === u.uuid}
                       className="shrink-0"
                     >
                       {isFollowing ? 'Following' : 'Follow'}
@@ -169,15 +142,6 @@ const WhoToFollow = () => {
                 )
               })}
         </div>
-        {/* {!loading && users.length > 0 && (
-          <button
-            type="button"
-            onClick={() => router.push('/discover/people')}
-            className="mt-3 text-sm text-primary hover:underline"
-          >
-            Show more
-          </button>
-        )} */}
       </CardContent>
     </Card>
   )

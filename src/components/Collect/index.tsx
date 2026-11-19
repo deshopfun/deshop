@@ -1,23 +1,18 @@
 import { useSnackPresistStore } from '@/lib'
-import { useEffect, useState } from 'react'
-import axios from '@/utils/http/axios'
-import { Http } from '@/utils/http/http'
-import { CollectType } from '@/utils/types'
-
+import { useEffect, useMemo } from 'react'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader } from '@/components/ui/card'
+import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { Separator } from '@/components/ui/separator'
-
-import { Trash2, Heart, ShoppingCart } from 'lucide-react'
+import { Trash2, Heart } from 'lucide-react'
 import { GetAbosolutePathByRelative } from '@/utils/image'
 import { useShallow } from 'zustand/react/shallow'
+import { useCollectList, useToggleCollect } from '@/hooks/queries/useCollect'
+import RemoteImage from '@/components/Image/RemoteImage'
+import Link from 'next/link'
 
 const Collect = () => {
-  const [collect, setCollect] = useState<CollectType[]>([])
-  const [collectProduct, setCollectProduct] = useState<CollectType[]>([])
-  // const [collectLive, setCollectLive] = useState<CollectType[]>([]);
-  // const [collectChat, setCollectChat] = useState<CollectType[]>([]);
+  const collectQuery = useCollectList(true)
+  const toggleCollect = useToggleCollect()
 
   const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore(
     useShallow((state) => ({
@@ -27,66 +22,33 @@ const Collect = () => {
     }))
   )
 
-  const init = async () => {
-    try {
-      const response: any = await axios.get(Http.collect)
-
-      if (response.result) {
-        const products: CollectType[] = []
-        // const lives: CollectType[] = [];
-        // const chats: CollectType[] = [];
-
-        response.data?.forEach((item: CollectType) => {
-          switch (item.collect_type) {
-            case 'product':
-              products.push(item)
-              break
-            // case "live": lives.push(item); break;
-            // case "chat": chats.push(item); break;
-          }
-        })
-
-        setCollect(response.data || [])
-        setCollectProduct(products)
-        // setCollectLive(lives);
-        // setCollectChat(chats);
-      } else {
-        setSnackSeverity('error')
-        setSnackMessage(response.message)
-        setSnackOpen(true)
-      }
-    } catch (e) {
-      setSnackSeverity('error')
-      setSnackMessage('The network error occurred. Please try again later.')
-      setSnackOpen(true)
-      console.error(e)
-    }
-  }
-
   useEffect(() => {
-    init()
-  }, [])
+    if (collectQuery.isError) {
+      setSnackSeverity('error')
+      setSnackMessage(
+        (collectQuery.error as Error)?.message ||
+          'The network error occurred. Please try again later.'
+      )
+      setSnackOpen(true)
+    }
+  }, [collectQuery.isError, collectQuery.error, setSnackSeverity, setSnackMessage, setSnackOpen])
+
+  const collectProduct = useMemo(
+    () => (collectQuery.data || []).filter((item) => item.collect_type === 'product'),
+    [collectQuery.data]
+  )
 
   const onClickDelete = async (collectType: string, bindId: number) => {
     try {
-      const response: any = await axios.put(Http.collect, {
-        collect_type: collectType,
-        bind_id: bindId,
-      })
-
-      if (response.result) {
-        await init()
-        setSnackSeverity('success')
-        setSnackMessage('Deleted successfully')
-        setSnackOpen(true)
-      } else {
-        setSnackSeverity('error')
-        setSnackMessage(response.message)
-        setSnackOpen(true)
-      }
+      await toggleCollect.mutateAsync({ collect_type: collectType, bind_id: bindId })
+      setSnackSeverity('success')
+      setSnackMessage('Deleted successfully')
+      setSnackOpen(true)
     } catch (e) {
       setSnackSeverity('error')
-      setSnackMessage('The network error occurred. Please try again later.')
+      setSnackMessage(
+        e instanceof Error ? e.message : 'The network error occurred. Please try again later.'
+      )
       setSnackOpen(true)
       console.error(e)
     }
@@ -107,19 +69,26 @@ const Collect = () => {
           </h2>
         </div>
 
-        {collectProduct.length > 0 ? (
+        {collectQuery.isLoading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <div key={i} className="h-72 rounded-xl bg-gray-100 animate-pulse" />
+            ))}
+          </div>
+        ) : collectProduct.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {collectProduct.map((item, index) => (
               <Card
-                key={index}
+                key={item.bind_id ?? index}
                 className="group overflow-hidden hover:shadow-lg transition-all duration-200 hover:-translate-y-0.5"
               >
                 <div className="relative aspect-square bg-muted">
-                  <img
+                  <RemoteImage
                     src={GetAbosolutePathByRelative(item.image_srcs?.[0], 'avatar')}
                     alt={item.title}
-                    className="w-full h-full object-cover"
-                    loading="lazy"
+                    fill
+                    sizes="(max-width: 768px) 100vw, 25vw"
+                    className="object-cover"
                   />
                   <Button
                     variant="secondary"
@@ -134,14 +103,8 @@ const Collect = () => {
                 <CardContent className="p-4 space-y-3">
                   <p className="font-semibold text-sm line-clamp-2">{item.title}</p>
                   <p className="text-muted-foreground text-sm line-clamp-3">{item.description}</p>
-                  <Button
-                    className="w-full mt-2"
-                    size="sm"
-                    onClick={() => {
-                      window.location.href = `/products/${item.slug || item.bind_id}`
-                    }}
-                  >
-                    View Product
+                  <Button asChild className="w-full mt-2" size="sm">
+                    <Link href={`/products/${item.slug || item.bind_id}`}>View Product</Link>
                   </Button>
                 </CardContent>
               </Card>

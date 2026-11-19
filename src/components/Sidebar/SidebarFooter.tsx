@@ -1,3 +1,4 @@
+import { useRouter } from 'next/router'
 import { Button } from '@/components/ui/button'
 import { Plus } from 'lucide-react'
 import { cn } from '@/lib/utils'
@@ -7,6 +8,8 @@ interface Props {
 }
 
 const SidebarFooter = ({ collapsed = false }: Props) => {
+  const router = useRouter()
+
   return (
     <div className={cn('p-3 border-t border-gray-100', collapsed && 'px-2')}>
       <Button
@@ -16,7 +19,7 @@ const SidebarFooter = ({ collapsed = false }: Props) => {
         )}
         title="Create Product"
         onClick={() => {
-          window.location.href = '/create'
+          void router.push('/create')
         }}
       >
         <Plus className="h-5 w-5 shrink-0" />

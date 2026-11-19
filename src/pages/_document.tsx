@@ -1,11 +1,10 @@
-import Document, { Html, Head, Main, NextScript } from 'next/document'
+import { Html, Head, Main, NextScript } from 'next/document'
 import { APP_NAME } from '@/packages/constants'
 
-export default function MyDocument(props: any) {
+export default function MyDocument() {
   return (
     <Html lang="en">
       <Head>
-        {/* <DocumentHeadTags {...props} /> */}
         <meta charSet="utf-8" />
         <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
         <link rel="icon" href={'/favicon.ico'} type="image/x-icon" />
@@ -24,8 +23,3 @@ export default function MyDocument(props: any) {
     </Html>
   )
 }
-
-// MyDocument.getInitialProps = async (ctx: any) => {
-//   const finalProps = await documentGetInitialProps(ctx);
-//   return finalProps;
-// };

@@ -1,4 +1,5 @@
 import { useUserPresistStore } from '@/lib'
+import { IS_PRODUCATION } from '@/packages/constants'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { Http } from '@/utils/http/http'
 
@@ -55,8 +56,16 @@ interface UseChatSocketOptions {
 const HEARTBEAT_INTERVAL_MS = 25000
 const MAX_RECONNECT_DELAY_MS = 30000
 
-// Legacy fallback: only when NEXT_PUBLIC_WS_AUTH_IN_QUERY=true (tokens leak into access logs / Referer)
-const AUTH_IN_QUERY = process.env.NEXT_PUBLIC_WS_AUTH_IN_QUERY === 'true'
+// Legacy fallback: only when NEXT_PUBLIC_WS_AUTH_IN_QUERY=true (tokens leak into access logs / Referer).
+// Forced off in production builds so a misconfigured env cannot re-enable query tokens.
+const AUTH_IN_QUERY =
+  !IS_PRODUCATION && process.env.NEXT_PUBLIC_WS_AUTH_IN_QUERY === 'true'
+
+if (IS_PRODUCATION && process.env.NEXT_PUBLIC_WS_AUTH_IN_QUERY === 'true') {
+  console.warn(
+    '[chat ws] NEXT_PUBLIC_WS_AUTH_IN_QUERY is ignored in production; use Sec-WebSocket-Protocol auth'
+  )
+}
 
 function getAuthToken(): string | null {
   const { getAuth } = useUserPresistStore.getState()

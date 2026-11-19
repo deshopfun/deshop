@@ -2,26 +2,23 @@ import { useSnackPresistStore, useUserPresistStore } from '@/lib'
 import { useRouter } from 'next/router'
 import { MANAGE_TAB_DATAS } from '@/packages/constants'
 import { useEffect, useState } from 'react'
-import axios from '@/utils/http/axios'
-import { Http } from '@/utils/http/http'
 import ManageOrder from './Order'
 import ManageWallet from './Wallet'
 import ManageNotification from './Notification'
 import ManageSetting from './Setting'
 import ManageProduct from './Product'
-import { UserType } from '@/utils/types'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
 import { ShieldAlert, LayoutDashboard } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useShallow } from 'zustand/react/shallow'
 import ManageTransaction from './Transaction'
+import { useManageUser } from '@/hooks/queries/useManage'
 
 const ManageDetails = () => {
   const router = useRouter()
   const id = typeof router.query.id === 'string' ? router.query.id : ''
   const tab = typeof router.query.tab === 'string' ? router.query.tab : ''
 
-  const [user, setUser] = useState<UserType>()
   const [tabValue, setTabValue] = useState('0')
 
   const { uuid } = useUserPresistStore(
@@ -38,11 +35,32 @@ const ManageDetails = () => {
     }))
   )
 
-  const showError = (msg: string) => {
-    setSnackSeverity('error')
-    setSnackMessage(msg)
-    setSnackOpen(true)
-  }
+  const manageUserQuery = useManageUser(!!uuid && router.isReady)
+  const user = manageUserQuery.data
+
+  useEffect(() => {
+    if (!uuid) {
+      setSnackSeverity('error')
+      setSnackMessage('Need login')
+      setSnackOpen(true)
+    }
+  }, [uuid, setSnackSeverity, setSnackMessage, setSnackOpen])
+
+  useEffect(() => {
+    if (manageUserQuery.isError) {
+      setSnackSeverity('error')
+      setSnackMessage(
+        (manageUserQuery.error as Error)?.message || 'Network error. Please try again later.'
+      )
+      setSnackOpen(true)
+    }
+  }, [
+    manageUserQuery.isError,
+    manageUserQuery.error,
+    setSnackSeverity,
+    setSnackMessage,
+    setSnackOpen,
+  ])
 
   const handleTabChange = (value: string) => {
     const tabId = MANAGE_TAB_DATAS.find((item) => item.id === Number(value))?.tabId
@@ -56,25 +74,6 @@ const ManageDetails = () => {
       setTabValue(String(tabId ?? 0))
     }
   }, [tab])
-
-  const init = async () => {
-    if (!uuid) return showError('Need login')
-    try {
-      const response: any = await axios.get(Http.user_manage)
-      if (response.result) {
-        setUser(response.data)
-      } else {
-        showError(response.message)
-      }
-    } catch {
-      showError('Network error. Please try again later.')
-    }
-  }
-
-  useEffect(() => {
-    if (!router.isReady) return
-    init()
-  }, [router.isReady])
 
   const tabComponents: Record<string, React.ReactNode> = {
     '0': <ManageProduct />,
@@ -130,13 +129,7 @@ const ManageDetails = () => {
               You don't have permission to view this management page.
             </p>
           </div>
-          <Button
-            variant="outline"
-            className="mt-2"
-            onClick={() => {
-              window.location.href = '/'
-            }}
-          >
+          <Button variant="outline" className="mt-2" onClick={() => void router.push('/')}>
             Back to Home
           </Button>
         </div>

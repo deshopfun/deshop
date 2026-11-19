@@ -1,55 +1,27 @@
-import { useSnackPresistStore, useUserPresistStore } from '@/lib'
-import { useEffect, useState } from 'react'
-import axios from '@/utils/http/axios'
-import { Http } from '@/utils/http/http'
+import { useUserPresistStore } from '@/lib'
 import { Button } from '@/components/ui/button'
 import { Bell } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { SiteLogo } from '@/components/Logo/SiteLogo'
 import { cn } from '@/lib/utils'
 import { useShallow } from 'zustand/react/shallow'
+import { useNotifications } from '@/hooks/queries/useNotifications'
+import Link from 'next/link'
 
 interface Props {
   collapsed?: boolean
 }
 
 const SidebarHeader = ({ collapsed = false }: Props) => {
-  const [notificationNumber, setNotificationNumber] = useState(0)
-
   const { isLogin } = useUserPresistStore(
     useShallow((state) => ({
       isLogin: state.isLogin,
     }))
   )
 
-  const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore(
-    useShallow((state) => ({
-      setSnackSeverity: state.setSnackSeverity,
-      setSnackMessage: state.setSnackMessage,
-      setSnackOpen: state.setSnackOpen,
-    }))
-  )
-  const init = async () => {
-    try {
-      if (!isLogin) return
-      const response: any = await axios.get(Http.user_notification)
-      if (response && response.result) {
-        const list = response.data || []
-        const count = list.filter((item: any) => item.is_read === 'false').length
-        setNotificationNumber(count)
-      } else {
-        setSnackSeverity('error')
-        setSnackMessage(response.message)
-        setSnackOpen(true)
-      }
-    } catch (e) {
-      console.error(e)
-    }
-  }
-
-  useEffect(() => {
-    init()
-  }, [])
+  const notificationsQuery = useNotifications(isLogin)
+  const notificationNumber =
+    notificationsQuery.data?.filter((item) => String(item?.is_read) === 'false').length ?? 0
 
   return (
     <div className={cn('p-3 border-b border-gray-50', collapsed && 'px-2')}>
@@ -68,11 +40,11 @@ const SidebarHeader = ({ collapsed = false }: Props) => {
               variant="ghost"
               size="icon"
               title="Notifications"
-              onClick={() => {
-                window.location.href = '/notification'
-              }}
+              asChild
             >
-              <Bell className="h-4 w-4" />
+              <Link href="/notification">
+                <Bell className="h-4 w-4" />
+              </Link>
             </Button>
             {notificationNumber > 0 && (
               <Badge className="absolute -top-1 -right-1 h-4 min-w-4 px-1 flex items-center justify-center text-[10px] bg-red-500 hover:bg-red-600">

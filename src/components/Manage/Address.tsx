@@ -1,21 +1,30 @@
 import UserAddressDialog from '@/components/Dialog/UserAddressDialog'
 import { useSnackPresistStore } from '@/lib'
 import { useEffect, useState } from 'react'
-import axios from '@/utils/http/axios'
-import { Http } from '@/utils/http/http'
 import { AddressType } from '@/utils/types'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { MapPin, Plus, Trash2, Copy, Pencil, CheckCircle2, Star } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useShallow } from 'zustand/react/shallow'
+import {
+  manageKeys,
+  useDeleteAddress,
+  useManageAddresses,
+  useSetDefaultAddress,
+} from '@/hooks/queries/useManage'
+import { useQueryClient } from '@tanstack/react-query'
 
 const ManageAddress = () => {
   const [alignment, setAlignment] = useState<'received' | 'delivery'>('received')
   const [handle, setHandle] = useState<number>(0)
-  const [addresses, setAddresses] = useState<AddressType[]>([])
   const [currentAddress, setCurrentAddress] = useState<AddressType>()
   const [openDialog, setOpenDialog] = useState(false)
+  const queryClient = useQueryClient()
+  const addressesQuery = useManageAddresses(alignment)
+  const setDefaultAddress = useSetDefaultAddress(alignment)
+  const deleteAddress = useDeleteAddress(alignment)
+  const addresses = addressesQuery.data ?? []
 
   const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore(
     useShallow((state) => ({
@@ -24,7 +33,7 @@ const ManageAddress = () => {
       setSnackOpen: state.setSnackOpen,
     }))
   )
-  
+
   const showError = (msg: string) => {
     setSnackSeverity('error')
     setSnackMessage(msg)
@@ -36,48 +45,40 @@ const ManageAddress = () => {
     setSnackOpen(true)
   }
 
-  const init = async (kind: string) => {
-    try {
-      const response: any = await axios.get(Http.address, {
-        params: { kind },
-      })
-      setAddresses(response.result ? response.data : [])
-    } catch {
-      showError('Network error. Please try again later.')
-    }
-  }
-
   useEffect(() => {
-    init('received')
-  }, [])
+    if (addressesQuery.isError) {
+      showError(
+        (addressesQuery.error as Error)?.message || 'Network error. Please try again later.'
+      )
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [addressesQuery.isError, addressesQuery.error])
+
+  const refresh = async () => {
+    await queryClient.invalidateQueries({ queryKey: manageKeys.addresses(alignment) })
+  }
 
   const handleCloseDialog = async () => {
     setCurrentAddress(undefined)
-    await init(alignment)
+    await refresh()
     setOpenDialog(false)
   }
 
   const onClickSetDefault = async (id: number, set: string) => {
     try {
-      const response: any = await axios.put(Http.address, { address_id: id, is_default: set })
-      if (response.result) {
-        await init(alignment)
-        showSuccess('Updated successfully')
-      } else showError('Update failed')
-    } catch {
-      showError('Network error. Please try again later.')
+      await setDefaultAddress.mutateAsync({ address_id: id, is_default: set })
+      showSuccess('Updated successfully')
+    } catch (e) {
+      showError(e instanceof Error ? e.message : 'Network error. Please try again later.')
     }
   }
 
   const onClickDelete = async (id: number) => {
     try {
-      const response: any = await axios.delete(Http.address, { params: { address_id: id } })
-      if (response.result) {
-        await init(alignment)
-        showSuccess('Deleted successfully')
-      } else showError('Delete failed')
-    } catch {
-      showError('Network error. Please try again later.')
+      await deleteAddress.mutateAsync(id)
+      showSuccess('Deleted successfully')
+    } catch (e) {
+      showError(e instanceof Error ? e.message : 'Network error. Please try again later.')
     }
   }
 
@@ -107,10 +108,7 @@ const ManageAddress = () => {
           {(['received', 'delivery'] as const).map((type) => (
             <button
               key={type}
-              onClick={async () => {
-                setAlignment(type)
-                await init(type)
-              }}
+              onClick={() => setAlignment(type)}
               className={cn(
                 'px-4 py-2 text-sm font-medium transition-colors capitalize',
                 alignment === type
@@ -128,7 +126,7 @@ const ManageAddress = () => {
         <div className="flex flex-col gap-3">
           {addresses.map((item, index) => (
             <Card
-              key={index}
+              key={item.address_id ?? index}
               className={cn(
                 'border-0 shadow-sm overflow-hidden transition-all',
                 item.is_default === 'true' && 'ring-2 ring-sky-400'

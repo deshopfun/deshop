@@ -1,10 +1,10 @@
 import { useSnackPresistStore, useUserPresistStore } from '@/lib'
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
+import Link from 'next/link'
 import { IsValidEmail } from '@/utils/verify'
-import axios from '@/utils/http/axios'
-import { Http } from '@/utils/http/http'
 import { SiteLogo } from '@/components/Logo/SiteLogo'
+import { useLoginByCode, useRequestLoginCode } from '@/hooks/queries/useAuth'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -18,7 +18,9 @@ const Login = () => {
   const [email, setEmail] = useState('')
   const [code, setCode] = useState('')
   const [showCode, setShowCode] = useState(false)
-  const [loading, setLoading] = useState(false)
+  const requestCode = useRequestLoginCode()
+  const loginByCode = useLoginByCode()
+  const loading = requestCode.isPending || loginByCode.isPending
 
   const redirectTarget = (() => {
     const raw = router.query.redirect
@@ -51,39 +53,27 @@ const Login = () => {
   }
 
   useEffect(() => {
-    if (isLogin) window.location.href = redirectTarget
-  }, [isLogin, redirectTarget])
+    if (isLogin) void router.replace(redirectTarget)
+  }, [isLogin, redirectTarget, router])
 
   const onLogin = async () => {
     if (!email || !IsValidEmail(email)) return showError('Please enter a valid email')
 
-    setLoading(true)
     try {
       if (showCode) {
         if (!code) return showError('Please enter the verification code')
-
-        const response: any = await axios.post(Http.login_by_code, { email, code })
-        if (response.result) {
-          setAuth(response.data.auth)
-          setUuid(response.data.uuid)
-          setIsLogin(true)
-          window.location.href = redirectTarget
-        } else {
-          showError('Login failed, please check your code')
-        }
+        const data = await loginByCode.mutateAsync({ email, code })
+        setAuth(data.auth)
+        setUuid(data.uuid)
+        setIsLogin(true)
+        void router.replace(redirectTarget)
       } else {
-        const response: any = await axios.post(Http.login, { email })
-        if (response.result) {
-          setShowCode(true)
-        } else {
-          showError('Cannot get the login code, please check your email')
-        }
+        await requestCode.mutateAsync(email)
+        setShowCode(true)
       }
     } catch (e) {
-      showError('Network error. Please try again later.')
+      showError(e instanceof Error ? e.message : 'Network error. Please try again later.')
       console.error(e)
-    } finally {
-      setLoading(false)
     }
   }
 
@@ -211,7 +201,7 @@ const Login = () => {
               variant="outline"
               className="h-11 font-medium"
               onClick={() => {
-                window.location.href = '/register'
+                void router.push('/register')
               }}
             >
               Create your account
@@ -221,13 +211,13 @@ const Login = () => {
 
         <p className="text-xs text-muted-foreground text-center">
           By signing in, you agree to our{' '}
-          <a href="/docs/terms-and-conditions" className="text-sky-500 hover:underline">
+          <Link href="/docs/terms-and-conditions" className="text-sky-500 hover:underline">
             Terms of Service
-          </a>{' '}
+          </Link>{' '}
           and{' '}
-          <a href="/docs/privacy-policy" className="text-sky-500 hover:underline">
+          <Link href="/docs/privacy-policy" className="text-sky-500 hover:underline">
             Privacy Policy
-          </a>
+          </Link>
         </p>
       </div>
     </div>

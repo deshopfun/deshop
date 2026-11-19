@@ -1,8 +1,6 @@
-import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-
-import { Video, Play, Users, Plus } from 'lucide-react';
+import { Card, CardContent } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
+import { Video, Play } from 'lucide-react'
 
 const Live = () => {
   return (
@@ -13,12 +11,8 @@ const Live = () => {
             <Video className="w-6 h-6 text-red-500" />
           </div>
           <h1 className="text-3xl font-bold tracking-tight">Live Streams</h1>
+          <Badge variant="secondary">Coming soon</Badge>
         </div>
-
-        <Button className="gap-2">
-          <Plus className="w-4 h-4" />
-          Go Live
-        </Button>
       </div>
 
       <Card className="min-h-[70vh] flex flex-col">
@@ -29,36 +23,24 @@ const Live = () => {
                 <div className="w-28 h-28 bg-muted rounded-full flex items-center justify-center">
                   <Play className="w-14 h-14 text-muted-foreground" />
                 </div>
-                <Badge className="absolute -top-1 -right-1 bg-red-500 hover:bg-red-500 text-white px-3 py-1 text-xs font-medium">
-                  LIVE
+                <Badge className="absolute -top-1 -right-1 bg-amber-500 hover:bg-amber-500 text-white px-3 py-1 text-xs font-medium">
+                  SOON
                 </Badge>
               </div>
             </div>
 
-            <h3 className="text-2xl font-semibold mb-3">No live streams right now</h3>
-            <p className="text-muted-foreground mb-8">
-              Be the first to go live or check back later when creators start streaming.
+            <h3 className="text-2xl font-semibold mb-3">Live streaming is coming soon</h3>
+            <p className="text-muted-foreground mb-2">
+              This page is a placeholder. Creator live commerce is not available yet.
             </p>
-
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button size="lg" className="gap-2">
-                <Users className="w-5 h-5" />
-                Browse Creators
-              </Button>
-              <Button variant="outline" size="lg">
-                Upcoming Streams
-              </Button>
-            </div>
+            <p className="text-sm text-muted-foreground">
+              Check back later, or explore products on the home and explore pages.
+            </p>
           </div>
         </CardContent>
       </Card>
-
-      <p className="text-center text-xs text-muted-foreground mt-6">
-        Live streaming feature is coming soon. Creators will be able to broadcast products, tutorials, and events in
-        real-time.
-      </p>
     </div>
-  );
-};
+  )
+}
 
-export default Live;
+export default Live

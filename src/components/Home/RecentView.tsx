@@ -1,5 +1,7 @@
+import { useRouter } from 'next/router'
 import { Card, CardContent } from '@/components/ui/card'
 import { Clock } from 'lucide-react'
+import RemoteImage from '@/components/Image/RemoteImage'
 
 const items = [
   {
@@ -12,6 +14,8 @@ const items = [
 ]
 
 const RecentView = () => {
+  const router = useRouter()
+
   return (
     <div className="flex flex-col gap-4">
       <div className="flex items-center gap-2">
@@ -25,14 +29,18 @@ const RecentView = () => {
             key={i}
             className="cursor-pointer hover:shadow-md hover:-translate-y-1 transition-all duration-200 overflow-hidden group"
             onClick={() => {
-              window.location.href = item.href
+              void router.push(item.href)
             }}
           >
-            <img
-              src={item.image}
-              alt={item.title}
-              className="w-full h-36 object-cover group-hover:scale-105 transition-transform duration-300"
-            />
+            <div className="relative h-36 overflow-hidden">
+              <RemoteImage
+                src={item.image}
+                alt={item.title}
+                fill
+                sizes="20vw"
+                className="object-cover group-hover:scale-105 transition-transform duration-300"
+              />
+            </div>
             <CardContent className="p-3 flex flex-col gap-1">
               <p className="text-sm font-semibold line-clamp-1">{item.title}</p>
               <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed">

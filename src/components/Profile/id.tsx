@@ -2,9 +2,7 @@ import { useSnackPresistStore, useUserPresistStore } from '@/lib'
 import { useRouter } from 'next/router'
 import { PROFILE_TAB_DATAS } from '@/packages/constants'
 import { useEffect, useState } from 'react'
-import axios from '@/utils/http/axios'
-import { Http } from '@/utils/http/http'
-import { useAbortableEffect } from '@/hooks/useAbortableEffect'
+import { useProfileByUsername } from '@/hooks/queries/useProfile'
 
 import ProfileProduct from './Product'
 import EditProfileDialog from '@/components/Dialog/EditProfileDialog'
@@ -16,8 +14,8 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Card, CardContent } from '@/components/ui/card'
-import { Coins, Edit, Globe, MessageCircle, Send, Share2, User } from 'lucide-react'
-import { ProfileType, UserType } from '@/utils/types'
+import { Coins, Edit, Share2, User } from 'lucide-react'
+import { ProfileType } from '@/utils/types'
 import { GetAbosolutePathByRelative } from '@/utils/image'
 import { cn } from '@/lib/utils'
 import WhoToFollow from './WhoToFollow'
@@ -92,7 +90,6 @@ const ProfileDetails = () => {
   const id = typeof router.query.id === 'string' ? router.query.id : ''
   const tab = typeof router.query.tab === 'string' ? router.query.tab : ''
 
-  const [user, setUser] = useState<UserType>()
   const [activeTab, setActiveTab] = useState('products')
   const [openEditProfileDialog, setOpenEditProfileDialog] = useState<boolean>(false)
   const [openTipDialog, setOpenTipDialog] = useState<boolean>(false)
@@ -119,6 +116,20 @@ const ProfileDetails = () => {
     setSnackOpen(true)
   }
 
+  const profileQuery = useProfileByUsername(id, router.isReady && !!id)
+  const user = profileQuery.data
+
+  useEffect(() => {
+    if (profileQuery.isError) {
+      toast(
+        'error',
+        (profileQuery.error as Error)?.message ||
+          'The network error occurred. Please try again later.'
+      )
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [profileQuery.isError, profileQuery.error])
+
   useEffect(() => {
     if (tab) {
       const matchedTab = PROFILE_TAB_DATAS.find((item) => item.tabId === tab)
@@ -133,41 +144,6 @@ const ProfileDetails = () => {
     })
     setActiveTab(value)
   }
-
-  const init = async (username: string, signal?: AbortSignal) => {
-    if (!username) return toast('error', 'Incorrect username input')
-
-    try {
-      const response: any = await axios.get(Http.user_profile_by_username, {
-        params: { username },
-        signal,
-      })
-
-      if (response.result) {
-        setUser({
-          profile: response.data.profile,
-          products: response.data.products,
-          followers: response.data.followers,
-          followings: response.data.followings,
-          wallets: response.data.wallets,
-        })
-      } else {
-        toast('error', response.message)
-      }
-    } catch (e) {
-      if (axios.isCancel(e) || (e as any)?.code === 'ERR_CANCELED') return
-      toast('error', 'The network error occurred. Please try again later.')
-      console.error(e)
-    }
-  }
-
-  useAbortableEffect(
-    (signal) => {
-      if (!router.isReady || !id) return
-      init(id, signal)
-    },
-    [router.isReady, id]
-  )
 
   const onCopyText = async (text: string) => {
     try {

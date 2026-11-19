@@ -1,8 +1,15 @@
-import axios, { AxiosError, InternalAxiosRequestConfig, AxiosResponse } from 'axios'
+import axios, { AxiosError, AxiosInstance, AxiosResponse, InternalAxiosRequestConfig } from 'axios'
 import { useUserPresistStore } from '@/lib'
-const { getAuth, resetUser } = useUserPresistStore.getState()
 
-axios.interceptors.request.use(
+type AppAxios = AxiosInstance & {
+  isCancel: typeof axios.isCancel
+}
+
+/** App API client — do not use bare `axios` in feature code. */
+const api = axios.create() as AppAxios
+api.isCancel = axios.isCancel
+
+api.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
     config.headers.set(
       'Content-Type',
@@ -10,7 +17,8 @@ axios.interceptors.request.use(
     )
     config.headers.set('Accept', config.headers.get('Accept') ?? 'application/json')
 
-    const auth = getAuth()
+    // Read store per-request so rehydrated / post-login auth is always current.
+    const auth = useUserPresistStore.getState().getAuth()
     if (auth) config.headers.set('Authorization', auth)
 
     config.timeout = 100_000
@@ -20,20 +28,24 @@ axios.interceptors.request.use(
   (error: AxiosError) => Promise.reject(error)
 )
 
-axios.interceptors.response.use(
+api.interceptors.response.use(
   (response: AxiosResponse) => {
     if (response.status === 200) return Promise.resolve(response.data)
     return Promise.reject(response)
   },
   (error: AxiosError) => {
     if (error.response?.status === 401) {
-      resetUser()
-      window.location.href = '/login'
-      return
-    } else {
+      useUserPresistStore.getState().resetUser()
+      if (typeof window !== 'undefined') {
+        // Interceptor is outside React; full navigation clears in-memory app state.
+        // eslint-disable-next-line @next/next/no-location-assign-relative-destination -- auth hard redirect
+        window.location.href = '/login'
+      }
       return Promise.reject(error)
     }
+    return Promise.reject(error)
   }
 )
 
-export default axios
+export const isCancel = axios.isCancel
+export default api

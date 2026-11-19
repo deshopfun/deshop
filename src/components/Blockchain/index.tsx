@@ -2,10 +2,7 @@ import { useSnackPresistStore } from '@/lib'
 import Image from 'next/image'
 import { BLOCKCHAIN, BLOCKCHAINNAMES, CURRENCYS } from '@/packages/constants'
 import { useEffect, useState } from 'react'
-import axios from '@/utils/http/axios'
-import { Http } from '@/utils/http/http'
 import { OmitMiddleString } from '@/utils/strings'
-import { BlockchainOrderType } from '@/utils/types'
 import { GetBlockchainTxUrlByChainIds } from '@/utils/web3'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -13,12 +10,17 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import { ExternalLink, ChevronRight, Wallet } from 'lucide-react'
-import { useAbortableEffect } from '@/hooks/useAbortableEffect'
 import { useShallow } from 'zustand/react/shallow'
+import { useBlockchainOrders } from '@/hooks/queries/useBlockchain'
+import { GetAbosolutePathByRelative } from '@/utils/image'
+import { navigateTo } from '@/utils/navigate'
+import { useRouter } from 'next/router'
 
 const Blockchain = () => {
-  const [blockchainOrder, setBlockchainOrder] = useState<BlockchainOrderType>()
+  const router = useRouter()
   const [selectBlockchain, setSelectBlockchain] = useState<BLOCKCHAIN>(BLOCKCHAINNAMES[0])
+  const ordersQuery = useBlockchainOrders(selectBlockchain.chainId)
+  const blockchainOrder = ordersQuery.data
 
   const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore(
     useShallow((state) => ({
@@ -28,37 +30,16 @@ const Blockchain = () => {
     }))
   )
 
-  const init = async (block: BLOCKCHAIN, signal?: AbortSignal) => {
-    try {
-      if (!block) return
-
-      const response: any = await axios.get(Http.blockchainOrder, {
-        params: { chain_id: Number(block.chainId) },
-        signal,
-      })
-
-      if (response.result) {
-        setBlockchainOrder(response.data)
-      } else {
-        setBlockchainOrder(undefined)
-      }
-    } catch (e) {
-      if (axios.isCancel(e) || (e as any)?.code === 'ERR_CANCELED') return
-
+  useEffect(() => {
+    if (ordersQuery.isError) {
       setSnackSeverity('error')
       setSnackMessage('The network error occurred. Please try again later.')
       setSnackOpen(true)
-      console.error(e)
     }
-  }
+  }, [ordersQuery.isError, setSnackSeverity, setSnackMessage, setSnackOpen])
 
-  useAbortableEffect((signal) => {
-    init(BLOCKCHAINNAMES[0], signal)
-  }, [])
-
-  const handleSelectBlockchain = async (item: BLOCKCHAIN) => {
+  const handleSelectBlockchain = (item: BLOCKCHAIN) => {
     setSelectBlockchain(item)
-    await init(item)
   }
 
   return (
@@ -84,7 +65,7 @@ const Blockchain = () => {
                 >
                   <div className="flex items-center gap-3 w-full">
                     <Image
-                      src={item.icon}
+                      src={item.icon || '/images/default_image.png'}
                       alt={item.name}
                       width={28}
                       height={28}
@@ -113,7 +94,12 @@ const Blockchain = () => {
                         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                           <div className="flex items-center gap-4">
                             <Avatar className="w-12 h-12">
-                              <AvatarImage src={(item.customer_avatar_url, 'avatar')} />
+                              <AvatarImage
+                                src={GetAbosolutePathByRelative(
+                                  item.customer_avatar_url,
+                                  'avatar'
+                                )}
+                              />
                               <AvatarFallback>👤</AvatarFallback>
                             </Avatar>
 
@@ -168,7 +154,7 @@ const Blockchain = () => {
                             <Button
                               variant="ghost"
                               size="icon"
-                              onClick={() => window.open(item.order_status_url, '_blank')}
+                              onClick={() => navigateTo(router, item.order_status_url)}
                             >
                               <ChevronRight className="w-5 h-5" />
                             </Button>

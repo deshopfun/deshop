@@ -1,17 +1,19 @@
+import { useRouter } from 'next/router'
 import { useCartPresistStore, useSnackPresistStore, useUserPresistStore } from '@/lib'
 import axios from '@/utils/http/axios'
 import { Http } from '@/utils/http/http'
 import { useEffect, useState } from 'react'
 import { COLLECT_TYPE } from '@/packages/constants'
 import { marked } from 'marked'
-import DOMPurify from 'dompurify'
 import { ProductType, ProductVariantType } from '@/utils/types'
+import { sanitizeHtml } from '@/utils/sanitizeHtml'
 import { CURRENCYS } from '@/packages/constants/currency'
 import Decimal from 'decimal.js'
 import { useShallow } from 'zustand/react/shallow'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { queryKeys } from '@/lib/queryClient'
 import type { ApiResponse } from '@/utils/http/types'
+import { useToggleCollect } from '@/hooks/queries/useCollect'
 
 type ProductDetailResult = {
   product: ProductType
@@ -32,16 +34,18 @@ async function fetchProductDetail(id: string, isLogin: boolean): Promise<Product
   return {
     product: {
       ...response.data,
-      render_body_html: DOMPurify.sanitize(await marked(response.data.body_html || '')),
+      render_body_html: sanitizeHtml(await marked(response.data.body_html || '')),
     },
     storyHtml: response.data.story?.body_html
-      ? DOMPurify.sanitize(await marked(response.data.story.body_html))
+      ? sanitizeHtml(await marked(response.data.story.body_html))
       : '',
   }
 }
 
 export function useProductDetails(id: string, routerReady: boolean) {
+  const router = useRouter()
   const queryClient = useQueryClient()
+  const toggleCollect = useToggleCollect()
 
   const [openRatingsDialog, setOpenRatingsDialog] = useState(false)
   const [openRefundPolicy, setOpenRefundPolicy] = useState(false)
@@ -52,7 +56,6 @@ export function useProductDetails(id: string, routerReady: boolean) {
   const [currentProductVariant, setCurrentProductVariant] = useState<ProductVariantType>()
   const [isSelectOption, setIsSelectOption] = useState(false)
   const [quantity, setQuantity] = useState(1)
-  const [thumbsSwiper, setThumbsSwiper] = useState<any>(null)
   const [showStory, setShowStory] = useState(false)
   const [showAbout, setShowAbout] = useState(true)
   const [aboutExpanded, setAboutExpanded] = useState(false)
@@ -141,9 +144,9 @@ export function useProductDetails(id: string, routerReady: boolean) {
       }
       setIsSelectOption(true)
       try {
-        const response: any = await axios.get(Http.product_variant_by_option, {
+        const response = (await axios.get(Http.product_variant_by_option, {
           params: { product_id: product.product_id, option },
-        })
+        })) as ApiResponse<ProductVariantType>
         if (response.result) {
           setCurrentProductVariant({
             ...response.data,
@@ -213,25 +216,21 @@ export function useProductDetails(id: string, routerReady: boolean) {
       return showError('Not enough stock for the selected quantity.')
     if (uuid === product.user_uuid) return showError('Cannot buy your own products.')
     addToCart()
-    window.location.href = `/checkout/${product.user_uuid}`
+    void router.push(`/checkout/${product.user_uuid}`)
   }
 
   const onClickFavorite = async () => {
     if (!product?.product_id) return showError('Incorrect product id')
     try {
-      const response: any = await axios.put(Http.collect, {
+      await toggleCollect.mutateAsync({
         collect_type: COLLECT_TYPE.PRODUCT,
         bind_id: product.product_id,
       })
-      if (response.result) {
-        await queryClient.invalidateQueries({
-          queryKey: queryKeys.products.detail(id, isLogin),
-        })
-      } else {
-        showError(response.message)
-      }
-    } catch {
-      showError('Network error. Please try again later.')
+      await queryClient.invalidateQueries({
+        queryKey: queryKeys.products.detail(id, isLogin),
+      })
+    } catch (e) {
+      showError(e instanceof Error ? e.message : 'Network error. Please try again later.')
     }
   }
 
@@ -251,7 +250,7 @@ export function useProductDetails(id: string, routerReady: boolean) {
           .filter(Boolean)
   ).slice(0, 4)
 
-  const init = async (_productId?: any) => {
+  const init = async (_productId?: string | number) => {
     await refreshProduct()
   }
 
@@ -275,8 +274,6 @@ export function useProductDetails(id: string, routerReady: boolean) {
     isSelectOption,
     quantity,
     setQuantity,
-    thumbsSwiper,
-    setThumbsSwiper,
     showStory,
     setShowStory,
     showAbout,

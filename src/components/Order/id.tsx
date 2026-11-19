@@ -2,11 +2,9 @@ import { useSnackPresistStore, useUserPresistStore } from '@/lib'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { CHAINIDS } from '@/packages/constants'
-import { useState } from 'react'
-import axios from '@/utils/http/axios'
-import { Http } from '@/utils/http/http'
+import { useEffect } from 'react'
 import { OmitMiddleString } from '@/utils/strings'
-import { OrderType } from '@/utils/types'
+import { useOrderById } from '@/hooks/queries/useOrder'
 import {
   FindChainNamesByChainids,
   GetBlockchainAddressUrlByChainIds,
@@ -14,7 +12,6 @@ import {
 } from '@/utils/web3'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
 import {
   ShoppingBag,
   User,
@@ -36,8 +33,10 @@ import {
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { GetAbosolutePathByRelative } from '@/utils/image'
-import { useAbortableEffect } from '@/hooks/useAbortableEffect'
+import RemoteImage from '@/components/Image/RemoteImage'
 import { useShallow } from 'zustand/react/shallow'
+import type { LucideIcon } from 'lucide-react'
+import { REFUNDED_STATUSES, VOIDED_STATUSES } from '@/utils/paymentStatus'
 
 const InfoRow = ({ label, children }: { label: string; children: React.ReactNode }) => (
   <div className="flex items-center justify-between gap-4 py-2 border-b border-dashed border-gray-100 last:border-0">
@@ -81,18 +80,14 @@ const StatusBadge = ({ state, doneText = 'Complete' }: { state: StepState; doneT
   )
 }
 
-const txStatusMap: Record<string, { label: string; icon: any; className: string }> = {
+const txStatusMap: Record<string, { label: string; icon: LucideIcon; className: string }> = {
   pending: { label: 'Pending', icon: Loader, className: 'text-blue-500' },
   failure: { label: 'Failure', icon: XCircle, className: 'text-red-500' },
   success: { label: 'Success', icon: CheckCircle2, className: 'text-green-500' },
   error: { label: 'Error', icon: AlertCircle, className: 'text-red-400' },
 }
 
-// 需要和后端 constant.FinancialStatusToString 的取值保持一致，按你实际枚举字符串调整
-const VOIDED_STATUSES = ['voided']
-const REFUNDED_STATUSES = ['refunded', 'partially_refunded']
-
-const SectionTitle = ({ icon: Icon, title }: { icon: any; title: string }) => (
+const SectionTitle = ({ icon: Icon, title }: { icon: LucideIcon; title: string }) => (
   <div className="flex items-center gap-2 mt-2 mb-1">
     <div className="h-7 w-7 rounded-lg bg-sky-50 flex items-center justify-center">
       <Icon className="h-4 w-4 text-sky-500" />
@@ -105,11 +100,10 @@ const OrderDetails = () => {
   const router = useRouter()
   const id = typeof router.query.id === 'string' ? router.query.id : ''
 
-  const [order, setOrder] = useState<OrderType>()
-  const [loading, setLoading] = useState(true)
-  const [notFound, setNotFound] = useState(false)
-  const [confirmInput, setConfirmInput] = useState('')
-  const [submitting, setSubmitting] = useState(false)
+  const orderQuery = useOrderById(id, router.isReady && !!id)
+  const order = orderQuery.data
+  const loading = orderQuery.isLoading || (orderQuery.isFetching && !order)
+  const notFound = orderQuery.isError || (!loading && router.isReady && !!id && !order)
 
   const { uuid } = useUserPresistStore(
     useShallow((state) => ({
@@ -125,41 +119,15 @@ const OrderDetails = () => {
     }))
   )
 
-  const init = async (orderId: any, signal?: AbortSignal) => {
-    if (!orderId) return
-    setLoading(true)
-    try {
-      const response: any = await axios.get(Http.order_by_id, {
-        params: { order_id: Number(orderId) },
-        signal,
-      })
-      if (response.result) {
-        setOrder(response.data)
-        setNotFound(false)
-      } else {
-        setNotFound(true)
-      }
-    } catch (e) {
-      if (axios.isCancel(e) || (e as any)?.code === 'ERR_CANCELED') return
-      setNotFound(true)
+  useEffect(() => {
+    if (orderQuery.isError) {
       setSnackSeverity('error')
-      setSnackMessage('Network error. Please try again later.')
+      setSnackMessage(
+        (orderQuery.error as Error)?.message || 'Network error. Please try again later.'
+      )
       setSnackOpen(true)
-    } finally {
-      setLoading(false)
     }
-  }
-
-  useAbortableEffect(
-    (signal) => {
-      if (!router.isReady || !id) return
-      init(id, signal)
-    },
-    [router.isReady, id]
-  )
-
-  // 三段确认后每次成功都需要重新拉取订单，保证状态和输入框都同步刷新
-  const refresh = () => init(id)
+  }, [orderQuery.isError, orderQuery.error, setSnackSeverity, setSnackMessage, setSnackOpen])
 
   if (loading) {
     return (
@@ -221,35 +189,6 @@ const OrderDetails = () => {
     { label: 'Discounts', value: order.total_discounts },
   ].filter(({ value }) => Number(value) > 0)
 
-  // 统一处理三步确认的提交，接口地址需要你按实际后端路由确认
-  const handleConfirmStep = async (
-    endpoint: string,
-    payload: Record<string, any>,
-    successMessage: string
-  ) => {
-    if (submitting) return
-    setSubmitting(true)
-    try {
-      const response: any = await axios.put(endpoint, payload)
-      if (response.result) {
-        setSnackSeverity('success')
-        setSnackMessage(successMessage)
-        setSnackOpen(true)
-        setConfirmInput('')
-        refresh()
-      } else {
-        setSnackSeverity('error')
-        setSnackMessage(response.message || 'Confirmation failed, please check the code.')
-        setSnackOpen(true)
-      }
-    } catch (e) {
-      setSnackSeverity('error')
-      setSnackMessage('Network error. Please try again later.')
-      setSnackOpen(true)
-    } finally {
-      setSubmitting(false)
-    }
-  }
 
   // 决定当前该展示的操作区（三步之外，还要处理已取消/已退款/买家支付跳转这三种终止态）
   const renderActionArea = () => {
@@ -277,77 +216,13 @@ const OrderDetails = () => {
         <Button
           className="h-12 bg-sky-500 hover:bg-sky-600 text-white font-semibold gap-2"
           onClick={() => {
-            window.location.href = `/payment/${order.order_id}`
+            void router.push(`/payment/${order.order_id}`)
           }}
         >
           <CreditCard className="h-5 w-5" /> Go to Pay
         </Button>
       )
     }
-
-    // 卖家确认收款：还未付款确认，且当前用户是卖家，需要输入 PaymentConfirmationNumber
-    // if (!paymentDone && isSeller) {
-    //   return (
-    //     <ConfirmActionCard
-    //       icon={CreditCard}
-    //       title="Confirm you received payment"
-    //       value={confirmInput}
-    //       onChange={setConfirmInput}
-    //       submitting={submitting}
-    //       onSubmit={() =>
-    //         handleConfirmStep(
-    //           Http.order_confirm, // TODO: 确认实际接口地址
-    //           {
-    //             order_id: order.order_id,
-    //             confirm_number: confirmInput,
-    //             confirm_payment_id: tx?.transaction_id,
-    //           },
-    //           'Payment confirmed.'
-    //         )
-    //       }
-    //     />
-    //   )
-    // }
-
-    // // 买家确认收货：已付款但还未确认收货，且当前用户是买家
-    // if (paymentDone && !shippingDone && isBuyer) {
-    //   return (
-    //     <ConfirmActionCard
-    //       icon={Package}
-    //       title="Confirm you received the goods"
-    //       value={confirmInput}
-    //       onChange={setConfirmInput}
-    //       submitting={submitting}
-    //       onSubmit={() =>
-    //         handleConfirmStep(
-    //           Http.order_confirm_shipping, // TODO: 确认实际接口地址
-    //           { order_id: order.order_id, confirm_number: confirmInput },
-    //           'Shipping confirmed.'
-    //         )
-    //       }
-    //     />
-    //   )
-    // }
-
-    // // 卖家最终确认完成：已确认收货但还未最终完成，且当前用户是卖家
-    // if (shippingDone && !orderDone && isSeller) {
-    //   return (
-    //     <ConfirmActionCard
-    //       icon={CheckCircle2}
-    //       title="Confirm to complete this order"
-    //       value={confirmInput}
-    //       onChange={setConfirmInput}
-    //       submitting={submitting}
-    //       onSubmit={() =>
-    //         handleConfirmStep(
-    //           Http.order_confirm, // TODO: 确认实际接口地址
-    //           { order_id: order.order_id, confirm_number: confirmInput },
-    //           'Order completed.'
-    //         )
-    //       }
-    //     />
-    //   )
-    // }
 
     // 剩下的情况：轮到对方操作，本方只需等待
     if (!orderDone) {
@@ -464,9 +339,11 @@ const OrderDetails = () => {
               href={`/products/${item.slug || item.product_id}`}
               className="flex items-center gap-3 hover:opacity-80 transition-opacity"
             >
-              <img
+              <RemoteImage
                 src={GetAbosolutePathByRelative(item.image)}
                 alt="product"
+                width={64}
+                height={64}
                 className="h-16 w-16 object-cover rounded-xl border shrink-0"
               />
               <div className="flex-1 min-w-0">
@@ -576,40 +453,5 @@ const OrderDetails = () => {
     </div>
   )
 }
-
-// 三步确认共用的操作卡片：展示要输入的确认码
-const ConfirmActionCard = ({
-  icon: Icon,
-  title,
-  value,
-  onChange,
-  onSubmit,
-  submitting,
-}: {
-  icon: any
-  title: string
-  value: string
-  onChange: (v: string) => void
-  onSubmit: () => void
-  submitting: boolean
-}) => (
-  <Card className="border-0 shadow-sm">
-    <CardContent className="p-6 flex flex-col gap-3">
-      <SectionTitle icon={Icon} title={title} />
-      <Input
-        placeholder="Enter confirmation code"
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-      />
-      <Button
-        className="h-11 bg-sky-500 hover:bg-sky-600 text-white font-semibold"
-        disabled={submitting || !value}
-        onClick={onSubmit}
-      >
-        {submitting ? 'Confirming...' : 'Confirm'}
-      </Button>
-    </CardContent>
-  </Card>
-)
 
 export default OrderDetails

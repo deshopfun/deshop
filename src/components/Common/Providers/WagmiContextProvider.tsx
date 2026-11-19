@@ -1,19 +1,15 @@
-import { QueryClientProvider } from '@tanstack/react-query'
 import { createAppKit } from '@reown/appkit/react'
 import { mainnet } from '@reown/appkit/networks'
-import React, { type ReactNode } from 'react'
+import React, { useEffect, type ReactNode } from 'react'
 import { cookieToInitialState, WagmiProvider, type Config } from 'wagmi'
 import { GetAllSupportAppKitNetwork } from '@/utils/web3'
-import { WALLETCONNECT_PROJECT_ID } from '@/packages/constants'
-import { createAppQueryClient } from '@/lib/queryClient'
+import { SITE_URL, WALLETCONNECT_PROJECT_ID } from '@/packages/constants'
 import { wagmiAdapter } from './WagmiAdapter'
-
-const queryClient = createAppQueryClient()
 
 const metadata = {
   name: 'Deshop',
   description: 'Decentralized open source product display and trading platform',
-  url: window.location.origin,
+  url: SITE_URL,
   icons: [`/favicon.ico`],
 }
 
@@ -24,14 +20,16 @@ export const networks = GetAllSupportAppKitNetwork()
 if (!networks) throw new Error('Networks ID is not defined')
 
 declare global {
-  // eslint-disable-next-line no-var
   var __APPKIT_INITIALIZED__: boolean | undefined
 }
 
-if (!globalThis.__APPKIT_INITIALIZED__) {
+function ensureAppKit() {
+  if (typeof window === 'undefined') return
+  if (globalThis.__APPKIT_INITIALIZED__) return
+
   createAppKit({
     adapters: [wagmiAdapter],
-    projectId,
+    projectId: projectId!,
     networks,
     defaultNetwork: mainnet,
     metadata,
@@ -51,11 +49,15 @@ function WagmiContextProvider({
   children: ReactNode
   cookies: string | null
 }) {
+  useEffect(() => {
+    ensureAppKit()
+  }, [])
+
   const initialState = cookieToInitialState(wagmiAdapter.wagmiConfig as Config, cookies)
 
   return (
     <WagmiProvider config={wagmiAdapter.wagmiConfig as Config} initialState={initialState}>
-      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+      {children}
     </WagmiProvider>
   )
 }

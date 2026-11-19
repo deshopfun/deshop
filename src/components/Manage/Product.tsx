@@ -1,16 +1,15 @@
+import { useEffect } from 'react'
 import { useSnackPresistStore } from '@/lib'
-import { useEffect, useState } from 'react'
-import axios from '@/utils/http/axios'
-import { Http } from '@/utils/http/http'
-import { ProductType } from '@/utils/types'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Package, Plus, ExternalLink } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { GetAbosolutePathByRelative } from '@/utils/image'
+import RemoteImage from '@/components/Image/RemoteImage'
 import { useShallow } from 'zustand/react/shallow'
 import Link from 'next/link'
+import { useManageProducts } from '@/hooks/queries/useManage'
 
 const statusConfig: Record<string, { label: string; className: string }> = {
   active: { label: 'Active', className: 'bg-green-100 text-green-700 border-green-200' },
@@ -19,8 +18,6 @@ const statusConfig: Record<string, { label: string; className: string }> = {
 }
 
 const ManageProduct = () => {
-  const [products, setProducts] = useState<ProductType[]>([])
-
   const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore(
     useShallow((state) => ({
       setSnackSeverity: state.setSnackSeverity,
@@ -29,20 +26,18 @@ const ManageProduct = () => {
     }))
   )
 
-  const init = async () => {
-    try {
-      const response: any = await axios.get(Http.product)
-      setProducts(response.result ? response.data : [])
-    } catch {
-      setSnackSeverity('error')
-      setSnackMessage('Network error. Please try again later.')
-      setSnackOpen(true)
-    }
-  }
+  const productsQuery = useManageProducts()
+  const products = productsQuery.data ?? []
 
   useEffect(() => {
-    init()
-  }, [])
+    if (productsQuery.isError) {
+      setSnackSeverity('error')
+      setSnackMessage(
+        (productsQuery.error as Error)?.message || 'Network error. Please try again later.'
+      )
+      setSnackOpen(true)
+    }
+  }, [productsQuery.isError, productsQuery.error, setSnackSeverity, setSnackMessage, setSnackOpen])
 
   return (
     <div className="flex flex-col gap-4">
@@ -54,21 +49,18 @@ const ManageProduct = () => {
           <div>
             <h3 className="font-semibold">All Products</h3>
             <p className="text-xs text-muted-foreground">
-              {products?.length} product{products?.length !== 1 ? 's' : ''}
+              {products.length} product{products.length !== 1 ? 's' : ''}
             </p>
           </div>
         </div>
-        <Button
-          className="h-9 bg-sky-500 hover:bg-sky-600 text-white gap-1.5"
-          onClick={() => {
-            window.location.href = '/create'
-          }}
-        >
-          <Plus className="h-4 w-4" /> New Product
+        <Button className="h-9 bg-sky-500 hover:bg-sky-600 text-white gap-1.5" asChild>
+          <Link href="/create">
+            <Plus className="h-4 w-4" /> New Product
+          </Link>
         </Button>
       </div>
 
-      {products?.length > 0 ? (
+      {products.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {products.map((item, index) => {
             const status = statusConfig[item.product_status ?? 'draft']
@@ -79,11 +71,13 @@ const ManageProduct = () => {
                 className="block"
               >
                 <Card className="h-full hover:shadow-md hover:-translate-y-1 transition-all duration-200 overflow-hidden group">
-                  <div className="relative overflow-hidden">
-                    <img
+                  <div className="relative h-44 overflow-hidden">
+                    <RemoteImage
                       src={GetAbosolutePathByRelative(item.images?.[0]?.src)}
                       alt={item.title}
-                      className="w-full h-44 object-cover group-hover:scale-105 transition-transform duration-300"
+                      fill
+                      sizes="(max-width: 640px) 100vw, 25vw"
+                      className="object-cover group-hover:scale-105 transition-transform duration-300"
                     />
                     <div className="absolute top-2 right-2">
                       <span
@@ -147,13 +141,10 @@ const ManageProduct = () => {
               Create your first product and start selling.
             </p>
           </div>
-          <Button
-            className="bg-sky-500 hover:bg-sky-600 text-white gap-1.5"
-            onClick={() => {
-              window.location.href = '/create'
-            }}
-          >
-            <Plus className="h-4 w-4" /> Create Product
+          <Button className="bg-sky-500 hover:bg-sky-600 text-white gap-1.5" asChild>
+            <Link href="/create">
+              <Plus className="h-4 w-4" /> Create Product
+            </Link>
           </Button>
         </div>
       )}

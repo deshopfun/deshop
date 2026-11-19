@@ -1,20 +1,7 @@
 import { useRouter } from 'next/router'
-import { Navigation, Pagination, Thumbs } from 'swiper/modules'
-import { Swiper, SwiperSlide } from 'swiper/react'
-// @ts-ignore
-import 'swiper/css'
-// @ts-ignore
-import 'swiper/css/navigation'
-// @ts-ignore
-import 'swiper/css/pagination'
-// @ts-ignore
-import 'swiper/css/thumbs'
+import dynamic from 'next/dynamic'
 import ProductRatingsDialog from '@/components/Dialog/ProductRatingsDialog'
 import RefundPolicyDialog from '@/components/Dialog/RefundPolicyDialog'
-import { PRODUCT_TAB_DATAS } from '@/packages/constants'
-import Product from './Product'
-import ProductVariant from './Variant'
-import ProductRating from './Rating'
 import {
   SectionNav,
   HighlightsSection,
@@ -26,7 +13,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
+import OwnerTabs from './OwnerTabs'
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -39,63 +26,37 @@ import {
   Mail,
   Flag,
   Star,
-  ShoppingCart,
-  Zap,
-  Minus,
-  Plus,
   Link2,
   RefreshCcw,
   Tag,
   Coins,
   Receipt,
   AlertCircle,
-  PackageX,
   ExternalLink,
   ShieldCheck,
   Check,
-  BookOpen,
-  ChevronDown,
-  ZoomIn,
   ArrowRight,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import Decimal from 'decimal.js'
-import VideoPlayer from '../VIdeo/VideoPlayer'
+import VideoPlayer from '../Video/VideoPlayer'
 import { GetAbosolutePathByRelative } from '@/utils/image'
 import Recommended from './Recommended'
-import ProductStory from './Story'
 import ImageLightbox from '../Image/ImageLightbox'
 import { useProductDetails } from '@/hooks/useProductDetails'
+import { NAV_STICKY_TOP, PriceRow } from './ProductDetailParts'
+import ProductReviewsSection from './ProductReviewsSection'
+import ProductPurchasePanel from './ProductPurchasePanel'
+import ProductAboutSection from './ProductAboutSection'
+import ProductStorySection from './ProductStorySection'
+import { navigateTo } from '@/utils/navigate'
 
-// 如果全局 Header 是固定定位，把这里改成 Header 高度（px）
-const NAV_STICKY_TOP = 70
-
-const RatingBar = ({ star, ratings }: { star: number; ratings: any[] }) => {
-  const count = ratings.filter((r) => r.number === star).length
-  const percent = ratings.length > 0 ? (count / ratings.length) * 100 : 0
-  return (
-    <div className="flex items-center gap-2">
-      <span className="text-xs text-muted-foreground w-3 tabular-nums">{star}</span>
-      <div className="flex-1 h-1.5 bg-gray-100 rounded-full overflow-hidden">
-        <div
-          className="h-full bg-amber-400 rounded-full transition-all duration-500"
-          style={{ width: `${percent}%` }}
-        />
-      </div>
-      <span className="text-xs text-muted-foreground w-5 text-right tabular-nums">{count}</span>
-    </div>
-  )
-}
-
-const PriceRow = ({ icon: Icon, label, value }: { icon: any; label: string; value: string }) => (
-  <div className="flex items-center justify-between py-2">
-    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-      <Icon className="h-3.5 w-3.5" />
-      {label}
-    </div>
-    <span className="text-sm font-medium text-gray-800">{value}</span>
-  </div>
-)
+const ProductGallery = dynamic(() => import('./ProductGallery'), {
+  ssr: false,
+  loading: () => (
+    <div className="min-h-[320px] sm:min-h-[420px] animate-pulse bg-gray-100 rounded-2xl" />
+  ),
+})
 
 const ProductDetails = () => {
   const router = useRouter()
@@ -121,8 +82,6 @@ const ProductDetails = () => {
     isSelectOption,
     quantity,
     setQuantity,
-    thumbsSwiper,
-    setThumbsSwiper,
     showStory,
     setShowStory,
     showAbout,
@@ -164,7 +123,7 @@ const ProductDetails = () => {
         <p className="text-muted-foreground text-sm max-w-sm">
           This product does not exist or has been removed.
         </p>
-        <Button onClick={() => (window.location.href = '/')}>Back to Home</Button>
+        <Button onClick={() => router.push('/')}>Back to Home</Button>
       </div>
     )
   }
@@ -228,74 +187,13 @@ const ProductDetails = () => {
           )}
 
           <div className="rounded-2xl overflow-hidden border border-gray-100 bg-gray-50 shadow-sm">
-            {isSelectOption && currentProductVariant?.image ? (
-              <div className="flex justify-center items-center p-6 min-h-[320px] sm:min-h-[420px]">
-                <img
-                  src={GetAbosolutePathByRelative(currentProductVariant.image)}
-                  alt="variant"
-                  className="max-h-[380px] object-contain rounded-xl cursor-zoom-in"
-                  onClick={() =>
-                    openLightbox([GetAbosolutePathByRelative(currentProductVariant.image)])
-                  }
-                />
-              </div>
-            ) : (
-              <>
-                <Swiper
-                  navigation
-                  pagination={{ clickable: true }}
-                  modules={[Navigation, Pagination, Thumbs]}
-                  thumbs={{ swiper: thumbsSwiper && !thumbsSwiper.destroyed ? thumbsSwiper : null }}
-                  className="min-h-[320px] sm:min-h-[420px]"
-                >
-                  {product.images?.map((item, i) => (
-                    <SwiperSlide key={i}>
-                      <div className="group relative flex justify-center items-center p-6 min-h-[320px] sm:min-h-[420px]">
-                        <img
-                          src={GetAbosolutePathByRelative(item.src)}
-                          alt={`${product.title} ${i + 1}`}
-                          className="max-h-[380px] object-contain rounded-xl cursor-zoom-in"
-                          onClick={() =>
-                            openLightbox(
-                              product.images.map((img) => GetAbosolutePathByRelative(img.src)),
-                              i
-                            )
-                          }
-                        />
-                        <span className="pointer-events-none absolute bottom-3 right-3 h-8 w-8 rounded-full bg-black/50 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                          <ZoomIn className="h-4 w-4" />
-                        </span>
-                      </div>
-                    </SwiperSlide>
-                  ))}
-                </Swiper>
-
-                {product.images && product.images.length > 1 && (
-                  <div className="px-3 pb-3">
-                    <Swiper
-                      onSwiper={setThumbsSwiper}
-                      spaceBetween={8}
-                      slidesPerView={5}
-                      watchSlidesProgress
-                      modules={[Thumbs]}
-                      className="thumbs-swiper"
-                    >
-                      {product.images.map((item, i) => (
-                        <SwiperSlide key={i} className="cursor-pointer">
-                          <div className="aspect-square rounded-lg overflow-hidden border-2 border-transparent hover:border-sky-400 transition-colors bg-white">
-                            <img
-                              src={GetAbosolutePathByRelative(item.src)}
-                              alt=""
-                              className="w-full h-full object-cover"
-                            />
-                          </div>
-                        </SwiperSlide>
-                      ))}
-                    </Swiper>
-                  </div>
-                )}
-              </>
-            )}
+            <ProductGallery
+              title={product.title}
+              images={product.images}
+              isSelectOption={isSelectOption}
+              currentProductVariant={currentProductVariant}
+              onOpenLightbox={openLightbox}
+            />
           </div>
         </div>
 
@@ -305,7 +203,7 @@ const ProductDetails = () => {
               <button
                 type="button"
                 className="flex items-center gap-2.5 group"
-                onClick={() => (window.location.href = `/profile/${product.username}`)}
+                onClick={() => router.push(`/profile/${product.username}`)}
               >
                 <Avatar className="h-9 w-9 border border-gray-100">
                   <AvatarImage
@@ -348,15 +246,15 @@ const ProductDetails = () => {
                     </button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="w-52">
-                    <DropdownMenuItem
-                      onClick={() => (window.location.href = `mailto:${product.user_email}`)}
-                    >
-                      <Mail className="mr-2 h-4 w-4" /> Contact seller
+                    <DropdownMenuItem asChild>
+                      <a href={`mailto:${product.user_email}`}>
+                        <Mail className="mr-2 h-4 w-4" /> Contact seller
+                      </a>
                     </DropdownMenuItem>
                     <DropdownMenuItem
                       className="text-red-500 focus:text-red-500"
                       onClick={() =>
-                        (window.location.href = `/report/products/${product.product_id}`)
+                        router.push(`/report/products/${product.product_id}`)
                       }
                     >
                       <Flag className="mr-2 h-4 w-4" /> Report product
@@ -503,144 +401,23 @@ const ProductDetails = () => {
                   </Card>
                 )}
 
-                {product.options?.map((item, index) => (
-                  <div key={index} className="flex flex-col gap-2.5">
-                    <div className="flex items-center justify-between">
-                      <h3 className="text-sm font-semibold text-gray-900">{item.name}</h3>
-                      <span className="text-xs text-muted-foreground">
-                        {index === 0
-                          ? optionOneValue
-                          : index === 1
-                            ? optionTwoValue
-                            : optionThreeValue || 'Select'}
-                      </span>
-                    </div>
-                    <div className="flex flex-wrap gap-2">
-                      {item.value.split(',').map((val, vi) => {
-                        const isSelected =
-                          (index === 0 && val === optionOneValue) ||
-                          (index === 1 && val === optionTwoValue) ||
-                          (index === 2 && val === optionThreeValue)
-                        return (
-                          <button
-                            key={vi}
-                            type="button"
-                            onClick={() => {
-                              if (index === 0) setOptionOneValue(val)
-                              else if (index === 1) setOptionTwoValue(val)
-                              else setOptionThreeValue(val)
-                            }}
-                            className={cn(
-                              'px-4 py-2 rounded-xl text-sm font-medium border transition-all duration-150',
-                              isSelected
-                                ? 'bg-sky-500 text-white border-sky-500 shadow-sm shadow-sky-200'
-                                : 'border-gray-200 text-gray-700 hover:border-sky-300 hover:bg-sky-50'
-                            )}
-                          >
-                            {val}
-                          </button>
-                        )
-                      })}
-                    </div>
-                  </div>
-                ))}
-
-                {product.product_status === 'active' &&
-                  isSelectOption &&
-                  (canBuy ? (
-                    <div className="flex flex-col gap-3">
-                      <div className="flex items-center gap-3 flex-wrap">
-                        <span className="text-sm font-semibold">Quantity</span>
-                        <div className="flex items-center border border-gray-200 rounded-xl overflow-hidden bg-white">
-                          <button
-                            type="button"
-                            className="h-10 w-10 flex items-center justify-center hover:bg-gray-50 disabled:opacity-40"
-                            disabled={quantity <= 1}
-                            onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-                          >
-                            <Minus className="h-4 w-4" />
-                          </button>
-                          <input
-                            type="text"
-                            inputMode="numeric"
-                            value={quantity}
-                            className="w-12 h-10 text-center text-sm font-semibold bg-transparent outline-none border-x border-gray-200"
-                            onChange={(e) => {
-                              const raw = e.target.value.replace(/\D/g, '')
-                              if (raw === '') {
-                                setQuantity('' as unknown as number)
-                                return
-                              }
-                              setQuantity(
-                                Math.min(currentProductVariant!.inventory_quantity, Number(raw))
-                              )
-                            }}
-                            onBlur={() => {
-                              setQuantity((q) => {
-                                const num = Number(q)
-                                if (!num || num < 1) return 1
-                                return Math.min(currentProductVariant!.inventory_quantity, num)
-                              })
-                            }}
-                          />
-                          <button
-                            type="button"
-                            className="h-10 w-10 flex items-center justify-center hover:bg-gray-50 disabled:opacity-40"
-                            disabled={quantity >= currentProductVariant!.inventory_quantity}
-                            onClick={() =>
-                              setQuantity((q) =>
-                                Math.min(currentProductVariant!.inventory_quantity, q + 1)
-                              )
-                            }
-                          >
-                            <Plus className="h-4 w-4" />
-                          </button>
-                        </div>
-                        <button
-                          type="button"
-                          className="text-xs text-sky-600 hover:underline font-medium"
-                          onClick={() => setQuantity(1)}
-                        >
-                          Min
-                        </button>
-                        <button
-                          type="button"
-                          className="text-xs text-sky-600 hover:underline font-medium"
-                          onClick={() => setQuantity(currentProductVariant!.inventory_quantity)}
-                        >
-                          Max ({currentProductVariant!.inventory_quantity})
-                        </button>
-                      </div>
-
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                        <Button
-                          className="h-12 bg-sky-500 hover:bg-sky-600 text-white font-semibold gap-2 rounded-xl shadow-sm shadow-sky-200"
-                          onClick={onClickAddToCart}
-                        >
-                          <ShoppingCart className="h-4 w-4" /> Add to cart
-                        </Button>
-                        <Button
-                          className="h-12 bg-gray-900 hover:bg-gray-800 text-white font-semibold gap-2 rounded-xl"
-                          onClick={onClickBuyNow}
-                        >
-                          <Zap className="h-4 w-4" /> Buy now
-                        </Button>
-                      </div>
-                    </div>
-                  ) : (
-                    isSelectOption && (
-                      <div className="flex items-center gap-3 px-4 py-3.5 bg-red-50 text-red-600 rounded-xl">
-                        <PackageX className="h-5 w-5 shrink-0" />
-                        <p className="text-sm font-medium">Sorry, this product is sold out.</p>
-                      </div>
-                    )
-                  ))}
-
-                {!isSelectOption && product.options?.length > 0 && (
-                  <p className="text-sm text-muted-foreground">
-                    Select options to see price and buy.
-                  </p>
-                )}
+                <ProductPurchasePanel
+                  options={product.options}
+                  optionOneValue={optionOneValue}
+                  optionTwoValue={optionTwoValue}
+                  optionThreeValue={optionThreeValue}
+                  setOptionOneValue={setOptionOneValue}
+                  setOptionTwoValue={setOptionTwoValue}
+                  setOptionThreeValue={setOptionThreeValue}
+                  productStatus={product.product_status}
+                  isSelectOption={isSelectOption}
+                  canBuy={!!canBuy}
+                  quantity={quantity}
+                  setQuantity={setQuantity}
+                  currentProductVariant={currentProductVariant}
+                  onAddToCart={onClickAddToCart}
+                  onBuyNow={onClickBuyNow}
+                />
               </>
             )}
 
@@ -649,7 +426,7 @@ const ProductDetails = () => {
                 <Button
                   variant="outline"
                   className="flex-1 gap-2 rounded-xl h-10 bg-gray-50 bg-sky-500 hover:bg-sky-600 text-white hover:text-white"
-                  onClick={() => (window.location.href = product.plan_image_website)}
+                  onClick={() => navigateTo(router, product.plan_image_website)}
                 >
                   Go to Buy Now <ArrowRight className="h-4 w-4" />
                 </Button>
@@ -660,7 +437,7 @@ const ProductDetails = () => {
               <Button
                 variant="outline"
                 className="flex-1 gap-2 rounded-xl h-10"
-                onClick={() => (window.location.href = `/profile/${product.username}`)}
+                onClick={() => router.push(`/profile/${product.username}`)}
               >
                 <Link2 className="h-4 w-4" /> More from {product.username}
               </Button>
@@ -681,66 +458,13 @@ const ProductDetails = () => {
       {navItems.length > 2 && <SectionNav items={navItems} stickyTop={NAV_STICKY_TOP} />}
 
       {product.render_body_html && (
-        <section
-          id="overview"
-          className="scroll-mt-32 rounded-2xl border border-gray-100 bg-white p-6 sm:p-8 shadow-sm"
-        >
-          <button
-            type="button"
-            aria-expanded={showAbout}
-            onClick={() => setShowAbout((v) => !v)}
-            className="w-full flex items-center justify-between gap-4 text-left group"
-          >
-            <h2 className="text-lg font-bold text-gray-900 group-hover:text-sky-600 transition-colors">
-              About this product
-            </h2>
-            <span className="shrink-0 flex items-center gap-1 text-xs font-medium text-sky-600">
-              {showAbout ? 'Hide' : 'Show'}
-              <ChevronDown
-                className={cn(
-                  'h-4 w-4 transition-transform duration-200',
-                  showAbout && 'rotate-180'
-                )}
-              />
-            </span>
-          </button>
-
-          {showAbout && (
-            <div className="mt-4">
-              <div
-                className={cn(
-                  'relative',
-                  !aboutExpanded && product.render_body_html.length > 800
-                    ? 'max-h-64 overflow-hidden'
-                    : ''
-                )}
-              >
-                <div
-                  className="text-sm text-gray-600 leading-relaxed prose prose-sm max-w-none prose-headings:text-gray-900 prose-a:text-sky-600"
-                  dangerouslySetInnerHTML={{ __html: product.render_body_html }}
-                />
-                {!aboutExpanded && product.render_body_html.length > 800 && (
-                  <div className="pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-white to-transparent" />
-                )}
-              </div>
-              {product.render_body_html.length > 800 && (
-                <button
-                  type="button"
-                  onClick={() => setAboutExpanded((v) => !v)}
-                  className="mt-3 flex items-center gap-1 text-xs font-medium text-sky-600 hover:underline"
-                >
-                  {aboutExpanded ? 'Show less' : 'Show more'}
-                  <ChevronDown
-                    className={cn(
-                      'h-3.5 w-3.5 transition-transform duration-200',
-                      aboutExpanded && 'rotate-180'
-                    )}
-                  />
-                </button>
-              )}
-            </div>
-          )}
-        </section>
+        <ProductAboutSection
+          html={product.render_body_html}
+          showAbout={showAbout}
+          setShowAbout={setShowAbout}
+          aboutExpanded={aboutExpanded}
+          setAboutExpanded={setAboutExpanded}
+        />
       )}
 
       {!!product.highlights?.length && <HighlightsSection items={product.highlights} />}
@@ -759,173 +483,20 @@ const ProductDetails = () => {
       {!!product.faqs?.length && <FaqSection items={product.faqs} />}
 
       {hasStory && product.story && (
-        <section
-          id="story"
-          className="scroll-mt-32 rounded-2xl border border-gray-100 bg-white p-6 sm:p-8 shadow-sm"
-        >
-          <div className="flex items-start gap-4">
-            <button
-              type="button"
-              aria-expanded={showStory}
-              onClick={() => setShowStory((v) => !v)}
-              className="flex-1 min-w-0 flex items-start justify-between gap-4 text-left group"
-            >
-              <div className="flex flex-col gap-1.5 min-w-0">
-                <div className="flex items-center gap-2 text-xs font-medium text-sky-600">
-                  <BookOpen className="h-3.5 w-3.5" />
-                  Product Story
-                  {product.story.story_status !== 'active' && (
-                    <Badge variant="outline" className="text-[10px] font-normal">
-                      {product.story.story_status}
-                    </Badge>
-                  )}
-                </div>
-                <h2 className="text-lg sm:text-xl font-bold text-gray-900 leading-snug group-hover:text-sky-600 transition-colors">
-                  {product.story.title}
-                </h2>
-                {product.story.sub_title && (
-                  <p className="text-sm text-muted-foreground">{product.story.sub_title}</p>
-                )}
-              </div>
-
-              <span className="shrink-0 flex items-center gap-1 text-xs font-medium text-sky-600 mt-1">
-                {showStory ? 'Hide' : 'Read story'}
-                <ChevronDown
-                  className={cn(
-                    'h-4 w-4 transition-transform duration-200',
-                    showStory && 'rotate-180'
-                  )}
-                />
-              </span>
-            </button>
-            <a
-              href={`/story/${product.story.slug}`}
-              className="shrink-0 mt-1 inline-flex items-center gap-1 rounded-lg border border-gray-200 px-2.5 py-1.5 text-xs font-medium text-gray-700 hover:border-sky-300 hover:text-sky-600 transition-colors"
-            >
-              Full story
-              <ExternalLink className="h-3 w-3" />
-            </a>
-          </div>
-
-          {showStory && (
-            <div className="mt-6 flex flex-col gap-6">
-              {product.story.cover_image && (
-                <figure className="flex flex-col gap-2">
-                  <img
-                    src={GetAbosolutePathByRelative(product.story.cover_image)}
-                    alt={product.story.title}
-                    className="w-full max-h-[420px] object-cover rounded-xl border border-gray-100"
-                  />
-                  {product.story.cover_image_caption && (
-                    <figcaption className="text-xs text-muted-foreground text-center">
-                      {product.story.cover_image_caption}
-                    </figcaption>
-                  )}
-                </figure>
-              )}
-
-              <div
-                className="text-sm text-gray-600 leading-relaxed prose prose-sm max-w-none prose-headings:text-gray-900 prose-a:text-sky-600"
-                dangerouslySetInnerHTML={{ __html: storyHtml }}
-              />
-
-              <div className="flex items-center justify-center gap-4">
-                <button
-                  type="button"
-                  onClick={() => setShowStory(false)}
-                  className="text-xs text-sky-600 hover:underline font-medium"
-                >
-                  Hide story
-                </button>
-                <a
-                  href={`/story/${product.story.slug}`}
-                  className="inline-flex items-center gap-1 text-xs text-sky-600 hover:underline font-medium"
-                >
-                  Open full page <ExternalLink className="h-3 w-3" />
-                </a>
-              </div>
-            </div>
-          )}
-        </section>
+        <ProductStorySection
+          story={product.story}
+          storyHtml={storyHtml}
+          showStory={showStory}
+          setShowStory={setShowStory}
+        />
       )}
 
-      {product.ratings && product.ratings.length > 0 ? (
-        <section
-          id="reviews"
-          className="scroll-mt-32 rounded-2xl border border-gray-100 bg-white p-6 sm:p-8 shadow-sm"
-        >
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-lg font-bold text-gray-900">Ratings & Reviews</h2>
-            <Button
-              variant="outline"
-              size="sm"
-              className="rounded-xl"
-              onClick={() => setOpenRatingsDialog(true)}
-            >
-              View all
-            </Button>
-          </div>
-
-          <div className="flex flex-col sm:flex-row gap-8 mb-6">
-            <div className="flex flex-col items-center sm:items-start shrink-0">
-              <span className="text-5xl font-bold text-gray-900 leading-none">{avgRating}</span>
-              <div className="flex mt-2">
-                {[1, 2, 3, 4, 5].map((s) => (
-                  <Star
-                    key={s}
-                    className={cn(
-                      'h-4 w-4',
-                      s <= Math.round(Number(avgRating))
-                        ? 'text-amber-400 fill-amber-400'
-                        : 'text-gray-200 fill-gray-200'
-                    )}
-                  />
-                ))}
-              </div>
-              <span className="text-xs text-muted-foreground mt-1">
-                {product.ratings.length} reviews
-              </span>
-            </div>
-            <div className="flex-1 flex flex-col gap-1.5 max-w-md">
-              {[5, 4, 3, 2, 1].map((s) => (
-                <RatingBar key={s} star={s} ratings={product.ratings} />
-              ))}
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {product.ratings.slice(0, 4).map((item, i) => (
-              <div
-                key={i}
-                className="flex flex-col gap-1.5 p-4 rounded-xl bg-gray-50 border border-gray-100"
-              >
-                <div className="flex items-center justify-between gap-2">
-                  <span className="text-sm font-semibold text-gray-800 truncate">
-                    {item.username}
-                  </span>
-                  <div className="flex shrink-0">
-                    {[1, 2, 3, 4, 5].map((s) => (
-                      <Star
-                        key={s}
-                        className={cn(
-                          'h-3 w-3',
-                          s <= item.number
-                            ? 'text-amber-400 fill-amber-400'
-                            : 'text-gray-200 fill-gray-200'
-                        )}
-                      />
-                    ))}
-                  </div>
-                </div>
-                {item.body && (
-                  <p className="text-sm text-gray-600 line-clamp-3 leading-relaxed">{item.body}</p>
-                )}
-              </div>
-            ))}
-          </div>
-        </section>
-      ) : (
-        <></>
+      {product.ratings && product.ratings.length > 0 && (
+        <ProductReviewsSection
+          ratings={product.ratings}
+          avgRating={avgRating}
+          onViewAll={() => setOpenRatingsDialog(true)}
+        />
       )}
 
       {product.product_status === 'active' && (
@@ -937,55 +508,31 @@ const ProductDetails = () => {
       )}
 
       {uuid === product.user_uuid && (
-        <div className="flex flex-col gap-4 pt-2 border-t">
-          <h2 className="text-lg font-bold pt-6">Product Management</h2>
-          <Tabs value={tabValue} onValueChange={setTabValue}>
-            <TabsList className="w-full justify-start">
-              {PRODUCT_TAB_DATAS.map((item) => (
-                <TabsTrigger key={item.id} value={String(item.id)}>
-                  {item.title}
-                </TabsTrigger>
-              ))}
-            </TabsList>
-            <TabsContent value="0">
-              <Product
-                productId={product.product_id}
-                title={product.title}
-                slug={product.slug}
-                vendor={product.vendor}
-                productType={product.product_type}
-                tags={product.tags}
-                description={product.body_html}
-                website={product.website}
-                video={product.video}
-                isPromote={product.is_promote}
-                planImage={product.plan_image}
-                planImageCaption={product.plan_image_caption}
-                planImageWebsite={product.plan_image_website}
-                options={product.options}
-                images={product.images}
-                specs={product.specs}
-                highlights={product.highlights}
-                faqs={product.faqs}
-                productStatus={product.product_status}
-                init={init}
-              />
-            </TabsContent>
-            <TabsContent value="1">
-              <ProductVariant
-                productId={product.product_id}
-                options={product.options}
-                currency={product.currency}
-              />
-            </TabsContent>
-            <TabsContent value="2">
-              <ProductStory productId={product.product_id} />
-            </TabsContent>
-            <TabsContent value="3">
-              <ProductRating />
-            </TabsContent>
-          </Tabs>
-        </div>
+        <OwnerTabs
+          productId={product.product_id}
+          title={product.title}
+          slug={product.slug}
+          vendor={product.vendor}
+          productType={product.product_type}
+          tags={product.tags}
+          description={product.body_html}
+          website={product.website}
+          video={product.video}
+          isPromote={product.is_promote}
+          planImage={product.plan_image}
+          planImageCaption={product.plan_image_caption}
+          planImageWebsite={product.plan_image_website}
+          options={product.options}
+          images={product.images}
+          specs={product.specs}
+          highlights={product.highlights}
+          faqs={product.faqs}
+          productStatus={product.product_status}
+          currency={product.currency}
+          tabValue={tabValue}
+          setTabValue={setTabValue}
+          init={init}
+        />
       )}
 
       <ProductRatingsDialog

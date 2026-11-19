@@ -1,3 +1,4 @@
+import { useRouter } from 'next/router'
 import { useState } from 'react'
 
 interface DeshopWelcomeProps {
@@ -91,6 +92,8 @@ const OWNER_FAQS: FaqItem[] = [
 ]
 
 export default function DeshopWelcome({ className = '' }: DeshopWelcomeProps) {
+  const router = useRouter()
+
   return (
     <div className={`min-h-screen bg-[#F7F9FC] text-[#0B1B33] antialiased ${className}`}>
       <header className="border-b border-[#DCE3EE]">
@@ -119,7 +122,7 @@ export default function DeshopWelcome({ className = '' }: DeshopWelcomeProps) {
             <button
               type="button"
               onClick={() => {
-                window.location.href = '/login'
+                void router.push('/login')
               }}
               className="hidden rounded-full border border-[#DCE3EE] px-4 py-2 text-sm font-medium transition hover:border-[#0B6CFF] hover:text-[#0B6CFF] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0B6CFF] sm:inline-flex"
             >
@@ -128,7 +131,7 @@ export default function DeshopWelcome({ className = '' }: DeshopWelcomeProps) {
             <button
               type="button"
               onClick={() => {
-                window.location.href = '/register'
+                void router.push('/register')
               }}
               className="rounded-full bg-gradient-to-br from-[#0B6CFF] to-[#00AEFF] px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0B6CFF]"
             >
@@ -152,7 +155,7 @@ export default function DeshopWelcome({ className = '' }: DeshopWelcomeProps) {
             <button
               type="button"
               onClick={() => {
-                window.location.href = '/explore'
+                void router.push('/explore')
               }}
               className="rounded-full bg-gradient-to-br from-[#0B6CFF] to-[#00AEFF] px-6 py-3 text-sm font-semibold text-white shadow-sm transition hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0B6CFF]"
             >
@@ -161,7 +164,7 @@ export default function DeshopWelcome({ className = '' }: DeshopWelcomeProps) {
             <button
               type="button"
               onClick={() => {
-                window.location.href = '/create'
+                void router.push('/create')
               }}
               className="rounded-full border border-[#DCE3EE] px-6 py-3 text-sm font-semibold transition hover:border-[#0B6CFF] hover:text-[#0B6CFF] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0B6CFF]"
             >

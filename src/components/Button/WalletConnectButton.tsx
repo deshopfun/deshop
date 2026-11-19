@@ -60,7 +60,7 @@ const WalletConnectButton = (props: WalletConnectType) => {
         sendTransaction({
           data: data as `0x${string}`,
           to: props.contractAddress as `0x${string}`,
-          value: 0 as any,
+          value: BigInt(0),
         })
       } else {
         sendTransaction({
@@ -98,7 +98,7 @@ const WalletConnectButton = (props: WalletConnectType) => {
       setSnackMessage('Transaction sent successfully')
       setSnackOpen(true)
     }
-  }, [hash])
+  }, [hash, setSnackSeverity, setSnackMessage, setSnackOpen])
 
   useEffect(() => {
     if (!props.chainIds || !props.address) return

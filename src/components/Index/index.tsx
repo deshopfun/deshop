@@ -1,12 +1,11 @@
 import { useRouter } from 'next/router'
 import { routes } from './Routes'
 import MetaTags from '@/components/Common/MetaTags'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import HomeSidebar from '@/components/Sidebar'
 import HomeHeader from '@/components/Home/HomeHeader'
 import HomeFooter from '@/components/Home/HomeFooter'
 import { useSnackPresistStore, useUserPresistStore } from '@/lib'
-import { RouteType } from '@/utils/types'
 import { cn } from '@/lib/utils'
 import { CheckCircle2, XCircle, AlertCircle, Info, X } from 'lucide-react'
 import { useShallow } from 'zustand/react/shallow'
@@ -20,8 +19,13 @@ const snackIcons = {
 
 const Index = () => {
   const router = useRouter()
-  const [currentRoute, setCurrentRoute] = useState<RouteType>()
   const [authReady, setAuthReady] = useState(() => useUserPresistStore.persist.hasHydrated())
+  const [loginRedirecting, setLoginRedirecting] = useState(false)
+
+  const currentRoute = useMemo(
+    () => routes.find((item) => item.path === router.pathname),
+    [router.pathname]
+  )
 
   const { sidebarCollapsed, setSidebarCollapsed, isLogin } = useUserPresistStore(
     useShallow((state) => ({
@@ -51,34 +55,39 @@ const Index = () => {
   }, [])
 
   useEffect(() => {
-    if (!authReady) return
-
-    const route = routes.find((item) => item.path === router.pathname)
-    if (!route) return
-
-    if (route.needLogin && !isLogin) {
-      const redirect = encodeURIComponent(router.asPath || router.pathname)
-      window.location.href = `/login?redirect=${redirect}`
+    if (!authReady || !currentRoute?.needLogin) {
+      setLoginRedirecting(false)
       return
     }
 
-    setCurrentRoute(route)
-  }, [router.pathname, router.asPath, isLogin, authReady])
+    if (!isLogin) {
+      setLoginRedirecting(true)
+      const redirect = router.asPath || router.pathname
+      void router.replace({ pathname: '/login', query: { redirect } })
+      return
+    }
+
+    setLoginRedirecting(false)
+  }, [router.pathname, router.asPath, isLogin, authReady, currentRoute?.needLogin, router])
 
   useEffect(() => {
     setSnackOpen(false)
-  }, [])
+  }, [setSnackOpen])
 
   useEffect(() => {
     if (!snackOpen) return
     const timer = setTimeout(() => setSnackOpen(false), 3000)
     return () => clearTimeout(timer)
-  }, [snackOpen])
+  }, [snackOpen, setSnackOpen])
 
   const SnackIcon = snackSeverity ? snackIcons[snackSeverity]?.icon : Info
   const snackIconClass = snackSeverity ? snackIcons[snackSeverity]?.className : ''
 
-  if (!authReady || !currentRoute) {
+  // Auth-only routes wait for hydration / redirect; public routes render immediately (incl. SSR).
+  const waitingForAuth =
+    !!currentRoute?.needLogin && (!authReady || loginRedirecting || !isLogin)
+
+  if (!currentRoute || waitingForAuth) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center text-sm text-muted-foreground">
         Loading…
@@ -86,11 +95,15 @@ const Index = () => {
     )
   }
 
+  // Product/Story pages already emit SSR Head + JSON-LD; skip shell MetaTags so we don't overwrite them.
+  const skipShellMeta =
+    currentRoute.path === '/products/[id]' || currentRoute.path === '/story/[id]'
+
   return (
     <div className="min-h-screen bg-gray-50">
-      <MetaTags title={currentRoute?.title} />
+      {!skipShellMeta && <MetaTags title={currentRoute.title} />}
 
-      {currentRoute?.enableSidebar ? (
+      {currentRoute.enableSidebar ? (
         <div className="flex min-h-screen">
           <HomeSidebar
             collapsed={sidebarCollapsed}
@@ -103,19 +116,19 @@ const Index = () => {
               sidebarCollapsed ? 'ml-[72px]' : 'ml-60'
             )}
           >
-            {currentRoute?.enableHomeHeader && <HomeHeader />}
+            {currentRoute.enableHomeHeader && <HomeHeader />}
             <main className="flex-1 p-6">
-              {currentRoute?.Component ? <currentRoute.Component /> : null}
+              {currentRoute.Component ? <currentRoute.Component /> : null}
             </main>
-            {currentRoute?.enableHomeFooter && <HomeFooter />}
+            {currentRoute.enableHomeFooter && <HomeFooter />}
           </div>
         </div>
       ) : (
         <div className="flex flex-col min-h-screen">
           <main className="flex-1">
-            {currentRoute?.Component ? <currentRoute.Component /> : null}
+            {currentRoute.Component ? <currentRoute.Component /> : null}
           </main>
-          {currentRoute?.enableHomeFooter && <HomeFooter />}
+          {currentRoute.enableHomeFooter && <HomeFooter />}
         </div>
       )}
 

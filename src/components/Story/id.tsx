@@ -1,8 +1,6 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
 import Link from 'next/link'
-import { marked } from 'marked'
-import DOMPurify from 'dompurify'
 import MetaTags from '@/components/Common/MetaTags'
 import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
@@ -15,19 +13,17 @@ import {
   Repeat2,
   Bookmark,
   Upload,
-  Shield,
   RefreshCw,
 } from 'lucide-react'
-import axios from '@/utils/http/axios'
 import { Http } from '@/utils/http/http'
-import { CURRENCYS } from '@/packages/constants/currency'
 import { GetAbosolutePathByRelative } from '@/utils/image'
-import { ProductStoryType } from '@/utils/types'
+import RemoteImage from '@/components/Image/RemoteImage'
 import { useSnackPresistStore, useUserPresistStore } from '@/lib'
-import { useAbortableEffect } from '@/hooks/useAbortableEffect'
 import { useShallow } from 'zustand/react/shallow'
 import ImageLightbox from '../Image/ImageLightbox'
 import { safeJsonLd } from '@/utils/seo'
+import { useStoryBySlug } from '@/hooks/queries/useStories'
+import { stripHtml, toStoryDate } from '@/utils/storyTime'
 
 // NOTE: engagement numbers and responses below are placeholder/preview data —
 // the comments & reactions backend isn't wired up yet. Everything in this
@@ -39,103 +35,37 @@ const PREVIEW_STORY_STATS = {
   restacks: 0,
 }
 
-const PREVIEW_RESPONSES = [
-  {
-    id: 1,
-    name: 'Alex Chen',
-    date: 'Aug 2',
-    body: 'The mutual confirmation step is what sold me. Most crypto checkouts stop at the tx hash.',
-    claps: 128,
-  },
-  {
-    id: 2,
-    name: 'Jordan Lee',
-    date: 'Aug 3',
-    body: 'Clear write-up. Would love a follow-up on which networks you support first.',
-    claps: 56,
-  },
-  {
-    id: 3,
-    name: 'Sam Rivera',
-    date: 'Aug 4',
-    body: 'Writing product pages for humans instead of crawlers is advice more marketplaces need.',
-    claps: 41,
-  },
-]
-
-const PREVIEW_RECOMMENDED = [
-  {
-    slug: 'why-we-built-deshop',
-    title: 'Why we built DESHOP for open commerce',
-    subtitle: 'A short note on crypto, creators, and keeping checkout honest.',
-    author_name: 'DESHOP Editorial',
-    date: 'Jul 28, 2026',
-    read: '4 min read',
-  },
-  {
-    slug: 'listing-that-converts',
-    title: 'Listings that convert without keyword stuffing',
-    subtitle: 'What we look for in a trustworthy product page.',
-    author_name: 'DESHOP Editorial',
-    date: 'Jul 12, 2026',
-    read: '6 min read',
-  },
-  {
-    slug: 'on-chain-confirmation',
-    title: 'On-chain confirmation, explained simply',
-    subtitle: 'What "confirmed" means for buyers and sellers.',
-    author_name: 'DESHOP Editorial',
-    date: 'Jun 30, 2026',
-    read: '5 min read',
-  },
-]
-
-// Backend timestamps have been inconsistent about seconds vs milliseconds in
-// this codebase, so normalize defensively: anything below the "seconds since
-// ~2001" threshold is treated as seconds and scaled up.
-const SECONDS_HEURISTIC_THRESHOLD = 10_000_000_000
-function toDate(timestamp: number | undefined | null): Date | null {
-  if (!timestamp) return null
-  const ms = timestamp < SECONDS_HEURISTIC_THRESHOLD ? timestamp * 1000 : timestamp
-  const date = new Date(ms)
-  return Number.isNaN(date.getTime()) ? null : date
-}
-
-function stripHtml(html: string) {
-  if (typeof window === 'undefined') return html.replace(/<[^>]*>/g, ' ')
-  const el = document.createElement('div')
-  el.innerHTML = html
-  return el.textContent || el.innerText || ''
-}
-
 function estimateReadingTime(html: string) {
   const words = stripHtml(html).trim().split(/\s+/).filter(Boolean).length
   return Math.max(1, Math.ceil(words / 220))
 }
 
-function formatPrice(price: string, currencyCode: string) {
-  try {
-    return new Intl.NumberFormat('en-US', {
-      style: currencyCode ? 'currency' : 'decimal',
-      currency: currencyCode || undefined,
-      maximumFractionDigits: 2,
-    }).format(Number(price))
-  } catch {
-    // Unknown/unsupported currency code — fall back to a plain label.
-    return `${currencyCode} ${price}`.trim()
-  }
-}
 
 type LoadState = 'loading' | 'error' | 'not-found' | 'ready'
 
 const StoryDetails = () => {
   const router = useRouter()
   const slug = typeof router.query.id === 'string' ? router.query.id : ''
-  const [story, setStory] = useState<ProductStoryType>()
-  const [loadState, setLoadState] = useState<LoadState>('loading')
   const [lightboxOpen, setLightboxOpen] = useState(false)
   const [lightboxIndex, setLightboxIndex] = useState(0)
   const [lightboxImages, setLightboxImages] = useState<string[]>([])
+
+  const storyQuery = useStoryBySlug(slug, router.isReady && !!slug)
+  const story = storyQuery.data
+
+  const loadState: LoadState = !router.isReady
+    ? 'loading'
+    : !slug
+      ? 'not-found'
+      : storyQuery.isLoading || (storyQuery.isFetching && !story)
+        ? 'loading'
+        : storyQuery.isError && !story
+          ? (storyQuery.error as Error)?.message?.toLowerCase().includes('not found')
+            ? 'not-found'
+            : 'error'
+          : story
+            ? 'ready'
+            : 'not-found'
 
   const { uuid, isLogin } = useUserPresistStore(
     useShallow((state) => ({
@@ -171,42 +101,16 @@ const StoryDetails = () => {
     return true
   }
 
-  const init = async (slugValue: string, signal?: AbortSignal) => {
-    setLoadState('loading')
-    try {
-      if (!slugValue) {
-        setLoadState('not-found')
-        return
-      }
-      const response: any = await axios.get(Http.product_story_by_id, {
-        params: { slug: slugValue },
-        signal,
-      })
-      if (response.result && response.data) {
-        setStory({
-          ...response.data,
-          render_body_html: DOMPurify.sanitize(await marked(response.data.body_html || '')),
-        })
-        setLoadState('ready')
-      } else {
-        setLoadState('not-found')
-      }
-    } catch (e) {
-      if (axios.isCancel(e) || (e as any)?.code === 'ERR_CANCELED') return
-      setLoadState('error')
+  useEffect(() => {
+    if (storyQuery.isError && loadState === 'error') {
       showError('Network error. Please try again later.')
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [storyQuery.isError, loadState])
+
+  const onRetry = () => {
+    void storyQuery.refetch()
   }
-
-  useAbortableEffect(
-    (signal) => {
-      if (!router.isReady) return
-      init(slug, signal)
-    },
-    [router.isReady, slug]
-  )
-
-  const onRetry = () => init(slug)
 
   if (!router.isReady || loadState === 'loading') {
     return (
@@ -247,8 +151,6 @@ const StoryDetails = () => {
   }
 
   const minutes = estimateReadingTime(story.render_body_html)
-  const currencyCode = CURRENCYS.find((c) => c.name === story.currency)?.code ?? ''
-  const price = story.variants?.[0]?.price
   const hasProduct = Boolean(story.product_slug || story.product_id)
   const productHref = hasProduct ? `/products/${story.product_slug || story.product_id}` : ''
 
@@ -257,8 +159,8 @@ const StoryDetails = () => {
     .map((t) => t.trim())
     .filter(Boolean)
 
-  const createdAt = toDate(story.create_time)
-  const updatedAt = toDate(story.update_time) || createdAt
+  const createdAt = toStoryDate(story.create_time)
+  const updatedAt = toStoryDate(story.update_time) || createdAt
 
   const coverSrc = story.cover_image
     ? story.cover_image.startsWith('http')
@@ -332,7 +234,7 @@ const StoryDetails = () => {
             <button
               type="button"
               className="flex items-center gap-2.5 group"
-              onClick={() => (window.location.href = `/profile/${story.username}`)}
+              onClick={() => void router.push(`/profile/${story.username}`)}
             >
               <Avatar className="h-12 w-12">
                 {story.user_avatar_url ? (
@@ -367,10 +269,12 @@ const StoryDetails = () => {
 
           {coverSrc && (
             <figure className="mb-10 -mx-6 sm:mx-0">
-              <img
+              <RemoteImage
                 src={coverSrc}
                 alt={story.title}
-                className="w-full max-h-[480px] object-cover sm:rounded-sm"
+                width={1200}
+                height={480}
+                className="w-full max-h-[480px] object-cover sm:rounded-sm cursor-pointer"
                 onClick={() => openLightbox([coverSrc])}
               />
               {story.cover_image_caption && (
@@ -469,7 +373,7 @@ const StoryDetails = () => {
           <div className="flex items-start gap-4">
             <button
               type="button"
-              onClick={() => (window.location.href = `/profile/${story.username}`)}
+              onClick={() => void router.push(`/profile/${story.username}`)}
             >
               <Avatar className="h-14 w-14 shrink-0">
                 {story.user_avatar_url ? (
@@ -484,7 +388,7 @@ const StoryDetails = () => {
             <div>
               <button
                 type="button"
-                onClick={() => (window.location.href = `/profile/${story.username}`)}
+                onClick={() => void router.push(`/profile/${story.username}`)}
               >
                 <p className="text-[15px] font-semibold text-gray-900">
                   Written by {story.username || 'DESHOP'}
@@ -518,99 +422,6 @@ const StoryDetails = () => {
             </div>
           )}
 
-          {/* Responses (preview data — comments backend not wired up yet) */}
-          {/* <section id="responses" className="mt-16">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-[22px] font-bold text-gray-900 tracking-tight">
-                Responses ({PREVIEW_STORY_STATS.responses})
-              </h2>
-              <Shield className="h-5 w-5 text-gray-400" aria-hidden />
-            </div>
-
-            <div className="mb-8">
-              <div className="flex items-center gap-3 mb-3">
-                <div className="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center">
-                  <span className="text-gray-400 text-xs">You</span>
-                </div>
-                <span className="text-[14px] text-gray-500">Write a response</span>
-              </div>
-              <input
-                type="text"
-                placeholder="What are your thoughts?"
-                className="w-full h-12 rounded-full bg-gray-100 px-5 text-[15px] text-gray-900 placeholder:text-gray-400 outline-none border border-transparent cursor-not-allowed"
-                disabled
-              />
-              <p className="mt-2 text-[12px] text-gray-400">
-                Comments coming soon — preview only, the responses below are examples.
-              </p>
-            </div>
-
-            <div className="flex flex-col divide-y divide-gray-100">
-              {PREVIEW_RESPONSES.map((r) => (
-                <div key={r.id} className="py-6 first:pt-0">
-                  <div className="flex items-center gap-3 mb-2">
-                    <Avatar className="h-8 w-8">
-                      <AvatarFallback className="bg-gray-100 text-gray-600 text-xs">
-                        {r.name[0]}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div className="flex flex-col">
-                      <span className="text-[14px] font-medium text-gray-900">{r.name}</span>
-                      <span className="text-[12px] text-gray-400">{r.date}</span>
-                    </div>
-                  </div>
-                  <p className="text-[15px] leading-relaxed text-gray-800 pl-11">{r.body}</p>
-                  <div className="pl-11 mt-3 flex items-center gap-1.5 text-gray-400 text-[13px]">
-                    <Hand className="h-3.5 w-3.5" />
-                    {r.claps}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </section> */}
-
-          {/* Recommended (preview data) */}
-          {/* <section className="mt-20 pt-10 border-t border-gray-100">
-            <h2 className="text-[22px] font-bold text-gray-900 tracking-tight mb-8">
-              Recommended from DESHOP
-            </h2>
-            <div className="flex flex-col gap-10">
-              {PREVIEW_RECOMMENDED.map((item) => (
-                <Link
-                  key={item.slug}
-                  href={`/stories/${item.slug}`}
-                  className="text-left group block"
-                >
-                  <div className="flex items-center gap-2 mb-2">
-                    <Avatar className="h-6 w-6">
-                      <AvatarFallback className="text-[10px] bg-gray-100">D</AvatarFallback>
-                    </Avatar>
-                    <span className="text-[13px] text-gray-700">{item.author_name}</span>
-                  </div>
-                  <h3 className="font-serif text-[1.25rem] font-bold text-gray-900 leading-snug group-hover:underline underline-offset-2">
-                    {item.title}
-                  </h3>
-                  <p className="mt-1 text-[15px] text-gray-500 leading-snug line-clamp-2">
-                    {item.subtitle}
-                  </p>
-                  <p className="mt-2 text-[13px] text-gray-400">
-                    {item.date}
-                    <span className="mx-1">·</span>
-                    {item.read}
-                  </p>
-                </Link>
-              ))}
-            </div>
-          </section> */}
-
-          {/* <p className="mt-14 text-center">
-            <Link
-              href="/"
-              className="text-[14px] text-gray-500 hover:text-gray-900 underline-offset-4 hover:underline"
-            >
-              Back to DESHOP
-            </Link>
-          </p> */}
         </div>
       </article>
 

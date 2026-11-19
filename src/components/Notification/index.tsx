@@ -1,7 +1,7 @@
+import { useRouter } from 'next/router'
+import { navigateTo } from '@/utils/navigate'
 import { useSnackPresistStore, useUserPresistStore } from '@/lib'
 import { useEffect, useMemo, useState } from 'react'
-import axios from '@/utils/http/axios'
-import { Http } from '@/utils/http/http'
 import { NOTIFICATIONS } from '@/packages/constants/notification'
 import { NotificationType } from '@/utils/types'
 import { Button } from '@/components/ui/button'
@@ -9,10 +9,14 @@ import { Badge } from '@/components/ui/badge'
 import { Bell, BellOff, CheckCheck, ExternalLink, Eye } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useShallow } from 'zustand/react/shallow'
+import { useMarkNotificationSeen, useNotifications } from '@/hooks/queries/useNotifications'
+import { getSiteOrigin } from '@/utils/seo'
 
 const Notification = () => {
-  const [notifications, setNotifications] = useState<NotificationType[]>([])
+  const router = useRouter()
+
   const [activeFilter, setActiveFilter] = useState<string | 'all'>('all')
+  const markSeen = useMarkNotificationSeen()
 
   const { isLogin } = useUserPresistStore(
     useShallow((state) => ({
@@ -39,45 +43,33 @@ const Notification = () => {
     setSnackOpen(true)
   }
 
-  const init = async () => {
-    if (!isLogin) return
-    try {
-      const response: any = await axios.get(Http.user_notification)
-      if (response.result) {
-        setNotifications(
-          response.data?.map((item: NotificationType) => ({
-            ...item,
-            url: window.location.origin + item.url,
-          })) || []
-        )
-      } else {
-        showError(response.message)
-      }
-    } catch {
-      showError('Network error. Please try again later.')
+  const notificationsQuery = useNotifications(isLogin)
+
+  useEffect(() => {
+    if (notificationsQuery.isError) {
+      showError((notificationsQuery.error as Error)?.message || 'Network error. Please try again later.')
     }
-  }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [notificationsQuery.isError])
+
+  const notifications: NotificationType[] = useMemo(() => {
+    const origin = getSiteOrigin()
+    return (
+      notificationsQuery.data?.map((item: NotificationType) => ({
+        ...item,
+        url: item.url?.startsWith('http') ? item.url : origin + (item.url || ''),
+      })) || []
+    )
+  }, [notificationsQuery.data])
 
   const onClickSeen = async (kind: string, id?: number) => {
     try {
-      const response: any = await axios.put(Http.user_notification, {
-        kind,
-        notification_id: kind === 'single' ? id : undefined,
-      })
-      if (response.result) {
-        await init()
-        showSuccess('Marked as seen')
-      } else {
-        showError(response.message)
-      }
-    } catch {
-      showError('Network error. Please try again later.')
+      await markSeen.mutateAsync({ kind, notification_id: id })
+      showSuccess('Marked as seen')
+    } catch (e) {
+      showError(e instanceof Error ? e.message : 'Network error. Please try again later.')
     }
   }
-
-  useEffect(() => {
-    init()
-  }, [])
 
   const unreadCount = notifications?.filter((n) => n.is_read === 'false').length
 
@@ -86,10 +78,6 @@ const Notification = () => {
     if (activeFilter === 'all') return notifications
     return notifications.filter((row) => row.notification_type === activeFilter)
   }, [notifications, activeFilter])
-
-  const filteredUnreadCount = useMemo(() => {
-    return filteredNotifications.filter((row) => row.is_read === 'false').length
-  }, [filteredNotifications])
 
   return (
     <div className="container mx-auto py-8 px-4 flex flex-col gap-6">
@@ -203,9 +191,7 @@ const Notification = () => {
                       size="sm"
                       variant="outline"
                       className="h-8 gap-1.5 text-xs"
-                      onClick={() => {
-                        window.location.href = row.url
-                      }}
+                      onClick={() => navigateTo(router, row.url)}
                     >
                       <ExternalLink className="h-3.5 w-3.5" /> View
                     </Button>

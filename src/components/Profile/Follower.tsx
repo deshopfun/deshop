@@ -1,5 +1,3 @@
-import { useSnackPresistStore, useUserPresistStore } from '@/lib'
-import { useState } from 'react'
 import { ProfileType } from '@/utils/types'
 import { Card, CardContent } from '@/components/ui/card'
 import { GetAbosolutePathByRelative } from '@/utils/image'

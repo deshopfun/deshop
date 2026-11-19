@@ -1,7 +1,5 @@
 import { useState } from 'react'
 import { useSnackPresistStore } from '@/lib'
-import axios from '@/utils/http/axios'
-import { Http } from '@/utils/http/http'
 import {
   Dialog,
   DialogContent,
@@ -14,6 +12,7 @@ import { Input } from '@/components/ui/input'
 import { PackageCheck, Loader2, AlertCircle } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useShallow } from 'zustand/react/shallow'
+import { useConfirmOrder } from '@/hooks/queries/useOrderActions'
 
 interface DialogType  {
   orderId: number
@@ -29,7 +28,8 @@ export default function ConfirmOrderDialog({
   handleCloseDialog,
 }: DialogType) {
   const [text, setText] = useState('')
-  const [loading, setLoading] = useState(false)
+  const confirmOrder = useConfirmOrder()
+  const loading = confirmOrder.isPending
 
   const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore(
     useShallow((state) => ({
@@ -61,22 +61,12 @@ export default function ConfirmOrderDialog({
   const onClickConfirm = async () => {
     if (!orderId) return
     if (!text || text !== confirmNumber) return showError('Incorrect confirmation text')
-    setLoading(true)
     try {
-      const response: any = await axios.put(Http.order_confirm, {
-        order_id: orderId,
-        confirm_number: text,
-      })
-      if (response.result) {
-        await handleCloseDialog()
-        showSuccess('Order confirmed successfully')
-      } else {
-        showError('Confirmation failed')
-      }
-    } catch {
-      showError('Network error. Please try again later.')
-    } finally {
-      setLoading(false)
+      await confirmOrder.mutateAsync({ order_id: orderId, confirm_number: text })
+      await handleCloseDialog()
+      showSuccess('Order confirmed successfully')
+    } catch (e) {
+      showError(e instanceof Error ? e.message : 'Network error. Please try again later.')
     }
   }
 

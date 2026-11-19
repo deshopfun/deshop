@@ -1,13 +1,12 @@
 import { create } from 'zustand'
-import { persist } from 'zustand/middleware'
 
-interface SnackPersistState {
+interface SnackState {
   snackOpen: boolean
   snackMessage: string
   snackSeverity: 'success' | 'info' | 'warning' | 'error'
 }
 
-interface SnackPersistAction {
+interface SnackAction {
   setSnackOpen: (snackOpen: boolean) => void
   getSnackOpen: () => boolean
   setSnackMessage: (message: string) => void
@@ -18,37 +17,30 @@ interface SnackPersistAction {
   resetSnack: () => void
 }
 
-const initialSnackState: SnackPersistState = {
+const initialSnackState: SnackState = {
   snackOpen: false,
   snackMessage: '',
   snackSeverity: 'success',
 }
 
-export const useSnackPresistStore = create(
-  persist<SnackPersistState & SnackPersistAction>(
-    (set, get) => ({
-      ...initialSnackState,
+export const useSnackPresistStore = create<SnackState & SnackAction>((set, get) => ({
+  ...initialSnackState,
 
-      setSnackOpen: (value) => {
-        set(() => ({ snackOpen: value }))
-        if (value) {
-          setTimeout(() => {
-            set(() => ({ snackOpen: !value }))
-          }, 3000)
-        }
-      },
-      getSnackOpen: () => get().snackOpen,
-      setSnackMessage: (value) => set(() => ({ snackMessage: value })),
-      getSnackMessage: () => get().snackMessage,
-      setSnackSeverity: (value) => set(() => ({ snackSeverity: value })),
-      getSnackSeverity: () => get().snackSeverity,
-
-      resetSnack: () => {
-        set(initialSnackState)
-      },
-    }),
-    {
-      name: 'deshop.snack.market',
+  setSnackOpen: (value) => {
+    set(() => ({ snackOpen: value }))
+    if (value) {
+      setTimeout(() => {
+        set(() => ({ snackOpen: false }))
+      }, 3000)
     }
-  )
-)
+  },
+  getSnackOpen: () => get().snackOpen,
+  setSnackMessage: (value) => set(() => ({ snackMessage: value })),
+  getSnackMessage: () => get().snackMessage,
+  setSnackSeverity: (value) => set(() => ({ snackSeverity: value })),
+  getSnackSeverity: () => get().snackSeverity,
+
+  resetSnack: () => {
+    set(initialSnackState)
+  },
+}))

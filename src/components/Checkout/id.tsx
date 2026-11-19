@@ -1,7 +1,6 @@
 import { CartLineType, useCartPresistStore, useSnackPresistStore, useUserPresistStore } from '@/lib'
 import { useRouter } from 'next/router'
-import axios from '@/utils/http/axios'
-import { Http } from '@/utils/http/http'
+import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { CURRENCYS } from '@/packages/constants/currency'
 import Decimal from 'decimal.js'
@@ -11,8 +10,12 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import { GetAbosolutePathByRelative } from '@/utils/image'
+import RemoteImage from '@/components/Image/RemoteImage'
 import { CartSkuInfo } from '@/utils/types'
-import { cn } from '@/lib/utils' // 如果没有 cn 工具，可自行实现或删除相关 className
+import { cn } from '@/lib/utils'
+import { fetchCartSkus } from '@/hooks/queries/useCartSkus'
+import { useCreateOrder } from '@/hooks/queries/useOrder'
+import { getSiteOrigin } from '@/utils/seo'
 
 interface MergedLine extends CartLineType {
   sku?: CartSkuInfo
@@ -27,7 +30,7 @@ const CheckoutDetails = () => {
   const [lines, setLines] = useState<MergedLine[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)
-  const [payLoading, setPayLoading] = useState(false)
+  const createOrder = useCreateOrder()
 
   const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore((s) => s)
   const { getIsLogin } = useUserPresistStore((s) => s)
@@ -45,13 +48,7 @@ const CheckoutDetails = () => {
     if (!group || group.variant.length === 0) return []
 
     const items = group.variant.map((v) => ({ product_id: v.productId, option: v.option }))
-    const res: any = await axios.post(Http.product_variant_by_option_list, { items })
-    if (!res.result) throw new Error(res.message || 'Failed to load cart data')
-
-    const map: Record<string, CartSkuInfo> = {}
-    res.data.forEach((sku: CartSkuInfo) => {
-      map[`${sku.product_id}|${sku.option}`] = sku
-    })
+    const map = await fetchCartSkus(items)
 
     return group.variant.map((v) => {
       const sku = map[`${v.productId}|${v.option}`]
@@ -65,10 +62,11 @@ const CheckoutDetails = () => {
     if (!router.isReady || !id) return
     setLoading(true)
     setError(false)
-    fetchAndMerge()
+    void fetchAndMerge()
       .then(setLines)
       .catch(() => setError(true))
       .finally(() => setLoading(false))
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [router.isReady, id])
 
   const currency = lines.find((l) => l.sku)?.sku?.currency ?? ''
@@ -105,7 +103,6 @@ const CheckoutDetails = () => {
     if (!getIsLogin?.()) return showError('Please login first')
     if (lines.length === 0) return showError('Cart is empty')
 
-    setPayLoading(true)
     try {
       const fresh = await fetchAndMerge()
       setLines(fresh)
@@ -121,22 +118,15 @@ const CheckoutDetails = () => {
         quantity: l.quantity,
       }))
 
-      const response: any = await axios.post(Http.order, {
+      const data = await createOrder.mutateAsync({
         seller_uuid: id,
         items,
-        landing_site: window.location.origin,
+        landing_site: getSiteOrigin(),
       })
-
-      if (response.result && response.data.order_id) {
-        setCart(getCart().filter((c) => c.uuid !== id))
-        window.location.href = `/payment/${response.data.order_id}`
-      } else {
-        showError(response.message || 'Payment failed')
-      }
-    } catch {
-      showError('Network error. Please try again later.')
-    } finally {
-      setPayLoading(false)
+      setCart(getCart().filter((c) => c.uuid !== id))
+      void router.push(`/payment/${data.order_id}`)
+    } catch (e) {
+      showError(e instanceof Error ? e.message : 'Network error. Please try again later.')
     }
   }
 
@@ -179,7 +169,7 @@ const CheckoutDetails = () => {
         <Button
           variant="outline"
           className="mt-8 gap-2"
-          onClick={() => (window.location.href = '/cart')}
+          onClick={() => (void router.push('/cart'))}
         >
           <ArrowLeft className="h-4 w-4" />
           Back to Cart
@@ -193,7 +183,7 @@ const CheckoutDetails = () => {
       <div className="container mx-auto max-w-2xl py-8 px-4">
         <div className="mb-8">
           <button
-            onClick={() => (window.location.href = '/cart')}
+            onClick={() => (void router.push('/cart'))}
             className="mb-4 inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
           >
             <ArrowLeft className="h-4 w-4" />
@@ -212,9 +202,9 @@ const CheckoutDetails = () => {
               <p className="font-medium">Some items need attention</p>
               <p className="mt-0.5 text-red-600/90">
                 Please{' '}
-                <a href="/cart" className="underline underline-offset-2 font-medium">
+                <Link href="/cart" className="underline underline-offset-2 font-medium">
                   update your cart
-                </a>{' '}
+                </Link>{' '}
                 before continuing.
               </p>
             </div>
@@ -246,13 +236,15 @@ const CheckoutDetails = () => {
                       )}
                     >
                       <div className="relative shrink-0">
-                        <img
+                        <RemoteImage
                           src={
                             GetAbosolutePathByRelative(line.sku?.image) ??
                             GetAbosolutePathByRelative(line.snapshotImage) ??
                             '/placeholder.png'
                           }
                           alt={line.sku?.title ?? line.snapshotTitle ?? 'Product'}
+                          width={80}
+                          height={80}
                           className="h-20 w-20 rounded-xl border object-cover bg-muted"
                         />
                         {line.isUnavailable && (
@@ -361,9 +353,9 @@ const CheckoutDetails = () => {
               size="lg"
               className="h-12 w-full bg-sky-500 hover:bg-sky-600 text-white font-semibold text-base shadow-md shadow-sky-500/20 transition-all"
               onClick={onClickPayNow}
-              disabled={payLoading || hasBlockingIssues}
+              disabled={createOrder.isPending || hasBlockingIssues}
             >
-              {payLoading ? (
+              {createOrder.isPending ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   Processing…

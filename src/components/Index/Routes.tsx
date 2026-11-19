@@ -8,27 +8,31 @@ const PageLoading = () => (
   </div>
 )
 
-function lazyPage(loader: () => Promise<{ default: ComponentType<any> }>) {
+function lazyPage(
+  loader: () => Promise<{ default: ComponentType<object> }>,
+  options: { ssr?: boolean } = {}
+) {
   return dynamic(loader, {
-    ssr: false,
+    ssr: options.ssr ?? false,
     loading: () => <PageLoading />,
   })
 }
 
-const Home = lazyPage(() => import('@/components/Home'))
-const Welcome = lazyPage(() => import('../Welcome'))
+// Public marketing / content pages: enable SSR so crawlers see more than a loading shell.
+const Home = lazyPage(() => import('@/components/Home'), { ssr: true })
+const Welcome = lazyPage(() => import('../Welcome'), { ssr: true })
 const Login = lazyPage(() => import('@/components/Login'))
 const Register = lazyPage(() => import('@/components/Register'))
 const EmailConfirm = lazyPage(() => import('@/components/EmailConfirm'))
 const ForgotPassword = lazyPage(() => import('@/components/ForgotPassword'))
-const Explore = lazyPage(() => import('@/components/Explore'))
-const Live = lazyPage(() => import('@/components/Live'))
+const Explore = lazyPage(() => import('@/components/Explore'), { ssr: true })
+const Live = lazyPage(() => import('@/components/Live'), { ssr: true })
 const Notification = lazyPage(() => import('@/components/Notification'))
 const Chat = lazyPage(() => import('@/components/Chat'))
-const ProfileDetails = lazyPage(() => import('@/components/Profile/id'))
-const Support = lazyPage(() => import('@/components/Support'))
+const ProfileDetails = lazyPage(() => import('@/components/Profile/id'), { ssr: true })
+const Support = lazyPage(() => import('@/components/Support'), { ssr: true })
 const Create = lazyPage(() => import('@/components/Create'))
-const ProductDetails = lazyPage(() => import('@/components/Product/id'))
+const ProductDetails = lazyPage(() => import('@/components/Product/id'), { ssr: true })
 const Cart = lazyPage(() => import('@/components/Cart'))
 const Checkout = lazyPage(() => import('@/components/Checkout'))
 const CheckoutDetails = lazyPage(() => import('@/components/Checkout/id'))
@@ -37,13 +41,15 @@ const Collect = lazyPage(() => import('@/components/Collect'))
 const OrderDetails = lazyPage(() => import('@/components/Order/id'))
 const Manage = lazyPage(() => import('@/components/Manage'))
 const ManageDetails = lazyPage(() => import('@/components/Manage/id'))
-const DocsFees = lazyPage(() => import('@/components/Docs/Fees'))
-const DocsPrivacyPolicy = lazyPage(() => import('@/components/Docs/PrivacyPolicy'))
-const DocsTermsAndConditions = lazyPage(() => import('@/components/Docs/TermsAndConditions'))
+const DocsFees = lazyPage(() => import('@/components/Docs/Fees'), { ssr: true })
+const DocsPrivacyPolicy = lazyPage(() => import('@/components/Docs/PrivacyPolicy'), { ssr: true })
+const DocsTermsAndConditions = lazyPage(() => import('@/components/Docs/TermsAndConditions'), {
+  ssr: true,
+})
 const ReportProductDetails = lazyPage(() => import('@/components/Report/Products/id'))
-const Blockchain = lazyPage(() => import('@/components/Blockchain'))
-const Search = lazyPage(() => import('@/components/Search'))
-const StoryDetails = lazyPage(() => import('@/components/Story/id'))
+const Blockchain = lazyPage(() => import('@/components/Blockchain'), { ssr: true })
+const Search = lazyPage(() => import('@/components/Search'), { ssr: true })
+const StoryDetails = lazyPage(() => import('@/components/Story/id'), { ssr: true })
 
 export const routes: RouteType[] = [
   {

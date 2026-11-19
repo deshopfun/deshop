@@ -1,16 +1,16 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useRouter } from 'next/router'
+import { useEffect, useMemo } from 'react'
 import { useSnackPresistStore } from '@/lib'
 import { CURRENCYS } from '@/packages/constants/currency'
 import { PRODUCT_TYPE } from '@/packages/constants'
-import axios from '@/utils/http/axios'
-import { Http } from '@/utils/http/http'
-import { ProductType } from '@/utils/types'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Loader2, ChevronRight } from 'lucide-react'
 import { GetAbosolutePathByRelative } from '@/utils/image'
+import RemoteImage from '@/components/Image/RemoteImage'
 import { useShallow } from 'zustand/react/shallow'
 import Link from 'next/link'
+import { useRecommendedProducts } from '@/hooks/queries/useProductList'
 
 interface Props {
   productType?: string
@@ -21,11 +21,7 @@ interface Props {
 const PAGE_SIZE_DEFAULT = 5
 
 const Recommended = ({ productType, excludeId, pageSize = PAGE_SIZE_DEFAULT }: Props) => {
-  const [products, setProducts] = useState<ProductType[]>([])
-  const [offset, setOffset] = useState(0)
-  const [hasMore, setHasMore] = useState(true)
-  const [loading, setLoading] = useState(false)
-  const [initialLoading, setInitialLoading] = useState(true)
+  const router = useRouter()
 
   const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore(
     useShallow((state) => ({
@@ -35,78 +31,31 @@ const Recommended = ({ productType, excludeId, pageSize = PAGE_SIZE_DEFAULT }: P
     }))
   )
 
-  const fetchProducts = useCallback(
-    async (nextOffset: number, isReset: boolean) => {
-      if (isReset) {
-        setInitialLoading(true)
-      } else {
-        setLoading(true)
-      }
+  const productsQuery = useRecommendedProducts({ productType, excludeId, pageSize })
 
-      try {
-        const response: any = await axios.get(Http.product_list, {
-          params: {
-            product_type: productType || undefined,
-            exclude_id: excludeId || undefined,
-            limit: pageSize,
-            offset: nextOffset,
-          },
-        })
+  const products = useMemo(() => {
+    const merged = productsQuery.data?.pages.flat() ?? []
+    const seen = new Set<number>()
+    return merged.filter((item) => {
+      if (!item?.product_id) return false
+      if (excludeId && item.product_id === excludeId) return false
+      if (seen.has(item.product_id)) return false
+      seen.add(item.product_id)
+      return true
+    })
+  }, [productsQuery.data, excludeId])
 
-        if (!response.result) {
-          if (isReset) {
-            setProducts([])
-            setHasMore(false)
-          }
-          return
-        }
-
-        const incoming: ProductType[] = response.data || []
-
-        setProducts((prev) => {
-          const merged = isReset ? incoming : [...prev, ...incoming]
-          const seen = new Set<number>()
-          return merged.filter((item) => {
-            if (!item?.product_id) return false
-            if (excludeId && item.product_id === excludeId) return false
-            if (seen.has(item.product_id)) return false
-            seen.add(item.product_id)
-            return true
-          })
-        })
-
-        if (typeof response.total === 'number') {
-          const loaded = nextOffset + incoming.length
-          setHasMore(loaded < response.total)
-        } else {
-          setHasMore(incoming.length >= pageSize)
-        }
-
-        setOffset(nextOffset + pageSize)
-      } catch (e) {
-        setSnackSeverity('error')
-        setSnackMessage('The network error occurred. Please try again later')
-        setSnackOpen(true)
-        console.error(e)
-      } finally {
-        setLoading(false)
-        setInitialLoading(false)
-      }
-    },
-    [productType, excludeId, pageSize, setSnackSeverity, setSnackMessage, setSnackOpen]
-  )
+  const loading = productsQuery.isFetchingNextPage
+  const initialLoading = productsQuery.isLoading
+  const hasMore = !!productsQuery.hasNextPage
 
   useEffect(() => {
-    setProducts([])
-    setOffset(0)
-    setHasMore(true)
-    fetchProducts(0, true)
-  }, [productType, excludeId, pageSize]) // eslint-disable-line react-hooks/exhaustive-deps
-
-  const onClickLoadMore = () => {
-    if (loading || !hasMore) return
-    fetchProducts(offset, false)
-  }
+    if (productsQuery.isError) {
+      setSnackSeverity('error')
+      setSnackMessage('The network error occurred. Please try again later')
+      setSnackOpen(true)
+    }
+  }, [productsQuery.isError, setSnackSeverity, setSnackMessage, setSnackOpen])
 
   const exploreHref = (() => {
     const entry = Object.entries(PRODUCT_TYPE).find(([, v]) => v === productType)
@@ -131,7 +80,7 @@ const Recommended = ({ productType, excludeId, pageSize = PAGE_SIZE_DEFAULT }: P
         type="button"
         className="flex items-center gap-1 w-fit hover:text-sky-600 transition-colors group"
         onClick={() => {
-          window.location.href = exploreHref
+          void router.push(exploreHref)
         }}
       >
         <h2 className="text-lg font-bold">Recommended</h2>
@@ -146,12 +95,13 @@ const Recommended = ({ productType, excludeId, pageSize = PAGE_SIZE_DEFAULT }: P
             className="block"
           >
             <Card className="h-full hover:shadow-md hover:-translate-y-1 transition-all duration-200 overflow-hidden group">
-              <div className="relative">
-                <img
+              <div className="relative h-48">
+                <RemoteImage
                   src={GetAbosolutePathByRelative(item.images?.[0]?.src)}
                   alt={item.title}
-                  className="w-full h-48 object-cover"
-                  loading="lazy"
+                  fill
+                  sizes="20vw"
+                  className="object-cover"
                 />
               </div>
 
@@ -159,26 +109,23 @@ const Recommended = ({ productType, excludeId, pageSize = PAGE_SIZE_DEFAULT }: P
                 <p className="font-semibold text-sm line-clamp-2">{item.title}</p>
 
                 {item.is_promote === 'true' ? (
-                  <>
-                    <p className="text-muted-foreground text-sm line-clamp-3">{item.body_html}</p>
-                  </>
+                  <p className="text-muted-foreground text-sm line-clamp-3">{item.body_html}</p>
                 ) : (
-                  <>
-                    {item.variants && item.variants.length > 0 && (
-                      <>
-                        <p className="text-xs text-muted-foreground">{item.variants[0].option}</p>
-                        <div className="flex items-center justify-between mt-1">
-                          <p className="font-bold text-red-500 text-base">
-                            {CURRENCYS.find((c) => c.name === item.currency)?.code}
-                            {item.variants[0].price}
-                          </p>
-                          <p className="text-xs text-muted-foreground">
-                            {item.variants[0].inventory_quantity} in stock
-                          </p>
-                        </div>
-                      </>
-                    )}
-                  </>
+                  item.variants &&
+                  item.variants.length > 0 && (
+                    <>
+                      <p className="text-xs text-muted-foreground">{item.variants[0].option}</p>
+                      <div className="flex items-center justify-between mt-1">
+                        <p className="font-bold text-red-500 text-base">
+                          {CURRENCYS.find((c) => c.name === item.currency)?.code}
+                          {item.variants[0].price}
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          {item.variants[0].inventory_quantity} in stock
+                        </p>
+                      </div>
+                    </>
+                  )
                 )}
               </CardContent>
             </Card>
@@ -190,7 +137,7 @@ const Recommended = ({ productType, excludeId, pageSize = PAGE_SIZE_DEFAULT }: P
         <div className="flex justify-center pt-2">
           <Button
             variant="outline"
-            onClick={onClickLoadMore}
+            onClick={() => productsQuery.fetchNextPage()}
             disabled={loading}
             className="min-w-[160px] gap-2 rounded-full"
           >
@@ -199,9 +146,7 @@ const Recommended = ({ productType, excludeId, pageSize = PAGE_SIZE_DEFAULT }: P
           </Button>
         </div>
       ) : (
-        <p className="text-center text-xs text-muted-foreground">
-          {/* You&apos;ve reached the end of the recommendations. */}
-        </p>
+        <p className="text-center text-xs text-muted-foreground" />
       )}
     </div>
   )

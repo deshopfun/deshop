@@ -1,8 +1,7 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useRouter } from 'next/router'
+import { useMemo } from 'react'
 import { CartLineType, useCartPresistStore } from '@/lib'
 import { CURRENCYS } from '@/packages/constants/currency'
-import axios from '@/utils/http/axios'
-import { Http } from '@/utils/http/http'
 
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -15,8 +14,10 @@ import { cn } from '@/lib/utils'
 import { Plus, Minus, Trash2, ShoppingCart, User, AlertCircle, Loader2 } from 'lucide-react'
 import Decimal from 'decimal.js'
 import { GetAbosolutePathByRelative } from '@/utils/image'
+import RemoteImage from '@/components/Image/RemoteImage'
 import { CartSkuInfo } from '@/utils/types'
 import { useShallow } from 'zustand/react/shallow'
+import { useCartSkus } from '@/hooks/queries/useCartSkus'
 
 interface MergedLine extends CartLineType {
   sku?: CartSkuInfo
@@ -33,9 +34,7 @@ interface MergedGroup {
 }
 
 const Cart = () => {
-  const [skuMap, setSkuMap] = useState<Record<string, CartSkuInfo>>({})
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(false)
+  const router = useRouter()
 
   const { cart, updateQuantity, removeFromCart, resetCart } = useCartPresistStore(
     useShallow((state) => ({
@@ -46,40 +45,19 @@ const Cart = () => {
     }))
   )
 
-  const fetchSkuData = async () => {
-    const items = cart.flatMap((c) =>
-      c.variant.map((v) => ({ product_id: v.productId, option: v.option }))
-    )
-    if (items.length === 0) {
-      setSkuMap({})
-      setLoading(false)
-      return
-    }
-    setLoading(true)
-    setError(false)
-    try {
-      const res: any = await axios.post(Http.product_variant_by_option_list, { items })
-      if (res.result) {
-        const map: Record<string, CartSkuInfo> = {}
-        res.data.forEach((sku: CartSkuInfo) => {
-          map[`${sku.product_id}|${sku.option}`] = sku
-        })
-        setSkuMap(map)
-      } else {
-        setError(true)
-      }
-    } catch {
-      setError(true)
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  useEffect(() => {
-    fetchSkuData()
-  }, [cart.reduce((n, c) => n + c.variant.length, 0)])
+  const skuItems = useMemo(
+    () =>
+      cart.flatMap((c) =>
+        c.variant.map((v) => ({ product_id: v.productId, option: v.option }))
+      ),
+    [cart]
+  )
+  const skuQuery = useCartSkus(skuItems, skuItems.length > 0)
+  const loading = skuItems.length > 0 && skuQuery.isLoading
+  const error = skuQuery.isError
 
   const mergedGroups: MergedGroup[] = useMemo(() => {
+    const skuMap = skuQuery.data ?? {}
     return cart.map((c) => {
       const lines: MergedLine[] = c.variant.map((v) => {
         const sku = skuMap[`${v.productId}|${v.option}`]
@@ -96,7 +74,7 @@ const Cart = () => {
         lines,
       }
     })
-  }, [cart, skuMap])
+  }, [cart, skuQuery.data])
 
   const countGroupTotal = (group: MergedGroup): Decimal => {
     return group.lines.reduce((sum, line) => {
@@ -152,7 +130,7 @@ const Cart = () => {
         <div className="flex items-center gap-2 px-4 py-3 bg-red-50 text-red-600 rounded-xl mb-6 text-sm">
           <AlertCircle className="h-4 w-4 shrink-0" />
           Failed to load the latest cart data.
-          <button className="underline ml-1" onClick={fetchSkuData}>
+          <button className="underline ml-1" onClick={() => void skuQuery.refetch()}>
             Retry
           </button>
         </div>
@@ -166,7 +144,7 @@ const Cart = () => {
                 <CardHeader className="bg-muted/50 pb-4">
                   <div
                     className="flex items-center gap-3 cursor-pointer hover:underline"
-                    onClick={() => (window.location.href = `/profile/${group.username}`)}
+                    onClick={() => (void router.push(`/profile/${group.username}`))}
                   >
                     <Avatar className="w-9 h-9">
                       <AvatarImage src={GetAbosolutePathByRelative(group.avatarUrl, 'avatar')} />
@@ -181,17 +159,18 @@ const Cart = () => {
                 <CardContent className="pt-6 space-y-6">
                   {group.lines.map((line) => (
                     <div key={`${line.productId}-${line.option}`} className="flex gap-5">
-                      <img
+                      <RemoteImage
                         src={
                           GetAbosolutePathByRelative(line.sku?.image) ??
                           GetAbosolutePathByRelative(line.snapshotImage)
                         }
-                        alt={line.sku?.title ?? line.snapshotTitle}
+                        alt={line.sku?.title ?? line.snapshotTitle ?? 'Product'}
+                        width={96}
+                        height={96}
                         className={cn(
                           'w-24 h-24 object-cover rounded-lg border',
                           line.isUnavailable && 'opacity-40 grayscale'
                         )}
-                        loading="lazy"
                       />
 
                       <div className="flex-1 min-w-0">
@@ -202,7 +181,7 @@ const Cart = () => {
                               line.isUnavailable && 'text-gray-400 pointer-events-none'
                             )}
                             onClick={() =>
-                              line.sku && (window.location.href = `/products/${line.sku.slug}`)
+                              line.sku && void router.push(`/products/${line.sku.slug}`)
                             }
                           >
                             <p className="font-semibold text-lg leading-tight">
@@ -319,7 +298,7 @@ const Cart = () => {
                     size="lg"
                     className="h-12 w-full bg-sky-500 hover:bg-sky-600 text-white font-semibold text-base shadow-md shadow-sky-500/20 transition-all"
                     disabled={hasIssues(group)}
-                    onClick={() => (window.location.href = `/checkout/${group.uuid}`)}
+                    onClick={() => (void router.push(`/checkout/${group.uuid}`))}
                   >
                     {hasIssues(group) ? 'Resolve issues above to continue' : 'Continue to Checkout'}
                   </Button>

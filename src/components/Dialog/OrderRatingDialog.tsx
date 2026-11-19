@@ -10,8 +10,8 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Star, Calendar } from 'lucide-react'
-import { Http } from '@/utils/http/http'
 import { GetAbosolutePathByRelative } from '@/utils/image'
+import RemoteImage from '@/components/Image/RemoteImage'
 
 interface DialogType  {
   ratings: RatingType[]
@@ -75,11 +75,12 @@ export default function OrderRatingDialog({ ratings, openDialog, handleCloseDial
                   <p className="text-sm leading-relaxed text-foreground">{item.body}</p>
 
                   {item.image && (
-                    <img
+                    <RemoteImage
                       src={GetAbosolutePathByRelative(item.image)}
                       alt="Review photo"
-                      className="max-w-[180px] rounded-lg border mt-2"
-                      loading="lazy"
+                      width={180}
+                      height={180}
+                      className="max-w-[180px] h-auto rounded-lg border mt-2"
                     />
                   )}
                 </CardContent>

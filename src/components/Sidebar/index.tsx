@@ -3,8 +3,6 @@ import Link from 'next/link'
 import { cn } from '@/lib/utils'
 import {
   House,
-  MessageCircle,
-  Bitcoin,
   Info,
   CircleEllipsis,
   PanelLeftClose,
@@ -109,7 +107,7 @@ const HomeSidebar = ({ collapsed, onCollapsedChange }: HomeSidebarProps) => {
               <DropdownMenuItem
                 key={item.href}
                 onClick={() => {
-                  window.location.href = item.href
+                  void router.push(item.href)
                 }}
               >
                 {item.label}

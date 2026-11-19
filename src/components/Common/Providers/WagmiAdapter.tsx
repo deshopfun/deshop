@@ -15,5 +15,5 @@ export const wagmiAdapter = new WagmiAdapter({
   }),
   projectId,
   networks,
-  // ssr: true,
+  ssr: true,
 })

@@ -1,10 +1,9 @@
 import { RATING_TYPE, SORT_BY_TYPE } from '@/packages/constants'
 import { useEffect, useState } from 'react'
-import { Http } from '@/utils/http/http'
-import axios from '@/utils/http/axios'
 import { useSnackPresistStore } from '@/lib'
 import { RatingType } from '@/utils/types'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { useProductRatings } from '@/hooks/queries/useProductRating'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import {
@@ -20,6 +19,7 @@ import { Star, Search, MessageSquare, X } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import Decimal from 'decimal.js'
 import { GetAbosolutePathByRelative } from '@/utils/image'
+import RemoteImage from '@/components/Image/RemoteImage'
 import { useShallow } from 'zustand/react/shallow'
 
 interface DialogType  {
@@ -95,7 +95,6 @@ export default function ProductRatingsDialog({
   openDialog,
   setOpenDialog,
 }: DialogType) {
-  const [ratings, setRatings] = useState<RatingType[]>([])
   const [reviewSearch, setReviewSearch] = useState('')
   const [selectSortBy, setSelectSortBy] = useState('')
   const [selectRating, setSelectRating] = useState('')
@@ -108,27 +107,20 @@ export default function ProductRatingsDialog({
     }))
   )
 
+  const ratingsQuery = useProductRatings(
+    product_id,
+    selectSortBy,
+    selectRating,
+    openDialog && !!product_id
+  )
+  const ratings = ratingsQuery.data ?? propsRatings ?? []
+
   const avgRating = propsRatings?.length
     ? propsRatings
         .reduce((s, r) => s.plus(new Decimal(r.number || 0)), new Decimal(0))
         .dividedBy(propsRatings.length)
         .toFixed(1)
     : '0.0'
-
-  const init = async (id: number, sortBy: string, ratingFilter: string) => {
-    if (!id) return
-    try {
-      const ratingVal = !isNaN(parseInt(ratingFilter)) ? parseInt(ratingFilter) : 0
-      const response: any = await axios.get(Http.product_rating_by_id, {
-        params: { product_id: id, sort_by: sortBy || undefined, rating_number: ratingVal },
-      })
-      setRatings(response.result ? response.data || [] : [])
-    } catch (e) {
-      setSnackSeverity('error')
-      setSnackMessage('Network error. Please try again later.')
-      setSnackOpen(true)
-    }
-  }
 
   const filteredRatings = ratings.filter(
     (r) =>
@@ -138,8 +130,20 @@ export default function ProductRatingsDialog({
   )
 
   useEffect(() => {
-    if (product_id) init(product_id, selectSortBy, selectRating)
-  }, [product_id, selectSortBy, selectRating])
+    if (ratingsQuery.isError) {
+      setSnackSeverity('error')
+      setSnackMessage(
+        (ratingsQuery.error as Error)?.message || 'Network error. Please try again later.'
+      )
+      setSnackOpen(true)
+    }
+  }, [
+    ratingsQuery.isError,
+    ratingsQuery.error,
+    setSnackSeverity,
+    setSnackMessage,
+    setSnackOpen,
+  ])
 
   const handleStarFilter = (star: number) => {
     const val = String(star)
@@ -282,11 +286,12 @@ export default function ProductRatingsDialog({
                     )}
 
                     {item.image && (
-                      <img
+                      <RemoteImage
                         src={GetAbosolutePathByRelative(item.image)}
                         alt="review"
+                        width={80}
+                        height={80}
                         className="mb-2.5 h-20 w-20 object-cover rounded-lg border border-gray-100"
-                        loading="lazy"
                       />
                     )}
 

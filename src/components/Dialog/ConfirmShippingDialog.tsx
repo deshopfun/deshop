@@ -1,8 +1,7 @@
 import { useSnackPresistStore } from '@/lib'
 import { useState } from 'react'
-import axios from '@/utils/http/axios'
-import { Http } from '@/utils/http/http'
 import { AddressType } from '@/utils/types'
+import { useConfirmShipping } from '@/hooks/queries/useOrderActions'
 import {
   Dialog,
   DialogContent,
@@ -24,7 +23,15 @@ interface DialogType {
   handleCloseDialog: () => Promise<void>
 }
 
-const InfoRow = ({ icon: Icon, label, value }: { icon: any; label: string; value?: string }) => {
+const InfoRow = ({
+  icon: Icon,
+  label,
+  value,
+}: {
+  icon: React.ComponentType<{ className?: string }>
+  label: string
+  value?: string
+}) => {
   if (!value) return null
   return (
     <div className="flex items-center justify-between gap-4 py-2 border-b border-dashed border-gray-100 last:border-0">
@@ -45,7 +52,8 @@ export default function ConfirmShippingDialog({
   handleCloseDialog,
 }: DialogType) {
   const [text, setText] = useState('')
-  const [loading, setLoading] = useState(false)
+  const confirmShipping = useConfirmShipping()
+  const loading = confirmShipping.isPending
 
   const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore(
     useShallow((state) => ({
@@ -77,22 +85,12 @@ export default function ConfirmShippingDialog({
   const onClickConfirm = async () => {
     if (!orderId) return
     if (!text || text !== confirmNumber) return showError('Incorrect confirmation text')
-    setLoading(true)
     try {
-      const response: any = await axios.put(Http.order_confirm_shipping, {
-        order_id: orderId,
-        confirm_number: text,
-      })
-      if (response.result) {
-        await handleCloseDialog()
-        showSuccess('Shipping confirmed successfully')
-      } else {
-        showError('Confirmation failed')
-      }
-    } catch {
-      showError('Network error. Please try again later.')
-    } finally {
-      setLoading(false)
+      await confirmShipping.mutateAsync({ order_id: orderId, confirm_number: text })
+      await handleCloseDialog()
+      showSuccess('Shipping confirmed successfully')
+    } catch (e) {
+      showError(e instanceof Error ? e.message : 'Network error. Please try again later.')
     }
   }
 

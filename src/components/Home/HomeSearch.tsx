@@ -1,12 +1,11 @@
 import { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/router'
 import { Search as SearchIcon, X } from 'lucide-react'
-import { SearchType } from '@/utils/types'
 import { GetAbosolutePathByRelative } from '@/utils/image'
-import axios from '@/utils/http/axios'
-import { Http } from '@/utils/http/http'
+import RemoteImage from '@/components/Image/RemoteImage'
 import { useSnackPresistStore } from '@/lib'
 import { useShallow } from 'zustand/react/shallow'
+import { useSearchAll } from '@/hooks/queries/useSearch'
 
 type Tab = 'products' | 'profiles'
 
@@ -26,17 +25,9 @@ const HomeSearch = () => {
   const [query, setQuery] = useState('')
   const [open, setOpen] = useState(false)
   const [tab, setTab] = useState<Tab>('products')
-  const [loading, setLoading] = useState(false)
-  const [data, setData] = useState<SearchType>({
-    products: [],
-    profiles: [],
-    total_product: 0,
-    total_profile: 0,
-  })
 
   const containerRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
-  const searchAbortRef = useRef<AbortController | null>(null)
 
   const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore(
     useShallow((state) => ({
@@ -47,6 +38,14 @@ const HomeSearch = () => {
   )
 
   const debouncedQuery = useDebouncedValue(query, DEBOUNCE_MS)
+  const searchQuery = useSearchAll(debouncedQuery, open)
+  const data = searchQuery.data ?? {
+    products: [],
+    profiles: [],
+    total_product: 0,
+    total_profile: 0,
+  }
+  const loading = searchQuery.isFetching
 
   useEffect(() => {
     function onClickOutside(e: MouseEvent) {
@@ -58,48 +57,16 @@ const HomeSearch = () => {
     return () => document.removeEventListener('mousedown', onClickOutside)
   }, [])
 
-  const init = async (searchQuery: string) => {
-    const trimmed = searchQuery.trim()
-
-    if (!trimmed) {
-      setData({ products: [], profiles: [], total_product: 0, total_profile: 0 })
-      setLoading(false)
-      return
-    }
-
-    searchAbortRef.current?.abort()
-    const controller = new AbortController()
-    searchAbortRef.current = controller
-
-    setLoading(true)
-    try {
-      const response: any = await axios.get(Http.search, {
-        params: { q: trimmed, type: 'all' },
-        signal: controller.signal,
-      })
-
-      if (response.result) {
-        setData(response.data)
-      } else {
-        setSnackSeverity('error')
-        setSnackMessage(response.message)
-        setSnackOpen(true)
-      }
-    } catch (e) {
-      if (axios.isCancel(e) || (e as any)?.code === 'ERR_CANCELED') return
-
-      setSnackSeverity('error')
-      setSnackMessage('Network error occurred. Please try again later.')
-      setSnackOpen(true)
-      console.error(e)
-    } finally {
-      setLoading(false)
-    }
-  }
-
   useEffect(() => {
-    init(debouncedQuery)
-  }, [debouncedQuery])
+    if (searchQuery.isError) {
+      setSnackSeverity('error')
+      setSnackMessage(
+        (searchQuery.error as Error)?.message ||
+          'Network error occurred. Please try again later.'
+      )
+      setSnackOpen(true)
+    }
+  }, [searchQuery.isError, searchQuery.error, setSnackSeverity, setSnackMessage, setSnackOpen])
 
   const goToFullResults = () => {
     if (!query.trim()) return
@@ -162,24 +129,6 @@ const HomeSearch = () => {
             ))}
           </div>
 
-          {/* {tab === 'products' && data.tags.length > 0 && (
-            <div className="flex flex-wrap gap-2 px-4 pt-3">
-              {data.tags.map((tagItem) => (
-                <button
-                  key={tagItem.id}
-                  type="button"
-                  onClick={() => {
-                    setOpen(false)
-                    router.push(`/tags/${tagItem.slug}`)
-                  }}
-                  className="px-3 py-1.5 rounded-full text-sm border border-gray-200 text-gray-700 hover:border-gray-400 hover:bg-gray-50 transition-colors"
-                >
-                  {tagItem.name}
-                </button>
-              ))}
-            </div>
-          )} */}
-
           <div className="px-2 py-3 max-h-[60vh] overflow-y-auto">
             {!loading && !query.trim() && (
               <p className="px-2 py-6 text-center text-sm text-gray-400">
@@ -202,9 +151,11 @@ const HomeSearch = () => {
                   className="w-full flex items-center gap-3 px-2 py-2.5 rounded-lg hover:bg-gray-50 text-left"
                 >
                   {m.images && m.images[0].src ? (
-                    <img
+                    <RemoteImage
                       src={GetAbosolutePathByRelative(m.images[0].src)}
                       alt=""
+                      width={36}
+                      height={36}
                       className="w-9 h-9 rounded-full object-cover shrink-0 border border-gray-100"
                     />
                   ) : (
@@ -232,9 +183,11 @@ const HomeSearch = () => {
                   className="w-full flex items-center gap-3 px-2 py-2.5 rounded-lg hover:bg-gray-50 text-left"
                 >
                   {p.avatar_url ? (
-                    <img
+                    <RemoteImage
                       src={GetAbosolutePathByRelative(p.avatar_url, 'avatar')}
                       alt=""
+                      width={36}
+                      height={36}
                       className="w-9 h-9 rounded-full object-cover shrink-0 border border-gray-100"
                     />
                   ) : (

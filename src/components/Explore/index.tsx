@@ -1,21 +1,18 @@
 import { PRODUCT_TYPE } from '@/packages/constants'
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import { GetAbosolutePathByRelative, GetImgSrcByProductType } from '@/utils/image'
-import axios from '@/utils/http/axios'
-import { Http } from '@/utils/http/http'
-import { useSnackPresistStore } from '@/lib'
 import { useRouter } from 'next/router'
 import { CURRENCYS } from '@/packages/constants/currency'
-import { ProductType } from '@/utils/types'
 
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 
-import { Check, ChevronDown, ChevronUp, ImageOff, ShoppingBag } from 'lucide-react'
-import { useShallow } from 'zustand/react/shallow'
+import { Check, ChevronDown, ChevronUp, ImageOff, Loader2, ShoppingBag } from 'lucide-react'
 import Link from 'next/link'
 import { cn } from '@/lib/utils'
+import { useProductListInfinite } from '@/hooks/queries/useProductList'
+import RemoteImage from '@/components/Image/RemoteImage'
 
 const DEFAULT_VISIBLE = 10
 
@@ -119,48 +116,18 @@ const Explore = () => {
   const info = PRODUCT_TYPE_INFO[currentProductType]
 
   const [showMore, setShowMore] = useState(false)
-  const [products, setProducts] = useState<ProductType[]>([])
-  const [loading, setLoading] = useState(true)
   const productsRef = useRef<HTMLDivElement>(null)
 
-  const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore(
-    useShallow((state) => ({
-      setSnackSeverity: state.setSnackSeverity,
-      setSnackMessage: state.setSnackMessage,
-      setSnackOpen: state.setSnackOpen,
-    }))
-  )
+  const {
+    data,
+    isLoading: loading,
+    isError,
+    hasNextPage,
+    isFetchingNextPage,
+    fetchNextPage,
+  } = useProductListInfinite(currentProductType)
 
-  // 以 URL 为唯一数据源；cancelled 标记避免快速切换时旧请求覆盖新结果
-  useEffect(() => {
-    if (!router.isReady) return
-    let cancelled = false
-
-    const load = async () => {
-      setLoading(true)
-      try {
-        const response: any = await axios.get(Http.product_list, {
-          params: { product_type: currentProductType },
-        })
-        if (cancelled) return
-        setProducts(response.result ? response.data || [] : [])
-      } catch (e) {
-        if (cancelled) return
-        setProducts([])
-        setSnackSeverity('error')
-        setSnackMessage('The network error occurred. Please try again later')
-        setSnackOpen(true)
-        console.error(e)
-      } finally {
-        if (!cancelled) setLoading(false)
-      }
-    }
-    load()
-
-    return () => {
-      cancelled = true
-    }
-  }, [router.isReady, currentProductType])
+  const products = useMemo(() => data?.pages.flatMap((page) => page) ?? [], [data])
 
   const handleCategoryClick = (key: string) => {
     router.push({ pathname: router.pathname, query: { ...router.query, type: key } }, undefined, {
@@ -204,9 +171,11 @@ const Explore = () => {
                 )}
               >
                 <div className="flex items-center gap-3">
-                  <img
+                  <RemoteImage
                     src={GetImgSrcByProductType(value)}
                     alt=""
+                    width={56}
+                    height={56}
                     className="h-14 w-14 shrink-0 rounded-xl object-cover"
                   />
                   <div className="min-w-0">
@@ -249,9 +218,11 @@ const Explore = () => {
 
       <section ref={productsRef} className="flex flex-col gap-6 scroll-mt-24">
         <div className="flex flex-col sm:flex-row sm:items-center gap-5 rounded-2xl border border-sky-100 bg-gradient-to-r from-sky-50 via-white to-white p-5 sm:p-6">
-          <img
+          <RemoteImage
             src={GetImgSrcByProductType(currentProductType)}
             alt={currentProductType}
+            width={80}
+            height={80}
             className="h-20 w-20 shrink-0 rounded-2xl object-cover shadow-sm"
           />
           <div className="flex flex-col gap-2 min-w-0">
@@ -281,71 +252,102 @@ const Explore = () => {
               <div key={i} className="h-72 rounded-xl bg-gray-100 animate-pulse" />
             ))}
           </div>
+        ) : isError ? (
+          <Card>
+            <CardContent className="py-20 text-center text-sm text-muted-foreground">
+              The network error occurred. Please try again later.
+            </CardContent>
+          </Card>
         ) : products.length > 0 ? (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-            {products.map((item, index) => {
-              const cover = item.images?.[0]?.src
-              return (
-                <Link
-                  key={item.product_id ?? index}
-                  href={`/products/${item.slug || item.product_id}`}
-                  className="block"
-                >
-                  <Card className="h-full hover:shadow-md hover:-translate-y-1 transition-all duration-200 overflow-hidden group">
-                    <div className="relative w-full h-48 overflow-hidden bg-[#F1F3F7]">
-                      {cover ? (
-                        <>
-                          <img
-                            src={GetAbosolutePathByRelative(cover)}
-                            alt=""
-                            aria-hidden="true"
-                            className="absolute inset-0 h-full w-full scale-110 object-cover blur-xl opacity-60"
-                          />
-                          <img
-                            src={GetAbosolutePathByRelative(cover)}
-                            alt={item.title}
-                            className="relative h-full w-full object-contain"
-                          />
-                        </>
-                      ) : (
-                        <div className="h-full w-full flex items-center justify-center text-gray-300">
-                          <ImageOff className="h-8 w-8" />
-                        </div>
-                      )}
-                    </div>
-
-                    <CardContent className="p-4 space-y-3">
-                      <p className="font-semibold text-sm line-clamp-2">{item.title}</p>
-
-                      {item.is_promote === 'true' ? (
-                        <p className="text-muted-foreground text-sm line-clamp-3">
-                          {item.body_html}
-                        </p>
-                      ) : (
-                        item.variants &&
-                        item.variants.length > 0 && (
+          <>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+              {products.map((item, index) => {
+                const cover = item.images?.[0]?.src
+                return (
+                  <Link
+                    key={item.product_id ?? index}
+                    href={`/products/${item.slug || item.product_id}`}
+                    className="block"
+                  >
+                    <Card className="h-full hover:shadow-md hover:-translate-y-1 transition-all duration-200 overflow-hidden group">
+                      <div className="relative w-full h-48 overflow-hidden bg-[#F1F3F7]">
+                        {cover ? (
                           <>
-                            <p className="text-xs text-muted-foreground">
-                              {item.variants[0].option}
-                            </p>
-                            <div className="flex items-center justify-between mt-1">
-                              <p className="font-bold text-red-500 text-base">
-                                {CURRENCYS.find((c) => c.name === item.currency)?.code}
-                                {item.variants[0].price}
-                              </p>
-                              <p className="text-xs text-muted-foreground">
-                                {item.variants[0].inventory_quantity} in stock
-                              </p>
-                            </div>
+                            <RemoteImage
+                              src={GetAbosolutePathByRelative(cover)}
+                              alt=""
+                              aria-hidden="true"
+                              fill
+                              sizes="(max-width: 768px) 50vw, 20vw"
+                              className="scale-110 object-cover blur-xl opacity-60"
+                            />
+                            <RemoteImage
+                              src={GetAbosolutePathByRelative(cover)}
+                              alt={item.title}
+                              fill
+                              sizes="(max-width: 768px) 50vw, 20vw"
+                              className="object-contain"
+                            />
                           </>
-                        )
-                      )}
-                    </CardContent>
-                  </Card>
-                </Link>
-              )
-            })}
-          </div>
+                        ) : (
+                          <div className="h-full w-full flex items-center justify-center text-gray-300">
+                            <ImageOff className="h-8 w-8" />
+                          </div>
+                        )}
+                      </div>
+
+                      <CardContent className="p-4 space-y-3">
+                        <p className="font-semibold text-sm line-clamp-2">{item.title}</p>
+
+                        {item.is_promote === 'true' ? (
+                          <p className="text-muted-foreground text-sm line-clamp-3">
+                            {item.body_html}
+                          </p>
+                        ) : (
+                          item.variants &&
+                          item.variants.length > 0 && (
+                            <>
+                              <p className="text-xs text-muted-foreground">
+                                {item.variants[0].option}
+                              </p>
+                              <div className="flex items-center justify-between mt-1">
+                                <p className="font-bold text-red-500 text-base">
+                                  {CURRENCYS.find((c) => c.name === item.currency)?.code}
+                                  {item.variants[0].price}
+                                </p>
+                                <p className="text-xs text-muted-foreground">
+                                  {item.variants[0].inventory_quantity} in stock
+                                </p>
+                              </div>
+                            </>
+                          )
+                        )}
+                      </CardContent>
+                    </Card>
+                  </Link>
+                )
+              })}
+            </div>
+            {hasNextPage && (
+              <div className="flex justify-center">
+                <Button
+                  variant="outline"
+                  className="min-w-[200px] h-11 rounded-full"
+                  onClick={() => fetchNextPage()}
+                  disabled={isFetchingNextPage}
+                >
+                  {isFetchingNextPage ? (
+                    <>
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      Loading...
+                    </>
+                  ) : (
+                    'Show more products'
+                  )}
+                </Button>
+              </div>
+            )}
+          </>
         ) : (
           <Card>
             <CardContent className="py-20 text-center">

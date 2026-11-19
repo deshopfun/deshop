@@ -1,8 +1,8 @@
+import { useRouter } from 'next/router'
 import { useSnackPresistStore } from '@/lib'
-import { FILE_TYPE } from '@/packages/constants'
-import { useCallback, useEffect, useState } from 'react'
-import axios from '@/utils/http/axios'
-import { Http } from '@/utils/http/http'
+import { useEffect, useState } from 'react'
+import { uploadFiles } from '@/utils/upload'
+import { useProductStory, useSaveProductStory } from '@/hooks/queries/useProductStory'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -11,6 +11,7 @@ import { Label } from '@/components/ui/label'
 import { cn } from '@/lib/utils'
 import { Trash2, Save, Settings, Image as ImageIcon, ImagePlus } from 'lucide-react'
 import { GetAbosolutePathByRelative } from '@/utils/image'
+import RemoteImage from '@/components/Image/RemoteImage'
 import { useShallow } from 'zustand/react/shallow'
 
 interface Props {
@@ -24,6 +25,10 @@ const statusConfig: Record<string, { label: string; className: string }> = {
 }
 
 const ProductStory = ({ productId }: Props) => {
+  const saveStory = useSaveProductStory(productId)
+  const storyQuery = useProductStory(productId, !!productId)
+  const router = useRouter()
+
   const [slug, setSlug] = useState('')
   const [title, setTitle] = useState('')
   const [subTitle, setSubTitle] = useState('')
@@ -62,34 +67,26 @@ const ProductStory = ({ productId }: Props) => {
     setStoryStatus('draft')
   }
 
-  const init = useCallback(async (id: number) => {
-    try {
-      const response: any = await axios.get(Http.product_story, {
-        params: { product_id: id },
-      })
-      if (response.result) {
-        const d = response.data ?? {}
-        setSlug(d.slug ?? '')
-        setTitle(d.title ?? '')
-        setSubTitle(d.sub_title ?? '')
-        setDescription(d.body_html ?? '')
-        setCoverImage(d.cover_image ?? '')
-        setCoverImageCaption(d.cover_image_caption ?? '')
-        setStoryStatus(d.story_status ?? 'draft')
-      } else {
-        resetForm()
-      }
-    } catch {
-      showError('Network error. Please try again later.')
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
-
   useEffect(() => {
-    if (productId) {
-      init(productId)
+    if (storyQuery.isError) {
+      showError((storyQuery.error as Error)?.message || 'Network error. Please try again later.')
+      return
     }
-  }, [productId, init])
+    if (!storyQuery.isSuccess) return
+    const d = storyQuery.data
+    if (!d) {
+      resetForm()
+      return
+    }
+    setSlug(d.slug ?? '')
+    setTitle(d.title ?? '')
+    setSubTitle(d.sub_title ?? '')
+    setDescription(d.body_html ?? '')
+    setCoverImage(d.cover_image ?? '')
+    setCoverImageCaption(d.cover_image_caption ?? '')
+    setStoryStatus(d.story_status ?? 'draft')
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [storyQuery.isSuccess, storyQuery.isError, storyQuery.data, storyQuery.error])
 
   const MAX_SIZE = 1 * 1024 * 1024
   const ACCEPT_TYPES = ['image/jpeg', 'image/png', 'image/gif', 'image/svg+xml']
@@ -103,20 +100,15 @@ const ProductStory = ({ productId }: Props) => {
 
     setUploading(true)
     try {
-      const formData = new FormData()
-      formData.append('files', file)
-      const response: any = await axios.post(Http.upload_file, formData, {
-        params: { file_type: FILE_TYPE.Image },
-        headers: { 'Content-Type': 'multipart/form-data' },
-      })
-      if (response.result && response.data.urls.length > 0) {
-        setCoverImage(response.data.urls[0])
+      const urls = await uploadFiles([file])
+      if (urls[0]) {
+        setCoverImage(urls[0])
         showSuccess('Image uploaded')
       } else {
         showError('Upload failed')
       }
-    } catch {
-      showError('Network error. Please try again later.')
+    } catch (e) {
+      showError((e as Error)?.message || 'Network error. Please try again later.')
     } finally {
       setUploading(false)
     }
@@ -137,7 +129,7 @@ const ProductStory = ({ productId }: Props) => {
     const lowerSlug = slug.toLowerCase()
     setSaving(true)
     try {
-      const response: any = await axios.post(Http.product_story, {
+      await saveStory.mutateAsync({
         product_id: productId,
         slug: lowerSlug,
         title,
@@ -147,14 +139,10 @@ const ProductStory = ({ productId }: Props) => {
         cover_image_caption: coverImageCaption,
         story_status: status || storyStatus,
       })
-      if (response.result) {
-        await init(productId)
-        showSuccess('Updated successfully')
-      } else {
-        showError('Update failed')
-      }
-    } catch {
-      showError('Network error. Please try again later.')
+      await storyQuery.refetch()
+      showSuccess('Updated successfully')
+    } catch (e) {
+      showError(e instanceof Error ? e.message : 'Network error. Please try again later.')
     } finally {
       setSaving(false)
     }
@@ -178,7 +166,7 @@ const ProductStory = ({ productId }: Props) => {
                 <Button
                   size="sm"
                   className="h-9 bg-green-500 hover:bg-green-600 text-white gap-1.5"
-                  onClick={() => (window.location.href = `/story/${slug}`)}
+                  onClick={() => (void router.push(`/story/${slug}`))}
                 >
                   See Website
                 </Button>
@@ -303,10 +291,12 @@ const ProductStory = ({ productId }: Props) => {
           <div className="grid grid-cols-3 gap-3">
             {coverImage ? (
               <div className="relative group aspect-square rounded-xl overflow-hidden border">
-                <img
+                <RemoteImage
                   src={GetAbosolutePathByRelative(coverImage)}
                   alt="Story cover"
-                  className="w-full h-full object-cover"
+                  fill
+                  sizes="100vw"
+                  className="object-cover"
                 />
                 <button
                   type="button"

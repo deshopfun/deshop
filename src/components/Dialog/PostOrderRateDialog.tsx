@@ -1,9 +1,8 @@
 import { useSnackPresistStore } from '@/lib'
-import { FILE_TYPE } from '@/packages/constants'
 import { useEffect, useState } from 'react'
-import axios from '@/utils/http/axios'
-import { Http } from '@/utils/http/http'
 import { PostRatingType } from '@/utils/types'
+import { uploadFiles } from '@/utils/upload'
+import { useSubmitProductRating } from '@/hooks/queries/useProductRating'
 
 import {
   Dialog,
@@ -18,8 +17,9 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 
-import { Star, Upload, X, Image as ImageIcon } from 'lucide-react'
+import { Star, X, Image as ImageIcon } from 'lucide-react'
 import { GetAbosolutePathByRelative } from '@/utils/image'
+import RemoteImage from '@/components/Image/RemoteImage'
 import { useShallow } from 'zustand/react/shallow'
 
 interface DialogType {
@@ -37,6 +37,7 @@ export default function PostOrderRateDialog({
 }: DialogType) {
   const [ratings, setRatings] = useState<PostRatingType[]>([])
   const [countRating, setCountRating] = useState<number>(0)
+  const submitRating = useSubmitProductRating()
 
   const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore(
     useShallow((state) => ({
@@ -55,18 +56,12 @@ export default function PostOrderRateDialog({
     }
 
     try {
-      const formData = new FormData()
-      formData.append('files', files[0])
+      const urls = await uploadFiles([files[0]])
 
-      const response: any = await axios.post(Http.upload_file, formData, {
-        params: { file_type: FILE_TYPE.Image },
-        headers: { 'Content-Type': 'multipart/form-data' },
-      })
-
-      if (response.result && response.data.urls?.[0]) {
+      if (urls[0]) {
         setRatings((prev) =>
           prev.map((rating, i) =>
-            i === ratingIndex ? { ...rating, rating_image: response.data.urls[0] } : rating
+            i === ratingIndex ? { ...rating, rating_image: urls[0] } : rating
           )
         )
       } else {
@@ -76,7 +71,7 @@ export default function PostOrderRateDialog({
       }
     } catch (e) {
       setSnackSeverity('error')
-      setSnackMessage('Network error occurred')
+      setSnackMessage((e as Error)?.message || 'Network error occurred')
       setSnackOpen(true)
       console.error(e)
     }
@@ -86,24 +81,14 @@ export default function PostOrderRateDialog({
     if (!orderId || ratings.length === 0) return
 
     try {
-      const response: any = await axios.post(Http.product_rating, {
-        order_id: orderId,
-        ratings: ratings,
-      })
-
-      if (response.result) {
-        setSnackSeverity('success')
-        setSnackMessage('Rating posted successfully')
-        setSnackOpen(true)
-        await handleCloseDialog()
-      } else {
-        setSnackSeverity('error')
-        setSnackMessage(response.message || 'Failed to post rating')
-        setSnackOpen(true)
-      }
+      await submitRating.mutateAsync({ order_id: orderId, ratings })
+      setSnackSeverity('success')
+      setSnackMessage('Rating posted successfully')
+      setSnackOpen(true)
+      await handleCloseDialog()
     } catch (e) {
       setSnackSeverity('error')
-      setSnackMessage('Network error occurred')
+      setSnackMessage(e instanceof Error ? e.message : 'Network error occurred')
       setSnackOpen(true)
       console.error(e)
     }
@@ -135,9 +120,11 @@ export default function PostOrderRateDialog({
             <Card key={index}>
               <CardContent className="p-6 space-y-5">
                 <div className="flex gap-4">
-                  <img
+                  <RemoteImage
                     src={GetAbosolutePathByRelative(item.image)}
                     alt={item.title}
+                    width={64}
+                    height={64}
                     className="w-16 h-16 object-cover rounded-lg border"
                   />
                   <div className="flex-1">
@@ -178,10 +165,12 @@ export default function PostOrderRateDialog({
                   <div className="border border-dashed border-border rounded-lg p-4">
                     {item.rating_image ? (
                       <div className="relative inline-block">
-                        <img
+                        <RemoteImage
                           src={GetAbosolutePathByRelative(item.rating_image)}
                           alt="Review"
-                          className="max-h-40 rounded-lg"
+                          width={320}
+                          height={160}
+                          className="max-h-40 w-auto rounded-lg"
                         />
                         <Button
                           variant="destructive"

@@ -1,10 +1,8 @@
 import { useSnackPresistStore } from '@/lib'
 import type { COUNTRY } from '@/packages/constants/countryState'
 import { useEffect, useState } from 'react'
-import axios from '@/utils/http/axios'
-import { Http } from '@/utils/http/http'
 import { IsValidEmail } from '@/utils/verify'
-import type { ApiResponse } from '@/utils/http/types'
+import { useSaveAddress } from '@/hooks/queries/useManage'
 import {
   Dialog,
   DialogContent,
@@ -22,7 +20,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { MapPin, Loader2, User, Mail, Building2, Phone } from 'lucide-react'
+import { MapPin, Loader2, User } from 'lucide-react'
 import { useShallow } from 'zustand/react/shallow'
 
 interface DialogType {
@@ -73,8 +71,11 @@ export default function UserAddressDialog(props: DialogType) {
   const [city, setCity] = useState('')
   const [province, setProvince] = useState('')
   const [zip, setZip] = useState('')
-  const [loading, setLoading] = useState(false)
   const [countries, setCountries] = useState<COUNTRY[]>([])
+  const addressKind =
+    props.kind === 'received' || props.kind === 'delivery' ? props.kind : 'received'
+  const saveAddress = useSaveAddress(addressKind)
+  const loading = saveAddress.isPending
 
   const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore(
     useShallow((state) => ({
@@ -161,27 +162,18 @@ export default function UserAddressDialog(props: DialogType) {
       address_two: addressTwo,
     }
 
-    setLoading(true)
-    try {
-      let response: ApiResponse<unknown>
-      if (props.handle === 1) {
-        response = await axios.post(Http.address, { ...payload, kind: props.kind })
-      } else if (props.handle === 2) {
-        response = await axios.put(Http.address, { ...payload, address_id: props.addressId })
-      } else {
-        return showError('Not supported')
-      }
+    if (props.handle !== 1 && props.handle !== 2) return showError('Not supported')
 
-      if (response.result) {
-        await props.handleCloseDialog()
-        showSuccess('Address saved successfully')
-      } else {
-        showError(response.message || 'Save failed')
-      }
-    } catch {
-      showError('Network error. Please try again later.')
-    } finally {
-      setLoading(false)
+    try {
+      await saveAddress.mutateAsync({
+        handle: props.handle as 1 | 2,
+        address_id: props.addressId,
+        payload,
+      })
+      await props.handleCloseDialog()
+      showSuccess('Address saved successfully')
+    } catch (e) {
+      showError(e instanceof Error ? e.message : 'Network error. Please try again later.')
     }
   }
 

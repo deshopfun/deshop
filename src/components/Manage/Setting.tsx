@@ -1,9 +1,6 @@
 import { useSnackPresistStore } from '@/lib'
 import { CURRENCYS } from '@/packages/constants/currency'
 import { useEffect, useState } from 'react'
-import axios from '@/utils/http/axios'
-import { Http } from '@/utils/http/http'
-import { ProfileType } from '@/utils/types'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
@@ -17,8 +14,18 @@ import {
 import { Settings, User, Mail, Gift, FileText, Clock, Coins, Save, Loader2 } from 'lucide-react'
 import { GetAbosolutePathByRelative } from '@/utils/image'
 import { useShallow } from 'zustand/react/shallow'
+import { useUpdateUserCurrency, useUserSetting } from '@/hooks/queries/useUserSetting'
+import type { LucideIcon } from 'lucide-react'
 
-const InfoRow = ({ icon: Icon, label, value }: { icon: any; label: string; value?: string }) => (
+const InfoRow = ({
+  icon: Icon,
+  label,
+  value,
+}: {
+  icon: LucideIcon
+  label: string
+  value?: string
+}) => (
   <div className="flex items-center justify-between py-3 border-b border-dashed border-gray-100 last:border-0">
     <div className="flex items-center gap-2 text-sm text-muted-foreground">
       <Icon className="h-4 w-4 shrink-0" />
@@ -29,9 +36,10 @@ const InfoRow = ({ icon: Icon, label, value }: { icon: any; label: string; value
 )
 
 const ManageSetting = () => {
-  const [user, setUser] = useState<ProfileType>()
   const [currency, setCurrency] = useState('')
-  const [loading, setLoading] = useState(false)
+  const settingQuery = useUserSetting()
+  const updateCurrency = useUpdateUserCurrency()
+  const user = settingQuery.data
 
   const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore(
     useShallow((state) => ({
@@ -52,44 +60,31 @@ const ManageSetting = () => {
     setSnackOpen(true)
   }
 
-  const init = async () => {
-    try {
-      const response: any = await axios.get(Http.user_setting)
-      if (response.result) {
-        setUser(response.data)
-        setCurrency(response.data.currency)
-      } else {
-        setUser(undefined)
-        setCurrency('')
-      }
-    } catch {
-      showError('Network error. Please try again later.')
+  useEffect(() => {
+    if (user?.currency) setCurrency(user.currency)
+  }, [user?.currency])
+
+  useEffect(() => {
+    if (settingQuery.isError) {
+      showError(
+        (settingQuery.error as Error)?.message || 'Network error. Please try again later.'
+      )
     }
-  }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [settingQuery.isError, settingQuery.error])
 
   const onSave = async () => {
     if (!currency) return showError('Please select a currency')
-    setLoading(true)
     try {
-      const response: any = await axios.put(Http.user_setting, { currency })
-      if (response.result) {
-        await init()
-        showSuccess('Settings saved successfully')
-      } else {
-        showError(response.message)
-      }
-    } catch {
-      showError('Network error. Please try again later.')
-    } finally {
-      setLoading(false)
+      await updateCurrency.mutateAsync(currency)
+      showSuccess('Settings saved successfully')
+    } catch (e) {
+      showError((e as Error)?.message || 'Network error. Please try again later.')
     }
   }
 
-  useEffect(() => {
-    init()
-  }, [])
-
   const currencyCode = CURRENCYS.find((c) => c.name === currency)?.code
+  const loading = updateCurrency.isPending
 
   return (
     <div className="flex flex-col gap-4">

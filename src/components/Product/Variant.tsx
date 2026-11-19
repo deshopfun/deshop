@@ -1,10 +1,9 @@
 import { useSnackPresistStore } from '@/lib'
-import { FILE_TYPE } from '@/packages/constants'
 import { CURRENCYS } from '@/packages/constants/currency'
-import { useEffect, useState } from 'react'
-import axios from '@/utils/http/axios'
-import { Http } from '@/utils/http/http'
+import { useEffect, useMemo, useState } from 'react'
 import { ProductOptionType } from '@/utils/types'
+import { uploadFiles } from '@/utils/upload'
+import { useProductVariant, useSaveProductVariant } from '@/hooks/queries/useProductVariant'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -12,6 +11,7 @@ import { Label } from '@/components/ui/label'
 import { ImagePlus, Trash2, Save, Package, SlidersHorizontal } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { GetAbosolutePathByRelative } from '@/utils/image'
+import RemoteImage from '@/components/Image/RemoteImage'
 import { useShallow } from 'zustand/react/shallow'
 import SwitchRow from '../Switch/SwitchRow'
 import CurrencyInput from '../Input/CurrencyInput'
@@ -23,6 +23,7 @@ interface Props {
 }
 
 const ProductVariant = (props: Props) => {
+  const saveVariant = useSaveProductVariant()
   const [currency, setCurrency] = useState('')
   const [title, setTitle] = useState('')
   const [image, setImage] = useState('')
@@ -74,7 +75,7 @@ const ProductVariant = (props: Props) => {
     }
   }, [props])
 
-  const buildOption = () => {
+  const selectedOption = useMemo(() => {
     switch (options.length) {
       case 3:
         return optionOneValue && optionTwoValue && optionThreeValue
@@ -87,7 +88,9 @@ const ProductVariant = (props: Props) => {
       default:
         return ''
     }
-  }
+  }, [options.length, optionOneValue, optionTwoValue, optionThreeValue])
+
+  const variantQuery = useProductVariant(props.productId, selectedOption, !!selectedOption)
 
   const resetForm = () => {
     setTitle('')
@@ -106,70 +109,44 @@ const ProductVariant = (props: Props) => {
     setTip('')
   }
 
-  const init = async (one: string, two: string, three: string) => {
-    const option = (() => {
-      switch (options.length) {
-        case 3:
-          return one && two && three ? `${one},${two},${three}` : ''
-        case 2:
-          return one && two ? `${one},${two}` : ''
-        case 1:
-          return one || ''
-        default:
-          return ''
-      }
-    })()
-    if (!option) return
-    try {
-      const response: any = await axios.get(Http.product_variant, {
-        params: { product_id: props.productId, option },
-      })
-      if (response.result) {
-        const d = response.data
-        console.log(d)
-        setTitle(d.title)
-        setImage(d.image)
-        setBarcode(d.barcode)
-        setCompareAtPrice(d.compare_at_price)
-        setInventoryPolicy(d.inventory_policy === 'true')
-        setIsVirtual(d.is_virtual === 'true')
-        setInventoryQuantity(d.inventory_quantity)
-        setPrice(d.price)
-        setPosition(d.position)
-        setSku(d.sku)
-        setTax(d.tax)
-        setTaxable(d.taxable === 'true')
-        setDiscounts(d.discounts)
-        setTip(d.tip)
-      } else {
-        resetForm()
-      }
-    } catch {
-      showError('Network error. Please try again later.')
-    }
-  }
-
   useEffect(() => {
-    init(optionOneValue, optionTwoValue, optionThreeValue)
-  }, [optionOneValue, optionTwoValue, optionThreeValue])
+    if (!selectedOption) return
+    if (variantQuery.isError) {
+      showError((variantQuery.error as Error)?.message || 'Network error. Please try again later.')
+      return
+    }
+    if (!variantQuery.isSuccess) return
+    const d = variantQuery.data
+    if (!d) {
+      resetForm()
+      return
+    }
+    setTitle(d.title)
+    setImage(d.image)
+    setBarcode(d.barcode)
+    setCompareAtPrice(d.compare_at_price)
+    setInventoryPolicy(d.inventory_policy === 'true')
+    setIsVirtual(d.is_virtual === 'true')
+    setInventoryQuantity(String(d.inventory_quantity ?? ''))
+    setPrice(d.price)
+    setPosition(String(d.position ?? ''))
+    setSku(d.sku)
+    setTax(d.tax)
+    setTaxable(d.taxable === 'true')
+    setDiscounts(d.discounts)
+    setTip(d.tip)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedOption, variantQuery.isSuccess, variantQuery.isError, variantQuery.data, variantQuery.error])
 
-  const uploadFile = async (files: FileList) => {
-    if (!files.length) return showError('No file selected')
+  const uploadFile = async (files: FileList | null) => {
+    if (!files?.length) return showError('No file selected')
     setUploading(true)
     try {
-      const formData = new FormData()
-      Array.from(files).forEach((f) => formData.append('files', f))
-      const response: any = await axios.post(Http.upload_file, formData, {
-        params: { file_type: FILE_TYPE.Image },
-        headers: { 'Content-Type': 'multipart/form-data' },
-      })
-      if (response.result && response.data.urls.length > 0) {
-        setImage(response.data.urls[0])
-      } else {
-        showError('Upload failed')
-      }
-    } catch {
-      showError('Network error. Please try again later.')
+      const urls = await uploadFiles(Array.from(files))
+      if (urls[0]) setImage(urls[0])
+      else showError('Upload failed')
+    } catch (e) {
+      showError((e as Error)?.message || 'Network error. Please try again later.')
     } finally {
       setUploading(false)
     }
@@ -191,11 +168,10 @@ const ProductVariant = (props: Props) => {
       return showError('Incorrect inventory quantity')
     if (taxable && (!tax || Number(tax) <= 0)) return showError('Incorrect tax input')
 
-    const option = buildOption()
-    if (!option) return showError('Incorrect option parameter')
+    if (!selectedOption) return showError('Incorrect option parameter')
 
     try {
-      const response: any = await axios.post(Http.product_variant, {
+      await saveVariant.mutateAsync({
         product_id: props.productId,
         image,
         position: parseInt(position),
@@ -211,16 +187,12 @@ const ProductVariant = (props: Props) => {
         is_virtual: isVirtual ? 'true' : 'false',
         taxable: taxable ? 'true' : 'false',
         tax: taxable ? tax : undefined,
-        option,
+        option: selectedOption,
       })
-      if (response.result) {
-        await init(optionOneValue, optionTwoValue, optionThreeValue)
-        showSuccess('Updated successfully')
-      } else {
-        showError(response.message)
-      }
-    } catch {
-      showError('Network error. Please try again later.')
+      await variantQuery.refetch()
+      showSuccess('Updated successfully')
+    } catch (e) {
+      showError(e instanceof Error ? e.message : 'Network error. Please try again later.')
     }
   }
 
@@ -306,10 +278,12 @@ const ProductVariant = (props: Props) => {
             </div>
             {image ? (
               <div className="relative w-32 h-32 rounded-xl overflow-hidden border">
-                <img
+                <RemoteImage
                   src={GetAbosolutePathByRelative(image)}
                   alt="variant"
-                  className="w-full h-full object-cover"
+                  fill
+                  sizes="120px"
+                  className="object-cover"
                 />
               </div>
             ) : (
@@ -330,7 +304,7 @@ const ProductVariant = (props: Props) => {
                 <input
                   type="file"
                   className="sr-only"
-                  onChange={(e: any) => uploadFile(e.target.files)}
+                  onChange={(e) => uploadFile(e.target.files)}
                 />
               </label>
             )}

@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
+import Link from 'next/link'
 import { IsValidEmail } from '@/utils/verify'
 import { useSnackPresistStore, useUserPresistStore } from '@/lib'
-import axios from '@/utils/http/axios'
-import { Http } from '@/utils/http/http'
 import RegisterDialog from '@/components/Dialog/RegisterDialog'
+import { useRegister } from '@/hooks/queries/useAuth'
 import { SiteLogo } from '@/components/Logo/SiteLogo'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -28,7 +28,8 @@ const Register = () => {
 
   const [email, setEmail] = useState('')
   const [open, setOpen] = useState(false)
-  const [loading, setLoading] = useState(false)
+  const register = useRegister()
+  const loading = register.isPending
 
   const { isLogin } = useUserPresistStore(
     useShallow((state) => ({
@@ -56,24 +57,17 @@ const Register = () => {
   }, [router.isReady, router.query])
 
   useEffect(() => {
-    if (isLogin) window.location.href = '/'
-  }, [])
+    if (isLogin) void router.replace('/')
+  }, [isLogin, router])
 
   const onRegister = async () => {
     if (!email || !IsValidEmail(email)) return showError('Please enter a valid email')
-    setLoading(true)
     try {
-      const response: any = await axios.post(Http.register, { email })
-      if (response.result) {
-        setOpen(true)
-      } else {
-        showError(response.message)
-      }
+      await register.mutateAsync(email)
+      setOpen(true)
     } catch (e) {
-      showError('Network error. Please try again later.')
+      showError(e instanceof Error ? e.message : 'Network error. Please try again later.')
       console.error(e)
-    } finally {
-      setLoading(false)
     }
   }
 
@@ -170,7 +164,7 @@ const Register = () => {
                 variant="outline"
                 className="h-11 font-medium"
                 onClick={() => {
-                  window.location.href = '/login'
+                  void router.push('/login')
                 }}
               >
                 Log in
@@ -180,13 +174,13 @@ const Register = () => {
 
           <p className="text-xs text-muted-foreground text-center">
             By creating an account, you agree to our{' '}
-            <a href="/docs/terms-and-conditions" className="text-sky-500 hover:underline">
+            <Link href="/docs/terms-and-conditions" className="text-sky-500 hover:underline">
               Terms of Service
-            </a>{' '}
+            </Link>{' '}
             and{' '}
-            <a href="/docs/privacy-policy" className="text-sky-500 hover:underline">
+            <Link href="/docs/privacy-policy" className="text-sky-500 hover:underline">
               Privacy Policy
-            </a>
+            </Link>
           </p>
         </div>
       </div>

@@ -1,86 +1,89 @@
-import { CHAINIDS, COINS } from '@/packages/constants/blockchain';
-// import QRCode from 'qrcode';
+import { CHAINIDS, COINS } from '@/packages/constants/blockchain'
+import { getSiteOrigin } from '@/utils/seo'
 
-// export function GenerateQrCode(content: string) {
-//   return QRCode.toDataURL(content);
-// }
+function getAssetOrigin(): string {
+  if (typeof window !== 'undefined' && window.location?.origin) {
+    return window.location.origin
+  }
+  return getSiteOrigin()
+}
 
 export function GetImgSrcByCrypto(crypto: COINS): string {
-  const baseUrl = window.location.origin;
+  const baseUrl = getAssetOrigin()
 
   switch (crypto) {
     case COINS.BTC:
-      return baseUrl + '/coin/btc.svg';
+      return baseUrl + '/coin/btc.svg'
     case COINS.BTC_LN:
-      return baseUrl + '/coin/btc_ln.svg';
+      return baseUrl + '/coin/btc_ln.svg'
     case COINS.ETH:
-      return baseUrl + '/coin/eth.svg';
+      return baseUrl + '/coin/eth.svg'
     case COINS.USDT:
-      return baseUrl + '/coin/usdt.svg';
+      return baseUrl + '/coin/usdt.svg'
     case COINS.BNB:
-      return baseUrl + '/coin/bnb.svg';
+      return baseUrl + '/coin/bnb.svg'
     case COINS.SOL:
-      return baseUrl + '/coin/sol.svg';
+      return baseUrl + '/coin/sol.svg'
     case COINS.USDC:
-      return baseUrl + '/coin/usdc.svg';
+      return baseUrl + '/coin/usdc.svg'
     case COINS.XRP:
-      return baseUrl + '/coin/xrp.svg';
+      return baseUrl + '/coin/xrp.svg'
     case COINS.TON:
-      return baseUrl + '/coin/ton.svg';
+      return baseUrl + '/coin/ton.svg'
     case COINS.TRX:
-      return baseUrl + '/coin/trx.svg';
+      return baseUrl + '/coin/trx.svg'
     case COINS.AVAX:
-      return baseUrl + '/coin/avax.svg';
+      return baseUrl + '/coin/avax.svg'
     case COINS.BCH:
-      return baseUrl + '/coin/bch.svg';
+      return baseUrl + '/coin/bch.svg'
     case COINS.DAI:
-      return baseUrl + '/coin/dai.svg';
+      return baseUrl + '/coin/dai.svg'
     case COINS.LTC:
-      return baseUrl + '/coin/ltc.svg';
+      return baseUrl + '/coin/ltc.svg'
     case COINS.POL:
-      return baseUrl + '/coin/pol.svg';
+      return baseUrl + '/coin/pol.svg'
 
     default:
-      return '';
+      return ''
   }
 }
 
 export function GetImgSrcByChain(chain: CHAINIDS): string {
-  const baseUrl = window.location.origin;
+  const baseUrl = getAssetOrigin()
 
   switch (chain) {
     case CHAINIDS.BITCOIN:
-      return baseUrl + '/chain/bitcoin.svg';
+      return baseUrl + '/chain/bitcoin.svg'
     case CHAINIDS.LITECOIN:
-      return baseUrl + '/chain/litecoin.svg';
+      return baseUrl + '/chain/litecoin.svg'
     case CHAINIDS.XRP:
-      return baseUrl + '/chain/xrp.svg';
+      return baseUrl + '/chain/xrp.svg'
     case CHAINIDS.BITCOINCASH:
-      return baseUrl + '/chain/bitcoincash.svg';
+      return baseUrl + '/chain/bitcoincash.svg'
     case CHAINIDS.ETHEREUM:
-      return baseUrl + '/chain/ethereum.svg';
+      return baseUrl + '/chain/ethereum.svg'
     case CHAINIDS.TRON:
-      return baseUrl + '/chain/tron.svg';
+      return baseUrl + '/chain/tron.svg'
     case CHAINIDS.SOLANA:
-      return baseUrl + '/chain/solana.svg';
+      return baseUrl + '/chain/solana.svg'
     case CHAINIDS.BSC:
-      return baseUrl + '/chain/bsc.svg';
+      return baseUrl + '/chain/bsc.svg'
     case CHAINIDS.ARBITRUM_ONE:
-      return baseUrl + '/chain/arbitrum.svg';
+      return baseUrl + '/chain/arbitrum.svg'
     case CHAINIDS.ARBITRUM_NOVA:
-      return baseUrl + '/chain/arbitrumnova.svg';
+      return baseUrl + '/chain/arbitrumnova.svg'
     case CHAINIDS.AVALANCHE:
-      return baseUrl + '/chain/avalanche.svg';
+      return baseUrl + '/chain/avalanche.svg'
     case CHAINIDS.POLYGON:
-      return baseUrl + '/chain/polygon.svg';
+      return baseUrl + '/chain/polygon.svg'
     case CHAINIDS.BASE:
-      return baseUrl + '/chain/base.svg';
+      return baseUrl + '/chain/base.svg'
     case CHAINIDS.OPTIMISM:
-      return baseUrl + '/chain/optimism.svg';
+      return baseUrl + '/chain/optimism.svg'
     case CHAINIDS.TON:
-      return baseUrl + '/chain/ton.svg';
+      return baseUrl + '/chain/ton.svg'
 
     default:
-      return '';
+      return ''
   }
 }

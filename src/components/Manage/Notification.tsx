@@ -1,17 +1,21 @@
 import { useSnackPresistStore } from '@/lib'
 import { NOTIFICATION, NOTIFICATIONS } from '@/packages/constants/notification'
-import { useEffect, useState } from 'react'
-import axios from '@/utils/http/axios'
-import { Http } from '@/utils/http/http'
+import { useEffect } from 'react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Switch } from '@/components/ui/switch'
 import { Bell, BellOff } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useShallow } from 'zustand/react/shallow'
+import {
+  useNotificationSettings,
+  useUpdateNotificationSettings,
+} from '@/hooks/queries/useNotifications'
 
 const ManageNotification = () => {
-  const [notification, setNotification] = useState('')
+  const settingsQuery = useNotificationSettings()
+  const updateSettings = useUpdateNotificationSettings()
+  const notification = settingsQuery.data ?? ''
 
   const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore(
     useShallow((state) => ({
@@ -32,18 +36,14 @@ const ManageNotification = () => {
     setSnackOpen(true)
   }
 
-  const init = async () => {
-    try {
-      const response: any = await axios.get(Http.user_notification_setting)
-      setNotification(response.result ? response.data.notification : '')
-    } catch {
-      showError('Network error. Please try again later.')
-    }
-  }
-
   useEffect(() => {
-    init()
-  }, [])
+    if (settingsQuery.isError) {
+      showError(
+        (settingsQuery.error as Error)?.message || 'Network error. Please try again later.'
+      )
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [settingsQuery.isError, settingsQuery.error])
 
   const isEnabled = (id: number) => notification.split(',').filter(Boolean).includes(String(id))
 
@@ -59,17 +59,10 @@ const ManageNotification = () => {
             ? arr.filter((i) => i !== String(id)).join(',')
             : [...arr, String(id)].join(',')
 
-      const response: any = await axios.put(Http.user_notification_setting, {
-        notification: newNotification,
-      })
-      if (response.result) {
-        await init()
-        showSuccess(id === 0 ? 'All notifications disabled' : 'Updated successfully')
-      } else {
-        showError(response.message)
-      }
-    } catch {
-      showError('Network error. Please try again later.')
+      await updateSettings.mutateAsync(newNotification)
+      showSuccess(id === 0 ? 'All notifications disabled' : 'Updated successfully')
+    } catch (e) {
+      showError((e as Error)?.message || 'Network error. Please try again later.')
     }
   }
 
@@ -147,7 +140,11 @@ const ManageNotification = () => {
                   </div>
                 </div>
 
-                <Switch checked={enabled} onCheckedChange={() => onChangeNotification(item.id)} />
+                <Switch
+                  checked={enabled}
+                  onCheckedChange={() => onChangeNotification(item.id)}
+                  disabled={updateSettings.isPending}
+                />
               </div>
             )
           })}

@@ -1,3 +1,5 @@
+import { useRouter } from 'next/router'
+import { navigateTo } from '@/utils/navigate'
 import BlockchainDialog from '@/components/Dialog/BlockchainDialog'
 import ConfirmOrderDialog from '@/components/Dialog/ConfirmOrderDialog'
 import ConfirmPaymentDialog from '@/components/Dialog/ConfirmPaymentDialog'
@@ -7,10 +9,10 @@ import OrderRatingDialog from '@/components/Dialog/OrderRatingDialog'
 import PostOrderRateDialog from '@/components/Dialog/PostOrderRateDialog'
 import { useSnackPresistStore } from '@/lib'
 import { useEffect, useState } from 'react'
-import axios from '@/utils/http/axios'
-import { Http } from '@/utils/http/http'
 import { OrderStatusText } from '@/utils/strings'
 import { OrderType, TransactionType } from '@/utils/types'
+import { manageKeys, useManageOrders } from '@/hooks/queries/useManage'
+import { useQueryClient } from '@tanstack/react-query'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
@@ -28,82 +30,22 @@ import {
   ShoppingCart,
   CheckCircle2,
   Package,
-  Ban,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { GetAbosolutePathByRelative } from '@/utils/image'
+import RemoteImage from '@/components/Image/RemoteImage'
 import { useShallow } from 'zustand/react/shallow'
-
-const steps = [
-  'Waiting for payment',
-  'Waiting for receipt confirm',
-  'Waiting for order confirm',
-  'Order complete',
-]
-
-const VOIDED_STATUSES = ['voided']
-const REFUNDED_STATUSES = ['refunded', 'partially_refunded']
-
-const OrderStepper = ({ activeStep }: { activeStep: number }) => (
-  <div className="flex items-center w-full">
-    {steps.map((label, i) => (
-      <div key={i} className="flex items-center flex-1 last:flex-none">
-        <div className="flex flex-col items-center gap-1">
-          <div
-            className={cn(
-              'h-7 w-7 rounded-full flex items-center justify-center text-xs font-bold transition-colors',
-              i < activeStep
-                ? 'bg-sky-500 text-white'
-                : i === activeStep
-                  ? 'bg-sky-500 text-white ring-4 ring-sky-100'
-                  : 'bg-gray-100 text-gray-400'
-            )}
-          >
-            {i < activeStep ? <CheckCircle2 className="h-4 w-4" /> : i + 1}
-          </div>
-          <span
-            className={cn(
-              'text-xs text-center max-w-20 leading-tight',
-              i <= activeStep ? 'text-sky-600 font-medium' : 'text-gray-400'
-            )}
-          >
-            {label}
-          </span>
-        </div>
-        {i < steps.length - 1 && (
-          <div
-            className={cn(
-              'flex-1 h-0.5 mx-2 mb-5 transition-colors',
-              i < activeStep ? 'bg-sky-500' : 'bg-gray-200'
-            )}
-          />
-        )}
-      </div>
-    ))}
-  </div>
-)
-
-const CancelledBanner = ({ order }: { order: OrderType }) => {
-  const isVoided = VOIDED_STATUSES.includes(order.financial_status)
-  return (
-    <div className="px-6 pt-5 pb-4 bg-gray-50 border-b flex items-center gap-3">
-      <Ban className="h-5 w-5 text-gray-400 shrink-0" />
-      <div>
-        <p className="text-sm font-semibold text-gray-700">
-          {isVoided ? 'Order cancelled' : 'Order refunded'}
-        </p>
-        {order.cancel_reason && (
-          <p className="text-xs text-muted-foreground mt-0.5">{order.cancel_reason}</p>
-        )}
-      </div>
-    </div>
-  )
-}
+import OrderStepper from './OrderStepper'
+import { REFUNDED_STATUSES, VOIDED_STATUSES } from '@/utils/paymentStatus'
+import OrderCancelledBanner from '@/components/Order/OrderCancelledBanner'
 
 const ManageOrder = () => {
+  const router = useRouter()
   const [alignment, setAlignment] = useState<'buy' | 'sell'>('buy')
-  const [orders, setOrders] = useState<OrderType[]>([])
   const [currentOrder, setCurrentOrder] = useState<OrderType>()
+  const queryClient = useQueryClient()
+  const ordersQuery = useManageOrders(alignment)
+  const orders = ordersQuery.data ?? []
 
   const [openBlockchainDialog, setOpenBlockchainDialog] = useState(false)
   const [openConfirmPaymentDialog, setOpenConfirmPaymentDialog] = useState(false)
@@ -127,25 +69,19 @@ const ManageOrder = () => {
     setSnackOpen(true)
   }
 
-  const init = async (kind: string) => {
-    try {
-      const response: any = await axios.get(Http.order, {
-        params: { kind },
-      })
-      setOrders(response.result ? response.data : [])
-    } catch {
-      showError('Network error. Please try again later.')
+  useEffect(() => {
+    if (ordersQuery.isError) {
+      showError(
+        (ordersQuery.error as Error)?.message || 'Network error. Please try again later.'
+      )
     }
-  }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ordersQuery.isError, ordersQuery.error])
 
   const refreshAndClose = (closeFn: (v: boolean) => void) => async () => {
-    await init(alignment)
+    await queryClient.invalidateQueries({ queryKey: manageKeys.orders(alignment) })
     closeFn(false)
   }
-
-  useEffect(() => {
-    init('buy')
-  }, [])
 
   const getActiveStep = (item: OrderType) => {
     if (item.payment_confirmed !== 'true') return 0
@@ -178,10 +114,7 @@ const ManageOrder = () => {
           {(['buy', 'sell'] as const).map((type) => (
             <button
               key={type}
-              onClick={async () => {
-                setAlignment(type)
-                await init(type)
-              }}
+              onClick={() => setAlignment(type)}
               className={cn(
                 'flex items-center gap-1.5 px-4 py-2 text-sm font-medium transition-colors',
                 alignment === type
@@ -207,7 +140,7 @@ const ManageOrder = () => {
               <Card key={index} className="border-0 shadow-sm overflow-hidden">
                 <CardContent className="p-0">
                   {isClosed ? (
-                    <CancelledBanner order={item} />
+                    <OrderCancelledBanner order={item} />
                   ) : (
                     <div className="px-6 pt-5 pb-4 bg-gray-50 border-b">
                       <OrderStepper activeStep={getActiveStep(item)} />
@@ -219,7 +152,7 @@ const ManageOrder = () => {
                       <button
                         className="flex items-center gap-2 hover:opacity-80 transition-opacity"
                         onClick={() => {
-                          window.location.href = `/profile/${item.username}`
+                          void router.push(`/profile/${item.username}`)
                         }}
                       >
                         <Avatar className="h-8 w-8">
@@ -245,18 +178,17 @@ const ManageOrder = () => {
 
                     <div
                       className="flex flex-col gap-3 cursor-pointer"
-                      onClick={() => {
-                        window.location.href = item.order_status_url
-                      }}
+                      onClick={() => navigateTo(router, item.order_status_url)}
                     >
                       {item.items.map((productItem, pi) => (
                         <div key={pi} className="flex items-center justify-between gap-3">
                           <div className="flex items-center gap-3">
-                            <img
+                            <RemoteImage
                               src={GetAbosolutePathByRelative(productItem.image)}
                               alt="product"
+                              width={64}
+                              height={64}
                               className="h-16 w-16 object-cover rounded-xl border shrink-0"
-                              loading="lazy"
                             />
                             <div>
                               <p className="text-sm font-semibold line-clamp-1">
@@ -327,7 +259,7 @@ const ManageOrder = () => {
                               size="sm"
                               className="h-8 text-xs bg-red-500 hover:bg-red-600 text-white gap-1.5 justify-start"
                               onClick={() => {
-                                window.location.href = `/payment/${item.order_id}`
+                                void router.push(`/payment/${item.order_id}`)
                               }}
                             >
                               <CreditCard className="h-3.5 w-3.5" /> Go to pay

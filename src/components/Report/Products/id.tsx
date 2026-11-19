@@ -1,11 +1,8 @@
 import { useSnackPresistStore } from '@/lib'
 import { useRouter } from 'next/router'
-import axios from '@/utils/http/axios'
-import { Http } from '@/utils/http/http'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import { REPORTS, REPORT_TYPE } from '@/packages/constants'
-import { ProductType } from '@/utils/types'
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -13,20 +10,22 @@ import { Textarea } from '@/components/ui/textarea'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Label } from '@/components/ui/label'
 import { Badge } from '@/components/ui/badge'
-import { Separator } from '@/components/ui/separator'
 
 import { AlertTriangle, Send } from 'lucide-react'
 import { GetAbosolutePathByRelative } from '@/utils/image'
-import { useAbortableEffect } from '@/hooks/useAbortableEffect'
+import RemoteImage from '@/components/Image/RemoteImage'
 import { useShallow } from 'zustand/react/shallow'
+import { useReportProduct, useSubmitReport } from '@/hooks/queries/useReport'
 
 const ReportProductDetails = () => {
   const router = useRouter()
   const id = typeof router.query.id === 'string' ? router.query.id : ''
 
-  const [product, setProduct] = useState<ProductType>()
   const [selectReport, setSelectReport] = useState<string>('')
   const [details, setDetails] = useState<string>('')
+  const productQuery = useReportProduct(id, router.isReady && !!id)
+  const submitReport = useSubmitReport()
+  const product = productQuery.data
 
   const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore(
     useShallow((state) => ({
@@ -36,45 +35,15 @@ const ReportProductDetails = () => {
     }))
   )
 
-  const init = async (productId: any, signal?: AbortSignal) => {
-    try {
-      if (!productId) {
-        setSnackSeverity('error')
-        setSnackMessage('Incorrect product id')
-        setSnackOpen(true)
-        return
-      }
-
-      const isNumericId = typeof productId === 'number' || /^\d+$/.test(String(id))
-      const response: any = await axios.get(Http.product_by_id, {
-        params: isNumericId ? { product_id: productId } : { slug: productId },
-        signal,
-      })
-
-      if (response.result) {
-        setProduct(response.data)
-      } else {
-        setSnackSeverity('error')
-        setSnackMessage(response.message)
-        setSnackOpen(true)
-      }
-    } catch (e) {
-      if (axios.isCancel(e) || (e as any)?.code === 'ERR_CANCELED') return
-
+  useEffect(() => {
+    if (productQuery.isError) {
       setSnackSeverity('error')
-      setSnackMessage('Network error occurred. Please try again later.')
+      setSnackMessage(
+        (productQuery.error as Error)?.message || 'Network error occurred. Please try again later.'
+      )
       setSnackOpen(true)
-      console.error(e)
     }
-  }
-
-  useAbortableEffect(
-    (signal) => {
-      if (!router.isReady || !id) return
-      init(id, signal)
-    },
-    [router.isReady, id]
-  )
+  }, [productQuery.isError, productQuery.error, setSnackSeverity, setSnackMessage, setSnackOpen])
 
   const sendReport = async () => {
     try {
@@ -86,26 +55,19 @@ const ReportProductDetails = () => {
         return
       }
 
-      const response: any = await axios.post(Http.report, {
+      await submitReport.mutateAsync({
         report_type: REPORT_TYPE.PRODUCT,
         bind_id: Number(id),
         select: selectReport,
         detail: details,
       })
-
-      if (response.result) {
-        setSnackSeverity('success')
-        setSnackMessage('Report submitted successfully')
-        setSnackOpen(true)
-        setTimeout(() => router.back(), 1500)
-      } else {
-        setSnackSeverity('error')
-        setSnackMessage(response.message || 'Failed to submit report')
-        setSnackOpen(true)
-      }
+      setSnackSeverity('success')
+      setSnackMessage('Report submitted successfully')
+      setSnackOpen(true)
+      setTimeout(() => router.back(), 1500)
     } catch (e) {
       setSnackSeverity('error')
-      setSnackMessage('Network error occurred')
+      setSnackMessage(e instanceof Error ? e.message : 'Network error occurred')
       setSnackOpen(true)
       console.error(e)
     }
@@ -133,13 +95,17 @@ const ReportProductDetails = () => {
         <CardContent>
           <div
             className="flex gap-4 cursor-pointer hover:bg-muted/50 p-3 rounded-xl transition-colors"
-            onClick={() => router.push(`/products/${product.product_id}`)}
+            onClick={() => void router.push(`/products/${product.product_id}`)}
           >
-            <img
-              src={GetAbosolutePathByRelative(product.images?.[0]?.src)}
-              alt={product.title}
-              className="w-24 h-24 object-cover rounded-lg border"
-            />
+            <div className="relative w-24 h-24 rounded-lg border overflow-hidden shrink-0 bg-muted">
+              <RemoteImage
+                src={GetAbosolutePathByRelative(product.images?.[0]?.src)}
+                alt={product.title}
+                fill
+                sizes="96px"
+                className="object-cover"
+              />
+            </div>
             <div className="flex-1">
               <h3 className="font-semibold text-lg">{product.title}</h3>
               <Badge variant="secondary" className="mt-1">
@@ -207,10 +173,10 @@ const ReportProductDetails = () => {
           onClick={sendReport}
           size="lg"
           className="w-full text-base"
-          disabled={!selectReport}
+          disabled={!selectReport || submitReport.isPending}
         >
           <Send className="mr-2 w-5 h-5" />
-          Submit Report
+          {submitReport.isPending ? 'Submitting…' : 'Submit Report'}
         </Button>
         <p className="text-center text-xs text-muted-foreground mt-4">
           All reports are reviewed by our team. Thank you for helping keep our platform safe.

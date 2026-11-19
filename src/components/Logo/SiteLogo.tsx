@@ -1,3 +1,4 @@
+import { useRouter } from 'next/router'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 
@@ -7,6 +8,8 @@ interface SiteLogoProps {
 }
 
 export function SiteLogo({ collapsed = false, className }: SiteLogoProps) {
+  const router = useRouter()
+
   return (
     <Button
       variant="ghost"
@@ -15,7 +18,7 @@ export function SiteLogo({ collapsed = false, className }: SiteLogoProps) {
         className
       )}
       onClick={() => {
-        window.location.href = '/'
+        void router.push('/')
       }}
     >
       <div className={cn('flex items-center', collapsed ? 'gap-0' : 'gap-2')}>

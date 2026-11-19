@@ -4,21 +4,23 @@ import Image from 'next/image'
 import { BLOCKCHAINNAMES, CHAINIDS, COINS } from '@/packages/constants'
 import { useEffect, useState } from 'react'
 import { OmitMiddleString } from '@/utils/strings'
-import axios from '@/utils/http/axios'
-import { Http } from '@/utils/http/http'
-import { WalletType } from '@/utils/types'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Switch } from '@/components/ui/switch'
 import { Wallet, Link2, CheckCircle2 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useShallow } from 'zustand/react/shallow'
+import { useManageWallets, useUpdateWalletCoin, manageKeys } from '@/hooks/queries/useManage'
+import { useQueryClient } from '@tanstack/react-query'
 
 const ManageWallet = () => {
-  const [wallets, setWallets] = useState<WalletType[]>([])
   const [selectChain, setSelectChain] = useState<CHAINIDS>(CHAINIDS.BITCOIN)
   const [selectAddress, setSelectAddress] = useState<string>()
   const [openEditAddressDialog, setOpenEditAddressDialog] = useState(false)
+  const queryClient = useQueryClient()
+  const walletsQuery = useManageWallets()
+  const updateCoin = useUpdateWalletCoin()
+  const wallets = walletsQuery.data ?? []
 
   const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore(
     useShallow((state) => ({
@@ -39,20 +41,16 @@ const ManageWallet = () => {
     setSnackOpen(true)
   }
 
-  const init = async () => {
-    try {
-      const response: any = await axios.get(Http.wallet)
-      setWallets(response.result ? response.data : [])
-    } catch {
-      showError('Network error. Please try again later.')
-    }
-  }
-
   useEffect(() => {
-    init()
-  }, [])
+    if (walletsQuery.isError) {
+      showError(
+        (walletsQuery.error as Error)?.message || 'Network error. Please try again later.'
+      )
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [walletsQuery.isError, walletsQuery.error])
 
-  const getWallet = (chainId: CHAINIDS) => wallets?.find((w) => w.chain_id === chainId)
+  const getWallet = (chainId: CHAINIDS) => wallets.find((w) => w.chain_id === chainId)
 
   const isCoinEnabled = (chainId: CHAINIDS, coinName: string) => {
     const wallet = getWallet(chainId)
@@ -68,22 +66,18 @@ const ManageWallet = () => {
         ? disableArray.filter((c) => c !== coin).join(',')
         : [...disableArray, coin].join(',')
 
-      const response: any = await axios.put(Http.wallet, {
-        handle: 'false',
+      await updateCoin.mutateAsync({
         chain_id: chain,
         disable_coin: newDisableCoin,
       })
-      if (response.result) {
-        await init()
-        showSuccess('Updated successfully')
-      } else showError(response.message)
-    } catch {
-      showError('Network error. Please try again later.')
+      showSuccess('Updated successfully')
+    } catch (e) {
+      showError((e as Error)?.message || 'Network error. Please try again later.')
     }
   }
 
   const handleCloseDialog = async () => {
-    await init()
+    await queryClient.invalidateQueries({ queryKey: manageKeys.wallets })
     setOpenEditAddressDialog(false)
   }
 

@@ -1,17 +1,15 @@
+import { useRouter } from 'next/router'
 import { useSnackPresistStore } from '@/lib'
 import { CURRENCYS } from '@/packages/constants/currency'
-import { useState } from 'react'
-import axios from '@/utils/http/axios'
-import { Http } from '@/utils/http/http'
-import { ProductStoryType } from '@/utils/types'
+import { useEffect } from 'react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { ArrowRight, ShoppingBag, BarChart3, RefreshCw, Package, Layers } from 'lucide-react'
-import { useAbortableEffect } from '@/hooks/useAbortableEffect'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { GetAbosolutePathByRelative } from '@/utils/image'
 import { useShallow } from 'zustand/react/shallow'
 import Link from 'next/link'
+import { useStoryList } from '@/hooks/queries/useStories'
 
 const HIGHLIGHTS = [
   {
@@ -42,8 +40,11 @@ const HIGHLIGHTS = [
 ]
 
 const Intro = () => {
-  const [stories, setStories] = useState<ProductStoryType[]>([])
-  const [storiesLoading, setStoriesLoading] = useState(true)
+  const router = useRouter()
+
+  const storiesQuery = useStoryList(5)
+  const stories = storiesQuery.data || []
+  const storiesLoading = storiesQuery.isLoading
 
   const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore(
     useShallow((state) => ({
@@ -53,35 +54,12 @@ const Intro = () => {
     }))
   )
 
-  const init = async (signal?: AbortSignal) => {
-    try {
-      setStoriesLoading(true)
-
-      const response: any = await axios.get(Http.product_story_list, {
-        params: {
-          limit: 5,
-        },
-        signal,
-      })
-
-      if (response.result) {
-        setStories(response.data)
-      }
-    } catch (e) {
-      if (axios.isCancel(e) || (e as any)?.code === 'ERR_CANCELED') return
-
-      setSnackSeverity('error')
-      setSnackMessage('The network error occurred. Please try again later')
-      setSnackOpen(true)
-      console.error(e)
-    } finally {
-      setStoriesLoading(false)
-    }
-  }
-
-  useAbortableEffect((signal) => {
-    init(signal)
-  }, [])
+  useEffect(() => {
+    if (!storiesQuery.isError) return
+    setSnackSeverity('error')
+    setSnackMessage('The network error occurred. Please try again later')
+    setSnackOpen(true)
+  }, [storiesQuery.isError, setSnackSeverity, setSnackMessage, setSnackOpen])
 
   return (
     <div className="container mx-auto py-8 flex flex-col gap-6">
@@ -115,7 +93,7 @@ const Intro = () => {
               <div className="flex flex-wrap items-center gap-3">
                 <Button
                   onClick={() => {
-                    window.location.href = '/create'
+                    void router.push('/create')
                   }}
                   className="bg-white text-blue-600 hover:bg-white/90 font-semibold px-6 h-11 gap-2"
                 >
@@ -125,7 +103,7 @@ const Intro = () => {
                 <Button
                   variant="ghost"
                   onClick={() => {
-                    window.location.href = '/explore'
+                    void router.push('/explore')
                   }}
                   className="text-white hover:bg-white/10 hover:text-white font-semibold px-5 h-11"
                 >

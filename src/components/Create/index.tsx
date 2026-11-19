@@ -1,43 +1,24 @@
 import { useSnackPresistStore, useUserPresistStore } from '@/lib'
-import { FILE_TYPE, PRODUCT_TYPE } from '@/packages/constants'
+import { PRODUCT_TYPE } from '@/packages/constants'
 import { useState } from 'react'
-import axios from '@/utils/http/axios'
-import { Http } from '@/utils/http/http'
 import { ProductImageType, ProductOptionType } from '@/utils/types'
+import { uploadFiles } from '@/utils/upload'
+import { parseProductImport, pickImportField } from '@/utils/productImport'
+import { useRouter } from 'next/router'
+import { useCreateProduct } from '@/hooks/queries/useCreateProduct'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/textarea'
-import { Badge } from '@/components/ui/badge'
-import { Label } from '@/components/ui/label'
-import { cn } from '@/lib/utils'
-import {
-  ImagePlus,
-  Trash2,
-  Plus,
-  PackagePlus,
-  FileText,
-  Upload,
-  ChevronDown,
-  ChevronUp,
-  X,
-} from 'lucide-react'
-import { Swiper, SwiperSlide } from 'swiper/react'
-import { Navigation, Pagination } from 'swiper/modules'
-// @ts-ignore
-import 'swiper/css'
-// @ts-ignore
-import 'swiper/css/navigation'
-// @ts-ignore
-import 'swiper/css/pagination'
-// @ts-ignore
-import 'swiper/css/scrollbar'
-import { GetAbosolutePathByRelative } from '@/utils/image'
+import { PackagePlus } from 'lucide-react'
+import CreateImportPanel from './CreateImportPanel'
+import CreatePreview from './CreatePreview'
+import CreateOptionsCard from './CreateOptionsCard'
+import CreateDetailsCard from './CreateDetailsCard'
+import ProductImageGrid from '@/components/Product/ProductImageGrid'
+import { ACCEPT_TYPES, MAX_SIZE } from '@/components/Product/ProductFormParts'
 import { useShallow } from 'zustand/react/shallow'
-import DOMPurify from 'dompurify'
-import SwitchRow from '../Switch/SwitchRow'
-
 const Create = () => {
+  const router = useRouter()
+  const createProduct = useCreateProduct()
   const [title, setTitle] = useState('')
   const [slug, setSlug] = useState('')
   const [vendor, setVendor] = useState('')
@@ -107,27 +88,14 @@ const Create = () => {
 
     setParsing(true)
     try {
-      let data: any = null
+      const data = parseProductImport(raw)
 
-      try {
-        data = JSON.parse(raw)
-      } catch {
-        data = parseKeyValueText(raw)
-      }
-
-      if (!data || (!data.title && !data.Title)) {
+      if (!data.title && !data.Title) {
         showError('Failed to parse. Please check the text format')
         return
       }
 
-      const get = (...keys: string[]) => {
-        for (const k of keys) {
-          if (data[k] !== undefined && data[k] !== null && data[k] !== '') {
-            return String(data[k]).trim()
-          }
-        }
-        return ''
-      }
+      const get = (...keys: string[]) => pickImportField(data, ...keys)
 
       const newTitle = get('title', 'Title')
       const newSlug = get('slug', 'Slug')
@@ -153,7 +121,7 @@ const Create = () => {
 
       // Options
       if (Array.isArray(data.options) && data.options.length > 0) {
-        const parsed = data.options.slice(0, 3).map((opt: any) => ({
+        const parsed = data.options.slice(0, 3).map((opt) => ({
           name: opt.name || '',
           value: opt.value || '',
         }))
@@ -183,34 +151,6 @@ const Create = () => {
     }
   }
 
-  const parseKeyValueText = (text: string) => {
-    const result: Record<string, string> = {}
-    const lines = text.split(/\r?\n/)
-    let currentKey = ''
-    let currentValue: string[] = []
-
-    const flush = () => {
-      if (currentKey) {
-        result[currentKey] = currentValue.join('\n').trim()
-      }
-      currentKey = ''
-      currentValue = []
-    }
-
-    for (const line of lines) {
-      const match = line.match(/^([A-Za-z0-9_]+)\s*[:：]\s*(.*)$/)
-      if (match) {
-        flush()
-        currentKey = match[1]
-        currentValue = [match[2]]
-      } else if (currentKey) {
-        currentValue.push(line)
-      }
-    }
-    flush()
-    return result
-  }
-
   const handleImportFile = (files: FileList | null) => {
     if (!files || files.length === 0) return
     const file = files[0]
@@ -225,9 +165,6 @@ const Create = () => {
     reader.onerror = () => showError('Failed to read the file')
     reader.readAsText(file)
   }
-
-  const MAX_SIZE = 3 * 1024 * 1024
-  const ACCEPT_TYPES = ['image/jpeg', 'image/png', 'image/gif', 'image/svg+xml']
 
   const uploadFile = async (files: FileList | null) => {
     if (!files || !files.length) return showError('Not found the file')
@@ -247,19 +184,10 @@ const Create = () => {
 
     setUploading(true)
     try {
-      const formData = new FormData()
-      validFiles.forEach((file) => formData.append('files', file))
-      const response: any = await axios.post(Http.upload_file, formData, {
-        params: { file_type: FILE_TYPE.Image },
-        headers: { 'Content-Type': 'multipart/form-data' },
-      })
-      if (response.result && response.data.urls.length > 0) {
-        setImageList((prev) => [...prev, ...response.data.urls])
-      } else {
-        showError('Upload Failed')
-      }
+      const urls = await uploadFiles(validFiles)
+      setImageList((prev) => [...prev, ...urls])
     } catch (e) {
-      showError('Network error. Please try again later.')
+      showError((e as Error)?.message || 'Network error. Please try again later.')
     } finally {
       setUploading(false)
     }
@@ -289,7 +217,7 @@ const Create = () => {
     }
     if (productOption.length === 0) return showError('At least one product option is needed')
     if (imageList.length === 0) return showError('At least one image is needed')
-    var lowerSlug = slug.toLowerCase()
+    const lowerSlug = slug.toLowerCase()
 
     try {
       const productImages: ProductImageType[] = imageList.map((src) => ({
@@ -297,7 +225,7 @@ const Create = () => {
         width: 100,
         height: 100,
       }))
-      const response: any = await axios.post(Http.product, {
+      const data = await createProduct.mutateAsync({
         title,
         slug: lowerSlug,
         body_html: description,
@@ -308,16 +236,12 @@ const Create = () => {
         options: productOption,
         is_promote: isPromote ? 'true' : 'false',
       })
-      if (response.result) {
-        setSnackSeverity('success')
-        setSnackMessage('Create successfully')
-        setSnackOpen(true)
-        window.location.href = `/products/${response.data.slug}`
-      } else {
-        showError(response.message)
-      }
+      setSnackSeverity('success')
+      setSnackMessage('Create successfully')
+      setSnackOpen(true)
+      void router.push(`/products/${data.slug}`)
     } catch (e) {
-      showError('Network error. Please try again later.')
+      showError(e instanceof Error ? e.message : 'Network error. Please try again later.')
     }
   }
 
@@ -337,365 +261,59 @@ const Create = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 flex flex-col gap-6">
-          <Card className="border-sky-100 bg-sky-50/30">
-            <CardContent className="p-0">
-              <button
-                type="button"
-                onClick={() => setShowImport(!showImport)}
-                className="w-full flex items-center justify-between p-5 text-left hover:bg-sky-50/50 transition-colors rounded-xl"
-              >
-                <div className="flex items-center gap-2">
-                  <FileText className="h-5 w-5 text-sky-500" />
-                  <div>
-                    <h2 className="font-semibold text-base">Import from Text / File</h2>
-                    <p className="text-xs text-muted-foreground mt-0.5">
-                      Paste text or upload a .txt / .md / .json file to auto-fill the form
-                    </p>
-                  </div>
-                </div>
-                {showImport ? (
-                  <ChevronUp className="h-5 w-5 text-muted-foreground shrink-0" />
-                ) : (
-                  <ChevronDown className="h-5 w-5 text-muted-foreground shrink-0" />
-                )}
-              </button>
+          <CreateImportPanel
+            showImport={showImport}
+            onToggle={() => setShowImport(!showImport)}
+            importText={importText}
+            onImportTextChange={setImportText}
+            parsing={parsing}
+            onParse={() => parseAndFill(importText)}
+            onImportFile={handleImportFile}
+            onClear={() => setImportText('')}
+          />
 
-              {showImport && (
-                <div className="px-5 pb-5 flex flex-col gap-4 border-t border-sky-100/60 pt-4">
-                  <Textarea
-                    value={importText}
-                    onChange={(e) => setImportText(e.target.value)}
-                    placeholder={`Supported formats:
+          <CreateDetailsCard
+            title={title}
+            slug={slug}
+            vendor={vendor}
+            productType={productType}
+            tags={tags}
+            description={description}
+            isPromote={isPromote}
+            onTitleChange={setTitle}
+            onSlugChange={setSlug}
+            onVendorChange={setVendor}
+            onProductTypeChange={setProductType}
+            onTagsChange={setTags}
+            onDescriptionChange={setDescription}
+            onPromoteChange={setIsPromote}
+          />
 
-1. Key-value text:
-Title: My Product
-Slug: my-product
-Type: OPENSOURCE
-Tags: ai,tool
-Description: xxxxxx
-Promote: true
-Multi-line description...
-
-Option1: Color
-Values1: Red,Blue,Green
-
-2. JSON is also supported`}
-                    className="min-h-40 font-mono text-sm"
-                  />
-
-                  <div className="flex flex-wrap items-center gap-3">
-                    <Button
-                      onClick={() => parseAndFill(importText)}
-                      disabled={parsing || !importText.trim()}
-                      className="bg-sky-500 hover:bg-sky-600 text-white gap-2"
-                    >
-                      <FileText className="h-4 w-4" />
-                      {parsing ? 'Parsing...' : 'Parse & Fill Form'}
-                    </Button>
-
-                    <label className="inline-flex items-center gap-2 px-4 py-2 rounded-md border border-input bg-background hover:bg-accent cursor-pointer text-sm">
-                      <Upload className="h-4 w-4" />
-                      Upload File
-                      <input
-                        type="file"
-                        accept=".txt,.md,.json,text/plain,application/json"
-                        className="sr-only"
-                        onChange={(e) => handleImportFile(e.target.files)}
-                      />
-                    </label>
-
-                    {importText && (
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => setImportText('')}
-                        className="text-muted-foreground"
-                      >
-                        Clear
-                      </Button>
-                    )}
-                  </div>
-                </div>
-              )}
-            </CardContent>
-          </Card>
+          <CreateOptionsCard
+            options={options}
+            onAdd={addOption}
+            onRemove={removeOption}
+            onUpdate={updateOption}
+          />
 
           <Card>
             <CardContent className="p-6 flex flex-col gap-4">
-              <h2 className="font-semibold text-base">Product Details</h2>
-
-              <div className="grid grid-cols-3 gap-4">
-                <div className="flex flex-col gap-1.5">
-                  <Label>
-                    Title <span className="text-red-500">*</span>
-                  </Label>
-                  <Input
-                    value={title}
-                    onChange={(e) => setTitle(e.target.value)}
-                    placeholder="Title your product"
-                  />
-                </div>
-                <div className="flex flex-col gap-1.5">
-                  <Label>
-                    Slug <span className="text-red-500">*</span>
-                  </Label>
-                  <Input
-                    value={slug}
-                    onChange={(e) => setSlug(e.target.value)}
-                    placeholder="Unique your product url"
-                  />
-                </div>
-                <div className="flex flex-col gap-1.5">
-                  <Label>Vendor</Label>
-                  <Input
-                    value={vendor}
-                    onChange={(e) => setVendor(e.target.value)}
-                    placeholder="Product vendor name"
-                  />
-                </div>
+              <div>
+                <h2 className="font-semibold text-base">
+                  Product Images <span className="text-red-500">*</span>
+                </h2>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  Max 3MB · JPG / PNG / GIF / SVG
+                </p>
               </div>
 
-              <div className="flex flex-col gap-1.5">
-                <Label>
-                  Type <span className="text-red-500">*</span>
-                </Label>
-                <div className="flex flex-wrap gap-2">
-                  {PRODUCT_TYPE &&
-                    Object.entries(PRODUCT_TYPE).map(([key, val]) => (
-                      <button
-                        key={key}
-                        onClick={() => setProductType(val as string)}
-                        className={cn(
-                          'px-3 py-1.5 rounded-full text-sm border transition-all duration-150',
-                          productType === val
-                            ? 'bg-sky-500 text-white border-sky-500'
-                            : 'border-gray-200 text-gray-600 hover:border-sky-300 hover:text-sky-500'
-                        )}
-                      >
-                        {val as string}
-                      </button>
-                    ))}
-                </div>
-              </div>
-
-              <div className="flex flex-col gap-1.5">
-                <Label>
-                  Tags <span className="text-red-500">*</span>
-                </Label>
-                <Input
-                  value={tags}
-                  onChange={(e) => setTags(e.target.value)}
-                  placeholder="Separate with commas: apple,nike,ai"
-                />
-                {tags && (
-                  <div className="flex flex-wrap gap-1 mt-1">
-                    {tags
-                      .split(',')
-                      .filter(Boolean)
-                      .map((tag, i) => (
-                        <Badge key={i} variant="secondary" className="text-xs">
-                          {tag.trim()}
-                        </Badge>
-                      ))}
-                  </div>
-                )}
-              </div>
-
-              <div className="flex flex-col gap-1.5">
-                <Label>
-                  Description (supports HTML) <span className="text-red-500">*</span>
-                </Label>
-                <Textarea
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  placeholder="Write a detailed description..."
-                  className="min-h-32 resize-y"
-                />
-              </div>
-
-              <div className="flex flex-col">
-                <SwitchRow
-                  label="Promote"
-                  desc="This product is only for promotion"
-                  checked={isPromote}
-                  onCheckedChange={setIsPromote}
-                />
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="p-6 flex flex-col gap-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h2 className="font-semibold text-base">Product Options</h2>
-                  <p className="text-xs text-muted-foreground mt-0.5">
-                    Add up to 3 options like Color, Size, Material
-                  </p>
-                </div>
-                {options.length < 3 && (
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={addOption}
-                    className="gap-1"
-                  >
-                    <Plus className="h-4 w-4" />
-                    Add Option
-                  </Button>
-                )}
-              </div>
-
-              <div className="flex flex-col gap-4">
-                {options.map((opt, index) => (
-                  <div key={index} className="relative">
-                    {index > 0 && <div className="border-t border-dashed mb-4" />}
-                    <div className="flex items-start gap-3">
-                      <div className="flex-1 grid grid-cols-2 gap-3">
-                        <div className="flex flex-col gap-1.5">
-                          <Label className="text-xs text-muted-foreground">
-                            Option {index + 1} Name{' '}
-                            {index === 0 && <span className="text-red-500">*</span>}
-                          </Label>
-                          <Input
-                            value={opt.name}
-                            onChange={(e) => updateOption(index, 'name', e.target.value)}
-                            placeholder={`e.g. ${['Color', 'Size', 'Material'][index] || 'Option'}`}
-                          />
-                        </div>
-                        <div className="flex flex-col gap-1.5">
-                          <Label className="text-xs text-muted-foreground">
-                            Values (comma separated){' '}
-                            {index === 0 && <span className="text-red-500">*</span>}
-                          </Label>
-                          <Input
-                            value={opt.value}
-                            onChange={(e) => updateOption(index, 'value', e.target.value)}
-                            placeholder="e.g. Red,Blue,Green"
-                          />
-                        </div>
-                      </div>
-
-                      {options.length > 1 && (
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="icon"
-                          className="mt-6 text-red-500 hover:text-red-600 hover:bg-red-50 shrink-0"
-                          onClick={() => removeOption(index)}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      )}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="p-6 flex flex-col gap-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h2 className="font-semibold text-base">
-                    Product Images <span className="text-red-500">*</span>
-                  </h2>
-                  <p className="text-xs text-muted-foreground mt-0.5">
-                    Max 3MB · JPG / PNG / GIF / SVG
-                  </p>
-                </div>
-                {imageList.length > 0 && (
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="text-red-500 hover:text-red-600 hover:bg-red-50 gap-1"
-                    onClick={() => setImageList([])}
-                  >
-                    <Trash2 className="h-4 w-4" />
-                    Clear all
-                  </Button>
-                )}
-              </div>
-
-              {imageList.length > 0 ? (
-                <div className="grid grid-cols-3 gap-3">
-                  {imageList.map((src, i) => (
-                    <div
-                      key={`${src}-${i}`}
-                      className="group relative aspect-square rounded-xl overflow-hidden border"
-                    >
-                      <img
-                        src={GetAbosolutePathByRelative(src)}
-                        alt="product"
-                        className="w-full h-full object-cover"
-                      />
-                      <button
-                        type="button"
-                        aria-label="Remove image"
-                        onClick={() => removeImage(i)}
-                        className="absolute top-1.5 right-1.5 h-6 w-6 rounded-full bg-black/60 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 focus:opacity-100 hover:bg-red-500 transition"
-                      >
-                        <X className="h-3.5 w-3.5" />
-                      </button>
-                    </div>
-                  ))}
-
-                  <label
-                    className={cn(
-                      'aspect-square rounded-xl border-2 border-dashed flex flex-col items-center justify-center cursor-pointer transition-colors',
-                      uploading
-                        ? 'border-sky-300 bg-sky-50 pointer-events-none'
-                        : 'border-gray-200 hover:border-sky-300 hover:bg-sky-50'
-                    )}
-                  >
-                    <Plus className="h-6 w-6 text-gray-400" />
-                    <span className="text-xs text-gray-400 mt-1">
-                      {uploading ? 'Uploading...' : 'Add more'}
-                    </span>
-                    <input
-                      type="file"
-                      className="sr-only"
-                      multiple
-                      accept={ACCEPT_TYPES.join(',')}
-                      onChange={(e) => {
-                        uploadFile(e.target.files)
-                        e.target.value = ''
-                      }}
-                    />
-                  </label>
-                </div>
-              ) : (
-                <label
-                  className={cn(
-                    'flex flex-col items-center justify-center gap-3 py-16 rounded-xl border-2 border-dashed cursor-pointer transition-colors',
-                    uploading
-                      ? 'border-sky-300 bg-sky-50'
-                      : 'border-gray-200 hover:border-sky-300 hover:bg-sky-50'
-                  )}
-                >
-                  <div className="h-12 w-12 rounded-full bg-gray-100 flex items-center justify-center">
-                    <ImagePlus className="h-6 w-6 text-gray-400" />
-                  </div>
-                  <div className="text-center">
-                    <p className="text-sm font-medium text-gray-600">
-                      {uploading ? 'Uploading...' : 'Click to upload images'}
-                    </p>
-                    <p className="text-xs text-muted-foreground mt-0.5">Support multiple files</p>
-                  </div>
-                  <input
-                    type="file"
-                    className="sr-only"
-                    multiple
-                    accept={ACCEPT_TYPES.join(',')}
-                    onChange={(e) => {
-                      uploadFile(e.target.files)
-                      e.target.value = ''
-                    }}
-                  />
-                </label>
-              )}
+              <ProductImageGrid
+                imageList={imageList}
+                uploading={uploading}
+                onUpload={uploadFile}
+                onRemove={removeImage}
+                onClear={() => setImageList([])}
+              />
             </CardContent>
           </Card>
 
@@ -709,74 +327,14 @@ Values1: Red,Blue,Green
         </div>
 
         <div className="flex flex-col gap-4">
-          <div className="sticky top-24">
-            <h2 className="font-semibold text-base mb-3">Preview</h2>
-            <Card className="overflow-hidden">
-              {title || slug || vendor || tags.length > 0 || description ? (
-                <>
-                  {imageList.length > 0 ? (
-                    <Swiper
-                      navigation={true}
-                      pagination={true}
-                      modules={[Navigation, Pagination]}
-                      className="min-h-72"
-                    >
-                      {imageList.map((item, i) => (
-                        <SwiperSlide key={i}>
-                          <div className="flex justify-center items-center p-8 bg-gray-50 min-h-72">
-                            <img
-                              src={GetAbosolutePathByRelative(item)}
-                              alt="product"
-                              className="max-h-64 object-contain rounded-xl"
-                            />
-                          </div>
-                        </SwiperSlide>
-                      ))}
-                    </Swiper>
-                  ) : (
-                    <div className="w-full h-56 bg-gray-50 flex items-center justify-center text-muted-foreground text-sm">
-                      No images yet
-                    </div>
-                  )}
-
-                  <CardContent className="p-4 flex flex-col gap-3">
-                    <div className="flex items-start justify-between gap-2">
-                      <p className="font-bold text-base line-clamp-2">{title || 'Product Title'}</p>
-                      <Badge className="bg-sky-500 shrink-0">{productType}</Badge>
-                    </div>
-                    {vendor && <p className="text-sm text-muted-foreground">{vendor}</p>}
-                    {tags && (
-                      <div className="flex flex-wrap gap-1">
-                        {tags
-                          .split(',')
-                          .filter(Boolean)
-                          .map((tag, i) => (
-                            <Badge key={i} variant="outline" className="text-xs">
-                              {tag.trim()}
-                            </Badge>
-                          ))}
-                      </div>
-                    )}
-                    {description && (
-                      <div
-                        className="text-sm text-muted-foreground line-clamp-4 prose prose-sm max-w-none"
-                        dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(description) }}
-                      />
-                    )}
-                  </CardContent>
-                </>
-              ) : (
-                <CardContent className="p-8 flex flex-col items-center justify-center gap-3 text-center min-h-64">
-                  <div className="h-16 w-16 rounded-full bg-gray-100 flex items-center justify-center">
-                    <ImagePlus className="h-8 w-8 text-gray-300" />
-                  </div>
-                  <p className="text-sm text-muted-foreground">
-                    A preview of how your product will look
-                  </p>
-                </CardContent>
-              )}
-            </Card>
-          </div>
+          <CreatePreview
+            title={title}
+            vendor={vendor}
+            tags={tags}
+            description={description}
+            productType={productType}
+            imageList={imageList}
+          />
         </div>
       </div>
     </div>

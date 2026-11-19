@@ -8,9 +8,8 @@ import {
 } from '@/utils/web3'
 import { useState } from 'react'
 import { useSnackPresistStore } from '@/lib'
-import axios from '@/utils/http/axios'
-import { Http } from '@/utils/http/http'
 import { TransactionType } from '@/utils/types'
+import { useConfirmPayment } from '@/hooks/queries/useOrderActions'
 import {
   Dialog,
   DialogContent,
@@ -69,7 +68,8 @@ export default function ConfirmPaymentDialog({
 }: DialogType) {
   const [text, setText] = useState('')
   const [selectId, setSelectId] = useState<number>(0)
-  const [loading, setLoading] = useState(false)
+  const confirmPayment = useConfirmPayment()
+  const loading = confirmPayment.isPending
 
   const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore(
     useShallow((state) => ({
@@ -104,23 +104,16 @@ export default function ConfirmPaymentDialog({
     if (!orderId) return
     if (!text || text !== confirmNumber) return showError('Incorrect confirmation text')
     if (!selectId) return showError('Please select a transaction')
-    setLoading(true)
     try {
-      const response: any = await axios.put(Http.order_confirm_payment, {
+      await confirmPayment.mutateAsync({
         order_id: orderId,
         confirm_payment_id: Number(selectId),
         confirm_number: text,
       })
-      if (response.result) {
-        await handleCloseDialog()
-        showSuccess('Payment confirmed successfully')
-      } else {
-        showError('Confirmation failed')
-      }
-    } catch {
-      showError('Network error. Please try again later.')
-    } finally {
-      setLoading(false)
+      await handleCloseDialog()
+      showSuccess('Payment confirmed successfully')
+    } catch (e) {
+      showError(e instanceof Error ? e.message : 'Network error. Please try again later.')
     }
   }
 

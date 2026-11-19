@@ -13,8 +13,8 @@ const ProfileReply = ({ reply }: Props) => {
 
       {reply && reply.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {reply.map((item, index) => (
-            <Card></Card>
+          {reply.map((_, index) => (
+            <Card key={index} />
           ))}
         </div>
       ) : (

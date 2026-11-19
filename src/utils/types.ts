@@ -257,6 +257,8 @@ export interface BlockchainType {
   token: string
   crypto_amount: string
   block_timestamp: number
+  confirmations?: number
+  required_confirmations?: number
 }
 
 export interface BlockchainOrderType {
@@ -349,7 +351,7 @@ export interface NotificationType {
   create_time: number
 }
 
-export interface ReplyType {}
+export type ReplyType = Record<string, never>
 
 export interface TabPanelType {
   children?: React.ReactNode

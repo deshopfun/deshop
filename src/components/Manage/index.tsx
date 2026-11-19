@@ -1,45 +1,36 @@
 import { useUserPresistStore } from '@/lib'
 import { useEffect } from 'react'
-import axios from '@/utils/http/axios'
-import { Http } from '@/utils/http/http'
+import { useRouter } from 'next/router'
 import { useShallow } from 'zustand/react/shallow'
 import { Loader2 } from 'lucide-react'
+import { useUserSetting } from '@/hooks/queries/useUserSetting'
 
 const Manage = () => {
+  const router = useRouter()
   const { isLogin } = useUserPresistStore(
     useShallow((state) => ({
       isLogin: state.isLogin,
     }))
   )
 
+  const settingQuery = useUserSetting(isLogin)
+
   useEffect(() => {
     if (!isLogin) {
-      window.location.href = '/login'
+      void router.replace({ pathname: '/login', query: { redirect: '/manage' } })
       return
     }
 
-    let cancelled = false
+    if (settingQuery.isLoading) return
 
-    const redirectToManage = async () => {
-      try {
-        const response: any = await axios.get(Http.user_setting)
-        if (cancelled) return
-        if (response?.result && response.data?.username) {
-          window.location.replace(`/manage/${response.data.username}?tab=products`)
-          return
-        }
-      } catch {
-        // fall through to home
-      }
-      if (!cancelled) window.location.replace('/')
+    const username = settingQuery.data?.username
+    if (username) {
+      void router.replace(`/manage/${username}?tab=products`)
+      return
     }
 
-    redirectToManage()
-
-    return () => {
-      cancelled = true
-    }
-  }, [isLogin])
+    void router.replace('/')
+  }, [isLogin, router, settingQuery.isLoading, settingQuery.data?.username])
 
   return (
     <div className="flex min-h-[40vh] items-center justify-center gap-2 text-muted-foreground">

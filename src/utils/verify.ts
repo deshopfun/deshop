@@ -7,8 +7,7 @@ export const IsValidJSON = (json: string): boolean => {
   try {
     const parsed = JSON.parse(json)
     return typeof parsed === 'object' && parsed !== null
-  } catch (e) {
-    console.error(e)
+  } catch {
     return false
   }
 }

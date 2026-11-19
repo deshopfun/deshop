@@ -1,8 +1,7 @@
-import { useSnackPresistStore, useUserPresistStore } from '@/lib'
+import { useSnackPresistStore } from '@/lib'
 import { useState } from 'react'
-import axios from '@/utils/http/axios'
-import { Http } from '@/utils/http/http'
 import { Card, CardContent } from '@/components/ui/card'
+import { useSubmitProductRating } from '@/hooks/queries/useProductRating'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -58,7 +57,8 @@ const ProductRating = () => {
   const [rating, setRating] = useState(5)
   const [body, setBody] = useState('')
   const [image, setImage] = useState('')
-  const [loading, setLoading] = useState(false)
+  const submitRating = useSubmitProductRating()
+  const loading = submitRating.isPending
 
   const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore(
     useShallow((state) => ({
@@ -87,24 +87,17 @@ const ProductRating = () => {
 
   const onSubmit = async () => {
     if (!body.trim()) return showError('Please write a review')
-    setLoading(true)
     try {
-      const response: any = await axios.post(Http.product_rating, {
+      await submitRating.mutateAsync({
         number: rating,
         body,
         image: image || undefined,
       })
-      if (response.result) {
-        showSuccess('Rating submitted successfully')
-        setOpen(false)
-        resetForm()
-      } else {
-        showError(response.message || 'Submission failed')
-      }
-    } catch {
-      showError('Network error. Please try again later.')
-    } finally {
-      setLoading(false)
+      showSuccess('Rating submitted successfully')
+      setOpen(false)
+      resetForm()
+    } catch (e) {
+      showError(e instanceof Error ? e.message : 'Network error. Please try again later.')
     }
   }
 

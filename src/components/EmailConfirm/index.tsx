@@ -1,9 +1,9 @@
 import { useSnackPresistStore } from '@/lib'
 import { useRouter } from 'next/router'
-import { useEffect, useState } from 'react'
-import axios from '@/utils/http/axios'
-import { Http } from '@/utils/http/http'
+import Link from 'next/link'
+import { useState } from 'react'
 import { Button } from '@/components/ui/button'
+import { useVerifyInvitation } from '@/hooks/queries/useAuth'
 import { Card, CardContent } from '@/components/ui/card'
 import { SiteLogo } from '@/components/Logo/SiteLogo'
 import { MailCheck, ShieldCheck, ArrowRight, Loader2 } from 'lucide-react'
@@ -15,7 +15,8 @@ const EmailConfirm = () => {
   const code = typeof router.query.code === 'string' ? router.query.code : ''
 
   const [showLogin, setShowLogin] = useState(false)
-  const [loading, setLoading] = useState(false)
+  const verifyInvitation = useVerifyInvitation()
+  const loading = verifyInvitation.isPending
 
   const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore(
     useShallow((state) => ({
@@ -33,22 +34,15 @@ const EmailConfirm = () => {
 
   const onClickVerify = async () => {
     if (!code) return showError('Incorrect code input')
-    setLoading(true)
     try {
-      const response: any = await axios.get(Http.verify_invitation, { params: { code } })
-      if (response.result) {
-        setShowLogin(true)
-        setSnackSeverity('success')
-        setSnackMessage('Registration successful, please proceed to log in')
-        setSnackOpen(true)
-      } else {
-        showError('Verification failed, please try again')
-      }
+      await verifyInvitation.mutateAsync(code)
+      setShowLogin(true)
+      setSnackSeverity('success')
+      setSnackMessage('Registration successful, please proceed to log in')
+      setSnackOpen(true)
     } catch (e) {
-      showError('Network error. Please try again later.')
+      showError(e instanceof Error ? e.message : 'Network error. Please try again later.')
       console.error(e)
-    } finally {
-      setLoading(false)
     }
   }
 
@@ -116,7 +110,7 @@ const EmailConfirm = () => {
                 <Button
                   className="h-11 bg-sky-500 hover:bg-sky-600 text-white font-semibold gap-2"
                   onClick={() => {
-                    window.location.href = '/login'
+                    void router.push('/login')
                   }}
                 >
                   Go to log in
@@ -129,7 +123,7 @@ const EmailConfirm = () => {
               variant="ghost"
               className="h-10 text-muted-foreground hover:text-gray-800"
               onClick={() => {
-                window.location.href = '/'
+                void router.push('/')
               }}
             >
               Back to home
@@ -139,13 +133,13 @@ const EmailConfirm = () => {
 
         <p className="text-xs text-muted-foreground text-center">
           By verifying, you agree to our{' '}
-          <a href="/docs/terms-and-conditions" className="text-sky-500 hover:underline">
+          <Link href="/docs/terms-and-conditions" className="text-sky-500 hover:underline">
             Terms of Service
-          </a>{' '}
+          </Link>{' '}
           and{' '}
-          <a href="/docs/privacy-policy" className="text-sky-500 hover:underline">
+          <Link href="/docs/privacy-policy" className="text-sky-500 hover:underline">
             Privacy Policy
-          </a>
+          </Link>
         </p>
       </div>
     </div>

@@ -1,8 +1,9 @@
 import { useSnackPresistStore } from '@/lib'
 import { FILE_TYPE } from '@/packages/constants'
 import { useEffect, useMemo, useState } from 'react'
-import axios from '@/utils/http/axios'
-import { Http } from '@/utils/http/http'
+import { uploadFiles } from '@/utils/upload'
+import { useRouter } from 'next/router'
+import { useUpdateUserProfile } from '@/hooks/queries/useUserSetting'
 
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -34,13 +35,15 @@ interface DialogType  {
 }
 
 export default function EditProfileDialog(props: DialogType) {
+  const router = useRouter()
   const [avatarUrl, setAvatarUrl] = useState<string>('')
   const [username, setUsername] = useState<string>('')
   const [bio, setBio] = useState<string>('')
   const [socials, setSocials] = useState<SocialValues>(EMPTY_SOCIALS)
   const [touched, setTouched] = useState<Partial<Record<SocialKey, boolean>>>({})
   const [submitted, setSubmitted] = useState(false)
-  const [saving, setSaving] = useState(false)
+  const updateProfile = useUpdateUserProfile()
+  const saving = updateProfile.isPending
 
   const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore(
     useShallow((state) => ({
@@ -84,21 +87,11 @@ export default function EditProfileDialog(props: DialogType) {
     if (!files || files.length !== 1) return toast('error', 'Only support uploading one file')
 
     try {
-      const formData = new FormData()
-      formData.append('files', files[0])
-
-      const response: any = await axios.post(Http.upload_file, formData, {
-        params: { file_type: FILE_TYPE.Image },
-        headers: { 'Content-Type': 'multipart/form-data' },
-      })
-
-      if (response.result && response.data.urls?.[0]) {
-        setAvatarUrl(response.data.urls[0])
-      } else {
-        toast('error', 'Upload Failed')
-      }
+      const urls = await uploadFiles([files[0]], FILE_TYPE.Image)
+      if (urls[0]) setAvatarUrl(urls[0])
+      else toast('error', 'Upload Failed')
     } catch (e) {
-      toast('error', 'The network error occurred. Please try again later.')
+      toast('error', (e as Error)?.message || 'The network error occurred. Please try again later.')
       console.error(e)
     }
   }
@@ -116,27 +109,19 @@ export default function EditProfileDialog(props: DialogType) {
     // 保存规范化后的值：去掉 @、补全 website 的协议，库里保持干净
     const socialPayload = Object.fromEntries(normalized.map((n) => [n.cfg.key, n.value]))
 
-    setSaving(true)
     try {
-      const response: any = await axios.put(Http.user_setting, {
+      await updateProfile.mutateAsync({
         username,
         avatar_url: avatarUrl,
         bio,
         ...socialPayload,
       })
-
-      if (response.result) {
-        toast('success', 'Update successfully')
-        handleClose()
-        window.location.href = `/profile/${username}`
-      } else {
-        toast('error', response.message || 'Update failed')
-      }
+      toast('success', 'Update successfully')
+      handleClose()
+      void router.push(`/profile/${username}`)
     } catch (e) {
-      toast('error', 'The network error occurred. Please try again later.')
+      toast('error', e instanceof Error ? e.message : 'The network error occurred. Please try again later.')
       console.error(e)
-    } finally {
-      setSaving(false)
     }
   }
 

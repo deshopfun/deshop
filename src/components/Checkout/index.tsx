@@ -1,10 +1,13 @@
 import { useEffect } from 'react'
+import { useRouter } from 'next/router'
 import { Loader2 } from 'lucide-react'
 
 const Checkout = () => {
+  const router = useRouter()
+
   useEffect(() => {
-    window.location.replace('/cart')
-  }, [])
+    void router.replace('/cart')
+  }, [router])
 
   return (
     <div className="flex min-h-[40vh] items-center justify-center gap-2 text-muted-foreground">

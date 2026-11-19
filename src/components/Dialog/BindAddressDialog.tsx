@@ -1,9 +1,8 @@
 import { useSnackPresistStore } from '@/lib'
 import { CHAINIDS } from '@/packages/constants'
 import { useEffect, useState } from 'react'
-import axios from '@/utils/http/axios'
-import { Http } from '@/utils/http/http'
 import { FindChainNamesByChainids } from '@/utils/web3'
+import { useBindWalletAddress } from '@/hooks/queries/useManage'
 import {
   Dialog,
   DialogContent,
@@ -31,7 +30,8 @@ export default function BindAddressDialog({
   handleCloseDialog,
 }: DialogType) {
   const [address, setAddress] = useState('')
-  const [loading, setLoading] = useState(false)
+  const bindWallet = useBindWalletAddress()
+  const loading = bindWallet.isPending
 
   const { setSnackSeverity, setSnackMessage, setSnackOpen } = useSnackPresistStore(
     useShallow((state) => ({
@@ -61,24 +61,12 @@ export default function BindAddressDialog({
   }
 
   const onClickSave = async () => {
-    // if (!address.trim()) return showError('Please enter a valid address')
-    setLoading(true)
     try {
-      const response: any = await axios.put(Http.wallet, {
-        handle: 'true',
-        chain_id: chain,
-        address,
-      })
-      if (response.result) {
-        await handleCloseDialog()
-        showSuccess('Address bound successfully')
-      } else {
-        showError(response.message)
-      }
-    } catch {
-      showError('Network error. Please try again later.')
-    } finally {
-      setLoading(false)
+      await bindWallet.mutateAsync({ chain_id: chain, address })
+      await handleCloseDialog()
+      showSuccess('Address bound successfully')
+    } catch (e) {
+      showError(e instanceof Error ? e.message : 'Network error. Please try again later.')
     }
   }
 

@@ -20,5 +20,7 @@ export function useAbortableEffect(
       controller.abort()
       cleanup?.() // 回调返回的 clearInterval/removeEventListener 等清理逻辑，之前从未被执行过
     }
+    // Caller-provided deps; effect identity is intentionally excluded.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, deps)
 }

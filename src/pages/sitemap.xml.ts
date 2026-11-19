@@ -1,38 +1,16 @@
 import { Http } from '@/utils/http/http'
-import axios from '@/utils/http/axios'
+import { serverGetUrl } from '@/utils/http/serverFetch'
 import { ProductStoryType, ProductType } from '@/utils/types'
 import type { GetServerSideProps, GetServerSidePropsContext } from 'next'
 
 async function getProducts(): Promise<ProductType[]> {
-  try {
-    const response: any = await axios.get(Http.product_list, {
-      params: { limit: 5000 },
-    })
-
-    if (response.result) {
-      return response.data || []
-    } else {
-      return []
-    }
-  } catch (e) {
-    return []
-  }
+  const response = await serverGetUrl<ProductType[]>(Http.product_list, { limit: 5000 })
+  return response.result ? response.data || [] : []
 }
 
 async function getStories(): Promise<ProductStoryType[]> {
-  try {
-    const response: any = await axios.get(Http.product_story_list, {
-      params: { limit: 5000 },
-    })
-
-    if (response.result) {
-      return response.data || []
-    } else {
-      return []
-    }
-  } catch (e) {
-    return []
-  }
+  const response = await serverGetUrl<ProductStoryType[]>(Http.product_story_list, { limit: 5000 })
+  return response.result ? response.data || [] : []
 }
 
 function escapeXml(s: string) {
@@ -53,7 +31,8 @@ function getSiteOrigin(req: GetServerSidePropsContext['req']): string {
     ?.split(',')[0]
     ?.trim()
   const forwardedHost = req.headers['x-forwarded-host']
-  const hostHeader = (Array.isArray(forwardedHost) ? forwardedHost[0] : forwardedHost) || req.headers.host
+  const hostHeader =
+    (Array.isArray(forwardedHost) ? forwardedHost[0] : forwardedHost) || req.headers.host
   const host = hostHeader?.split(',')[0]?.trim()
 
   if (host) {

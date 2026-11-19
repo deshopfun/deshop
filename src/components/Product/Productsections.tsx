@@ -1,10 +1,12 @@
 import { ReactNode, useEffect, useState } from 'react'
+import { useRouter } from 'next/router'
 import { ArrowRight, Check, ChevronDown, ZoomIn } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { GetAbosolutePathByRelative } from '@/utils/image'
 import { ProductFaqType, ProductHighlightType, ProductSpecType } from '@/utils/types'
 import { safeJsonLd } from '@/utils/seo'
 import RemoteImage from '@/components/Image/RemoteImage'
+import { navigateTo } from '@/utils/navigate'
 
 const Shell = ({ id, title, children }: { id: string; title: string; children: ReactNode }) => (
   <section
@@ -96,6 +98,7 @@ export const PlansSection = ({
   website?: string
   onOpen: (src: string) => void
 }) => {
+  const router = useRouter()
   const src = GetAbosolutePathByRelative(image)
   return (
     <Shell id="plans" title="Plans & Pricing">
@@ -120,7 +123,7 @@ export const PlansSection = ({
       {website && (
         <button
           type="button"
-          onClick={() => (window.location.href = website)}
+          onClick={() => navigateTo(router, website)}
           className="mt-4 w-full flex items-center justify-center gap-2 rounded-xl px-4 py-3.5 text-left transition-colors border border-gray-100 bg-gray-50 bg-sky-500 hover:bg-sky-600 text-white"
         >
           Go to Buy Now

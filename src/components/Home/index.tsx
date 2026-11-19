@@ -1,8 +1,5 @@
-import RecentView from '@/components/Home/RecentView'
 import AllMarket from '@/components/Home/AllMarket'
 import Intro from '@/components/Home/Intro'
-import { Button } from '@/components/ui/button'
-import { ChevronRight } from 'lucide-react'
 
 const Home = () => {
   return (
@@ -41,7 +38,7 @@ const Home = () => {
           <Button
             variant="ghost"
             onClick={() => {
-              window.location.href = '/explore';
+              void router.push('/explore');
             }}
           >
             <p className="text-lg">Explore</p>

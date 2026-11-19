@@ -1,8 +1,7 @@
 import { ProductType } from '@/utils/types'
 import { Card, CardContent } from '@/components/ui/card'
 import { GetAbosolutePathByRelative } from '@/utils/image'
-import { CURRENCYS } from '@/packages/constants'
-import { PackageOpen } from 'lucide-react'
+import RemoteImage from '@/components/Image/RemoteImage'
 import { Badge } from '../ui/badge'
 import Link from 'next/link'
 
@@ -27,11 +26,12 @@ const ProfileProduct = ({ products }: Props) => {
               <Card className="h-full hover:shadow-md hover:-translate-y-1 transition-all duration-200 overflow-hidden group">
                 {item.images?.[0]?.src && (
                   <div className="aspect-video relative overflow-hidden bg-muted">
-                    <img
+                    <RemoteImage
                       src={GetAbosolutePathByRelative(item.images[0].src)}
                       alt={item.title}
-                      className="w-full h-full object-cover transition-transform hover:scale-105 duration-300"
-                      loading="lazy"
+                      fill
+                      sizes="(max-width: 768px) 100vw, 33vw"
+                      className="object-cover transition-transform hover:scale-105 duration-300"
                     />
                   </div>
                 )}

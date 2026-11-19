@@ -17,7 +17,15 @@ interface DialogType {
   handleCloseDialog: () => Promise<void>
 }
 
-const InfoRow = ({ icon: Icon, label, value }: { icon: any; label: string; value?: string }) => {
+const InfoRow = ({
+  icon: Icon,
+  label,
+  value,
+}: {
+  icon: React.ComponentType<{ className?: string }>
+  label: string
+  value?: string
+}) => {
   if (!value) return null
   return (
     <div className="flex items-center justify-between gap-4 py-2 border-b border-dashed border-gray-100 last:border-0">
@@ -37,7 +45,7 @@ const SectionTitle = ({ title }: { title: string }) => (
 )
 
 export default function ShippingDialog({
-  alignment,
+  alignment: _alignment,
   shippingConfirmed,
   shipping,
   openDialog,
