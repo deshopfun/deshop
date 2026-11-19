@@ -30,7 +30,6 @@ export class Http {
   static home_stat = this.httpPath + '/client/home-stat'
   static report = this.httpPath + '/client/report'
   static blockchainOrder = this.httpPath + '/client/blockchain-order'
-  static address_by_uuid = this.httpPath + '/client/address-by-uuid'
 
   // upload
   static upload_file = this.httpPath + '/client/upload-file'
@@ -70,6 +69,7 @@ export class Http {
 
   // address
   static address = this.httpPath + '/client/address/address'
+  static address_by_uuid = this.httpPath + '/client/address/address-by-uuid'
 
   // collect
   static collect = this.httpPath + '/client/collect/collect'
