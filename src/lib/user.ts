@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
+import { createSSRJSONStorage } from './ssr-storage'
 
 interface UserPersistState {
   auth: string
@@ -66,6 +67,9 @@ export const useUserPresistStore = create(
     }),
     {
       name: 'deshop.user.market',
+      storage: createSSRJSONStorage<UserPersistState & UserPersistAction>(),
+      // Keep first client render aligned with SSR; rehydrate in PersistHydration.
+      skipHydration: true,
     }
   )
 )

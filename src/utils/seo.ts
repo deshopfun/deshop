@@ -1,5 +1,10 @@
 import { SITE_URL } from '@/packages/constants/general'
 
+/** Strip `undefined` so Next.js getServerSideProps can serialize the object. */
+export function stripUndefined<T>(value: T): T {
+  return JSON.parse(JSON.stringify(value)) as T
+}
+
 export function safeJsonLd(data: unknown): string {
   return JSON.stringify(data).replace(/</g, '\\u003c')
 }

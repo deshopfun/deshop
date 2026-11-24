@@ -2,6 +2,7 @@ import { ReactNode, useState } from 'react'
 import { QueryClientProvider } from '@tanstack/react-query'
 import ErrorBoundary from '../ErrorBoundary'
 import Web3Provider from './Web3Provider'
+import PersistHydration from './PersistHydration'
 import { createAppQueryClient } from '@/lib/queryClient'
 
 const Providers = ({ children, cookies }: { children: ReactNode; cookies: string | null }) => {
@@ -10,6 +11,7 @@ const Providers = ({ children, cookies }: { children: ReactNode; cookies: string
   return (
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>
+        <PersistHydration />
         <Web3Provider cookies={cookies}>{children}</Web3Provider>
       </QueryClientProvider>
     </ErrorBoundary>

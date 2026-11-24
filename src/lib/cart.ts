@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
+import { createSSRJSONStorage } from './ssr-storage'
 
 export interface CartLineType {
   productId: number
@@ -105,6 +106,10 @@ export const useCartPresistStore = create(
 
       resetCart: () => set(initialCartState),
     }),
-    { name: 'deshop.cart.market' }
+    {
+      name: 'deshop.cart.market',
+      storage: createSSRJSONStorage<CartPersistState & CartPersistAction>(),
+      skipHydration: true,
+    }
   )
 )

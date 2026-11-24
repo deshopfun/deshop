@@ -19,7 +19,8 @@ const snackIcons = {
 
 const Index = () => {
   const router = useRouter()
-  const [authReady, setAuthReady] = useState(() => useUserPresistStore.persist.hasHydrated())
+  // Always false on first render so SSR HTML matches the client before rehydrate.
+  const [authReady, setAuthReady] = useState(false)
   const [loginRedirecting, setLoginRedirecting] = useState(false)
 
   const currentRoute = useMemo(
@@ -49,8 +50,17 @@ const Index = () => {
   }
 
   useEffect(() => {
-    const unsub = useUserPresistStore.persist.onFinishHydration(() => setAuthReady(true))
-    if (useUserPresistStore.persist.hasHydrated()) setAuthReady(true)
+    const persistApi = useUserPresistStore.persist
+    if (!persistApi) {
+      setAuthReady(true)
+      return
+    }
+    const unsub = persistApi.onFinishHydration(() => setAuthReady(true))
+    if (persistApi.hasHydrated()) {
+      setAuthReady(true)
+    } else {
+      void persistApi.rehydrate()
+    }
     return unsub
   }, [])
 

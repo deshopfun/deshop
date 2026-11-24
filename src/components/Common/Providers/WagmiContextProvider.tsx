@@ -6,13 +6,6 @@ import { GetAllSupportAppKitNetwork } from '@/utils/web3'
 import { SITE_URL, WALLETCONNECT_PROJECT_ID } from '@/packages/constants'
 import { wagmiAdapter } from './WagmiAdapter'
 
-const metadata = {
-  name: 'Deshop',
-  description: 'Decentralized open source product display and trading platform',
-  url: SITE_URL,
-  icons: [`/favicon.ico`],
-}
-
 export const projectId = WALLETCONNECT_PROJECT_ID
 if (!projectId) throw new Error('Project ID is not defined')
 
@@ -32,7 +25,13 @@ function ensureAppKit() {
     projectId: projectId!,
     networks,
     defaultNetwork: mainnet,
-    metadata,
+    // Must match the page origin; SITE_URL is production canonical and warns on localhost.
+    metadata: {
+      name: 'Deshop',
+      description: 'Decentralized open source product display and trading platform',
+      url: window.location.origin || SITE_URL,
+      icons: [`${window.location.origin || SITE_URL}/favicon.ico`],
+    },
     features: {
       analytics: false,
       socials: [],

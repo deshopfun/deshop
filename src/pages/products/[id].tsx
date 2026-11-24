@@ -2,7 +2,7 @@ import Index from '@/components/Index'
 import Head from 'next/head'
 import type { GetServerSideProps, InferGetServerSidePropsType } from 'next'
 import { APP_DESCRIPTION, APP_NAME, IS_DEVELOPMENT } from '@/packages/constants'
-import { getSiteOrigin, safeJsonLd, toAbsoluteUrl } from '@/utils/seo'
+import { getSiteOrigin, safeJsonLd, stripUndefined, toAbsoluteUrl } from '@/utils/seo'
 
 type SeoProps = {
   title: string
@@ -54,12 +54,13 @@ export const getServerSideProps: GetServerSideProps<{ seo: SeoProps }> = async (
         ? product.body_html.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim()
         : '') || APP_DESCRIPTION
 
+    const variant = product.variants?.[0]
     const seo: SeoProps = {
       title: product.title || 'Product',
       description: description.slice(0, 160),
       image,
       canonicalPath,
-      jsonLd: {
+      jsonLd: stripUndefined({
         '@context': 'https://schema.org',
         '@type': 'Product',
         name: product.title,
@@ -69,19 +70,19 @@ export const getServerSideProps: GetServerSideProps<{ seo: SeoProps }> = async (
         brand: product.vendor
           ? { '@type': 'Brand', name: product.vendor }
           : undefined,
-        offers: product.variants?.[0]
+        offers: variant
           ? {
               '@type': 'Offer',
               priceCurrency: product.currency || 'USD',
-              price: product.variants[0].price,
+              price: variant.price ?? null,
               availability:
-                Number(product.variants[0].inventory_quantity) > 0
+                Number(variant.inventory_quantity) > 0
                   ? 'https://schema.org/InStock'
                   : 'https://schema.org/OutOfStock',
               url: toAbsoluteUrl(canonicalPath, origin),
             }
           : undefined,
-      },
+      }),
     }
 
     return { props: { seo } }
