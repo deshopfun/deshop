@@ -62,25 +62,25 @@ const Intro = () => {
   }, [storiesQuery.isError, setSnackSeverity, setSnackMessage, setSnackOpen])
 
   return (
-    <div className="container mx-auto py-8 flex flex-col gap-6">
+    <div className="w-full py-2 sm:py-4 lg:py-6 flex flex-col gap-5 sm:gap-6">
       <div className="relative overflow-hidden rounded-2xl bg-white shadow-lg border border-gray-100">
-        <div className="grid grid-cols-1 md:grid-cols-12">
-          <div className="md:col-span-8 relative overflow-hidden bg-gradient-to-br from-blue-600 to-sky-400 text-white p-8 sm:p-10 flex flex-col justify-center min-h-[320px]">
+        <div className="grid grid-cols-1 lg:grid-cols-12">
+          <div className="lg:col-span-8 relative overflow-hidden bg-gradient-to-br from-blue-600 to-sky-400 text-white p-5 sm:p-8 lg:p-10 flex flex-col justify-center min-h-[260px] sm:min-h-[320px]">
             <div className="absolute top-0 left-0 w-64 h-64 bg-white/10 rounded-full -translate-x-1/2 -translate-y-1/2" />
             <div className="absolute bottom-0 right-0 w-48 h-48 bg-white/10 rounded-full translate-x-1/4 translate-y-1/4" />
             <div className="absolute top-1/2 right-12 w-24 h-24 bg-white/5 rounded-full -translate-y-1/2 hidden lg:block" />
 
-            <div className="relative z-10 flex flex-col items-start gap-4 max-w-lg">
-              <div className="flex items-center gap-2">
-                <div className="w-9 h-9 rounded-lg flex items-center justify-center bg-white/20 shadow-md text-white text-xl font-bold select-none">
+            <div className="relative z-10 flex flex-col items-start gap-3 sm:gap-4 max-w-lg">
+              <div className="flex items-center gap-2 min-w-0">
+                <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg flex items-center justify-center bg-white/20 shadow-md text-white text-lg sm:text-xl font-bold select-none shrink-0">
                   D
                 </div>
-                <span className="text-white/80 text-sm">
+                <span className="text-white/80 text-xs sm:text-sm line-clamp-2">
                   Decentralized open source product display and trading platform
                 </span>
               </div>
 
-              <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight leading-tight">
+              <h1 className="text-xl sm:text-2xl lg:text-3xl font-extrabold tracking-tight leading-tight">
                 List, sell, and get paid in crypto — instantly.
               </h1>
 
@@ -113,7 +113,7 @@ const Intro = () => {
             </div>
           </div>
 
-          <div className="md:col-span-4 p-5 sm:p-6 bg-white flex flex-col border-t md:border-t-0 md:border-l border-gray-100">
+          <div className="lg:col-span-4 p-5 sm:p-6 bg-white flex flex-col border-t lg:border-t-0 lg:border-l border-gray-100">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-base font-semibold text-gray-900">Latest Stories</h2>
               <a

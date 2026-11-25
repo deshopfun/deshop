@@ -279,6 +279,8 @@ export interface WalletConnectType {
   buttonVariant?: 'text' | 'outlined' | 'contained'
   fullWidth?: boolean
   color?: 'inherit' | 'primary' | 'secondary' | 'success' | 'error' | 'info' | 'warning'
+  /** Fired after wallet broadcast succeeds; used to auto-submit TxID. */
+  onTxHash?: (hash: string) => void
 }
 
 export interface StatType {

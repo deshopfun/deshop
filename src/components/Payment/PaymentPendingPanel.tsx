@@ -24,6 +24,7 @@ type Props = {
   onTogglePaste: (open: boolean) => void
   onTxidChange: (value: string) => void
   onSubmitTxid: () => void
+  onWalletTxHash?: (hash: string) => void
 }
 
 export default function PaymentPendingPanel({
@@ -37,6 +38,7 @@ export default function PaymentPendingPanel({
   onTogglePaste,
   onTxidChange,
   onSubmitTxid,
+  onWalletTxHash,
 }: Props) {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
@@ -82,6 +84,7 @@ export default function PaymentPendingPanel({
                 value={tx.blockchain.crypto_amount}
                 buttonSize="large"
                 fullWidth
+                onTxHash={onWalletTxHash}
               />
             </div>
           </CardContent>

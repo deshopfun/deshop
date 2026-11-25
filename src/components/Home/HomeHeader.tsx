@@ -30,7 +30,9 @@ import {
   FilePenLine,
   Diamond,
   X,
+  Menu,
 } from 'lucide-react'
+import { SiteLogo } from '@/components/Logo/SiteLogo'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -52,7 +54,12 @@ import Link from 'next/link'
 const ICON_BTN = 'h-10 w-10 sm:h-11 sm:w-11 shadow-sm'
 const ICON = 'h-5 w-5 sm:h-6 sm:w-6'
 
-const HomeHeader = () => {
+type HomeHeaderProps = {
+  showMenuButton?: boolean
+  onMenuClick?: () => void
+}
+
+const HomeHeader = ({ showMenuButton = false, onMenuClick }: HomeHeaderProps) => {
   const router = useRouter()
   const [howItWorksOpen, setHowItWorksOpen] = useState(false)
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false)
@@ -82,7 +89,7 @@ const HomeHeader = () => {
 
   // 屏幕放大到桌面宽度后，自动收起手机端的搜索栏
   useEffect(() => {
-    const mq = window.matchMedia('(min-width: 768px)')
+    const mq = window.matchMedia('(min-width: 1024px)')
     const onChange = (e: MediaQueryListEvent) => e.matches && setMobileSearchOpen(false)
     mq.addEventListener('change', onChange)
     return () => mq.removeEventListener('change', onChange)
@@ -91,18 +98,34 @@ const HomeHeader = () => {
   return (
     <>
       <header className="sticky top-0 z-50 w-full border-b bg-white/80 backdrop-blur-md shadow-sm">
-        <div className="container mx-auto px-3 sm:px-4 h-14 sm:h-16 flex items-center justify-between gap-2 md:grid md:grid-cols-3 md:gap-4">
-          <div />
+        <div className="w-full max-w-[1600px] mx-auto px-3 sm:px-4 h-14 sm:h-16 flex items-center gap-2 lg:grid lg:grid-cols-[1fr_minmax(0,28rem)_1fr] lg:gap-4">
+          {/* Left: mobile menu + logo / desktop spacer */}
+          <div className="flex items-center gap-1 min-w-0 shrink-0">
+            {showMenuButton && (
+              <Button
+                variant="ghost"
+                size="icon"
+                className={cn(ICON_BTN, 'lg:hidden')}
+                aria-label="Open menu"
+                onClick={onMenuClick}
+              >
+                <Menu className={ICON} />
+              </Button>
+            )}
+            <div className="lg:hidden">
+              <SiteLogo collapsed={false} className="!p-1" />
+            </div>
+          </div>
 
-          <div className="hidden md:flex justify-center">
+          <div className="hidden lg:flex justify-center min-w-0">
             <HomeSearch />
           </div>
 
-          <div className="ml-auto flex items-center justify-end gap-0.5 sm:gap-2">
+          <div className="ml-auto flex items-center justify-end gap-0.5 sm:gap-1.5 min-w-0">
             <Button
               variant="ghost"
               size="icon"
-              className={cn(ICON_BTN, 'md:hidden')}
+              className={cn(ICON_BTN, 'lg:hidden')}
               aria-label={mobileSearchOpen ? 'Close search' : 'Open search'}
               aria-expanded={mobileSearchOpen}
               onClick={() => setMobileSearchOpen((v) => !v)}
@@ -112,12 +135,12 @@ const HomeHeader = () => {
 
             <Button
               variant="ghost"
-              className="h-10 w-10 sm:w-auto sm:h-10 px-0 sm:px-3 text-sm text-muted-foreground hover:text-foreground gap-1.5"
+              className="h-10 w-10 sm:w-auto sm:h-10 px-0 sm:px-3 text-sm text-muted-foreground hover:text-foreground gap-1.5 hidden sm:inline-flex"
               aria-label="How it works"
               onClick={() => setHowItWorksOpen(true)}
             >
               <Info className="h-5 w-5 sm:h-4 sm:w-4 shrink-0" />
-              <span className="hidden lg:inline">How it works</span>
+              <span className="hidden xl:inline">How it works</span>
             </Button>
 
             <div className="relative">
@@ -164,9 +187,9 @@ const HomeHeader = () => {
               onClick={() => {
                 void router.push('/create')
               }}
-              className="h-11 w-24 px-5 text-base bg-green-700 hover:bg-green-900 text-white gap-1 hidden md:flex"
+              className="h-11 px-4 text-base bg-green-700 hover:bg-green-900 text-white gap-1 hidden lg:flex"
             >
-              <Plus className="h-6 w-6" />
+              <Plus className="h-5 w-5" />
               Create
             </Button>
 
@@ -182,7 +205,7 @@ const HomeHeader = () => {
                       <AvatarImage src={GetAbosolutePathByRelative(avatarUrl, 'avatar')} />
                       <AvatarFallback>{username?.[0]?.toUpperCase()}</AvatarFallback>
                     </Avatar>
-                    <span className="text-sm font-medium hidden md:block">
+                    <span className="text-sm font-medium hidden xl:block">
                       {OmitMiddleString(String(username), 3)}
                     </span>
                   </Button>
@@ -211,7 +234,7 @@ const HomeHeader = () => {
                       Manage
                     </DropdownMenuLabel>
 
-                    <DropdownMenuItem asChild className="md:hidden py-2.5">
+                    <DropdownMenuItem asChild className="lg:hidden py-2.5">
                       <Link
                         href="/create"
                         className="flex w-full items-center font-medium text-green-700 focus:text-green-700"
@@ -219,6 +242,14 @@ const HomeHeader = () => {
                         <Plus className="mr-2 h-4 w-4" />
                         Create
                       </Link>
+                    </DropdownMenuItem>
+
+                    <DropdownMenuItem
+                      className="sm:hidden py-2.5"
+                      onSelect={() => setHowItWorksOpen(true)}
+                    >
+                      <Info className="mr-2 h-4 w-4" />
+                      How it works
                     </DropdownMenuItem>
 
                     <DropdownMenuItem asChild>
@@ -360,7 +391,7 @@ const HomeHeader = () => {
         </div>
 
         {mobileSearchOpen && (
-          <div className="md:hidden border-t bg-white/90 px-3 py-2.5">
+          <div className="lg:hidden border-t bg-white/90 px-3 py-2.5">
             <div className="w-full">
               <HomeSearch />
             </div>

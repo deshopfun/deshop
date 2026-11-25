@@ -165,17 +165,33 @@ const Chat = () => {
     enabled: isLogin,
 
     onAck: (payload) => {
+      const conversationId = payload.conversation_id
+      if (!conversationId) return
       setMessagesByConversation((prev) => {
-        const list = prev[payload.conversation_id] ?? []
+        const list = prev[conversationId] ?? []
         return {
           ...prev,
-          [payload.conversation_id]: list.map((m) =>
-            m.conversation_id.toString() === payload.client_message_id
-              ? { ...m, id: payload.message_id, status: 'sent' as const }
+          [conversationId]: list.map((m) =>
+            m.client_message_id === payload.client_message_id
+              ? {
+                  ...m,
+                  message_id: payload.message_id,
+                  create_time: payload.create_time || m.create_time,
+                  message_status: 'sent',
+                }
               : m
           ),
         }
       })
+      if (payload.create_time) {
+        setConversations((prev) =>
+          prev.map((c) =>
+            c.conversation_id === conversationId
+              ? { ...c, last_message_time: payload.create_time }
+              : c
+          )
+        )
+      }
     },
 
     onMessage: (payload) => {
@@ -183,7 +199,15 @@ const Chat = () => {
         ...prev,
         [payload.conversation_id]: [
           ...(prev[payload.conversation_id] ?? []),
-          { ...payload, status: 'sent' as const },
+          {
+            conversation_id: payload.conversation_id,
+            message_id: payload.message_id,
+            client_message_id: '',
+            sender_uuid: payload.sender_uuid,
+            content: payload.content,
+            create_time: payload.create_time,
+            message_status: 'sent',
+          },
         ],
       }))
       setConversations((prev) =>
@@ -192,7 +216,7 @@ const Chat = () => {
             ? {
                 ...c,
                 last_message: payload.content,
-                last_message_at: payload.create_time,
+                last_message_time: payload.create_time,
                 unread_count:
                   selectedId === c.conversation_id ? c.unread_count : c.unread_count + 1,
               }
@@ -236,7 +260,7 @@ const Chat = () => {
       setMessagesByConversation((prev) => ({
         ...prev,
         [conversationId]: (prev[conversationId] ?? []).map((m) =>
-          m.conversation_id.toString() === clientMessageId ? { ...m, status: 'failed' as const } : m
+          m.client_message_id === clientMessageId ? { ...m, message_status: 'failed' } : m
         ),
       }))
     }
@@ -277,13 +301,17 @@ const Chat = () => {
   }
 
   const onRetryMessage = (message: ConversationMessage) => {
+    const clientMessageId = message.client_message_id || crypto.randomUUID()
     setMessagesByConversation((prev) => ({
       ...prev,
       [message.conversation_id]: (prev[message.conversation_id] ?? []).map((m) =>
-        m.conversation_id === message.conversation_id ? { ...m, status: 'sending' as const } : m
+        m.client_message_id === message.client_message_id ||
+        (!m.client_message_id && m.message_id === message.message_id)
+          ? { ...m, client_message_id: clientMessageId, message_status: 'sending' }
+          : m
       ),
     }))
-    sendDraftMessage(message.conversation_id, message.content, message.client_message_id)
+    sendDraftMessage(message.conversation_id, message.content, clientMessageId)
   }
 
   const handleKeyDown = (e: React.KeyboardEvent) => {

@@ -94,13 +94,13 @@ const PaymentDetails = () => {
     }
   }
 
-  const onClickPasteTxId = async () => {
-    if (!order || !txid.trim() || pasteTx.isPending) return
+  const submitTxid = async (rawTxid: string) => {
+    if (!order || !rawTxid.trim() || pasteTx.isPending) return
 
     try {
       await pasteTx.mutateAsync({
         order_id: order.order_id,
-        txid: txid.trim(),
+        txid: rawTxid.trim(),
       })
       setSnackSeverity('success')
       setSnackMessage('Transaction submitted')
@@ -114,6 +114,15 @@ const PaymentDetails = () => {
       setSnackOpen(true)
       console.error(e)
     }
+  }
+
+  const onClickPasteTxId = async () => {
+    await submitTxid(txid)
+  }
+
+  const onWalletTxHash = async (hash: string) => {
+    setTxid(hash)
+    await submitTxid(hash)
   }
 
   const onClickChangeMethod = async () => {
@@ -292,6 +301,7 @@ const PaymentDetails = () => {
               onTogglePaste={setPasteTxId}
               onTxidChange={setTxid}
               onSubmitTxid={onClickPasteTxId}
+              onWalletTxHash={onWalletTxHash}
             />
           )}
         </div>

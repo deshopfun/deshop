@@ -17,10 +17,11 @@ export type ServerEnvelope =
   | {
       type: 'message'
       payload: {
-        id: string
         conversation_id: number
+        message_id: number
         sender_uuid: string
         content: string
+        content_type?: string
         create_time: number
       }
     }

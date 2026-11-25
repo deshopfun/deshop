@@ -3,29 +3,12 @@ import Intro from '@/components/Home/Intro'
 
 const Home = () => {
   return (
-    <div className="container mx-auto">
-      <div>
-        <Intro />
-      </div>
+    <div className="w-full max-w-[1400px] mx-auto">
+      <Intro />
 
-      {/* <div>
+      <div className="mt-4 px-0 sm:px-0">
         <div className="flex items-center">
-          <Button variant="ghost">
-            <p className="text-lg">Recently viewed</p>
-            <ChevronRight />
-          </Button>
-        </div>
-
-        <div className="mt-4">
-          <RecentView />
-        </div>
-      </div> */}
-
-      <div className="mt-4">
-        <div className="flex items-center">
-          <p className="text-2xl font-bold" color={'textPrimary'}>
-            All markets
-          </p>
+          <p className="text-xl sm:text-2xl font-bold">All markets</p>
         </div>
 
         <div className="mt-4">
